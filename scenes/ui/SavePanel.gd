@@ -1,4 +1,4 @@
-﻿# scenes/ui/SavePanel.gd
+# scenes/ui/SavePanel.gd
 extends PanelContainer
 
 var save_system: SaveSystem

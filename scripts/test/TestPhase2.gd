@@ -1,4 +1,4 @@
-﻿# scripts/test/TestPhase2.gd
+# scripts/test/TestPhase2.gd
 extends Node
 
 func _ready():

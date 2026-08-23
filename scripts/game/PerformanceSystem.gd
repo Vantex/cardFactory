@@ -1,4 +1,4 @@
-﻿# scripts/game/PerformanceSystem.gd
+# scripts/game/PerformanceSystem.gd
 class_name PerformanceSystem
 extends RefCounted
 

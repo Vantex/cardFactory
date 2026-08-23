@@ -1,4 +1,4 @@
-﻿# scripts/game/BeltSystem.gd
+# scripts/game/BeltSystem.gd
 class_name BeltSystem
 extends RefCounted
 

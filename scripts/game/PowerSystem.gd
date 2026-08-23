@@ -1,4 +1,4 @@
-﻿# scripts/game/PowerSystem.gd
+# scripts/game/PowerSystem.gd
 class_name PowerSystem
 extends RefCounted
 

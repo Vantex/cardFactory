@@ -1,4 +1,4 @@
-﻿# scripts/game/LogisticsSystem.gd
+# scripts/game/LogisticsSystem.gd
 class_name LogisticsSystem
 extends RefCounted
 

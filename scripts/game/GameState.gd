@@ -1,4 +1,4 @@
-﻿# scripts/game/GameState.gd
+# scripts/game/GameState.gd
 class_name GameState
 extends RefCounted
 

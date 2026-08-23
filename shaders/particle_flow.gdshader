@@ -1,4 +1,4 @@
-﻿// shaders/particle_flow.gdshader
+// shaders/particle_flow.gdshader
 shader_type canvas_item;
 
 uniform float speed : hint_range(0.1, 5.0) = 1.0;

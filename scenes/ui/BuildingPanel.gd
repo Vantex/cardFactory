@@ -1,4 +1,4 @@
-﻿# scenes/ui/BuildingPanel.gd
+# scenes/ui/BuildingPanel.gd
 extends PanelContainer
 
 var selected_building_id: String = ""

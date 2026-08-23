@@ -1,4 +1,4 @@
-﻿# autoload/GameManager.gd
+# autoload/GameManager.gd
 extends Node
 
 var game_state: GameState

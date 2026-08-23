@@ -1,4 +1,4 @@
-﻿# scripts/game/TechnologySystem.gd
+# scripts/game/TechnologySystem.gd
 class_name TechnologySystem
 extends RefCounted
 

@@ -1,4 +1,4 @@
-﻿# scripts/game/DysonSphereSystem.gd
+# scripts/game/DysonSphereSystem.gd
 class_name DysonSphereSystem
 extends RefCounted
 

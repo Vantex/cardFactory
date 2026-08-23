@@ -1,4 +1,4 @@
-﻿# autoload/DataManager.gd
+# autoload/DataManager.gd
 extends Node
 
 var all_items: Dictionary = {}

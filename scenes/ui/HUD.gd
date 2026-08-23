@@ -1,4 +1,4 @@
-﻿# scenes/ui/HUD.gd
+# scenes/ui/HUD.gd
 extends CanvasLayer
 
 var power_label: Label

@@ -1,4 +1,4 @@
-﻿# scripts/game/StationSystem.gd
+# scripts/game/StationSystem.gd
 class_name StationSystem
 extends RefCounted
 

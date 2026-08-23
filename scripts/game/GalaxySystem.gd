@@ -1,4 +1,4 @@
-﻿# scripts/game/GalaxySystem.gd
+# scripts/game/GalaxySystem.gd
 class_name GalaxySystem
 extends RefCounted
 

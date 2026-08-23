@@ -1,4 +1,4 @@
-﻿# scripts/game/PlanetSystem.gd
+# scripts/game/PlanetSystem.gd
 class_name PlanetSystem
 extends RefCounted
 

@@ -1,4 +1,4 @@
-﻿# scenes/ui/MiniMap.gd
+# scenes/ui/MiniMap.gd
 extends Control
 
 const MINIMAP_SIZE = Vector2(200, 150)

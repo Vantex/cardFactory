@@ -1,4 +1,4 @@
-﻿# scripts/test/TestGameplay.gd
+# scripts/test/TestGameplay.gd
 extends Node
 
 func _ready():

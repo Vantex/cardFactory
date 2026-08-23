@@ -1,4 +1,4 @@
-﻿# scripts/rendering/ConnectionRenderer.gd
+# scripts/rendering/ConnectionRenderer.gd
 extends Node2D
 
 func _draw():

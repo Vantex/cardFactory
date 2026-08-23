@@ -1,4 +1,4 @@
-﻿# scripts/game/ProductionSystem.gd
+# scripts/game/ProductionSystem.gd
 class_name ProductionSystem
 extends RefCounted
 

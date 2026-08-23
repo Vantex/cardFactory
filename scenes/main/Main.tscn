@@ -1,4 +1,4 @@
-﻿[gd_scene load_steps=7 format=3 uid="uid://main004"]
+[gd_scene load_steps=7 format=3 uid="uid://main004"]
 
 [ext_resource type="Script" path="res://scenes/main/Main.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/rendering/CardRenderer.gd" id="2_card"]

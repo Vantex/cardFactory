@@ -1,4 +1,4 @@
-﻿# scripts/rendering/CardRenderer.gd
+# scripts/rendering/CardRenderer.gd
 extends Node2D
 
 # 绘制配置

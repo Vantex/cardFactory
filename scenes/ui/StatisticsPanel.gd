@@ -1,4 +1,4 @@
-﻿# scenes/ui/StatisticsPanel.gd
+# scenes/ui/StatisticsPanel.gd
 extends PanelContainer
 
 var stats_system: StatisticsSystem

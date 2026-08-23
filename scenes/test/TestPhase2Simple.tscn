@@ -1,4 +1,4 @@
-﻿[gd_scene load_steps=2 format=3 uid="uid://test_phase2_simple"]
+[gd_scene load_steps=2 format=3 uid="uid://test_phase2_simple"]
 
 [ext_resource type="Script" path="res://scripts/test/TestPhase2Simple.gd" id="1_test"]
 

@@ -1,4 +1,4 @@
-﻿# scenes/ui/MainUI.gd
+# scenes/ui/MainUI.gd
 extends CanvasLayer
 
 @onready var building_panel: PanelContainer = $BuildingPanel

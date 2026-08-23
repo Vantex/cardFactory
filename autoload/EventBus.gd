@@ -1,4 +1,4 @@
-﻿# autoload/EventBus.gd
+# autoload/EventBus.gd
 extends Node
 
 # 卡牌相关信号

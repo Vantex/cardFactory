@@ -1,4 +1,4 @@
-﻿// shaders/glow.gdshader
+// shaders/glow.gdshader
 shader_type canvas_item;
 
 uniform float glow_strength : hint_range(0.0, 1.0) = 0.5;

@@ -1,4 +1,4 @@
-﻿# scripts/test/TestCompletedFeatures.gd
+# scripts/test/TestCompletedFeatures.gd
 extends Node
 
 func _ready():

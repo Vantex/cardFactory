@@ -1,4 +1,4 @@
-﻿# scripts/game/SaveSystem.gd
+# scripts/game/SaveSystem.gd
 class_name SaveSystem
 extends RefCounted
 

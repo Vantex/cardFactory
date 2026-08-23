@@ -1,4 +1,4 @@
-﻿# scenes/ui/TechnologyPanel.gd
+# scenes/ui/TechnologyPanel.gd
 extends PanelContainer
 
 var tech_system: TechnologySystem

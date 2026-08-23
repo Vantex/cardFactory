@@ -1,4 +1,4 @@
-﻿# scripts/game/SimulationEngine.gd
+# scripts/game/SimulationEngine.gd
 class_name SimulationEngine
 extends Node
 

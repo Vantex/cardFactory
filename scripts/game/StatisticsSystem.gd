@@ -1,4 +1,4 @@
-﻿# scripts/game/StatisticsSystem.gd
+# scripts/game/StatisticsSystem.gd
 class_name StatisticsSystem
 extends RefCounted
 

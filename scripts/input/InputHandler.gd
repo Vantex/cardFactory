@@ -1,4 +1,4 @@
-﻿# scripts/input/InputHandler.gd
+# scripts/input/InputHandler.gd
 extends Node2D
 
 # 操作模式

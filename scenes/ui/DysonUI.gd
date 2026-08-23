@@ -1,4 +1,4 @@
-﻿# scenes/ui/DysonUI.gd
+# scenes/ui/DysonUI.gd
 extends Control
 
 var dyson_system: DysonSphereSystem

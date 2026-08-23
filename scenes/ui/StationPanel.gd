@@ -1,4 +1,4 @@
-﻿# scenes/ui/StationPanel.gd
+# scenes/ui/StationPanel.gd
 extends PanelContainer
 
 var station_system: StationSystem

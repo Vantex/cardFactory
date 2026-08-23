@@ -1,4 +1,4 @@
-﻿# scenes/ui/GalaxyMap.gd
+# scenes/ui/GalaxyMap.gd
 extends Control
 
 var planet_system: PlanetSystem

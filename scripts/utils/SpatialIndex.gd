@@ -1,4 +1,4 @@
-﻿# scripts/utils/SpatialIndex.gd
+# scripts/utils/SpatialIndex.gd
 class_name SpatialIndex
 extends RefCounted
 
