@@ -147,7 +147,7 @@ git commit -m "fix: validate static game data"
 
 - [ ] **步骤 1：编写失败的测试**
 
-在当前不可写 `user://` 环境实例化 `SaveSystem`，断言不会产生脚本错误，且 `is_storage_available()` 为 `false`、`save_game()` 返回 `false`。
+向 `SaveSystem` 构造函数注入确定无效的 `invalid://baseline/` 路径，断言不会产生脚本错误，且 `is_storage_available()` 为 `false`、`save_game()` 返回 `false`。默认构造仍使用 `user://saves/`。
 
 - [ ] **步骤 2：验证红灯**
 
@@ -155,7 +155,7 @@ git commit -m "fix: validate static game data"
 
 - [ ] **步骤 3：最小实现**
 
-缓存目录初始化结果；`DirAccess.open()` 返回空时停止；所有写操作先检查可用性并返回 `false`。
+允许构造函数注入保存目录，缓存目录初始化结果；`DirAccess.open()` 返回空时停止；所有写操作先检查可用性并返回 `false`。
 
 - [ ] **步骤 4：验证并 Commit**
 
