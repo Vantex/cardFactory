@@ -2,10 +2,11 @@
 class_name GameState
 extends RefCounted
 
-const DEFAULT_BUILDING_COST: int = 1
 const BUILDING_COSTS: Dictionary = {
     "miner": 1,
-    "smelter": 1,
+    "smelter": 2,
+    "assembling_machine_mk1": 3,
+    "power_generator": 2,
 }
 
 # 游戏状态
@@ -81,7 +82,10 @@ func try_place_building(building_type: String, position: Vector2) -> Dictionary:
     if building_definition.is_empty():
         return {"ok": false, "message": "Unknown building type"}
 
-    var cost: int = BUILDING_COSTS.get(building_type, DEFAULT_BUILDING_COST)
+    if not BUILDING_COSTS.has(building_type):
+        return {"ok": false, "message": "Construction cost is not configured"}
+
+    var cost: int = BUILDING_COSTS[building_type]
     if construction_points < cost:
         return {"ok": false, "message": "Insufficient construction points"}
 
@@ -140,15 +144,25 @@ func try_add_connection(source_id: String, target_id: String) -> Dictionary:
     if output_item.is_empty():
         return {"ok": false, "message": "Source building has no output item"}
 
-    var target_type: String = buildings[target_id].get("type", "")
-    var compatible_recipes := get_compatible_recipes(target_type, output_item)
-    if compatible_recipes.is_empty():
-        return {"ok": false, "message": "Target building cannot accept the source output"}
+    var target_building: Dictionary = buildings[target_id]
+    var existing_recipe_id: String = target_building.get("recipe_id", "")
+    if not existing_recipe_id.is_empty():
+        var existing_recipe := DataManager.get_recipe(existing_recipe_id)
+        var existing_recipe_accepts_output := false
+        for input in existing_recipe.get("inputs", []):
+            if input.get("item_id", "") == output_item:
+                existing_recipe_accepts_output = true
+                break
+        if not existing_recipe_accepts_output:
+            return {"ok": false, "message": "Target recipe cannot accept the source output"}
+    else:
+        var target_type: String = target_building.get("type", "")
+        var compatible_recipes := get_compatible_recipes(target_type, output_item)
+        if compatible_recipes.is_empty():
+            return {"ok": false, "message": "Target building cannot accept the source output"}
 
-    var selected_recipe: Dictionary = compatible_recipes[0]
-    var selected_recipe_id: String = selected_recipe.get("id", "")
-    if buildings[target_id].get("recipe_id", "") != selected_recipe_id:
-        set_entity_recipe(target_id, selected_recipe_id)
+        var selected_recipe: Dictionary = compatible_recipes[0]
+        set_entity_recipe(target_id, selected_recipe.get("id", ""))
 
     var connection_id := add_connection({
         "source_id": source_id,

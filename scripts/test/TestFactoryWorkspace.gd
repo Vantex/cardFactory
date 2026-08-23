@@ -4,6 +4,8 @@ var _failures := 0
 
 func _ready() -> void:
 	print("FACTORY WORKSPACE TESTS STARTED")
+	_test_explicit_building_costs()
+	_test_existing_recipe_connection_rules()
 
 	var state := GameState.new()
 	_expect(state.construction_points == 12, "new workspaces start with 12 construction points")
@@ -46,6 +48,39 @@ func _ready() -> void:
 
 	print("FACTORY WORKSPACE TESTS PASSED")
 	get_tree().quit(0)
+
+func _test_explicit_building_costs() -> void:
+	var cost_cases := [
+		{"building_type": "miner", "remaining_points": 11},
+		{"building_type": "smelter", "remaining_points": 10},
+		{"building_type": "assembling_machine_mk1", "remaining_points": 9},
+		{"building_type": "power_generator", "remaining_points": 10},
+	]
+	for cost_case in cost_cases:
+		var state := GameState.new()
+		var result: Dictionary = state.try_place_building(cost_case.building_type, Vector2(100, 100))
+		_expect(result.ok and state.construction_points == cost_case.remaining_points, "%s uses its configured construction cost" % cost_case.building_type)
+
+	var unconfigured_state := GameState.new()
+	var unconfigured_result: Dictionary = unconfigured_state.try_place_building("solar_panel", Vector2(100, 100))
+	_expect(not unconfigured_result.ok and unconfigured_state.construction_points == 12 and unconfigured_state.buildings.is_empty(), "buildings without configured costs are rejected without state changes")
+
+func _test_existing_recipe_connection_rules() -> void:
+	var compatible_state := GameState.new()
+	var compatible_miner: Dictionary = compatible_state.try_place_building("miner", Vector2(100, 100))
+	var compatible_smelter: Dictionary = compatible_state.try_place_building("smelter", Vector2(420, 100))
+	compatible_state.set_entity_recipe(compatible_smelter.id, "iron_ingot_recipe")
+	compatible_state.get_building(compatible_smelter.id)["progress"] = 0.5
+	var compatible_connection: Dictionary = compatible_state.try_add_connection(compatible_miner.id, compatible_smelter.id)
+	_expect(compatible_connection.ok and compatible_state.get_building(compatible_smelter.id).recipe_id == "iron_ingot_recipe" and compatible_state.get_building(compatible_smelter.id).progress == 0.5, "compatible existing recipes are accepted without being rewritten")
+
+	var incompatible_state := GameState.new()
+	var incompatible_miner: Dictionary = incompatible_state.try_place_building("miner", Vector2(100, 100))
+	var incompatible_smelter: Dictionary = incompatible_state.try_place_building("smelter", Vector2(420, 100))
+	incompatible_state.set_entity_recipe(incompatible_smelter.id, "copper_ingot_recipe")
+	incompatible_state.get_building(incompatible_smelter.id)["progress"] = 0.5
+	var incompatible_connection: Dictionary = incompatible_state.try_add_connection(incompatible_miner.id, incompatible_smelter.id)
+	_expect(not incompatible_connection.ok and incompatible_state.connections.is_empty() and incompatible_state.get_building(incompatible_smelter.id).recipe_id == "copper_ingot_recipe" and incompatible_state.get_building(incompatible_smelter.id).progress == 0.5, "incompatible existing recipes reject connections without state changes")
 
 func _expect(condition: bool, description: String) -> void:
 	if condition:
