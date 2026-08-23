@@ -1,0 +1,21 @@
+unit: factory-workspace
+commit: false
+candidate_splits:
+  - id: "DSPONLINE/src/components/GamePanels.tsx:133-377"
+    drivers: [concern_split, change_cadence_split]
+    rationale: >
+      资源聚合与任务摘要刷新频率高于其他面板，Godot 实现可保留为独立 ResourceRail 控件，
+      但本阶段先由单一工作区控制器组合以降低场景接线成本。
+    source_slice: {file: DSPONLINE/src/components/GamePanels.tsx, lines: [133, 377]}
+  - id: "DSPONLINE/src/components/GamePanels.tsx:2065-2400"
+    drivers: [concern_split, lifecycle_split]
+    rationale: >
+      检查器与建造坞具有独立选择生命周期和命令集合，后续可拆为 InspectorPanel 与 ConstructionDock，
+      当前阶段通过内部构建函数保持边界而不提前增加场景数量。
+    source_slice: {file: DSPONLINE/src/components/GamePanels.tsx, lines: [2065, 2400]}
+  - id: "DSPONLINE/src/components/FactoryNodes.tsx:639-862"
+    drivers: [reuse_split, nfr_split]
+    rationale: >
+      节点视觉需要高频重绘且可被缩略图复用，后续可演进为 Control 节点池；
+      本阶段继续使用低开销 Node2D 绘制并把可点击语义集中在 InputHandler。
+    source_slice: {file: DSPONLINE/src/components/FactoryNodes.tsx, lines: [639, 862]}

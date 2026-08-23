@@ -1,0 +1,33 @@
+unit: factory-workspace
+bindings:
+  - type: convention
+    name: "ReactFlowProvider + ReactFlow canvas"
+    source_loc: "DSPONLINE/src/FactoryRuntime.tsx:24"
+    target: "Main.tscn + Camera2D + Node2D render/input layers"
+    must_appear_in_target: true
+    notes: "Godot 场景树取代 React provider；相机负责画布世界坐标。"
+  - type: listener
+    name: "onConnect/onNodeDrag/onSelectionChange"
+    source_loc: "DSPONLINE/src/App.tsx:11452"
+    target: "InputHandler._unhandled_input and EventBus signals"
+    must_appear_in_target: true
+    notes: "端口连接、节点拖动和选择必须只由一个输入控制器仲裁。"
+  - type: convention
+    name: "FactoryGame workspace composition"
+    source_loc: "DSPONLINE/src/App.tsx:10999"
+    target: "FactoryWorkspaceUI CanvasLayer"
+    must_appear_in_target: true
+    notes: "顶部 HUD、左资源栏、右检查器、底部建造坞覆盖世界画布。"
+runtime_config:
+  - key: "display/window/size/viewport_width"
+    source_loc: "card-factory/project.godot:18"
+    source: properties-file
+    default_value: "1152"
+    must_appear_in_target: true
+    notes: "桌面三栏布局以 1152×648 为最小验证视口。"
+  - key: "input shortcuts Q/W/E/R, Escape, Delete, Space"
+    source_loc: "card-factory/scripts/input/InputHandler.gd:43"
+    source: code
+    default_value: "enabled"
+    must_appear_in_target: true
+    notes: "建造、取消、删除和暂停快捷键保留并在 UI 中提示。"

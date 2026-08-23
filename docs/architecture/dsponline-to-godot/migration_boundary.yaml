@@ -1,0 +1,57 @@
+user_intent:
+  raw_request: "参考 DSPONLINE 已完善的 UI 和设计，只需在 Godot 中实现，不需要讨论"
+  inferred_acceptance:
+    - "Godot 主场景呈现 DSPONLINE 式三栏工厂工作区和底部建造坞"
+    - "玩家可从空白画布完成建造、选中、移动、配方设置、连接和删除"
+    - "无效操作提供可见反馈，HUD 与模拟状态一致"
+  cleanup_required: false
+strategy: minimal_runtime
+runtime_reachable:
+  - scenes/main/Main.tscn
+  - scenes/main/Main.gd
+  - scenes/ui/FactoryWorkspaceUI.gd
+  - scripts/input/InputHandler.gd
+  - scripts/rendering/CardRenderer.gd
+  - scripts/rendering/ConnectionRenderer.gd
+  - scripts/game/GameState.gd
+must_rewrite:
+  - path: scenes/main/Main.tscn
+    reason: "Godot 主运行场景必须挂载新工作区和画布相机"
+  - path: scenes/main/Main.gd
+    reason: "移除自动演示生产线并接线工作区状态"
+  - path: scenes/ui/FactoryWorkspaceUI.gd
+    reason: "DSPONLINE 式资源栏、建造坞、检查器、HUD 和反馈的 Godot 实现"
+  - path: scripts/input/InputHandler.gd
+    reason: "画布放置、选择、拖动、端口连接、平移和缩放交互入口"
+  - path: scripts/rendering/CardRenderer.gd
+    reason: "节点卡片层级、状态、端口和进度需要匹配目标视觉语义"
+  - path: scripts/rendering/ConnectionRenderer.gd
+    reason: "连接方向、状态和流动反馈需要匹配目标视觉语义"
+  - path: scripts/game/GameState.gd
+    reason: "UI 命令需要集中验证的放置、连接和资源扣减契约"
+copy_as_is:
+  - autoload/DataManager.gd
+  - scripts/game/SimulationEngine.gd
+  - scripts/game/PowerSystem.gd
+  - scripts/game/BeltSystem.gd
+  - scripts/game/ProductionSystem.gd
+  - scripts/game/StatisticsSystem.gd
+  - data/base_metals.json
+  - data/chemicals.json
+  - data/electronics.json
+  - data/advanced_buildings.json
+legacy_allowed_to_remain:
+  - scenes/ui/HUD.gd
+  - scenes/ui/HUD.tscn
+  - scenes/ui/BuildingPanel.gd
+  - scenes/ui/BuildingPanel.tscn
+  - scenes/ui/MiniMap.gd
+  - scenes/ui/MiniMap.tscn
+  - scenes/ui/TechnologyPanel.gd
+  - scenes/ui/StatisticsPanel.gd
+defer_cleanup:
+  - "新工作区验证后再删除未挂载的旧 UI 脚本和历史测试场景。"
+full_rewrite_reason: null
+implementation_rule: >
+  实施任务只使用 must_rewrite 和必要的 copy_as_is；DSPONLINE source_anchors
+  是行为证据而非复制清单，旧 UI 是否删除不属于本阶段验收。

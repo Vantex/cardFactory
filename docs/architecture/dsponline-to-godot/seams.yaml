@@ -1,0 +1,27 @@
+seams:
+  - id: "card-factory/autoload/GameManager.gd:3"
+    description: "DSPONLINE 式 Godot 工作区迁移，现有数据加载与模拟核心本阶段冻结。"
+    source: inferred
+    cut_between:
+      migrated_side: factory-workspace
+      frozen_side: cardfactory-simulation-core
+    protocol_shift:
+      from: "React callbacks and immutable projection updates"
+      to: "Godot signals and mutable GameState dictionaries"
+    frozen_side_rule: "DataManager、SimulationEngine 及其系统在本阶段不得进行职责重构；只允许 UI 所需的窄 GameState 命令补充。"
+    bridge_points:
+      - at: "FactoryWorkspaceUI/InputHandler → GameState command boundary"
+        from_form: "React event handler invokes engine function and publishes notice/state projection"
+        to_form: "Godot UI emits intent; InputHandler calls GameState command returning result Dictionary; UI displays result.message"
+        mapping_rule: >
+          buildingId 与 entityId 保持字符串 ID；flow position 转为 Camera2D 世界 Vector2；
+          连接先推断源输出物品，再验证目标配方输入；任何失败返回 ok=false，状态不变。
+        edge_cases:
+          - "源或目标不存在：拒绝并显示错误"
+          - "源等于目标：拒绝且不生成连接"
+          - "重复源目标连接：拒绝且不生成连接"
+          - "目标未选配方：选择首个兼容配方后再连接"
+          - "建造点不足：不放置、不扣减"
+        idempotency_retry: "同一源目标和物品连接由重复检查保证重复提交不产生第二条连接。"
+        fallback: "无法推断兼容物品或配方时保留当前选择并提示玩家。"
+        must_preserve: true

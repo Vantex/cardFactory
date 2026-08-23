@@ -1,0 +1,49 @@
+unit: factory-workspace
+side_effects:
+  - source_loc: "DSPONLINE/src/App.tsx:9537"
+    effect: "合法端口连接创建物流边并更新画布反馈。"
+    must_preserve: true
+  - source_loc: "DSPONLINE/src/App.tsx:9716"
+    effect: "拖动节点持久更新实体世界坐标，连接端点随之移动。"
+    must_preserve: true
+  - source_loc: "DSPONLINE/src/components/GamePanels.tsx:2222"
+    effect: "建造坞选择建筑后进入放置模式并显示当前模式。"
+    must_preserve: true
+  - source_loc: "DSPONLINE/src/components/GamePanels.tsx:2065"
+    effect: "检查器修改所选实体配方并刷新卡片输入输出。"
+    must_preserve: true
+branches:
+  - source_loc: "DSPONLINE/src/App.tsx:9730"
+    condition: "节点、连接或空白画布被选中"
+    behavior: "同步选择状态；空白选择恢复工作区概览。"
+    must_preserve: true
+  - source_loc: "DSPONLINE/src/components/FactoryNodes.tsx:639"
+    condition: "节点处于 running、blocked、idle 或 selected"
+    behavior: "卡片边框、状态点、进度与端口信息呈现不同视觉语义。"
+    must_preserve: true
+  - source_loc: "DSPONLINE/src/components/GamePanels.tsx:2222"
+    condition: "建筑库存/建造资源足够或不足"
+    behavior: "足够时进入放置并扣减；不足时按钮/反馈说明缺口且状态不变。"
+    must_preserve: true
+  - source_loc: "DSPONLINE/src/App.tsx:9385"
+    condition: "连接目标有效、无效或放弃"
+    behavior: "有效时提交；无效时显示具体原因；放弃时清理预览。"
+    must_preserve: true
+error_paths:
+  - source_loc: "DSPONLINE/src/App.tsx:9537"
+    trigger: "连接自身、重复连接、物品/配方不兼容或目标不存在"
+    outcome: "画布保持原状态，显示短时错误消息。"
+    contract: "GameState command returns {ok:false,message:String}; no partial mutation"
+    must_preserve: true
+  - source_loc: "DSPONLINE/src/components/GamePanels.tsx:2222"
+    trigger: "建造资源不足或建筑定义不存在"
+    outcome: "不创建实体并在工作区显示原因。"
+    contract: "GameState command returns {ok:false,message:String}; construction_points unchanged"
+    must_preserve: true
+concurrency:
+  model: event-loop
+  tx_boundary:
+    source_loc: "DSPONLINE/src/App.tsx:9537"
+    scope: "单次放置或单次连接的验证、资源扣减和实体/边创建必须原子完成。"
+    isolation: "Godot 主线程单写者"
+    must_preserve: true

@@ -1,0 +1,23 @@
+contracts:
+  - name: factory-workspace-command-facade
+    unit: factory-workspace
+    type: sdk
+    stability: must_preserve
+    source_loc: "DSPONLINE/src/App.tsx:9537"
+    contract:
+      method: "place/select/move/connect/configure/remove"
+      path: "in-process game-state command boundary"
+      request: "building type, world position, entity ids, optional recipe id"
+      response: "{ok: bool, id?: String, message: String}"
+      error: "无效目标、重复连接、配方不兼容和建造点不足均返回 ok=false 且不改变状态"
+      auth: "none"
+    target_contract:
+      method: "GameState.try_place_building / try_add_connection / set_entity_recipe / move_entity / remove_building"
+      notes: "UI 只提交意图；状态验证和原子变更由 GameState 完成。"
+    semantic_divergence:
+      - field: position
+        issue: "ReactFlow 使用 CSS/flow 坐标；Godot 使用 Camera2D 转换后的 Vector2 世界坐标。"
+        source_loc: "DSPONLINE/src/App.tsx:9716"
+      - field: callback result
+        issue: "React 回调通过 state/notice 更新反馈；Godot 通过返回字典和 EventBus 信号同步。"
+        source_loc: "DSPONLINE/src/App.tsx:9537"

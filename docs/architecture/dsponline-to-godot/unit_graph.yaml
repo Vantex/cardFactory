@@ -1,0 +1,17 @@
+units:
+  - name: factory-workspace
+    trigger: page
+    trigger_detail: "玩家进入主场景后使用工厂工作区"
+    source_anchors:
+      - path: DSPONLINE/src/App.tsx
+        line: 11445
+    exported_signature:
+      - method: "FactoryGame(initialLoad, onReturnToMenu, onOpenReleaseNotes) -> ReactElement"
+        source_loc: "DSPONLINE/src/App.tsx:1230"
+        stability: must_preserve
+    dynamic_entrypoints:
+      - target: "res://scenes/main/Main.tscn"
+        mechanism: convention
+        source_loc: "card-factory/project.godot:14"
+    depends_on: []
+    shared_refs: []

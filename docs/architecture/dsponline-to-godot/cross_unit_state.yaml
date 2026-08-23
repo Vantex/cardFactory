@@ -1,0 +1,2 @@
+flows: []
+notes: "本阶段只有 factory-workspace 一个单位；UI 与冻结核心的切点记录在 seams.yaml，而非伪装成跨单位隐式状态。"
