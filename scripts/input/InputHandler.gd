@@ -84,6 +84,9 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not (event is InputEventMouseButton or event is InputEventMouseMotion):
 		return
 	var screen_position := _get_event_screen_position(event)
+	if event is InputEventMouseButton and not event.pressed:
+		_handle_mouse_button(event, screen_position)
+		return
 	if _is_pointer_over_ui(screen_position):
 		return
 	if event is InputEventMouseButton:

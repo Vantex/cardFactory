@@ -152,6 +152,31 @@ func _test_canvas_input_contract() -> void:
 		_expect(is_equal_approx(camera.get_meta("min_zoom", 0.0), 0.45) and is_equal_approx(camera.get_meta("max_zoom", 0.0), 1.8), "world camera exposes the 0.45 to 1.8 zoom range")
 	main.queue_free()
 
+	add_child(input_handler)
+	var ui_state := {"pointer_over_ui": false}
+	var ui_hit_test: Callable = func(_screen_position: Vector2) -> bool:
+		return ui_state.pointer_over_ui
+	input_handler.call("set_ui_hit_test", ui_hit_test)
+
+	input_handler.call("_unhandled_input", _mouse_button_event(MOUSE_BUTTON_RIGHT, true, Vector2(320, 180)))
+	_expect(input_handler.call("get_mode_name") == "panning", "right press starts panning on the world canvas")
+	ui_state.pointer_over_ui = true
+	input_handler.call("_unhandled_input", _mouse_button_event(MOUSE_BUTTON_RIGHT, false, Vector2(40, 80)))
+	_expect(input_handler.call("get_mode_name") == "idle", "panning release over UI clears the active operation")
+
+	input_handler.set("current_mode", 2)
+	input_handler.set("dragging_building_id", "building_under_test")
+	input_handler.call("_unhandled_input", _mouse_button_event(MOUSE_BUTTON_LEFT, false, Vector2(40, 80)))
+	_expect(input_handler.call("get_mode_name") == "idle", "dragging release over UI finishes the active operation")
+	input_handler.queue_free()
+
+func _mouse_button_event(button_index: MouseButton, pressed: bool, position: Vector2) -> InputEventMouseButton:
+	var event := InputEventMouseButton.new()
+	event.button_index = button_index
+	event.pressed = pressed
+	event.position = position
+	return event
+
 func _expect(condition: bool, description: String) -> void:
 	if condition:
 		print("PASS: %s" % description)
