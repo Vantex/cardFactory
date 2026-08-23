@@ -1,0 +1,306 @@
+﻿{
+    "line_id":  "electronics",
+    "name":  "电子生产线",
+    "items":  {
+                  "circuit":  {
+                                  "id":  "circuit",
+                                  "name":  "电路板",
+                                  "symbol":  "⚡",
+                                  "color":  "#00ff00",
+                                  "description":  "基础电子元件"
+                              },
+                  "chip":  {
+                               "id":  "chip",
+                               "name":  "芯片",
+                               "symbol":  "💎",
+                               "color":  "#00bfff",
+                               "description":  "高级电子元件"
+                           },
+                  "processor":  {
+                                    "id":  "processor",
+                                    "name":  "处理器",
+                                    "symbol":  "🔧",
+                                    "color":  "#9b59b6",
+                                    "description":  "计算设备"
+                                },
+                  "quantum_chip":  {
+                                       "id":  "quantum_chip",
+                                       "name":  "量子芯片",
+                                       "symbol":  "⚛️",
+                                       "color":  "#e74c3c",
+                                       "description":  "量子计算元件"
+                                   },
+                  "gear":  {
+                               "id":  "gear",
+                               "name":  "齿轮",
+                               "symbol":  "⚙️",
+                               "color":  "#b0b0b0",
+                               "description":  "机械零件"
+                           },
+                  "electric_motor":  {
+                                         "id":  "electric_motor",
+                                         "name":  "电动机",
+                                         "symbol":  "🔌",
+                                         "color":  "#a0a0a0",
+                                         "description":  "电能转换设备"
+                                     },
+                  "magnetic_coil":  {
+                                        "id":  "magnetic_coil",
+                                        "name":  "磁线圈",
+                                        "symbol":  "🧲",
+                                        "color":  "#c0c0c0",
+                                        "description":  "电磁元件"
+                                    },
+                  "gravity_lens":  {
+                                       "id":  "gravity_lens",
+                                       "name":  "引力透镜",
+                                       "symbol":  "GL",
+                                       "color":  "#8e44ad",
+                                       "description":  "弯曲空间的透镜"
+                                   },
+                  "solar_sail":  {
+                                     "id":  "solar_sail",
+                                     "name":  "太阳帆",
+                                     "symbol":  "SS",
+                                     "color":  "#ffd700",
+                                     "description":  "吸收太阳能的帆"
+                                 },
+                  "frame_material":  {
+                                         "id":  "frame_material",
+                                         "name":  "框架材料",
+                                         "symbol":  "FM",
+                                         "color":  "#bdc3c7",
+                                         "description":  "戴森球框架"
+                                     },
+                  "dyson_sphere_component":  {
+                                                 "id":  "dyson_sphere_component",
+                                                 "name":  "戴森球组件",
+                                                 "symbol":  "DC",
+                                                 "color":  "#f39c12",
+                                                 "description":  "戴森球零件"
+                                             },
+                  "small_carrier_rocket":  {
+                                               "id":  "small_carrier_rocket",
+                                               "name":  "小型运载火箭",
+                                               "symbol":  "RK",
+                                               "color":  "#e74c3c",
+                                               "description":  "发射戴森球组件"
+                                           },
+                  "logistics_drone":  {
+                                          "id":  "logistics_drone",
+                                          "name":  "物流运输机",
+                                          "symbol":  "LD",
+                                          "color":  "#3498db",
+                                          "description":  "行星内运输"
+                                      },
+                  "logistics_vessel":  {
+                                           "id":  "logistics_vessel",
+                                           "name":  "物流飞船",
+                                           "symbol":  "LV",
+                                           "color":  "#2980b9",
+                                           "description":  "星际运输"
+                                       }
+              },
+    "buildings":  {
+                      "assembler":  {
+                                        "id":  "assembler",
+                                        "name":  "组装机",
+                                        "symbol":  "⚙️",
+                                        "kind":  "processor",
+                                        "description":  "组装电子元件",
+                                        "size":  {
+                                                     "width":  1,
+                                                     "height":  1
+                                                 },
+                                        "power_demand":  270,
+                                        "speed":  0.75,
+                                        "input_slots":  3,
+                                        "output_slots":  1
+                                    },
+                      "miniature_particle_collider":  {
+                                                          "id":  "miniature_particle_collider",
+                                                          "name":  "微型粒子对撞机",
+                                                          "symbol":  "⚛️",
+                                                          "kind":  "processor",
+                                                          "description":  "制造奇异物质",
+                                                          "size":  {
+                                                                       "width":  3,
+                                                                       "height":  3
+                                                                   },
+                                                          "power_demand":  12000,
+                                                          "speed":  1.0,
+                                                          "input_slots":  2,
+                                                          "output_slots":  1
+                                                      }
+                  },
+    "recipes":  {
+                    "gear_recipe":  {
+                                        "id":  "gear_recipe",
+                                        "name":  "齿轮制造",
+                                        "building_id":  "assembler",
+                                        "inputs":  [
+                                                       {
+                                                           "item_id":  "iron_ingot",
+                                                           "amount":  1
+                                                       }
+                                                   ],
+                                        "outputs":  [
+                                                        {
+                                                            "item_id":  "gear",
+                                                            "amount":  1
+                                                        }
+                                                    ],
+                                        "duration":  1.0
+                                    },
+                    "circuit_recipe":  {
+                                           "id":  "circuit_recipe",
+                                           "name":  "电路板组装",
+                                           "building_id":  "assembler",
+                                           "inputs":  [
+                                                          {
+                                                              "item_id":  "iron_ingot",
+                                                              "amount":  2
+                                                          },
+                                                          {
+                                                              "item_id":  "copper_ingot",
+                                                              "amount":  1
+                                                          }
+                                                      ],
+                                           "outputs":  [
+                                                           {
+                                                               "item_id":  "circuit",
+                                                               "amount":  1
+                                                           }
+                                                       ],
+                                           "duration":  1.5
+                                       },
+                    "magnetic_coil_recipe":  {
+                                                 "id":  "magnetic_coil_recipe",
+                                                 "name":  "磁线圈制造",
+                                                 "building_id":  "assembler",
+                                                 "inputs":  [
+                                                                {
+                                                                    "item_id":  "copper_ingot",
+                                                                    "amount":  2
+                                                                },
+                                                                {
+                                                                    "item_id":  "magnet",
+                                                                    "amount":  1
+                                                                }
+                                                            ],
+                                                 "outputs":  [
+                                                                 {
+                                                                     "item_id":  "magnetic_coil",
+                                                                     "amount":  2
+                                                                 }
+                                                             ],
+                                                 "duration":  1.0
+                                             },
+                    "electric_motor_recipe":  {
+                                                  "id":  "electric_motor_recipe",
+                                                  "name":  "电动机制造",
+                                                  "building_id":  "assembler",
+                                                  "inputs":  [
+                                                                 {
+                                                                     "item_id":  "iron_ingot",
+                                                                     "amount":  2
+                                                                 },
+                                                                 {
+                                                                     "item_id":  "gear",
+                                                                     "amount":  1
+                                                                 },
+                                                                 {
+                                                                     "item_id":  "magnetic_coil",
+                                                                     "amount":  1
+                                                                 }
+                                                             ],
+                                                  "outputs":  [
+                                                                  {
+                                                                      "item_id":  "electric_motor",
+                                                                      "amount":  1
+                                                                  }
+                                                              ],
+                                                  "duration":  2.0
+                                              },
+                    "chip_recipe":  {
+                                        "id":  "chip_recipe",
+                                        "name":  "芯片制造",
+                                        "building_id":  "assembler",
+                                        "inputs":  [
+                                                       {
+                                                           "item_id":  "circuit",
+                                                           "amount":  2
+                                                       },
+                                                       {
+                                                           "item_id":  "plastic",
+                                                           "amount":  1
+                                                       }
+                                                   ],
+                                        "outputs":  [
+                                                        {
+                                                            "item_id":  "chip",
+                                                            "amount":  1
+                                                        }
+                                                    ],
+                                        "duration":  2.0
+                                    },
+                    "processor_recipe":  {
+                                             "id":  "processor_recipe",
+                                             "name":  "处理器制造",
+                                             "building_id":  "assembler",
+                                             "inputs":  [
+                                                            {
+                                                                "item_id":  "chip",
+                                                                "amount":  2
+                                                            },
+                                                            {
+                                                                "item_id":  "circuit",
+                                                                "amount":  1
+                                                            }
+                                                        ],
+                                             "outputs":  [
+                                                             {
+                                                                 "item_id":  "processor",
+                                                                 "amount":  1
+                                                             }
+                                                         ],
+                                             "duration":  3.0
+                                         },
+                    "gravity_lens_recipe":  {
+                                                "id":  "gravity_lens_recipe",
+                                                "name":  "引力透镜制造",
+                                                "building_id":  "assembler",
+                                                "inputs":  [
+                                                               {
+                                                                   "item_id":  "diamond",
+                                                                   "amount":  1
+                                                               }
+                                                           ],
+                                                "outputs":  [
+                                                                {
+                                                                    "item_id":  "gravity_lens",
+                                                                    "amount":  1
+                                                                }
+                                                            ],
+                                                "duration":  5
+                                            },
+                    "solar_sail_recipe":  {
+                                              "id":  "solar_sail_recipe",
+                                              "name":  "太阳帆制造",
+                                              "building_id":  "assembler",
+                                              "inputs":  [
+                                                             {
+                                                                 "item_id":  "graphene",
+                                                                 "amount":  1
+                                                             }
+                                                         ],
+                                              "outputs":  [
+                                                              {
+                                                                  "item_id":  "solar_sail",
+                                                                  "amount":  2
+                                                              }
+                                                          ],
+                                              "duration":  2
+                                          }
+                }
+}

@@ -1,0 +1,366 @@
+﻿{
+    "line_id":  "base_metals",
+    "name":  "基础金属生产线",
+    "items":  {
+                  "iron_ore":  {
+                                   "id":  "iron_ore",
+                                   "name":  "铁矿石",
+                                   "symbol":  "Fe",
+                                   "color":  "#9aa6a8",
+                                   "description":  "铁系生产链的基础矿物"
+                               },
+                  "iron_ingot":  {
+                                     "id":  "iron_ingot",
+                                     "name":  "铁锭",
+                                     "symbol":  "Fe↑",
+                                     "color":  "#c0c0c0",
+                                     "description":  "冶炼后的铁锭，用于制造各种零件"
+                                 },
+                  "copper_ore":  {
+                                     "id":  "copper_ore",
+                                     "name":  "铜矿石",
+                                     "symbol":  "Cu",
+                                     "color":  "#d2764c",
+                                     "description":  "铜系生产链的基础矿物"
+                                 },
+                  "copper_ingot":  {
+                                       "id":  "copper_ingot",
+                                       "name":  "铜锭",
+                                       "symbol":  "Cu↑",
+                                       "color":  "#b87333",
+                                       "description":  "冶炼后的铜锭"
+                                   },
+                  "coal":  {
+                               "id":  "coal",
+                               "name":  "煤矿",
+                               "symbol":  "C",
+                               "color":  "#4a4a4a",
+                               "description":  "燃料和化工原料"
+                           },
+                  "stone":  {
+                                "id":  "stone",
+                                "name":  "石矿",
+                                "symbol":  "St",
+                                "color":  "#b5a68d",
+                                "description":  "建筑材料"
+                            }
+              },
+    "buildings":  {
+                      "miner":  {
+                                    "id":  "miner",
+                                    "name":  "矿机",
+                                    "symbol":  "⛏️",
+                                    "kind":  "extractor",
+                                    "description":  "安装在矿脉上，持续开采矿物",
+                                    "size":  {
+                                                 "width":  1,
+                                                 "height":  1
+                                             },
+                                    "power_demand":  10,
+                                    "speed":  1.0
+                                },
+                      "smelter":  {
+                                      "id":  "smelter",
+                                      "name":  "熔炉",
+                                      "symbol":  "🔥",
+                                      "kind":  "processor",
+                                      "description":  "将矿石冶炼成锭",
+                                      "size":  {
+                                                   "width":  1,
+                                                   "height":  1
+                                               },
+                                      "power_demand":  50,
+                                      "speed":  1.0,
+                                      "input_slots":  1,
+                                      "output_slots":  1
+                                  },
+                      "assembling_machine_mk1":  {
+                                                     "id":  "assembling_machine_mk1",
+                                                     "name":  "制造台Mk.I",
+                                                     "symbol":  "⚙️",
+                                                     "kind":  "processor",
+                                                     "description":  "基础组装设备",
+                                                     "size":  {
+                                                                  "width":  1,
+                                                                  "height":  1
+                                                              },
+                                                     "power_demand":  30,
+                                                     "speed":  0.75,
+                                                     "input_slots":  3,
+                                                     "output_slots":  1
+                                                 },
+                      "power_generator":  {
+                                              "id":  "power_generator",
+                                              "name":  "发电机",
+                                              "symbol":  "🔋",
+                                              "kind":  "generator",
+                                              "description":  "燃烧燃料产生电力",
+                                              "size":  {
+                                                           "width":  1,
+                                                           "height":  1
+                                                       },
+                                              "power_demand":  0,
+                                              "power_generation":  500,
+                                              "input_slots":  1,
+                                              "output_slots":  0
+                                          },
+                      "solar_panel":  {
+                                          "id":  "solar_panel",
+                                          "name":  "太阳能板",
+                                          "symbol":  "☀️",
+                                          "kind":  "generator",
+                                          "description":  "利用太阳能发电",
+                                          "size":  {
+                                                       "width":  1,
+                                                       "height":  1
+                                                   },
+                                          "power_demand":  0,
+                                          "power_generation":  360,
+                                          "input_slots":  0,
+                                          "output_slots":  0
+                                      },
+                      "wind_turbine":  {
+                                           "id":  "wind_turbine",
+                                           "name":  "风力发电机",
+                                           "symbol":  "🌀",
+                                           "kind":  "generator",
+                                           "description":  "利用风能发电",
+                                           "size":  {
+                                                        "width":  1,
+                                                        "height":  1
+                                                    },
+                                           "power_demand":  0,
+                                           "power_generation":  300,
+                                           "input_slots":  0,
+                                           "output_slots":  0
+                                       },
+                      "planetary_logistics_station":  {
+                                                          "id":  "planetary_logistics_station",
+                                                          "name":  "行星物流站",
+                                                          "symbol":  "🚀",
+                                                          "kind":  "station",
+                                                          "description":  "行星内物流中转站",
+                                                          "size":  {
+                                                                       "width":  3,
+                                                                       "height":  3
+                                                                   },
+                                                          "power_demand":  500,
+                                                          "speed":  1.0,
+                                                          "input_slots":  4,
+                                                          "output_slots":  4
+                                                      },
+                      "interstellar_logistics_station":  {
+                                                             "id":  "interstellar_logistics_station",
+                                                             "name":  "星际物流站",
+                                                             "symbol":  "🌌",
+                                                             "kind":  "station",
+                                                             "description":  "星际物流中转站",
+                                                             "size":  {
+                                                                          "width":  3,
+                                                                          "height":  3
+                                                                      },
+                                                             "power_demand":  1000,
+                                                             "speed":  1.0,
+                                                             "input_slots":  4,
+                                                             "output_slots":  4
+                                                         },
+                      "storage_mk1":  {
+                                          "id":  "storage_mk1",
+                                          "name":  "储存箱Mk.I",
+                                          "symbol":  "📦",
+                                          "kind":  "storage",
+                                          "description":  "基础存储设备",
+                                          "size":  {
+                                                       "width":  1,
+                                                       "height":  1
+                                                   },
+                                          "power_demand":  0,
+                                          "speed":  1.0,
+                                          "input_slots":  1,
+                                          "output_slots":  1
+                                      },
+                      "splitter":  {
+                                       "id":  "splitter",
+                                       "name":  "分流器",
+                                       "symbol":  "🔀",
+                                       "kind":  "logistics",
+                                       "description":  "将物品分流到多个输出",
+                                       "size":  {
+                                                    "width":  1,
+                                                    "height":  1
+                                                },
+                                       "power_demand":  0,
+                                       "speed":  1.0,
+                                       "input_slots":  1,
+                                       "output_slots":  3
+                                   },
+                      "matrix_lab":  {
+                                         "id":  "matrix_lab",
+                                         "name":  "矩阵研究站",
+                                         "symbol":  "🔬",
+                                         "kind":  "processor",
+                                         "description":  "生产科学矩阵",
+                                         "size":  {
+                                                      "height":  2,
+                                                      "width":  2
+                                                  },
+                                         "power_demand":  480,
+                                         "speed":  1,
+                                         "input_slots":  2,
+                                         "output_slots":  1
+                                     },
+                      "tesla_coil":  {
+                                         "id":  "tesla_coil",
+                                         "name":  "特斯拉线圈",
+                                         "symbol":  "⚡",
+                                         "kind":  "defense",
+                                         "description":  "防御建筑",
+                                         "size":  {
+                                                      "height":  1,
+                                                      "width":  1
+                                                  },
+                                         "power_demand":  500,
+                                         "speed":  1
+                                     },
+                      "missile_turret":  {
+                                             "id":  "missile_turret",
+                                             "name":  "导弹发射塔",
+                                             "symbol":  "🚀",
+                                             "kind":  "defense",
+                                             "description":  "远程防御建筑",
+                                             "size":  {
+                                                          "height":  1,
+                                                          "width":  1
+                                                      },
+                                             "power_demand":  300,
+                                             "speed":  1
+                                         },
+                      "shield_generator":  {
+                                               "id":  "shield_generator",
+                                               "name":  "护盾发生器",
+                                               "symbol":  "🛡️",
+                                               "kind":  "defense",
+                                               "description":  "生成防护盾",
+                                               "size":  {
+                                                            "height":  2,
+                                                            "width":  2
+                                                        },
+                                               "power_demand":  1000,
+                                               "speed":  1
+                                           },
+                      "orbital_collector":  {
+                                                "id":  "orbital_collector",
+                                                "name":  "轨道采集器",
+                                                "symbol":  "🛰️",
+                                                "kind":  "extractor",
+                                                "description":  "在轨道上采集资源",
+                                                "size":  {
+                                                             "height":  2,
+                                                             "width":  2
+                                                         },
+                                                "power_demand":  0,
+                                                "speed":  1
+                                            },
+                      "spray_coater":  {
+                                           "id":  "spray_coater",
+                                           "name":  "喷涂机",
+                                           "symbol":  "🎨",
+                                           "kind":  "processor",
+                                           "description":  "喷涂增产剂",
+                                           "size":  {
+                                                        "height":  1,
+                                                        "width":  1
+                                                    },
+                                           "power_demand":  90,
+                                           "speed":  1,
+                                           "input_slots":  1,
+                                           "output_slots":  1
+                                       },
+                      "storage_mk2":  {
+                                          "id":  "storage_mk2",
+                                          "name":  "储存箱Mk.II",
+                                          "symbol":  "📦",
+                                          "kind":  "storage",
+                                          "description":  "大容量存储设备",
+                                          "size":  {
+                                                       "height":  2,
+                                                       "width":  2
+                                                   },
+                                          "power_demand":  0,
+                                          "speed":  1,
+                                          "input_slots":  1,
+                                          "output_slots":  1
+                                      },
+                      "quantum_chemical_plant":  {
+                                                     "id":  "quantum_chemical_plant",
+                                                     "name":  "量子化工厂",
+                                                     "symbol":  "🧪",
+                                                     "kind":  "processor",
+                                                     "description":  "高级化工设备",
+                                                     "size":  {
+                                                                  "height":  2,
+                                                                  "width":  2
+                                                              },
+                                                     "power_demand":  2160,
+                                                     "speed":  2,
+                                                     "input_slots":  2,
+                                                     "output_slots":  2
+                                                 }
+                  },
+    "recipes":  {
+                    "iron_ingot_recipe":  {
+                                              "id":  "iron_ingot_recipe",
+                                              "name":  "铁锭冶炼",
+                                              "building_id":  "smelter",
+                                              "inputs":  [
+                                                             {
+                                                                 "item_id":  "iron_ore",
+                                                                 "amount":  1
+                                                             }
+                                                         ],
+                                              "outputs":  [
+                                                              {
+                                                                  "item_id":  "iron_ingot",
+                                                                  "amount":  1
+                                                              }
+                                                          ],
+                                              "duration":  1.0
+                                          },
+                    "copper_ingot_recipe":  {
+                                                "id":  "copper_ingot_recipe",
+                                                "name":  "铜锭冶炼",
+                                                "building_id":  "smelter",
+                                                "inputs":  [
+                                                               {
+                                                                   "item_id":  "copper_ore",
+                                                                   "amount":  1
+                                                               }
+                                                           ],
+                                                "outputs":  [
+                                                                {
+                                                                    "item_id":  "copper_ingot",
+                                                                    "amount":  1
+                                                                }
+                                                            ],
+                                                "duration":  1.0
+                                            },
+                    "gear_recipe":  {
+                                        "id":  "gear_recipe",
+                                        "name":  "齿轮制造",
+                                        "building_id":  "assembling_machine_mk1",
+                                        "inputs":  [
+                                                       {
+                                                           "item_id":  "iron_ingot",
+                                                           "amount":  1
+                                                       }
+                                                   ],
+                                        "outputs":  [
+                                                        {
+                                                            "item_id":  "gear",
+                                                            "amount":  1
+                                                        }
+                                                    ],
+                                        "duration":  1.0
+                                    }
+                }
+}

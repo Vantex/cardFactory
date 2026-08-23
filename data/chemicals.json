@@ -1,0 +1,162 @@
+﻿{
+  "line_id": "chemicals",
+  "name": "化工生产线",
+  "items": {
+    "crude_oil": {
+      "id": "crude_oil",
+      "name": "原油",
+      "symbol": "Oil",
+      "color": "#735d46",
+      "description": "化工原料"
+    },
+    "refined_oil": {
+      "id": "refined_oil",
+      "name": "精炼油",
+      "symbol": "RO",
+      "color": "#8B6914",
+      "description": "精炼后的油品"
+    },
+    "plastic": {
+      "id": "plastic",
+      "name": "塑料",
+      "symbol": "Pl",
+      "color": "#e8e8e8",
+      "description": "基础化工产品"
+    },
+    "rubber": {
+      "id": "rubber",
+      "name": "橡胶",
+      "symbol": "Rb",
+      "color": "#4a4a4a",
+      "description": "弹性材料"
+    },
+    "sulfuric_acid": {
+      "id": "sulfuric_acid",
+      "name": "硫酸",
+      "symbol": "SA",
+      "color": "#ffd700",
+      "description": "化工原料"
+    },
+    "hydrogen": {
+      "id": "hydrogen",
+      "name": "氢",
+      "symbol": "H",
+      "color": "#4a9eff",
+      "description": "轻气体"
+    },
+    "deuterium": {
+      "id": "deuterium",
+      "name": "氘",
+      "symbol": "D",
+      "color": "#4a9eff",
+      "description": "重氢"
+    },
+    "water": {
+      "id": "water",
+      "name": "水",
+      "symbol": "H2O",
+      "color": "#4a9eff",
+      "description": "基础液体"
+    }
+  },
+  "buildings": {
+    "oil_extractor": {
+      "id": "oil_extractor",
+      "name": "原油萃取站",
+      "symbol": "⛽",
+      "kind": "extractor",
+      "description": "从原油矿脉提取原油",
+      "size": {"width": 2, "height": 2},
+      "power_demand": 840,
+      "speed": 1.0
+    },
+    "oil_refinery": {
+      "id": "oil_refinery",
+      "name": "原油精炼厂",
+      "symbol": "🏭",
+      "kind": "processor",
+      "description": "精炼原油",
+      "size": {"width": 2, "height": 2},
+      "power_demand": 960,
+      "speed": 1.0,
+      "input_slots": 2,
+      "output_slots": 2
+    },
+    "chemical_plant": {
+      "id": "chemical_plant",
+      "name": "化工厂",
+      "symbol": "🧪",
+      "kind": "processor",
+      "description": "处理化工配方",
+      "size": {"width": 2, "height": 2},
+      "power_demand": 720,
+      "speed": 1.0,
+      "input_slots": 2,
+      "output_slots": 2
+    },
+    "water_pump": {
+      "id": "water_pump",
+      "name": "抽水站",
+      "symbol": "💧",
+      "kind": "extractor",
+      "description": "抽取水资源",
+      "size": {"width": 1, "height": 1},
+      "power_demand": 300,
+      "speed": 1.0
+    },
+    "fractionator": {
+      "id": "fractionator",
+      "name": "分馏塔",
+      "symbol": "🔬",
+      "kind": "processor",
+      "description": "分离氢和氘",
+      "size": {"width": 1, "height": 3},
+      "power_demand": 720,
+      "speed": 1.0,
+      "input_slots": 1,
+      "output_slots": 2
+    }
+  },
+  "recipes": {
+    "refined_oil_recipe": {
+      "id": "refined_oil_recipe",
+      "name": "原油精炼",
+      "building_id": "oil_refinery",
+      "inputs": [{"item_id": "crude_oil", "amount": 2}],
+      "outputs": [{"item_id": "refined_oil", "amount": 1}, {"item_id": "hydrogen", "amount": 1}],
+      "duration": 2.0
+    },
+    "plastic_recipe": {
+      "id": "plastic_recipe",
+      "name": "塑料生产",
+      "building_id": "chemical_plant",
+      "inputs": [{"item_id": "refined_oil", "amount": 2}, {"item_id": "coal", "amount": 1}],
+      "outputs": [{"item_id": "plastic", "amount": 1}],
+      "duration": 2.0
+    },
+    "rubber_recipe": {
+      "id": "rubber_recipe",
+      "name": "橡胶生产",
+      "building_id": "chemical_plant",
+      "inputs": [{"item_id": "refined_oil", "amount": 2}, {"item_id": "coal", "amount": 1}],
+      "outputs": [{"item_id": "rubber", "amount": 1}],
+      "duration": 2.0
+    },
+    "sulfuric_acid_recipe": {
+      "id": "sulfuric_acid_recipe",
+      "name": "硫酸生产",
+      "building_id": "chemical_plant",
+      "inputs": [{"item_id": "water", "amount": 1}, {"item_id": "coal", "amount": 1}],
+      "outputs": [{"item_id": "sulfuric_acid", "amount": 1}],
+      "duration": 1.5
+    },
+    "deuterium_recipe": {
+      "id": "deuterium_recipe",
+      "name": "氘分离",
+      "building_id": "fractionator",
+      "inputs": [{"item_id": "hydrogen", "amount": 10}],
+      "outputs": [{"item_id": "deuterium", "amount": 1}],
+      "duration": 1.0
+    }
+  }
+}
