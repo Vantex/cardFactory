@@ -429,12 +429,12 @@ func _test_transformed_coordinate_connection_gestures() -> void:
 	EventBus.notice_requested.connect(notice_listener)
 
 	# The literal points are the viewport positions of the real ports after the 1.02 canvas transform.
-	test_viewport.push_input(_mouse_button_event(MOUSE_BUTTON_LEFT, true, Vector2(501.84, 175.44)))
+	test_viewport.push_input(_mouse_button_event(MOUSE_BUTTON_LEFT, true, Vector2(501.84, 175.44)), true)
 	await get_tree().process_frame
 	_expect(input_handler.call("get_mode_name") == "connecting", "transformed output press starts a real connection gesture")
-	test_viewport.push_input(_mouse_motion_event(Vector2(825.18, 175.44), Vector2(323.34, 0), MOUSE_BUTTON_MASK_LEFT))
+	test_viewport.push_input(_mouse_motion_event(Vector2(825.18, 175.44), Vector2(323.34, 0), MOUSE_BUTTON_MASK_LEFT), true)
 	await get_tree().process_frame
-	test_viewport.push_input(_mouse_button_event(MOUSE_BUTTON_LEFT, false, Vector2(825.18, 175.44)))
+	test_viewport.push_input(_mouse_button_event(MOUSE_BUTTON_LEFT, false, Vector2(825.18, 175.44)), true)
 	await get_tree().process_frame
 
 	var cancellation_count := 0
@@ -451,9 +451,9 @@ func _test_transformed_coordinate_connection_gestures() -> void:
 	var world_target: Dictionary = state.try_place_building("smelter", Vector2(600, 300))
 	_expect(world_source.ok and world_target.ok, "transformed world fixture creates a free port pair")
 	# These literal viewport points include both the 1.02 canvas transform and the 1.12 world CanvasItem transform.
-	test_viewport.push_input(_mouse_button_event(MOUSE_BUTTON_LEFT, true, Vector2(562.0608, 424.9728)))
-	test_viewport.push_input(_mouse_motion_event(Vector2(695.6288, 424.9728), Vector2(133.568, 0), MOUSE_BUTTON_MASK_LEFT))
-	test_viewport.push_input(_mouse_button_event(MOUSE_BUTTON_LEFT, false, Vector2(695.6288, 424.9728)))
+	test_viewport.push_input(_mouse_button_event(MOUSE_BUTTON_LEFT, true, Vector2(562.0608, 424.9728)), true)
+	test_viewport.push_input(_mouse_motion_event(Vector2(695.6288, 424.9728), Vector2(133.568, 0), MOUSE_BUTTON_MASK_LEFT), true)
+	test_viewport.push_input(_mouse_button_event(MOUSE_BUTTON_LEFT, false, Vector2(695.6288, 424.9728)), true)
 	await get_tree().process_frame
 	_expect(input_handler.call("get_mode_name") == "idle" and state.connections.size() == 2, "transformed release on a real world input port creates one connection")
 
