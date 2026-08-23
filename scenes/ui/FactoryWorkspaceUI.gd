@@ -94,10 +94,10 @@ func show_notice(message: String, tone: String = "info") -> void:
 	if toast.visible:
 		_toast_timer.start()
 
-func is_pointer_over_ui(screen_position: Vector2) -> bool:
+func is_pointer_over_ui(viewport_position: Vector2) -> bool:
 	for node_name in ["TopBar", "ResourceRail", "InspectorPanel", "ConstructionDock"]:
 		var region := get_node_or_null(node_name) as Control
-		if region != null and region.visible and region.get_global_rect().has_point(screen_position):
+		if region != null and region.visible and Rect2(Vector2.ZERO, region.size).has_point(region.get_global_transform_with_canvas().affine_inverse() * viewport_position):
 			return true
 	return false
 

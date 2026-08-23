@@ -291,8 +291,8 @@ func _is_inside_world_canvas(screen_position: Vector2) -> bool:
 func _get_camera() -> Camera2D:
 	return get_viewport().get_camera_2d()
 
-func _screen_to_world(screen_position: Vector2) -> Vector2:
-	return get_viewport().get_canvas_transform().affine_inverse() * screen_position
+func _screen_to_world(viewport_position: Vector2) -> Vector2:
+	return get_global_transform_with_canvas().affine_inverse() * viewport_position
 
 func _pan_camera(screen_position: Vector2) -> void:
 	var camera := _get_camera()

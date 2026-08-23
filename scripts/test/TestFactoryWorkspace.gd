@@ -25,6 +25,7 @@ func _ready() -> void:
 	await _test_workspace_live_content_and_actions()
 	await _test_selection_and_placement_mode_alignment()
 	await _test_main_scene_integration_contract()
+	await _test_transformed_coordinate_connection_gestures()
 	await _test_canvas_input_contract()
 	_test_real_production_loop()
 
@@ -390,6 +391,74 @@ func _test_selection_and_placement_mode_alignment() -> void:
 	await get_tree().process_frame
 	var mode_label := workspace.get_node("ConstructionDock/Mode") as Label
 	_expect(input_handler.call("get_mode_name") == "idle" and (not workspace.has_method("get_placement_building_type") or workspace.call("get_placement_building_type") == "") and "选择建筑" in mode_label.text, "Escape clears the real placement mode and its visible dock state")
+	test_viewport.queue_free()
+	await get_tree().process_frame
+
+func _test_transformed_coordinate_connection_gestures() -> void:
+	GameManager.game_state = GameState.new()
+	GameManager.simulation_engine = SimulationEngine.new(GameManager.game_state)
+	var main_scene := load("res://scenes/main/Main.tscn") as PackedScene
+	_expect(main_scene != null, "main scene is available for transformed coordinate gestures")
+	if main_scene == null:
+		return
+
+	var test_viewport := SubViewport.new()
+	test_viewport.size = Vector2i(1152, 648)
+	add_child(test_viewport)
+	var main := main_scene.instantiate() as Node2D
+	test_viewport.add_child(main)
+	await get_tree().process_frame
+	var world_camera := main.get_node("WorldCamera") as Camera2D
+	if world_camera != null:
+		world_camera.enabled = false
+	test_viewport.canvas_transform = Transform2D(Vector2(1.02, 0), Vector2(0, 1.02), Vector2.ZERO)
+
+	var state := GameManager.get_game_state()
+	var input_handler := main.get_node("InputHandler")
+	var workspace := main.get_node("FactoryWorkspaceUI") as CanvasLayer
+	workspace.transform = Transform2D(Vector2(1.05, 0), Vector2(0, 1.05), Vector2(-150, 0))
+	await get_tree().process_frame
+
+	var inspector_source: Dictionary = state.try_place_building("miner", Vector2(260, 100))
+	var inspector_target: Dictionary = state.try_place_building("smelter", Vector2(800, 100))
+	var existing_connection: Dictionary = state.try_add_connection(inspector_source.id, inspector_target.id)
+	_expect(inspector_source.ok and inspector_target.ok and existing_connection.ok, "transformed inspector fixture creates one existing connection")
+	var notices: Array[Dictionary] = []
+	var notice_listener: Callable = func(message: String, tone: String) -> void:
+		notices.append({"message": message, "tone": tone})
+	EventBus.notice_requested.connect(notice_listener)
+
+	# The literal points are the viewport positions of the real ports after the 1.02 canvas transform.
+	test_viewport.push_input(_mouse_button_event(MOUSE_BUTTON_LEFT, true, Vector2(501.84, 175.44)))
+	await get_tree().process_frame
+	_expect(input_handler.call("get_mode_name") == "connecting", "transformed output press starts a real connection gesture")
+	test_viewport.push_input(_mouse_motion_event(Vector2(825.18, 175.44), Vector2(323.34, 0), MOUSE_BUTTON_MASK_LEFT))
+	await get_tree().process_frame
+	test_viewport.push_input(_mouse_button_event(MOUSE_BUTTON_LEFT, false, Vector2(825.18, 175.44)))
+	await get_tree().process_frame
+
+	var cancellation_count := 0
+	var duplicate_count := 0
+	for notice in notices:
+		if notice.message == "连接已取消：请在输入端口释放":
+			cancellation_count += 1
+		elif notice.message == "连接已存在":
+			duplicate_count += 1
+	_expect(input_handler.call("get_mode_name") == "idle" and state.connections.size() == 1 and cancellation_count == 1 and duplicate_count == 0, "transformed inspector release cancels exactly once without retrying its covered existing connection")
+
+	main.transform = Transform2D(Vector2(1.12, 0), Vector2(0, 1.12), Vector2.ZERO)
+	var world_source: Dictionary = state.try_place_building("miner", Vector2(260, 300))
+	var world_target: Dictionary = state.try_place_building("smelter", Vector2(600, 300))
+	_expect(world_source.ok and world_target.ok, "transformed world fixture creates a free port pair")
+	# These literal viewport points include both the 1.02 canvas transform and the 1.12 world CanvasItem transform.
+	test_viewport.push_input(_mouse_button_event(MOUSE_BUTTON_LEFT, true, Vector2(562.0608, 424.9728)))
+	test_viewport.push_input(_mouse_motion_event(Vector2(695.6288, 424.9728), Vector2(133.568, 0), MOUSE_BUTTON_MASK_LEFT))
+	test_viewport.push_input(_mouse_button_event(MOUSE_BUTTON_LEFT, false, Vector2(695.6288, 424.9728)))
+	await get_tree().process_frame
+	_expect(input_handler.call("get_mode_name") == "idle" and state.connections.size() == 2, "transformed release on a real world input port creates one connection")
+
+	if EventBus.notice_requested.is_connected(notice_listener):
+		EventBus.notice_requested.disconnect(notice_listener)
 	test_viewport.queue_free()
 	await get_tree().process_frame
 
