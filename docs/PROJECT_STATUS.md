@@ -41,6 +41,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1
 - 主场景包含 `WorldCamera`、`CardRenderer`、`ConnectionRenderer`、`InputHandler` 和 `FactoryWorkspaceUI`，不再挂载旧 `HUD` 或 `BuildingPanel`。
 - 顶栏动态显示运行/暂停、速度、电力、建造点、数量和时间；资源栏显示上下文新手引导、聚合库存、生产概况和操作提示；检查器显示建筑状态、进度、电力、缓冲区、配方以及连接/删除动作；建造坞显示快捷键、成本、用途和当前模式。
 - 失败放置及自连接、重复连接、配方不兼容等原因会以中文短时通知显示；通知自动隐藏且不参与 UI 命中测试，其他 UI 面板仍阻止输入穿透到画布。
+- 连接手势在非单位 Viewport、CanvasLayer 和世界 CanvasItem 变换下分别换算 UI 与世界坐标；在 Inspector 内松开会取消，不会误命中其下方建筑并报告“连接已存在”。
 - 画布支持 Q/W/E/R 放置、同次按压的左键选择/拖动、输出端口按下后在输入端口释放完成连接、右键/中键平移、滚轮缩放、`Escape` 取消、`Delete` 删除、`Space` 暂停与 `1` / `2` / `3` 速度切换。
 - 连接以 `enabled` 保存持久运输许可，以 `active` 表示当前帧实际物流；禁用连接不运输，启用但无货物的连接保持非活动。
 - 矿机到熔炉的模拟链路将铁矿传入熔炉并生产铁锭。
@@ -59,6 +60,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1
 - `PowerSystem` 会计算并写入 `power_efficiency`，但 `ProductionSystem` 没有消费该值，电力不足尚不影响生产速度。
 - 科技、空间站、行星、星系、戴森球及高级物流功能多数没有进入当前主场景和活跃模拟编排，部分实现只是占位或局部 API。
 - `TestCompletedFeatures.gd`、`TestPhase*.gd` 等旧测试主要打印计数或结果，没有统一非零失败语义，不属于权威门禁。
+- 正式门禁和主场景验证目前仍会在 Godot 退出时报告 ObjectDB/resource 未释放警告；它们不包含脚本或解析错误，但资源生命周期清理还没有达到零警告。
 
 ## 下一阶段建议
 

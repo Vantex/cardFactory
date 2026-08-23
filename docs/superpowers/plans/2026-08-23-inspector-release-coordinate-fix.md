@@ -17,21 +17,21 @@
 - 修改：`scripts/input/InputHandler.gd`
 - 修改：`scenes/ui/FactoryWorkspaceUI.gd`
 
-- [ ] **步骤 1：编写失败的测试**
+- [x] **步骤 1：编写失败的测试**
 
 在真实 `SubViewport` 工作区用非单位 CanvasLayer 变换构造 Inspector 覆盖目标，推送真实按下、拖动和松开事件；断言松开只取消一次、连接数不变、没有“连接已存在”。另断言变换后的真实世界输入端口仍可连接。
 
-- [ ] **步骤 2：运行测试验证失败**
+- [x] **步骤 2：运行测试验证失败**
 
 运行：`D:\Godot\Godot.exe --headless --path . --script res://scripts/test/TestFactoryWorkspace.gd`
 
 预期：Inspector 松开用例进入“连接已存在”分支，测试退出码非零。
 
-- [ ] **步骤 3：编写最少实现代码**
+- [x] **步骤 3：编写最少实现代码**
 
 UI 命中改为先通过 Control 的 Canvas 变换把 Viewport 点转换成本地点；世界命中改为使用 InputHandler 自身的 CanvasItem 坐标转换。
 
-- [ ] **步骤 4：运行测试验证通过**
+- [x] **步骤 4：运行测试验证通过**
 
 重新运行完整 `TestFactoryWorkspace.gd`，预期退出码为 0，输出 `FACTORY WORKSPACE TESTS PASSED`。
 
@@ -39,7 +39,8 @@ UI 命中改为先通过 Control 的 Canvas 变换把 Viewport 点转换成本�
 
 运行主场景固定帧数，预期无脚本错误、无节点泄漏，退出码为 0。
 
-- [ ] **步骤 6：检查差异**
+执行结果：主场景 120 帧退出码为 0，且无 `SCRIPT ERROR` 或 `Parse Error`；Godot 退出时仍报告既有 ObjectDB/resource 泄漏警告，因此“无节点泄漏”尚未满足。
+
+- [x] **步骤 6：检查差异**
 
 确认仅规格、计划、目标测试和两个坐标转换文件发生预期变化，不纳入用户的 `project.godot` 与 `.uid` 文件。
-
