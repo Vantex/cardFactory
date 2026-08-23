@@ -35,6 +35,8 @@ func _init(state: GameState):
 
 func update(delta: float):
     if game_state.paused:
+        if belt_system:
+            belt_system.clear_flow_state()
         return
     
     var game_delta = delta * game_state.speed

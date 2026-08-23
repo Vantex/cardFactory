@@ -273,6 +273,20 @@ func _test_main_scene_integration_contract() -> void:
 		await get_tree().process_frame
 		_expect(input_handler.get("selected_building_id") == "" and workspace.call("get_selected_building_type") == "" and inspector_title.text == "工厂概览", "real blank canvas click clears input and workspace inspector selection")
 
+		var output_screen_position: Vector2 = canvas_transform * (placed_card_world_position + Vector2(232, 72))
+		var inspector_panel := workspace.get_node("InspectorPanel") as Control
+		test_viewport.push_input(_mouse_button_event(MOUSE_BUTTON_LEFT, true, output_screen_position))
+		await get_tree().process_frame
+		_expect(input_handler.call("get_mode_name") == "connecting", "a real output-port press starts a connection gesture")
+		test_viewport.push_input(_mouse_motion_event(Vector2(1000, 300), Vector2(1000, 300) - output_screen_position, MOUSE_BUTTON_MASK_LEFT))
+		await get_tree().process_frame
+		var hovered_control := test_viewport.gui_get_hovered_control()
+		_expect(hovered_control != null and (hovered_control == inspector_panel or inspector_panel.is_ancestor_of(hovered_control)), "the dragged pointer reaches a real inspector control")
+		test_viewport.push_input(_mouse_button_event(MOUSE_BUTTON_LEFT, false, Vector2(1000, 300)))
+		await get_tree().process_frame
+		var toast_message := workspace.get_node("Toast/Message") as Label
+		_expect(input_handler.call("get_mode_name") == "idle" and toast_message.text == "连接已取消：请在输入端口释放", "a connection release over the inspector still clears the active operation")
+
 		GameManager.get_game_state().remove_building(placed_id)
 		_expect(input_handler.get("selected_building_id") == "" and workspace.call("get_selected_building_type") == "", "removing the selected card clears input and inspector selection")
 
@@ -418,7 +432,7 @@ func _test_connection_activity_contract() -> void:
 	var disabled_connection: Dictionary = state.connections[disabled_id]
 	var defaulted_connection: Dictionary = state.connections[defaulted_id]
 	_expect(not disabled_connection.get("enabled", true) and disabled_connection.get("active", false), "explicit connection permission and flow state are both preserved")
-	_expect(defaulted_connection.get("enabled", false) and not defaulted_connection.get("active", true), "directly added connections default to enabled and idle")
+	_expect(defaulted_connection.get("enabled", false) and not defaulted_connection.get("active", true) and defaulted_connection.has("current_flow") and is_zero_approx(defaulted_connection.current_flow), "directly added connections default to enabled with an explicit idle flow")
 
 	var connection_renderer := ConnectionRenderer.new()
 	_expect(not connection_renderer.is_connection_active(normal_connection) and not connection_renderer.is_connection_active(defaulted_connection) and connection_renderer.is_connection_active(disabled_connection), "renderer follows current-frame activity instead of permission")
@@ -447,8 +461,19 @@ func _test_connection_activity_contract() -> void:
 	idle_state.get_building(idle_source.id)["output_buffer"] = {"iron_ore": 2.0}
 	BeltSystem.new(idle_state).update(0.5)
 	_expect(idle_flow.get("active", false) and idle_flow.get("current_flow", 0.0) > 0.0 and idle_state.get_building(idle_target.id).input_buffer.get("iron_ore", 0.0) > 0.0, "connection becomes active only in a frame that transfers cargo")
-	var copied_state := idle_state.copy_state()
-	_expect(copied_state.connections[idle_result.id].get("enabled", false) and copied_state.connections[idle_result.id].get("active", false), "state copy preserves enabled and active connection fields")
+	var active_copy := idle_state.copy_state()
+	_expect(active_copy.connections[idle_result.id].get("enabled", false) and active_copy.connections[idle_result.id].get("active", false) and active_copy.connections[idle_result.id].get("current_flow", 0.0) > 0.0, "state copy preserves an active connection frame")
+	BeltSystem.new(idle_state).update(0.5)
+	_expect(not idle_flow.get("active", true) and is_zero_approx(idle_flow.get("current_flow", -1.0)), "an enabled connection clears its previous activity when the next frame has no cargo")
+	idle_state.get_building(idle_source.id)["output_buffer"] = {"iron_ore": 1.0}
+	BeltSystem.new(idle_state).update(0.5)
+	_expect(idle_flow.get("active", false), "pause fixture reactivates the connection before pausing")
+	var paused_engine := SimulationEngine.new(idle_state)
+	idle_state.paused = true
+	paused_engine.update(0.5)
+	_expect(not idle_flow.get("active", true) and is_zero_approx(idle_flow.get("current_flow", -1.0)), "pausing clears the previous frame's connection activity")
+	var paused_copy := idle_state.copy_state()
+	_expect(paused_copy.connections[idle_result.id].get("enabled", false) and not paused_copy.connections[idle_result.id].get("active", true) and is_zero_approx(paused_copy.connections[idle_result.id].get("current_flow", -1.0)), "state copy preserves cleared paused connection fields")
 
 func _test_renderer_geometry_contract() -> void:
 	_expect(CardRenderer.CARD_SIZE == Vector2(232, 144), "card geometry is stable")
@@ -587,6 +612,7 @@ func _mouse_button_event(button_index: MouseButton, pressed: bool, position: Vec
 	event.button_index = button_index
 	event.pressed = pressed
 	event.position = position
+	event.global_position = position
 	return event
 
 func _mouse_motion_event(position: Vector2, relative: Vector2, button_mask: MouseButtonMask) -> InputEventMouseMotion:
@@ -594,6 +620,7 @@ func _mouse_motion_event(position: Vector2, relative: Vector2, button_mask: Mous
 	event.position = position
 	event.relative = relative
 	event.button_mask = button_mask
+	event.global_position = position
 	return event
 
 func _expect(condition: bool, description: String) -> void:

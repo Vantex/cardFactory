@@ -7,14 +7,19 @@ var game_state: GameState
 func _init(state: GameState):
 	game_state = state
 
+func clear_flow_state() -> void:
+	for conn_id in game_state.connections:
+		var connection = game_state.connections[conn_id]
+		connection["active"] = false
+		connection["current_flow"] = 0.0
+
 func update(delta: float):
+	clear_flow_state()
 	for conn_id in game_state.connections:
 		var connection = game_state.connections[conn_id]
 		_update_connection(connection, delta)
 
 func _update_connection(connection: Dictionary, delta: float):
-	connection["active"] = false
-	connection["current_flow"] = 0.0
 	if not connection.get("enabled", true) or delta <= 0.0:
 		return
 

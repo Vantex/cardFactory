@@ -132,6 +132,7 @@ func add_connection(connection_data: Dictionary) -> String:
     connection_data["id"] = id
     connection_data["enabled"] = bool(connection_data.get("enabled", true))
     connection_data["active"] = bool(connection_data.get("active", false))
+    connection_data["current_flow"] = float(connection_data.get("current_flow", 0.0))
     connections[id] = connection_data
     EventBus.connection_created.emit(id, connection_data.source_id, connection_data.target_id)
     return id
