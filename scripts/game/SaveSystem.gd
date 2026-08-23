@@ -5,15 +5,52 @@ extends RefCounted
 const SAVE_PATH = "user://saves/"
 const MAX_SAVES = 10
 
-func _init():
-    _ensure_save_directory()
+var _save_path: String
+var _storage_available: bool
 
-func _ensure_save_directory():
-    var dir = DirAccess.open("user://")
-    if not dir.dir_exists("saves"):
-        dir.make_dir("saves")
+func _init(save_path: String = SAVE_PATH):
+    _save_path = save_path.strip_edges().replace("\\", "/")
+    if _save_path.is_empty():
+        _save_path = SAVE_PATH
+    if not _save_path.ends_with("/"):
+        _save_path += "/"
+    _storage_available = _ensure_save_directory()
+
+func _ensure_save_directory() -> bool:
+    var root_path: String
+    var relative_path: String
+    var scheme_separator = _save_path.find("://")
+    if scheme_separator >= 0:
+        root_path = _save_path.substr(0, scheme_separator + 3)
+        relative_path = _save_path.substr(scheme_separator + 3).trim_suffix("/")
+    else:
+        var directory_path = _save_path.trim_suffix("/")
+        root_path = directory_path.get_base_dir()
+        relative_path = directory_path.get_file()
+
+    var dir = DirAccess.open(root_path)
+    if dir == null:
+        print("ERROR: Save storage unavailable: ", _save_path)
+        return false
+
+    if relative_path.is_empty() or dir.dir_exists(relative_path):
+        return true
+
+    var error = dir.make_dir_recursive(relative_path)
+    if error != OK:
+        print("ERROR: Save storage unavailable: ", _save_path)
+        return false
+    return true
+
+func is_storage_available() -> bool:
+    return _storage_available
+
+func _get_save_path(slot: int) -> String:
+    return _save_path + "save_%d.json" % slot
 
 func save_game(slot: int, game_state: GameState) -> bool:
+    if not _storage_available:
+        return false
     if slot < 0 or slot >= MAX_SAVES:
         print("ERROR: Invalid save slot: ", slot)
         return false
@@ -28,7 +65,7 @@ func save_game(slot: int, game_state: GameState) -> bool:
         "next_id": game_state._next_id
     }
     
-    var file_path = SAVE_PATH + "save_%d.json" % slot
+    var file_path = _get_save_path(slot)
     var file = FileAccess.open(file_path, FileAccess.WRITE)
     if file:
         file.store_string(JSON.stringify(save_data, "\t"))
@@ -40,11 +77,13 @@ func save_game(slot: int, game_state: GameState) -> bool:
     return false
 
 func load_game(slot: int, game_state: GameState) -> bool:
+    if not _storage_available:
+        return false
     if slot < 0 or slot >= MAX_SAVES:
         print("ERROR: Invalid save slot: ", slot)
         return false
     
-    var file_path = SAVE_PATH + "save_%d.json" % slot
+    var file_path = _get_save_path(slot)
     if not FileAccess.file_exists(file_path):
         print("ERROR: Save file not found: ", file_path)
         return false
@@ -72,7 +111,9 @@ func load_game(slot: int, game_state: GameState) -> bool:
     return false
 
 func delete_save(slot: int) -> bool:
-    var file_path = SAVE_PATH + "save_%d.json" % slot
+    if not _storage_available:
+        return false
+    var file_path = _get_save_path(slot)
     if FileAccess.file_exists(file_path):
         DirAccess.remove_absolute(file_path)
         print("Save deleted: ", slot)
@@ -80,7 +121,9 @@ func delete_save(slot: int) -> bool:
     return false
 
 func get_save_info(slot: int) -> Dictionary:
-    var file_path = SAVE_PATH + "save_%d.json" % slot
+    if not _storage_available:
+        return {}
+    var file_path = _get_save_path(slot)
     if not FileAccess.file_exists(file_path):
         return {}
     
@@ -102,6 +145,8 @@ func get_save_info(slot: int) -> Dictionary:
     return {}
 
 func get_all_saves() -> Array:
+    if not _storage_available:
+        return []
     var saves = []
     for i in range(MAX_SAVES):
         var info = get_save_info(i)
@@ -110,7 +155,9 @@ func get_all_saves() -> Array:
     return saves
 
 func has_save(slot: int) -> bool:
-    var file_path = SAVE_PATH + "save_%d.json" % slot
+    if not _storage_available:
+        return false
+    var file_path = _get_save_path(slot)
     return FileAccess.file_exists(file_path)
 
 # === 存档系统补完功能 ===
@@ -133,7 +180,9 @@ func restore_from_cloud(slot: int) -> bool:
 
 # 4. 存档压缩功能
 func compress_save(slot: int) -> bool:
-    var file_path = SAVE_PATH + "save_%d.json" % slot
+    if not _storage_available:
+        return false
+    var file_path = _get_save_path(slot)
     if not FileAccess.file_exists(file_path):
         return false
     print("Compressing save slot ", slot, "...")
@@ -142,7 +191,9 @@ func compress_save(slot: int) -> bool:
 
 # 5. 存档解压功能
 func decompress_save(slot: int) -> bool:
-    var file_path = SAVE_PATH + "save_%d.json" % slot
+    if not _storage_available:
+        return false
+    var file_path = _get_save_path(slot)
     if not FileAccess.file_exists(file_path):
         return false
     print("Decompressing save slot ", slot, "...")
@@ -150,8 +201,10 @@ func decompress_save(slot: int) -> bool:
 
 # 6. 存档迁移功能
 func migrate_save(from_slot: int, to_slot: int) -> bool:
-    var from_path = SAVE_PATH + "save_%d.json" % from_slot
-    var to_path = SAVE_PATH + "save_%d.json" % to_slot
+    if not _storage_available:
+        return false
+    var from_path = _get_save_path(from_slot)
+    var to_path = _get_save_path(to_slot)
     
     if not FileAccess.file_exists(from_path):
         return false
@@ -162,7 +215,9 @@ func migrate_save(from_slot: int, to_slot: int) -> bool:
 
 # 7. 获取存档大小
 func get_save_size(slot: int) -> int:
-    var file_path = SAVE_PATH + "save_%d.json" % slot
+    if not _storage_available:
+        return 0
+    var file_path = _get_save_path(slot)
     if not FileAccess.file_exists(file_path):
         return 0
     # 实际实现需要获取文件大小
@@ -170,7 +225,9 @@ func get_save_size(slot: int) -> int:
 
 # 8. 检查存档完整性
 func validate_save(slot: int) -> bool:
-    var file_path = SAVE_PATH + "save_%d.json" % slot
+    if not _storage_available:
+        return false
+    var file_path = _get_save_path(slot)
     if not FileAccess.file_exists(file_path):
         return false
     

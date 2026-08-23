@@ -25,6 +25,10 @@ func _ready() -> void:
 				for key in ["code", "source", "id", "message"]:
 					_expect(validation_error.has(key), "DataManager validation error contains %s" % key)
 
+	var unavailable_save_system := SaveSystem.new("invalid://baseline/")
+	_expect(not unavailable_save_system.is_storage_available(), "SaveSystem reports invalid storage as unavailable")
+	_expect(not unavailable_save_system.save_game(0, GameState.new()), "SaveSystem safely rejects saves when storage is unavailable")
+
 	if _failures > 0:
 		printerr("BASELINE TESTS FAILED")
 		get_tree().quit(1)
