@@ -36,39 +36,43 @@ Godot 不在默认位置时，通过 `-GodotPath` 覆盖：
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1 -GodotPath 'D:\Tools\Godot\Godot.exe'
 ```
 
-门禁运行真实 Godot 测试场景，并显式转发捕获的标准输出和错误输出。正常通过必须同时满足：Godot 退出码为 0；输出不包含 `SCRIPT ERROR`、`Parse Error`、`BASELINE TESTS FAILED`；完整行 `BASELINE TESTS PASSED` 恰好出现一次。成功标记缺失或重复都会使脚本给出诊断并退出 1。引擎级 `--quit-after 600` 保证测试脚本来不及自行退出时进程仍有界结束。
+门禁运行真实 Godot 测试场景：`TestBaseline` 与 `TestFactoryWorkspace`。正常通过必须同时满足：Godot 退出码为 0；每个场景的完整成功标记各出现一次；输出不包含 `SCRIPT ERROR`、`Parse Error` 或对应失败标记。引擎级 `--quit-after 600` 保证测试进程有界结束。
 
-## 当前原型
+## 当前可玩工作区（Phase 2）
 
-主场景启动时会创建矿机和熔炉，并建立一条传送连接。`GameManager` 驱动 `SimulationEngine`，依次更新电力、传送带、生产和统计系统，因此当前真实接通的原型链路是：
+主场景从空白画布开始。玩家可放置矿机、熔炉、制造台和发电机，选择配方，移动卡片，并从输出端口连接到输入端口；矿机到熔炉的链路会将 `iron_ore` 送入熔炉并生产 `iron_ingot`。放置和连接由 `GameState` 原子验证：失败不会扣除建造点或留下半条连接。
 
-```text
-矿机生产 iron_ore → 传送带转移 → 熔炉按 iron_ingot_recipe 生产 iron_ingot
-```
+操作如下：
 
-这是一条自动放置的局部原型链，不是已经完成的玩家建造、资源成本、目标反馈和胜负条件闭环。
+- `Q` / `W` / `E` / `R`：分别进入矿机、熔炉、制造台、发电机的放置模式。
+- 左键：在放置模式确认放置；空闲时选择卡片，按住卡片拖动；从右侧输出端口拖到另一张卡片左侧输入端口以创建连接。
+- 右键或中键拖动：平移画布。
+- 滚轮：以指针为中心缩放画布。
+- `Escape`：取消当前放置、拖动或连接操作。
+- `Delete`：删除当前选择的建筑及其连接。
+- `Space`：暂停或继续模拟；`1` / `2` / `3`：切换 1×、2×、3× 模拟速度。
 
-当前自动化只保证：
-
-- 统计摘要返回 `total_buildings`、`total_connections`、`elapsed_time`、`production`、`consumption`；
-- 四个静态数据文件可加载，重复 ID 与配方物品/建筑引用完整性校验结果为空；
-- 注入无效存档目录时安全报告不可用并拒绝写入。
+固定 UI 包含顶部状态栏、左侧资源栏、中央画布、右侧检查器、底部建造坞和短时通知。UI 面板会消费指针输入，中央画布保持可交互。
 
 ## 目录
 
 ```text
 autoload/       全局事件、游戏管理和静态数据加载
 data/           物品、建筑与配方 JSON
-scenes/         主场景、UI 和测试场景
+scenes/         主场景、工作区 UI 和测试场景
 scripts/game/   状态与模拟系统
-scripts/test/   权威基线测试及历史打印式测试
+scripts/input/  世界画布输入仲裁
+scripts/rendering/ 卡片与连接渲染
+scripts/test/   权威基线与工作区测试
 tools/          唯一测试门禁脚本
-docs/           权威状态、已批准恢复文档及历史材料
+docs/           权威状态、规格、计划和交付记录
 ```
 
 ## 非目标与未完成系统
 
-当前阶段不新增玩法，也不以函数数量或旧文档中的完成率判断可用性。电力效率尚未影响生产速度；存档中的 `Vector2` JSON 往返尚未解决；科技、空间站、行星、星系、戴森球和高级 UI 多数未接入主运行树或仅有空壳。`scripts/test/` 中除 `TestBaseline.gd` 外的旧打印式脚本不属于门禁。
+第二阶段不包含多选或框选、蓝图、建筑缩略图、移动端布局、云存档、目标/胜负系统、minimap 或高级面板。仓库中存在的相关旧 UI 或局部 API 没有接入当前主场景，不能视为已交付功能。
+
+存档的 `Vector2` JSON 往返尚未解决；电力效率目前也不会调节生产速度。科技、空间站、行星、星系、戴森球和高级物流能力同样不在活跃工作区范围内。`scripts/test/` 中除 `TestBaseline.gd` 与 `TestFactoryWorkspace.gd` 外的旧打印式脚本不属于门禁。
 
 `DSPONLINE` 仅可在其非商业许可范围内作为行为和架构参考；本项目不复制其源码或素材，也不把其高级能力作为当前阶段的前置条件。
 
@@ -78,6 +82,6 @@ docs/           权威状态、已批准恢复文档及历史材料
 
 1. 本 `README.md`；
 2. [`docs/PROJECT_STATUS.md`](docs/PROJECT_STATUS.md)；
-3. 已批准的[恢复规格](docs/superpowers/specs/2026-08-23-cardfactory-recovery-baseline-design.md)与[恢复计划](docs/superpowers/plans/2026-08-23-cardfactory-recovery-baseline.md)。
+3. 已批准的 [Phase 2 设计规格](docs/superpowers/specs/2026-08-23-cardfactory-phase2-dsponline-ui-design.md) 与 [实现计划](docs/superpowers/plans/2026-08-23-cardfactory-phase2-dsponline-ui.md)。
 
 其余带日期的审计、测试指南、设计和阶段计划均为历史参考，不证明当前能力。

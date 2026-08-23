@@ -2,6 +2,10 @@
 
 本文只记录可由当前代码和权威门禁证明的状态。运行与测试方法以根目录 [`README.md`](../README.md) 为准。
 
+## Phase 2：已完成
+
+Phase 2 的工厂工作区已接入主场景，并由正式测试门和无窗口主场景启动验证覆盖。该结论仅表示本阶段的建造、连接、配方和画布交互闭环已交付，不表示存档、目标、minimap 或高级系统已完成。
+
 ## 活跃运行树与数据流
 
 `project.godot` 注册 `EventBus`、`GameManager` 和 `DataManager` 三个 autoload，并以 `scenes/main/Main.tscn` 为主场景。
@@ -14,10 +18,11 @@ project.godot
 │                              ├─ BeltSystem
 │                              ├─ ProductionSystem
 │                              └─ StatisticsSystem
-└─ Main.tscn → Main.gd + CardRenderer + ConnectionRenderer + InputHandler + HUD + BuildingPanel
+└─ Main.tscn → WorldCamera + CardRenderer + ConnectionRenderer
+               + InputHandler + FactoryWorkspaceUI
 ```
 
-`Main.gd` 自动放置矿机与熔炉并建立 `iron_ore` 连接。每帧由 `GameManager` 调用模拟引擎，更新顺序为电力、物流、生产、统计。矿机写入输出缓冲，传送带把矿石移入熔炉输入缓冲，熔炉使用 `iron_ingot_recipe` 生成铁锭。HUD 消费稳定统计摘要，不再读取旧的 `item_totals` 字段。
+主场景不再自动放置测试生产线。`FactoryWorkspaceUI` 发出建造意图并显示状态；`InputHandler` 仲裁中央画布的放置、选择、拖动、端口连接、平移和缩放；两个 renderer 只读 `GameState` 绘制卡片和连接。`GameState` 负责建造点扣除、放置和连接的原子验证，`SimulationEngine` 继续更新电力、物流、生产和统计。
 
 ## 已验证能力
 
@@ -27,42 +32,41 @@ project.godot
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1
 ```
 
-它使用真实 `GameState`、`SimulationEngine`、`DataManager` 和 `SaveSystem`，验证：
+它顺序运行 `TestBaseline` 与 `TestFactoryWorkspace`，要求各自唯一的成功标记。门禁会在 Godot 非零退出、`SCRIPT ERROR`、`Parse Error`、失败标记或成功标记缺失/重复时失败。
 
-- 统计摘要是 Dictionary，且包含建筑数、连接数、运行时间、生产和消耗五个合同字段；
-- 门禁断言静态数据的结构化完整性错误为空；同次 DataManager 加载日志报告 38 items、30 buildings、20 recipes；
-- 无效存档目录不会导致脚本异常，存储状态为不可用且保存操作返回 `false`；
-- 测试断言失败、Godot 非零退出、`SCRIPT ERROR`、`Parse Error` 或 `BASELINE TESTS FAILED` 都使门禁非零退出；
-- 测试脚本异常而不能调用 `quit()` 时，`--quit-after 600` 仍会让进程有界结束。
+工作区测试覆盖：
 
-以下命令用于验证干净导入和活跃主场景，不替代上述测试门禁：
+- 初始 12 点建造点；成功放置才扣除成本，未知建筑、点数不足和重叠放置均不改变状态。
+- 矿机到熔炉自动选择可兼容配方；自连接、重复连接和配方不兼容连接被拒绝；删除建筑级联删除连接。
+- 主场景包含 `WorldCamera`、`CardRenderer`、`ConnectionRenderer`、`InputHandler` 和 `FactoryWorkspaceUI`，不再挂载旧 `HUD` 或 `BuildingPanel`。
+- UI 的顶部栏、资源栏、检查器、建造坞和通知节点可用；UI 命中测试阻止输入穿透到画布。
+- 画布支持 Q/W/E/R 放置、左键选择/拖动/端口连接、右键/中键平移、滚轮缩放、`Escape` 取消、`Delete` 删除、`Space` 暂停与 `1` / `2` / `3` 速度切换。
+- 矿机到熔炉的模拟链路将铁矿传入熔炉并生产铁锭。
+
+以下命令验证主场景能无窗口启动 120 帧；它不替代正式测试门：
 
 ```powershell
-& 'C:\Program Files\Godot\Godot.exe' --headless --path . --editor --quit
 & 'C:\Program Files\Godot\Godot.exe' --headless --path . --quit-after 120 res://scenes/main/Main.tscn
 ```
 
-## 已知缺口
+## 已知缺口与延期范围
 
-- `PowerSystem` 会计算并写入 `power_efficiency`，但 `ProductionSystem` 没有消费该值，电力不足尚不影响生产。
-- `SaveSystem` 直接将包含 `Vector2` 的状态交给 JSON；位置值的可靠序列化与加载后类型恢复尚未解决。
-- 科技、空间站、行星、星系、戴森球以及高级 UI 多数没有进入主场景和活跃模拟编排，部分实现只是占位或局部 API。
-- 主场景当前自动放置固定原型链；玩家建造、成本约束、明确目标反馈、失败/胜利条件和持续进度闭环尚未完成。
+- 多选/框选、蓝图、建筑缩略图和高级检查器面板延期。
+- 移动端布局、云存档、目标/胜负系统和 minimap 未进入活跃主场景。
+- `SaveSystem` 直接将包含 `Vector2` 的状态交给 JSON；位置值的可靠序列化与加载后类型恢复尚未解决，因此不能将保存/加载视为已交付能力。
+- `PowerSystem` 会计算并写入 `power_efficiency`，但 `ProductionSystem` 没有消费该值，电力不足尚不影响生产速度。
+- 科技、空间站、行星、星系、戴森球及高级物流功能多数没有进入当前主场景和活跃模拟编排，部分实现只是占位或局部 API。
 - `TestCompletedFeatures.gd`、`TestPhase*.gd` 等旧测试主要打印计数或结果，没有统一非零失败语义，不属于权威门禁。
-- 当前数据校验聚焦重复 ID 和配方物品/建筑引用，不是通用 JSON schema 校验。
 
 ## 下一阶段建议
 
-按可玩闭环优先级推进：
-
-1. 把放置、连接、配方选择、成本扣除和无效操作反馈接成玩家可操作的铁矿到铁锭流程，并为该流程增加行为断言。
+1. 为存档定义 schema，显式编码和恢复 `Vector2`，补充保存—加载往返测试。
 2. 让电力供需真实调节生产效率，覆盖断电、欠电与恢复供电。
-3. 定义存档 schema，显式编码和恢复 `Vector2`，补充保存—加载往返测试。
-4. 增加最小目标与进度反馈，再扩展科技或更多生产配方。
-5. 只有基础闭环稳定后，再逐项评估空间站、行星、星系、戴森球和高级 UI。
+3. 定义最小目标与进度反馈，再评估多选、蓝图、移动端和高级面板。
+4. 只有基础闭环稳定后，再逐项评估 minimap、科技、空间站、行星、星系和戴森球。
 
 `DSPONLINE` 只在其非商业许可范围内作为行为和架构参考；不复制其源码或素材，也不把账号、云档、多核 Worker、排行榜等高级能力作为 CardFactory 当前开发的前置条件。
 
 ## 文档口径
 
-根 `README.md` 与本文是开发者入口。已批准的 2026-08-23 恢复规格和计划记录本次基线决策；其余日期文档是历史材料，不能单独证明功能已经接入或通过测试。
+根 `README.md` 与本文是开发者入口。已批准的 2026-08-23 Phase 2 设计规格和实现计划记录本次范围与验收依据；其余日期文档是历史材料，不能单独证明功能已经接入或通过测试。

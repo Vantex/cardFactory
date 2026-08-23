@@ -246,11 +246,11 @@ git commit -m "feat: integrate playable factory workspace"
 - 修改：`docs/PROJECT_STATUS.md`
 - 修改：本计划复选框
 
-- [ ] **步骤 1：更新真实操作和范围**
+- [x] **步骤 1：更新真实操作和范围**
 
 README 写明：Q/W/E/R、左键放置/选择/拖动/端口连接、右键/中键平移、滚轮缩放、Escape、Delete、Space、1/2/3。PROJECT_STATUS 将 Phase 2 标为“已完成”仅在所有门通过后，并列出延后的多选、蓝图、缩略图和高级面板。
 
-- [ ] **步骤 2：执行完整证据检查**
+- [x] **步骤 2：执行完整证据检查**
 
 ```powershell
 git diff --check
@@ -259,11 +259,11 @@ powershell -ExecutionPolicy Bypass -File tools/run_tests.ps1
 git status --short --branch
 ```
 
-- [ ] **步骤 3：按 requesting-code-review 技能审查**
+- [x] **步骤 3：按 requesting-code-review 技能审查**
 
 审查重点：失败原子性、UI 输入穿透、相机坐标、端口几何一致、配方兼容、旧测试门无假绿。修复所有高置信度问题后重跑步骤 2。
 
-- [ ] **步骤 4：提交文档与审查修复**
+- [x] **步骤 4：提交文档与审查修复**
 
 ```powershell
 git add README.md docs/PROJECT_STATUS.md docs/superpowers/plans/2026-08-23-cardfactory-phase2-dsponline-ui.md
