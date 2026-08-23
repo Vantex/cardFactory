@@ -95,8 +95,11 @@ func _test_main_scene_integration_contract() -> void:
 	if main_scene == null:
 		return
 
+	var test_viewport := SubViewport.new()
+	test_viewport.size = Vector2i(1152, 648)
+	add_child(test_viewport)
 	var main := main_scene.instantiate()
-	add_child(main)
+	test_viewport.add_child(main)
 	await get_tree().process_frame
 
 	var world_camera := main.get_node_or_null("WorldCamera") as Camera2D
@@ -108,6 +111,16 @@ func _test_main_scene_integration_contract() -> void:
 	_expect(card_renderer != null and connection_renderer != null and input_handler != null and workspace != null, "main scene composes renderers, input, and workspace UI")
 	_expect(main.get_node_or_null("HUD") == null and main.get_node_or_null("BuildingPanel") == null, "main scene no longer mounts legacy UI")
 	_expect(GameManager.get_game_state().buildings.is_empty() and GameManager.get_game_state().connections.is_empty(), "main scene starts with an empty factory")
+	if workspace != null:
+		var top_bar := workspace.get_node("TopBar") as Control
+		var resource_rail := workspace.get_node("ResourceRail") as Control
+		var inspector_panel := workspace.get_node("InspectorPanel") as Control
+		var construction_dock := workspace.get_node("ConstructionDock") as Control
+		_expect(top_bar.get_global_rect() == Rect2(0, 0, 1152, 52), "top bar occupies the fixed workspace header")
+		_expect(resource_rail.get_global_rect() == Rect2(0, 52, 216, 504), "resource rail leaves header and dock unobstructed")
+		_expect(inspector_panel.get_global_rect() == Rect2(866, 52, 286, 504), "inspector leaves header and dock unobstructed")
+		_expect(construction_dock.get_global_rect() == Rect2(216, 556, 650, 92), "construction dock stays at the bottom of the workspace")
+		_expect(not workspace.call("is_pointer_over_ui", Vector2(500, 300)) and workspace.call("is_pointer_over_ui", Vector2(500, 600)), "workspace hit testing keeps the center interactive and the dock blocked")
 
 	if card_renderer != null and connection_renderer != null:
 		_expect(card_renderer.get("_game_state") == GameManager.get_game_state() and connection_renderer.get("_game_state") == GameManager.get_game_state(), "main injects the active game state into both renderers")
@@ -116,7 +129,8 @@ func _test_main_scene_integration_contract() -> void:
 		workspace.call("_on_building_pressed", "miner")
 		_expect(input_handler.call("get_mode_name") == "placing" and input_handler.get("placing_building_type") == "miner", "workspace placement requests enter real canvas placement mode")
 
-		input_handler.call("_place_card", Vector2(320, 180))
+		var placed_card_world_position: Vector2 = input_handler.call("_screen_to_world", Vector2(260, 120))
+		input_handler.call("_place_card", placed_card_world_position)
 		var placed_id: String = input_handler.get("selected_building_id")
 		_expect(not placed_id.is_empty() and GameManager.get_game_state().buildings.size() == 1, "real canvas placement adds and selects the requested card")
 		var resource_summary := workspace.get_node("ResourceRail/Summary") as Label
@@ -127,6 +141,19 @@ func _test_main_scene_integration_contract() -> void:
 		input_handler.set("selected_building_id", "")
 		EventBus.card_selected.emit(placed_id)
 		_expect(input_handler.get("selected_building_id") == placed_id and workspace.call("get_selected_building_type") == "miner", "card selection synchronizes input and workspace inspector")
+
+		input_handler.set("selected_building_id", "")
+		workspace.call("set_selected_building", "")
+		var canvas_transform := test_viewport.get_canvas_transform()
+		var card_screen_position: Vector2 = canvas_transform * (placed_card_world_position + Vector2(20, 20))
+		var blank_screen_position := Vector2(700, 300)
+		input_handler.call("_unhandled_input", _mouse_button_event(MOUSE_BUTTON_LEFT, true, card_screen_position))
+		_expect(input_handler.get("selected_building_id") == placed_id, "real card click selects input")
+		_expect(inspector_title.text == "矿机", "real card click synchronizes the workspace inspector")
+		input_handler.call("_unhandled_input", _mouse_button_event(MOUSE_BUTTON_LEFT, true, blank_screen_position))
+		await get_tree().process_frame
+		_expect(input_handler.get("selected_building_id") == "" and workspace.call("get_selected_building_type") == "" and inspector_title.text == "INSPECTOR", "real blank canvas click clears input and workspace inspector selection")
+
 		GameManager.get_game_state().remove_building(placed_id)
 		_expect(input_handler.get("selected_building_id") == "" and workspace.call("get_selected_building_type") == "", "removing the selected card clears input and inspector selection")
 
@@ -140,7 +167,7 @@ func _test_main_scene_integration_contract() -> void:
 		input_handler.call("_handle_key_press", speed_event)
 		_expect(GameManager.get_game_state().paused and is_equal_approx(GameManager.get_game_state().speed, 3.0), "workspace input controls write pause and speed to game state")
 
-	main.queue_free()
+	test_viewport.queue_free()
 	await get_tree().process_frame
 
 func _test_real_production_loop() -> void:

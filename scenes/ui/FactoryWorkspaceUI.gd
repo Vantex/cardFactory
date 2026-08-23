@@ -126,6 +126,7 @@ func _create_construction_dock() -> void:
 	var dock := _create_panel("ConstructionDock", PANEL_DARK)
 	dock.anchor_left = 0.0
 	dock.anchor_right = 1.0
+	dock.anchor_top = 1.0
 	dock.anchor_bottom = 1.0
 	dock.offset_left = RESOURCE_RAIL_WIDTH
 	dock.offset_right = -INSPECTOR_WIDTH

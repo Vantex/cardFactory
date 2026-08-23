@@ -6,6 +6,8 @@ extends Node2D
 @onready var input_handler: Node2D = $InputHandler
 @onready var factory_workspace_ui: CanvasLayer = $FactoryWorkspaceUI
 
+var _synced_selected_building_id := ""
+
 func _ready() -> void:
 	var game_state := GameManager.get_game_state()
 	card_renderer.set_game_state(game_state)
@@ -19,15 +21,24 @@ func _ready() -> void:
 	EventBus.placement_requested.connect(_on_placement_requested)
 	factory_workspace_ui.refresh_now()
 
+func _process(_delta: float) -> void:
+	var selected_building_id: String = input_handler.selected_building_id
+	if selected_building_id == _synced_selected_building_id:
+		return
+	_synced_selected_building_id = selected_building_id
+	factory_workspace_ui.set_selected_building(selected_building_id)
+
 func _on_card_placed(card_id: String, _position: Vector2) -> void:
 	if input_handler.get_mode_name() == "placing":
 		input_handler.selected_building_id = card_id
+		_synced_selected_building_id = card_id
 		factory_workspace_ui.set_selected_building(card_id)
 		return
 	factory_workspace_ui.refresh_now()
 
 func _on_card_selected(card_id: String) -> void:
 	input_handler.selected_building_id = card_id
+	_synced_selected_building_id = card_id
 	factory_workspace_ui.set_selected_building(card_id)
 
 func _on_card_removed(card_id: String) -> void:
@@ -35,6 +46,7 @@ func _on_card_removed(card_id: String) -> void:
 		factory_workspace_ui.refresh_now()
 		return
 	input_handler.selected_building_id = ""
+	_synced_selected_building_id = ""
 	input_handler.cancel_operation()
 	factory_workspace_ui.set_selected_building("")
 
