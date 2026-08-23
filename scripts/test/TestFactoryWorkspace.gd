@@ -1,11 +1,14 @@
 extends Node
 
+const CardRenderer = preload("res://scripts/rendering/CardRenderer.gd")
+
 var _failures := 0
 
 func _ready() -> void:
 	print("FACTORY WORKSPACE TESTS STARTED")
 	_test_explicit_building_costs()
 	_test_existing_recipe_connection_rules()
+	_test_renderer_geometry_contract()
 	await _test_workspace_chrome_contract()
 	_test_canvas_input_contract()
 
@@ -113,6 +116,11 @@ func _test_existing_recipe_connection_rules() -> void:
 	incompatible_state.get_building(incompatible_smelter.id)["progress"] = 0.5
 	var incompatible_connection: Dictionary = incompatible_state.try_add_connection(incompatible_miner.id, incompatible_smelter.id)
 	_expect(not incompatible_connection.ok and incompatible_state.connections.is_empty() and incompatible_state.get_building(incompatible_smelter.id).recipe_id == "copper_ingot_recipe" and incompatible_state.get_building(incompatible_smelter.id).progress == 0.5, "incompatible existing recipes reject connections without state changes")
+
+func _test_renderer_geometry_contract() -> void:
+	_expect(CardRenderer.CARD_SIZE == Vector2(232, 144), "card geometry is stable")
+	_expect(CardRenderer.get_input_port_rect(Vector2.ZERO).has_point(Vector2(0, 72)), "input port hit area matches drawing")
+	_expect(CardRenderer.get_output_port_rect(Vector2.ZERO).has_point(Vector2(232, 72)), "output port hit area matches drawing")
 
 func _test_canvas_input_contract() -> void:
 	var input_script := load("res://scripts/input/InputHandler.gd") as Script

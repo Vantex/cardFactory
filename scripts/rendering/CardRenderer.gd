@@ -1,79 +1,130 @@
-# scripts/rendering/CardRenderer.gd
 extends Node2D
 
-# 绘制配置
-const CARD_WIDTH = 200
-const CARD_HEIGHT = 150
-const CARD_COLOR_IDLE = Color(0.4, 0.4, 0.4)
-const CARD_COLOR_RUNNING = Color(0.0, 0.94, 1.0)
-const CARD_COLOR_BLOCKED = Color(1.0, 0.27, 0.27)
+const CARD_SIZE := Vector2(232, 144)
+const PORT_SIZE := Vector2(18, 36)
+const GRID_SIZE := 20.0
 
-func _draw():
-    var game_state = GameManager.get_game_state()
-    
-    # 绘制所有建筑
-    for building_id in game_state.buildings:
-        var building = game_state.buildings[building_id]
-        _draw_building(building)
+const CARD_COLOR_IDLE := Color("253244")
+const CARD_COLOR_RUNNING := Color("173f4e")
+const CARD_COLOR_BLOCKED := Color("512b36")
+const CARD_BORDER := Color("7b9fbd")
+const STATUS_COLORS := {
+	"idle": Color("8b9aad"),
+	"running": Color("38e6c2"),
+	"blocked": Color("ff6b70"),
+}
 
-func _draw_building(building: Dictionary):
-    var pos = building.get("position", Vector2.ZERO)
-    var status = building.get("status", "idle")
-    var color = CARD_COLOR_IDLE
-    
-    # 动画效果
-    var card_scale = 1.0
-    var alpha = 1.0
-    
-    match status:
-        "running":
-            color = CARD_COLOR_RUNNING
-            # 呼吸动画
-            card_scale = 1.0 + sin(Time.get_ticks_msec() * 0.005) * 0.02
-        "blocked":
-            color = CARD_COLOR_BLOCKED
-            # 闪烁动画
-            alpha = 0.7 + sin(Time.get_ticks_msec() * 0.01) * 0.3
-        "idle":
-            color = CARD_COLOR_IDLE
-    
-    # 绘制卡片背景（带缩放）
-    var rect = Rect2(pos, Vector2(CARD_WIDTH, CARD_HEIGHT) * card_scale)
-    var draw_color = Color(color, alpha)
-    draw_rect(rect, draw_color)
-    draw_rect(rect, Color.WHITE, false, 2.0)
-    
-    # 绘制文字
-    var font = ThemeDB.fallback_font
-    var building_type = building.get("type", "unknown")
-    draw_string(font, pos + Vector2(10, 25), building_type, HORIZONTAL_ALIGNMENT_LEFT, -1, 16)
-    
-    # 绘制状态
-    draw_string(font, pos + Vector2(10, 45), "状态: " + status, HORIZONTAL_ALIGNMENT_LEFT, -1, 12)
-    
-    # 绘制输入缓冲区
-    var input_buffer = building.get("input_buffer", {})
-    if input_buffer.size() > 0:
-        var y_offset = 65
-        draw_string(font, pos + Vector2(10, y_offset), "输入:", HORIZONTAL_ALIGNMENT_LEFT, -1, 10)
-        y_offset += 15
-        for item_id in input_buffer:
-            var amount = input_buffer[item_id]
-            if amount > 0:
-                draw_string(font, pos + Vector2(15, y_offset), item_id + ": " + str(snapped(amount, 0.1)), HORIZONTAL_ALIGNMENT_LEFT, -1, 10)
-                y_offset += 12
-    
-    # 绘制输出缓冲区
-    var output_buffer = building.get("output_buffer", {})
-    if output_buffer.size() > 0:
-        var y_offset = 110
-        draw_string(font, pos + Vector2(10, y_offset), "输出:", HORIZONTAL_ALIGNMENT_LEFT, -1, 10)
-        y_offset += 15
-        for item_id in output_buffer:
-            var amount = output_buffer[item_id]
-            if amount > 0:
-                draw_string(font, pos + Vector2(15, y_offset), item_id + ": " + str(snapped(amount, 0.1)), HORIZONTAL_ALIGNMENT_LEFT, -1, 10)
-                y_offset += 12
+var _game_state: GameState
 
-func _process(_delta):
-    queue_redraw()  # 每帧重绘
+func set_game_state(game_state: GameState) -> void:
+	_game_state = game_state
+	queue_redraw()
+
+static func get_input_port_rect(card_position: Vector2) -> Rect2:
+	return Rect2(card_position + Vector2(0, (CARD_SIZE.y - PORT_SIZE.y) * 0.5), PORT_SIZE)
+
+static func get_output_port_rect(card_position: Vector2) -> Rect2:
+	return Rect2(card_position + Vector2(CARD_SIZE.x - PORT_SIZE.x, (CARD_SIZE.y - PORT_SIZE.y) * 0.5), PORT_SIZE + Vector2(1, 0))
+
+func _draw() -> void:
+	_draw_grid()
+	var game_state := _get_game_state()
+	if game_state == null:
+		return
+	for building in game_state.buildings.values():
+		_draw_building(building)
+
+func _draw_grid() -> void:
+	var viewport := get_viewport()
+	if viewport == null:
+		return
+	var inverse_canvas := viewport.get_canvas_transform().affine_inverse()
+	var viewport_size := viewport.get_visible_rect().size
+	var world_top_left := inverse_canvas * Vector2.ZERO
+	var world_bottom_right := inverse_canvas * viewport_size
+	var min_x: float = floorf(minf(world_top_left.x, world_bottom_right.x) / GRID_SIZE) * GRID_SIZE
+	var max_x: float = ceilf(maxf(world_top_left.x, world_bottom_right.x) / GRID_SIZE) * GRID_SIZE
+	var min_y: float = floorf(minf(world_top_left.y, world_bottom_right.y) / GRID_SIZE) * GRID_SIZE
+	var max_y: float = ceilf(maxf(world_top_left.y, world_bottom_right.y) / GRID_SIZE) * GRID_SIZE
+	for x in range(int(min_x), int(max_x) + 1, int(GRID_SIZE)):
+		for y in range(int(min_y), int(max_y) + 1, int(GRID_SIZE)):
+			draw_circle(Vector2(x, y), 1.0, Color(0.36, 0.52, 0.65, 0.28))
+
+func _draw_building(building: Dictionary) -> void:
+	var position: Vector2 = building.get("position", Vector2.ZERO)
+	var status: String = building.get("status", "idle")
+	var card_rect := Rect2(position, CARD_SIZE)
+	var status_color: Color = STATUS_COLORS.get(status, STATUS_COLORS.idle)
+	draw_style_box(_make_card_style(CARD_COLOR_RUNNING if status == "running" else CARD_COLOR_BLOCKED if status == "blocked" else CARD_COLOR_IDLE), card_rect)
+	draw_rect(card_rect, CARD_BORDER, false, 1.5, true)
+
+	var font := ThemeDB.fallback_font
+	var building_type: String = building.get("type", "unknown")
+	var definition: Dictionary = DataManager.get_building(building_type)
+	var symbol: String = definition.get("symbol", _symbol_for_type(building_type))
+	var title: String = definition.get("name", building_type)
+	draw_string(font, position + Vector2(14, 25), "%s  %s" % [symbol, title], HORIZONTAL_ALIGNMENT_LEFT, 178, 16, Color("edf6ff"))
+	draw_circle(position + Vector2(CARD_SIZE.x - 17, 18), 5.0, status_color)
+
+	var progress := clampf(float(building.get("progress", 0.0)), 0.0, 1.0)
+	var progress_rect := Rect2(position + Vector2(14, 39), Vector2(CARD_SIZE.x - 28, 7))
+	draw_rect(progress_rect, Color("101924"), true)
+	draw_rect(Rect2(progress_rect.position, Vector2(progress_rect.size.x * progress, progress_rect.size.y)), status_color, true)
+
+	_draw_buffer_summary(font, position + Vector2(14, 68), "IN", building.get("input_buffer", {}), Color("8ec8ff"))
+	_draw_buffer_summary(font, position + Vector2(14, 91), "OUT", building.get("output_buffer", {}), Color("ffc66d"))
+
+	var power: float = float(definition.get("power_demand", definition.get("power", 0.0)))
+	var speed: float = float(building.get("speed", definition.get("speed", 1.0)))
+	draw_line(position + Vector2(14, 116), position + Vector2(CARD_SIZE.x - 14, 116), Color("40536a"), 1.0)
+	draw_string(font, position + Vector2(14, 134), "PWR %.1f  |  SPD %.1f/s" % [power, speed], HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color("b5c5d7"))
+
+	_draw_port(get_input_port_rect(position), Color("3a8fb7"), false)
+	_draw_port(get_output_port_rect(position), Color("d89b42"), true)
+	if building.get("selected", false):
+		draw_rect(card_rect.grow(3.0), Color("ffe585"), false, 2.0, true)
+
+func _draw_buffer_summary(font: Font, position: Vector2, label: String, buffer: Dictionary, color: Color) -> void:
+	var entries: Array[String] = []
+	for item_id in buffer:
+		var amount: float = float(buffer[item_id])
+		if amount > 0.0:
+			entries.append("%s %.1f" % [item_id, amount])
+	entries.sort()
+	var summary := "—" if entries.is_empty() else ", ".join(entries)
+	draw_string(font, position, "%s  %s" % [label, summary], HORIZONTAL_ALIGNMENT_LEFT, CARD_SIZE.x - 28, 11, color)
+
+func _draw_port(port_rect: Rect2, color: Color, is_output: bool) -> void:
+	draw_rect(port_rect, Color("101a26"), true)
+	draw_rect(port_rect, color, false, 1.5, true)
+	var center := port_rect.get_center()
+	var tip_offset := 5.0 if is_output else -5.0
+	draw_circle(center + Vector2(tip_offset, 0), 3.0, color)
+
+func _make_card_style(background_color: Color) -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.bg_color = background_color
+	style.corner_radius_top_left = 8
+	style.corner_radius_top_right = 8
+	style.corner_radius_bottom_left = 8
+	style.corner_radius_bottom_right = 8
+	return style
+
+func _symbol_for_type(building_type: String) -> String:
+	match building_type:
+		"miner":
+			return "M"
+		"smelter":
+			return "S"
+		"assembling_machine_mk1":
+			return "A"
+		"power_generator":
+			return "G"
+		_:
+			return "#"
+
+func _get_game_state() -> GameState:
+	return _game_state if _game_state != null else GameManager.get_game_state()
+
+func _process(_delta: float) -> void:
+	queue_redraw()
