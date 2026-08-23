@@ -1,6 +1,7 @@
 extends Node2D
 
-const CARD_SIZE := Vector2(232, 144)
+const FactoryGeometry = preload("res://scripts/game/FactoryGeometry.gd")
+const CARD_SIZE := FactoryGeometry.CARD_SIZE
 const PORT_SIZE := Vector2(18, 36)
 const GRID_SIZE := 20.0
 

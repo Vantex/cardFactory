@@ -2,6 +2,8 @@
 class_name GameState
 extends RefCounted
 
+const FactoryGeometry = preload("res://scripts/game/FactoryGeometry.gd")
+
 const BUILDING_COSTS: Dictionary = {
     "miner": 1,
     "smelter": 2,
@@ -80,18 +82,20 @@ func add_building(building_data: Dictionary) -> String:
 func try_place_building(building_type: String, position: Vector2) -> Dictionary:
     var building_definition := DataManager.get_building(building_type)
     if building_definition.is_empty():
-        return {"ok": false, "message": "Unknown building type"}
+        return {"ok": false, "message": "未知建筑类型"}
 
     if not BUILDING_COSTS.has(building_type):
-        return {"ok": false, "message": "Construction cost is not configured"}
+        return {"ok": false, "message": "未配置建造成本"}
 
     var cost: int = BUILDING_COSTS[building_type]
     if construction_points < cost:
-        return {"ok": false, "message": "Insufficient construction points"}
+        return {"ok": false, "message": "建造点不足"}
 
+    var placement_rect := FactoryGeometry.card_rect(position)
     for existing_building in buildings.values():
-        if existing_building.get("position", Vector2.ZERO) == position:
-            return {"ok": false, "message": "Building position is already occupied"}
+        var existing_rect := FactoryGeometry.card_rect(existing_building.get("position", Vector2.ZERO))
+        if placement_rect.intersects(existing_rect, false):
+            return {"ok": false, "message": "建筑卡片重叠"}
 
     var building_data := {
         "type": building_type,
@@ -108,7 +112,7 @@ func try_place_building(building_type: String, position: Vector2) -> Dictionary:
 
     construction_points -= cost
     var building_id := add_building(building_data)
-    return {"ok": true, "message": "Building placed", "id": building_id}
+    return {"ok": true, "message": "建筑已放置", "id": building_id}
 
 func remove_building(building_id: String):
     if buildings.has(building_id):
@@ -126,24 +130,25 @@ func remove_building(building_id: String):
 func add_connection(connection_data: Dictionary) -> String:
     var id = generate_id("conn")
     connection_data["id"] = id
-    connection_data["active"] = bool(connection_data.get("active", true))
+    connection_data["enabled"] = bool(connection_data.get("enabled", true))
+    connection_data["active"] = bool(connection_data.get("active", false))
     connections[id] = connection_data
     EventBus.connection_created.emit(id, connection_data.source_id, connection_data.target_id)
     return id
 
 func try_add_connection(source_id: String, target_id: String) -> Dictionary:
     if not buildings.has(source_id) or not buildings.has(target_id):
-        return {"ok": false, "message": "Connection buildings must exist"}
+        return {"ok": false, "message": "连接建筑不存在"}
     if source_id == target_id:
-        return {"ok": false, "message": "Cannot connect a building to itself"}
+        return {"ok": false, "message": "不能连接建筑自身"}
 
     for connection in connections.values():
         if connection.get("source_id", "") == source_id and connection.get("target_id", "") == target_id:
-            return {"ok": false, "message": "Connection already exists"}
+            return {"ok": false, "message": "连接已存在"}
 
     var output_item := get_building_output_item(source_id)
     if output_item.is_empty():
-        return {"ok": false, "message": "Source building has no output item"}
+        return {"ok": false, "message": "源建筑没有输出物品"}
 
     var target_building: Dictionary = buildings[target_id]
     var existing_recipe_id: String = target_building.get("recipe_id", "")
@@ -155,12 +160,12 @@ func try_add_connection(source_id: String, target_id: String) -> Dictionary:
                 existing_recipe_accepts_output = true
                 break
         if not existing_recipe_accepts_output:
-            return {"ok": false, "message": "Target recipe cannot accept the source output"}
+            return {"ok": false, "message": "目标配方无法接收源建筑输出"}
     else:
         var target_type: String = target_building.get("type", "")
         var compatible_recipes := get_compatible_recipes(target_type, output_item)
         if compatible_recipes.is_empty():
-            return {"ok": false, "message": "Target building cannot accept the source output"}
+            return {"ok": false, "message": "目标建筑无法接收源建筑输出"}
 
         var selected_recipe: Dictionary = compatible_recipes[0]
         set_entity_recipe(target_id, selected_recipe.get("id", ""))
@@ -171,7 +176,7 @@ func try_add_connection(source_id: String, target_id: String) -> Dictionary:
         "type": "conveyor_belt_mk1",
         "item_id": output_item,
     })
-    return {"ok": true, "message": "Connection added", "id": connection_id}
+    return {"ok": true, "message": "连接已创建", "id": connection_id}
 
 func get_compatible_recipes(building_type: String, input_item_id: String = "") -> Array:
     var compatible_recipes: Array = []

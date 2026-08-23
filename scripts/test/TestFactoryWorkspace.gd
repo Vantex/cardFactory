@@ -9,11 +9,14 @@ func _ready() -> void:
 	print("FACTORY WORKSPACE TESTS STARTED")
 	_test_explicit_building_costs()
 	_test_existing_recipe_connection_rules()
+	_test_rectangle_overlap_contract()
 	_test_connection_activity_contract()
 	_test_renderer_geometry_contract()
 	await _test_workspace_chrome_contract()
+	await _test_workspace_live_content_and_actions()
+	await _test_selection_and_placement_mode_alignment()
 	await _test_main_scene_integration_contract()
-	_test_canvas_input_contract()
+	await _test_canvas_input_contract()
 	_test_real_production_loop()
 
 	var state := GameState.new()
@@ -80,13 +83,129 @@ func _test_workspace_chrome_contract() -> void:
 	await get_tree().process_frame
 	for path in ["TopBar", "ResourceRail", "InspectorPanel", "ConstructionDock", "Toast"]:
 		_expect(workspace.get_node_or_null(path) != null, "workspace exposes %s" % path)
+	for path in ["TopBar/PauseButton", "TopBar/SpeedButtons/Speed1", "TopBar/SpeedButtons/Speed2", "TopBar/SpeedButtons/Speed3", "ResourceRail/Objective", "ResourceRail/Stock", "ResourceRail/Production", "ResourceRail/Tips", "InspectorPanel/Details", "InspectorPanel/InputBuffers", "InspectorPanel/OutputBuffers", "InspectorPanel/StartConnectionButton", "InspectorPanel/DeleteButton", "ConstructionDock/Mode"]:
+		_expect(workspace.get_node_or_null(path) != null, "workspace exposes live control %s" % path)
 	workspace.call("_on_building_pressed", "miner")
-	_expect(workspace.call("get_selected_building_type") == "miner", "dock enters placement mode")
+	_expect(workspace.call("get_selected_building_type") == "" and workspace.call("get_placement_building_type") == "miner", "dock enters placement mode without conflating selection")
 	_expect(placements == ["miner"], "dock emits a placement request for miner")
+	var miner_button := workspace.get_node_or_null("ConstructionDock/BuildingButtons/MinerButton") as Button
+	_expect(miner_button != null and "Q" in miner_button.text and "1" in miner_button.text, "dock shows the miner shortcut and cost")
+	_expect(miner_button != null and not miner_button.tooltip_text.is_empty(), "dock exposes each building purpose")
+	var mode_label := workspace.get_node_or_null("ConstructionDock/Mode") as Label
+	_expect(mode_label != null and "矿机" in mode_label.text, "dock displays the current placement mode")
 
 	if EventBus.has_signal("placement_requested") and EventBus.is_connected("placement_requested", listener):
 		EventBus.disconnect("placement_requested", listener)
 	workspace.queue_free()
+	await get_tree().process_frame
+
+func _test_workspace_live_content_and_actions() -> void:
+	GameManager.game_state = GameState.new()
+	GameManager.simulation_engine = SimulationEngine.new(GameManager.game_state)
+	var main_scene := load("res://scenes/main/Main.tscn") as PackedScene
+	var test_viewport := SubViewport.new()
+	test_viewport.size = Vector2i(1152, 648)
+	add_child(test_viewport)
+	var main := main_scene.instantiate()
+	test_viewport.add_child(main)
+	await get_tree().process_frame
+
+	var state := GameManager.get_game_state()
+	var workspace := main.get_node("FactoryWorkspaceUI") as CanvasLayer
+	var input_handler := main.get_node("InputHandler")
+	var miner: Dictionary = state.try_place_building("miner", Vector2(260, 100))
+	var smelter: Dictionary = state.try_place_building("smelter", Vector2(600, 100))
+	state.get_building(miner.id)["output_buffer"] = {"iron_ore": 4.0}
+	state.get_building(smelter.id)["input_buffer"] = {"iron_ore": 2.0}
+	state.get_building(miner.id)["status"] = "running"
+	state.elapsed_time = 65.0
+	EventBus.simulation_updated.emit()
+	await get_tree().process_frame
+
+	var metrics := workspace.get_node_or_null("TopBar/Status") as Label
+	_expect(metrics != null and "RUN" in metrics.text and "1x" in metrics.text and "GEN 0" in metrics.text and "USE 60" in metrics.text and "BAL -60" in metrics.text and "POINTS 09" in metrics.text and "BUILDINGS 02" in metrics.text and "LINKS 00" in metrics.text and "01:05" in metrics.text, "top bar displays live simulation, power, count, point, and time state")
+	var pause_button := workspace.get_node_or_null("TopBar/PauseButton") as Button
+	if pause_button != null:
+		pause_button.emit_signal("pressed")
+	_expect(pause_button != null and state.paused and "继续" in pause_button.text, "pause button changes simulation state and visible control state")
+	var speed_three := workspace.get_node_or_null("TopBar/SpeedButtons/Speed3") as Button
+	if speed_three != null:
+		speed_three.emit_signal("pressed")
+	_expect(speed_three != null and is_equal_approx(state.speed, 3.0) and speed_three.button_pressed, "speed buttons change simulation speed and visible control state")
+
+	var objective := workspace.get_node_or_null("ResourceRail/Objective") as Label
+	var stock := workspace.get_node_or_null("ResourceRail/Stock") as Label
+	var production := workspace.get_node_or_null("ResourceRail/Production") as Label
+	var tips := workspace.get_node_or_null("ResourceRail/Tips") as Label
+	_expect(objective != null and "连接" in objective.text, "resource rail displays the current beginner objective")
+	_expect(stock != null and "iron_ore" in stock.text and "6" in stock.text, "resource rail aggregates nonzero buffers")
+	_expect(production != null and "运行 1" in production.text, "resource rail displays a production overview")
+	_expect(tips != null and "操作提示" in tips.text and "Q/W/E/R" in tips.text, "resource rail displays concise controls")
+
+	workspace.set_selected_building(smelter.id)
+	await get_tree().process_frame
+	var inspector_title := workspace.get_node("InspectorPanel/Title") as Label
+	var details := workspace.get_node_or_null("InspectorPanel/Details") as Label
+	var input_buffers := workspace.get_node_or_null("InspectorPanel/InputBuffers") as Label
+	var output_buffers := workspace.get_node_or_null("InspectorPanel/OutputBuffers") as Label
+	_expect(inspector_title.text == "熔炉" and details != null and "smelter" in details.text and "idle" in details.text and "0%" in details.text and "50" in details.text, "inspector displays selected identity, type, status, progress, and power")
+	_expect(input_buffers != null and "iron_ore" in input_buffers.text and "2" in input_buffers.text and output_buffers != null, "inspector displays input and output buffers")
+	var recipe_list := workspace.get_node("InspectorPanel/RecipeList") as VBoxContainer
+	_expect(recipe_list.get_child_count() > 0, "smelter inspector exposes real recipe controls")
+	if recipe_list.get_child_count() > 0:
+		var first_recipe_control := recipe_list.get_child(0)
+		workspace.refresh_now()
+		_expect(recipe_list.get_child_count() > 0 and recipe_list.get_child(0) == first_recipe_control, "unchanged refresh does not rebuild recipe controls")
+	else:
+		_expect(false, "unchanged refresh does not rebuild recipe controls")
+	workspace.set_selected_building("")
+	await get_tree().process_frame
+	_expect(recipe_list.get_child_count() == 0, "smelter recipe controls are cleaned one frame after selection is cancelled")
+	workspace.set_selected_building(smelter.id)
+	await get_tree().process_frame
+
+	var toast := workspace.get_node("Toast") as Control
+	var toast_message := workspace.get_node("Toast/Message") as Label
+	input_handler.call("start_placing_card", "miner")
+	input_handler.call("_unhandled_input", _mouse_button_event(MOUSE_BUTTON_LEFT, true, Vector2(260, 100)))
+	_expect(toast.visible and toast_message.text == "建筑卡片重叠", "overlap failure reason is visible in Chinese")
+	input_handler.call("start_connection", miner.id)
+	_expect(input_handler.call("complete_connection", smelter.id), "notice fixture creates its first connection")
+	input_handler.call("start_connection", miner.id)
+	_expect(not input_handler.call("complete_connection", smelter.id) and toast_message.text == "连接已存在", "duplicate connection failure reason is visible in Chinese")
+	input_handler.call("start_connection", miner.id)
+	_expect(not input_handler.call("complete_connection", miner.id) and toast_message.text == "不能连接建筑自身", "self-connection failure reason is visible in Chinese")
+	input_handler.call("start_connection", smelter.id)
+	_expect(not input_handler.call("complete_connection", miner.id) and toast_message.text == "目标建筑无法接收源建筑输出", "incompatible connection failure reason is visible in Chinese")
+
+	var start_button := workspace.get_node_or_null("InspectorPanel/StartConnectionButton") as Button
+	if start_button != null:
+		start_button.emit_signal("pressed")
+	_expect(start_button != null and input_handler.call("get_mode_name") == "connecting" and input_handler.get("connecting_source_id") == smelter.id, "inspector start-connection action reaches the canvas input handler")
+	input_handler.call("cancel_operation")
+	var delete_button := workspace.get_node_or_null("InspectorPanel/DeleteButton") as Button
+	if delete_button != null:
+		delete_button.emit_signal("pressed")
+	await get_tree().process_frame
+	_expect(delete_button != null and not state.buildings.has(smelter.id) and inspector_title.text == "工厂概览", "inspector delete action removes the selected building and returns to overview")
+
+	_expect(recipe_list.get_child_count() == 0, "deleted selection leaves no stale recipe controls")
+
+	state.construction_points = 0
+	input_handler.call("start_placing_card", "smelter")
+	input_handler.call("_unhandled_input", _mouse_button_event(MOUSE_BUTTON_LEFT, true, Vector2(500, 300)))
+	_expect(toast.visible and toast_message.text == "建造点不足" and toast_message.get_theme_color("font_color") == Color("df7666"), "failed real placement displays the Chinese command message with error tone")
+	_expect(not workspace.is_pointer_over_ui(toast.get_global_rect().get_center()), "visible toast does not block the world canvas")
+	var hide_timer := workspace.get_node_or_null("Toast/HideTimer") as Timer
+	_expect(hide_timer != null, "toast owns an auto-hide timer")
+	if hide_timer != null:
+		hide_timer.wait_time = 0.05
+		hide_timer.start()
+		await get_tree().create_timer(0.1).timeout
+		_expect(not toast.visible, "toast automatically hides after its timer elapses")
+
+	test_viewport.queue_free()
+	await get_tree().process_frame
 
 func _test_main_scene_integration_contract() -> void:
 	GameManager.game_state = GameState.new()
@@ -152,7 +271,7 @@ func _test_main_scene_integration_contract() -> void:
 		_expect(inspector_title.text == "矿机", "real card click synchronizes the workspace inspector")
 		input_handler.call("_unhandled_input", _mouse_button_event(MOUSE_BUTTON_LEFT, true, blank_screen_position))
 		await get_tree().process_frame
-		_expect(input_handler.get("selected_building_id") == "" and workspace.call("get_selected_building_type") == "" and inspector_title.text == "INSPECTOR", "real blank canvas click clears input and workspace inspector selection")
+		_expect(input_handler.get("selected_building_id") == "" and workspace.call("get_selected_building_type") == "" and inspector_title.text == "工厂概览", "real blank canvas click clears input and workspace inspector selection")
 
 		GameManager.get_game_state().remove_building(placed_id)
 		_expect(input_handler.get("selected_building_id") == "" and workspace.call("get_selected_building_type") == "", "removing the selected card clears input and inspector selection")
@@ -167,6 +286,40 @@ func _test_main_scene_integration_contract() -> void:
 		input_handler.call("_handle_key_press", speed_event)
 		_expect(GameManager.get_game_state().paused and is_equal_approx(GameManager.get_game_state().speed, 3.0), "workspace input controls write pause and speed to game state")
 
+	test_viewport.queue_free()
+	await get_tree().process_frame
+
+func _test_selection_and_placement_mode_alignment() -> void:
+	GameManager.game_state = GameState.new()
+	GameManager.simulation_engine = SimulationEngine.new(GameManager.game_state)
+	var main_scene := load("res://scenes/main/Main.tscn") as PackedScene
+	var test_viewport := SubViewport.new()
+	test_viewport.size = Vector2i(1152, 648)
+	add_child(test_viewport)
+	var main := main_scene.instantiate()
+	test_viewport.add_child(main)
+	await get_tree().process_frame
+	var state := GameManager.get_game_state()
+	var input_handler := main.get_node("InputHandler")
+	var workspace := main.get_node("FactoryWorkspaceUI") as CanvasLayer
+	var miner: Dictionary = state.try_place_building("miner", Vector2(260, 100))
+	EventBus.card_selected.emit(miner.id)
+	workspace.call("_on_building_pressed", "smelter")
+	await get_tree().process_frame
+	_expect(input_handler.call("get_mode_name") == "placing" and input_handler.get("selected_building_id") == "" and workspace.call("get_selected_building_type") == "", "entering placement mode clears the old selection across input and inspector")
+	_expect(workspace.has_method("get_placement_building_type") and workspace.call("get_placement_building_type") == "smelter", "construction dock tracks placement mode separately from selection")
+	var delete_event := InputEventKey.new()
+	delete_event.keycode = KEY_DELETE
+	delete_event.pressed = true
+	input_handler.call("_handle_key_press", delete_event)
+	_expect(state.buildings.has(miner.id), "Delete in placement mode cannot remove the previously selected building")
+	var escape_event := InputEventKey.new()
+	escape_event.keycode = KEY_ESCAPE
+	escape_event.pressed = true
+	input_handler.call("_handle_key_press", escape_event)
+	await get_tree().process_frame
+	var mode_label := workspace.get_node("ConstructionDock/Mode") as Label
+	_expect(input_handler.call("get_mode_name") == "idle" and (not workspace.has_method("get_placement_building_type") or workspace.call("get_placement_building_type") == "") and "选择建筑" in mode_label.text, "Escape clears the real placement mode and its visible dock state")
 	test_viewport.queue_free()
 	await get_tree().process_frame
 
@@ -221,6 +374,26 @@ func _test_existing_recipe_connection_rules() -> void:
 	var incompatible_connection: Dictionary = incompatible_state.try_add_connection(incompatible_miner.id, incompatible_smelter.id)
 	_expect(not incompatible_connection.ok and incompatible_state.connections.is_empty() and incompatible_state.get_building(incompatible_smelter.id).recipe_id == "copper_ingot_recipe" and incompatible_state.get_building(incompatible_smelter.id).progress == 0.5, "incompatible existing recipes reject connections without state changes")
 
+func _test_rectangle_overlap_contract() -> void:
+	var partial_state := GameState.new()
+	_expect(partial_state.try_place_building("miner", Vector2(100, 100)).ok, "overlap fixture places its first card")
+	_expect(not partial_state.try_place_building("miner", Vector2(300, 180)).ok, "partial 232 by 144 card overlap is rejected")
+
+	var containment_state := GameState.new()
+	_expect(containment_state.try_place_building("miner", Vector2(100, 100)).ok, "containment fixture places its first card")
+	_expect(not containment_state.try_place_building("miner", Vector2(120, 120)).ok, "contained card rectangle is rejected")
+
+	var adjacent_state := GameState.new()
+	_expect(adjacent_state.try_place_building("miner", Vector2(100, 100)).ok, "adjacency fixture places its first card")
+	_expect(adjacent_state.try_place_building("miner", Vector2(332, 100)).ok, "cards sharing an exact edge are legal")
+
+	var zoom_independent_state := GameState.new()
+	_expect(zoom_independent_state.try_place_building("miner", Vector2(100, 100)).ok, "zoom fixture places its first world-space card")
+	var camera_zoom := Vector2(0.45, 0.45)
+	var second_world_position := Vector2(300, 180)
+	var displayed_position := second_world_position * camera_zoom
+	_expect(displayed_position == Vector2(135, 81) and not zoom_independent_state.try_place_building("miner", second_world_position).ok, "overlap validation uses world positions independently of camera zoom")
+
 func _test_connection_activity_contract() -> void:
 	var state := GameState.new()
 	GameManager.game_state = state
@@ -228,13 +401,14 @@ func _test_connection_activity_contract() -> void:
 	var target: Dictionary = state.try_place_building("smelter", Vector2(420, 100))
 	var normal_result: Dictionary = state.try_add_connection(source.id, target.id)
 	var normal_connection: Dictionary = state.connections[normal_result.id]
-	_expect(normal_result.ok and normal_connection.get("active", false), "normally created connections are explicitly active")
+	_expect(normal_result.ok and normal_connection.get("enabled", false) and not normal_connection.get("active", true), "new connections are enabled but idle before transfer")
 
 	var disabled_id := state.add_connection({
 		"source_id": source.id,
 		"target_id": target.id,
 		"item_id": "iron_ore",
-		"active": false,
+		"enabled": false,
+		"active": true,
 	})
 	var defaulted_id := state.add_connection({
 		"source_id": source.id,
@@ -243,15 +417,38 @@ func _test_connection_activity_contract() -> void:
 	})
 	var disabled_connection: Dictionary = state.connections[disabled_id]
 	var defaulted_connection: Dictionary = state.connections[defaulted_id]
-	_expect(not disabled_connection.get("active", true), "explicitly inactive connections remain inactive")
-	_expect(defaulted_connection.get("active", false), "directly added connections are explicitly active")
+	_expect(not disabled_connection.get("enabled", true) and disabled_connection.get("active", false), "explicit connection permission and flow state are both preserved")
+	_expect(defaulted_connection.get("enabled", false) and not defaulted_connection.get("active", true), "directly added connections default to enabled and idle")
 
 	var connection_renderer := ConnectionRenderer.new()
-	_expect(connection_renderer.is_connection_active(normal_connection) and connection_renderer.is_connection_active(defaulted_connection) and not connection_renderer.is_connection_active(disabled_connection), "renderer follows normalized connection activity")
+	_expect(not connection_renderer.is_connection_active(normal_connection) and not connection_renderer.is_connection_active(defaulted_connection) and connection_renderer.is_connection_active(disabled_connection), "renderer follows current-frame activity instead of permission")
 	connection_renderer.queue_free()
 
 	var statistics := StatisticsSystem.new(state)
-	_expect(is_equal_approx(statistics.get_logistics_efficiency(), 2.0 / 3.0), "statistics follows normalized connection activity")
+	_expect(is_equal_approx(statistics.get_logistics_efficiency(), 1.0 / 3.0), "statistics follows current-frame connection activity")
+
+	var disabled_state := GameState.new()
+	var disabled_source: Dictionary = disabled_state.try_place_building("miner", Vector2(100, 100))
+	var disabled_target: Dictionary = disabled_state.try_place_building("smelter", Vector2(420, 100))
+	var disabled_result: Dictionary = disabled_state.try_add_connection(disabled_source.id, disabled_target.id)
+	var disabled_flow: Dictionary = disabled_state.connections[disabled_result.id]
+	disabled_flow["enabled"] = false
+	disabled_state.get_building(disabled_source.id)["output_buffer"] = {"iron_ore": 5.0}
+	BeltSystem.new(disabled_state).update(1.0)
+	_expect(is_equal_approx(disabled_state.get_building(disabled_source.id).output_buffer.iron_ore, 5.0) and disabled_state.get_building(disabled_target.id).input_buffer.is_empty() and not disabled_flow.get("active", true), "disabled connections transport no cargo and report no current flow")
+
+	var idle_state := GameState.new()
+	var idle_source: Dictionary = idle_state.try_place_building("miner", Vector2(100, 100))
+	var idle_target: Dictionary = idle_state.try_place_building("smelter", Vector2(420, 100))
+	var idle_result: Dictionary = idle_state.try_add_connection(idle_source.id, idle_target.id)
+	var idle_flow: Dictionary = idle_state.connections[idle_result.id]
+	BeltSystem.new(idle_state).update(1.0)
+	_expect(idle_flow.get("enabled", false) and not idle_flow.get("active", true), "enabled connection remains idle when no cargo transfers")
+	idle_state.get_building(idle_source.id)["output_buffer"] = {"iron_ore": 2.0}
+	BeltSystem.new(idle_state).update(0.5)
+	_expect(idle_flow.get("active", false) and idle_flow.get("current_flow", 0.0) > 0.0 and idle_state.get_building(idle_target.id).input_buffer.get("iron_ore", 0.0) > 0.0, "connection becomes active only in a frame that transfers cargo")
+	var copied_state := idle_state.copy_state()
+	_expect(copied_state.connections[idle_result.id].get("enabled", false) and copied_state.connections[idle_result.id].get("active", false), "state copy preserves enabled and active connection fields")
 
 func _test_renderer_geometry_contract() -> void:
 	_expect(CardRenderer.CARD_SIZE == Vector2(232, 144), "card geometry is stable")
@@ -307,7 +504,7 @@ func _test_canvas_input_contract() -> void:
 	var connection_renderer := ConnectionRenderer.new()
 	_expect(connection_renderer.has_method("is_connection_active"), "connection renderer exposes activity semantics")
 	if connection_renderer.has_method("is_connection_active"):
-		_expect(connection_renderer.call("is_connection_active", GameManager.get_game_state().connections.values()[0]), "normally created connections animate by default")
+		_expect(not connection_renderer.call("is_connection_active", GameManager.get_game_state().connections.values()[0]), "new connections remain visually idle until cargo transfers")
 	connection_renderer.queue_free()
 
 	var main_scene := load("res://scenes/main/Main.tscn") as PackedScene
@@ -338,12 +535,65 @@ func _test_canvas_input_contract() -> void:
 	input_handler.call("_unhandled_input", _mouse_button_event(MOUSE_BUTTON_LEFT, false, Vector2(40, 80)))
 	_expect(input_handler.call("get_mode_name") == "idle", "dragging release over UI finishes the active operation")
 	input_handler.queue_free()
+	await get_tree().process_frame
+
+	GameManager.game_state = GameState.new()
+	GameManager.simulation_engine = SimulationEngine.new(GameManager.game_state)
+	var gesture_handler: Node = input_script.new()
+	add_child(gesture_handler)
+	var gesture_ui_state := {"pointer_over_ui": false}
+	gesture_handler.call("set_ui_hit_test", func(_position: Vector2) -> bool: return gesture_ui_state.pointer_over_ui)
+	var gesture_notices: Array[Dictionary] = []
+	var notice_listener: Callable = func(message: String, tone: String) -> void:
+		gesture_notices.append({"message": message, "tone": tone})
+	EventBus.notice_requested.connect(notice_listener)
+	var gesture_source: Dictionary = GameManager.get_game_state().try_place_building("miner", Vector2(260, 100))
+	var gesture_target: Dictionary = GameManager.get_game_state().try_place_building("smelter", Vector2(600, 100))
+	gesture_handler.call("_unhandled_input", _mouse_button_event(MOUSE_BUTTON_LEFT, true, Vector2(492, 172)))
+	gesture_handler.call("_unhandled_input", _mouse_motion_event(Vector2(540, 172), Vector2(48, 0), MOUSE_BUTTON_MASK_LEFT))
+	gesture_handler.call("_unhandled_input", _mouse_button_event(MOUSE_BUTTON_LEFT, false, Vector2(600, 172)))
+	_expect(GameManager.get_game_state().connections.size() == 1 and gesture_handler.call("get_mode_name") == "idle", "output press, pointer motion, and input release creates exactly one connection")
+	gesture_handler.call("start_connection", gesture_source.id)
+	gesture_handler.call("_unhandled_input", _mouse_motion_event(Vector2(760, 300), Vector2(40, 30), MOUSE_BUTTON_MASK_LEFT))
+	gesture_handler.call("_unhandled_input", _mouse_button_event(MOUSE_BUTTON_LEFT, false, Vector2(760, 300)))
+	_expect(gesture_handler.call("get_mode_name") == "idle" and gesture_notices[-1] == {"message": "连接已取消：请在输入端口释放", "tone": "error"}, "blank connection release cancels and publishes its failure result")
+	gesture_handler.call("start_connection", gesture_source.id)
+	gesture_ui_state.pointer_over_ui = true
+	gesture_handler.call("_unhandled_input", _mouse_button_event(MOUSE_BUTTON_LEFT, false, Vector2(300, 80)))
+	_expect(gesture_handler.call("get_mode_name") == "idle" and gesture_notices[-1].message == "连接已取消：请在输入端口释放", "UI connection release cancels and publishes its failure result")
+	gesture_ui_state.pointer_over_ui = false
+	gesture_handler.call("cancel_operation")
+
+	var original_position: Vector2 = GameManager.get_game_state().get_building(gesture_source.id).position
+	gesture_handler.call("_unhandled_input", _mouse_button_event(MOUSE_BUTTON_LEFT, true, original_position + Vector2(20, 20)))
+	gesture_handler.call("_unhandled_input", _mouse_button_event(MOUSE_BUTTON_LEFT, false, original_position + Vector2(20, 20)))
+	gesture_handler.call("_unhandled_input", _mouse_button_event(MOUSE_BUTTON_LEFT, true, Vector2(800, 320)))
+	gesture_handler.call("_unhandled_input", _mouse_motion_event(Vector2(850, 360), Vector2(50, 40), MOUSE_BUTTON_MASK_LEFT))
+	gesture_handler.call("_unhandled_input", _mouse_button_event(MOUSE_BUTTON_LEFT, false, Vector2(850, 360)))
+	_expect(GameManager.get_game_state().get_building(gesture_source.id).position == original_position, "click-release followed by a blank drag cannot move the previously selected card")
+	_expect(gesture_handler.get("dragging_building_id").is_empty(), "every release and blank press clears the current drag candidate")
+
+	gesture_handler.call("_unhandled_input", _mouse_button_event(MOUSE_BUTTON_LEFT, true, original_position + Vector2(20, 20)))
+	gesture_handler.call("_unhandled_input", _mouse_motion_event(original_position + Vector2(80, 70), Vector2(60, 50), MOUSE_BUTTON_MASK_LEFT))
+	gesture_handler.call("_unhandled_input", _mouse_button_event(MOUSE_BUTTON_LEFT, false, original_position + Vector2(80, 70)))
+	_expect(GameManager.get_game_state().get_building(gesture_source.id).position == original_position + Vector2(60, 50), "motion from the same card press still drags the card")
+	if EventBus.notice_requested.is_connected(notice_listener):
+		EventBus.notice_requested.disconnect(notice_listener)
+	gesture_handler.queue_free()
+	await get_tree().process_frame
 
 func _mouse_button_event(button_index: MouseButton, pressed: bool, position: Vector2) -> InputEventMouseButton:
 	var event := InputEventMouseButton.new()
 	event.button_index = button_index
 	event.pressed = pressed
 	event.position = position
+	return event
+
+func _mouse_motion_event(position: Vector2, relative: Vector2, button_mask: MouseButtonMask) -> InputEventMouseMotion:
+	var event := InputEventMouseMotion.new()
+	event.position = position
+	event.relative = relative
+	event.button_mask = button_mask
 	return event
 
 func _expect(condition: bool, description: String) -> void:

@@ -26,6 +26,7 @@ var placing_building_type := ""
 var connecting_source_id := ""
 var selected_building_id := ""
 var dragging_building_id := ""
+var press_candidate_building_id := ""
 var drag_start_screen_position := Vector2.ZERO
 var drag_offset := Vector2.ZERO
 var pan_last_screen_position := Vector2.ZERO
@@ -50,7 +51,9 @@ func get_mode_name() -> String:
 func start_placing_card(building_type: String) -> void:
 	placing_building_type = building_type
 	connecting_source_id = ""
+	selected_building_id = ""
 	dragging_building_id = ""
+	press_candidate_building_id = ""
 	current_mode = Mode.PLACING
 	queue_redraw()
 
@@ -60,6 +63,7 @@ func start_connection(source_id: String) -> void:
 	placing_building_type = ""
 	connecting_source_id = source_id
 	dragging_building_id = ""
+	press_candidate_building_id = ""
 	current_mode = Mode.CONNECTING
 	queue_redraw()
 
@@ -67,6 +71,7 @@ func complete_connection(target_id: String) -> bool:
 	if current_mode != Mode.CONNECTING or connecting_source_id.is_empty():
 		return false
 	var result: Dictionary = GameManager.get_game_state().try_add_connection(connecting_source_id, target_id)
+	_publish_command_result(result)
 	cancel_operation()
 	return result.get("ok", false)
 
@@ -75,6 +80,7 @@ func cancel_operation() -> void:
 	placing_building_type = ""
 	connecting_source_id = ""
 	dragging_building_id = ""
+	press_candidate_building_id = ""
 	drag_start_screen_position = Vector2.ZERO
 	drag_offset = Vector2.ZERO
 	queue_redraw()
@@ -104,12 +110,16 @@ func _handle_key_press(event: InputEventKey) -> void:
 			_delete_selected()
 		KEY_SPACE:
 			GameManager.get_game_state().paused = not GameManager.get_game_state().paused
+			EventBus.simulation_updated.emit()
 		KEY_1:
 			GameManager.get_game_state().speed = 1.0
+			EventBus.simulation_updated.emit()
 		KEY_2:
 			GameManager.get_game_state().speed = 2.0
+			EventBus.simulation_updated.emit()
 		KEY_3:
 			GameManager.get_game_state().speed = 3.0
+			EventBus.simulation_updated.emit()
 		KEY_Q:
 			start_placing_card("miner")
 		KEY_W:
@@ -136,31 +146,30 @@ func _handle_mouse_button(event: InputEventMouseButton, screen_position: Vector2
 	if event.pressed:
 		if _is_inside_world_canvas(screen_position):
 			_handle_left_press(screen_position)
-	elif current_mode == Mode.DRAGGING:
-		_finish_drag()
+	else:
+		_handle_left_release(screen_position)
 
-func _handle_mouse_motion(_event: InputEventMouseMotion, screen_position: Vector2) -> void:
+func _handle_mouse_motion(event: InputEventMouseMotion, screen_position: Vector2) -> void:
 	if current_mode == Mode.PANNING:
 		_pan_camera(screen_position)
 		return
-	if not _is_inside_world_canvas(screen_position) or not Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+	if not _is_inside_world_canvas(screen_position) or not _is_left_button_held(event):
 		return
-	if current_mode == Mode.IDLE and not dragging_building_id.is_empty() and screen_position.distance_to(drag_start_screen_position) >= DRAG_THRESHOLD:
+	if current_mode == Mode.IDLE and not press_candidate_building_id.is_empty() and screen_position.distance_to(drag_start_screen_position) >= DRAG_THRESHOLD:
+		dragging_building_id = press_candidate_building_id
+		press_candidate_building_id = ""
 		current_mode = Mode.DRAGGING
 	if current_mode == Mode.DRAGGING:
 		_update_drag(_screen_to_world(screen_position))
 
 func _handle_left_press(screen_position: Vector2) -> void:
+	press_candidate_building_id = ""
 	var world_position := _screen_to_world(screen_position)
 	match current_mode:
 		Mode.PLACING:
 			_place_card(world_position)
 		Mode.CONNECTING:
-			var target_id := _get_input_port_at_position(world_position)
-			if not target_id.is_empty():
-				complete_connection(target_id)
-			else:
-				cancel_operation()
+			pass
 		Mode.IDLE:
 			var source_id := _get_output_port_at_position(world_position)
 			if not source_id.is_empty():
@@ -169,9 +178,10 @@ func _handle_left_press(screen_position: Vector2) -> void:
 			var building := _get_building_at_position(world_position)
 			if building.is_empty():
 				selected_building_id = ""
+				EventBus.card_selected.emit("")
 				return
 			selected_building_id = building.get("id", "")
-			dragging_building_id = selected_building_id
+			press_candidate_building_id = selected_building_id
 			drag_start_screen_position = screen_position
 			drag_offset = world_position - building.get("position", Vector2.ZERO)
 			EventBus.card_selected.emit(selected_building_id)
@@ -180,6 +190,7 @@ func _place_card(world_position: Vector2) -> void:
 	var result: Dictionary = GameManager.get_game_state().try_place_building(placing_building_type, world_position)
 	if result.get("ok", false):
 		selected_building_id = result.get("id", "")
+	_publish_command_result(result)
 	cancel_operation()
 
 func _update_drag(world_position: Vector2) -> void:
@@ -191,7 +202,34 @@ func _update_drag(world_position: Vector2) -> void:
 func _finish_drag() -> void:
 	current_mode = Mode.IDLE
 	dragging_building_id = ""
+	press_candidate_building_id = ""
 	queue_redraw()
+
+func _handle_left_release(screen_position: Vector2) -> void:
+	press_candidate_building_id = ""
+	if current_mode == Mode.CONNECTING:
+		if _is_pointer_over_ui(screen_position) or not _is_inside_world_canvas(screen_position):
+			_publish_command_result({"ok": false, "message": "连接已取消：请在输入端口释放"})
+			cancel_operation()
+			return
+		var target_id := _get_input_port_at_position(_screen_to_world(screen_position))
+		if target_id.is_empty():
+			_publish_command_result({"ok": false, "message": "连接已取消：请在输入端口释放"})
+			cancel_operation()
+			return
+		complete_connection(target_id)
+		return
+	if current_mode == Mode.DRAGGING:
+		_finish_drag()
+
+func _is_left_button_held(event: InputEventMouseMotion) -> bool:
+	return event.button_mask & MOUSE_BUTTON_MASK_LEFT != 0 or Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT)
+
+func _publish_command_result(result: Dictionary) -> void:
+	var message: String = result.get("message", "")
+	if message.is_empty():
+		return
+	EventBus.notice_requested.emit(message, "success" if result.get("ok", false) else "error")
 
 func _delete_selected() -> void:
 	if selected_building_id.is_empty():
