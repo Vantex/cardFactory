@@ -3,6 +3,15 @@ extends Node
 const CardRenderer = preload("res://scripts/rendering/CardRenderer.gd")
 const ConnectionRenderer = preload("res://scripts/rendering/ConnectionRenderer.gd")
 
+class UnhandledReleaseObserver:
+	extends Node
+
+	var release_count := 0
+
+	func _unhandled_input(event: InputEvent) -> void:
+		if event is InputEventMouseButton and not event.pressed:
+			release_count += 1
+
 var _failures := 0
 
 func _ready() -> void:
@@ -85,6 +94,22 @@ func _test_workspace_chrome_contract() -> void:
 		_expect(workspace.get_node_or_null(path) != null, "workspace exposes %s" % path)
 	for path in ["TopBar/PauseButton", "TopBar/SpeedButtons/Speed1", "TopBar/SpeedButtons/Speed2", "TopBar/SpeedButtons/Speed3", "ResourceRail/Objective", "ResourceRail/Stock", "ResourceRail/Production", "ResourceRail/Tips", "InspectorPanel/Details", "InspectorPanel/InputBuffers", "InspectorPanel/OutputBuffers", "InspectorPanel/StartConnectionButton", "InspectorPanel/DeleteButton", "ConstructionDock/Mode"]:
 		_expect(workspace.get_node_or_null(path) != null, "workspace exposes live control %s" % path)
+	var brand := workspace.get_node("TopBar/Brand") as Label
+	var pause_button := workspace.get_node("TopBar/PauseButton") as Button
+	var summary := workspace.get_node("ResourceRail/Summary") as Label
+	var objective := workspace.get_node("ResourceRail/Objective") as Label
+	var inspector_title := workspace.get_node("InspectorPanel/Title") as Label
+	var inspector_details := workspace.get_node("InspectorPanel/Details") as Label
+	var dock_points := workspace.get_node("ConstructionDock/Points") as Label
+	var dock_buttons := workspace.get_node("ConstructionDock/BuildingButtons") as HBoxContainer
+	_expect(brand.position == Vector2(14, 15) and pause_button.get_rect() == Rect2(132, 9, 64, 34), "top-bar children keep their authored positions instead of filling the panel")
+	_expect(summary.position == Vector2(16, 14) and objective.position == Vector2(16, 76) and not summary.get_rect().intersects(objective.get_rect()), "resource-rail sections keep distinct non-overlapping rectangles")
+	_expect(inspector_title.get_rect() == Rect2(18, 14, 250, 28) and inspector_details.get_rect() == Rect2(18, 46, 250, 76) and not inspector_title.get_rect().intersects(inspector_details.get_rect()), "inspector sections keep distinct non-overlapping rectangles")
+	_expect(dock_points.position == Vector2(14, 12) and dock_buttons.get_rect() == Rect2(126, 13, 510, 64), "construction-dock labels and buttons keep separate authored regions")
+	_expect(_controls_do_not_overlap(workspace.get_node("TopBar"), ["Brand", "PauseButton", "SpeedButtons", "Status"]), "all top-bar regions remain non-overlapping")
+	_expect(_controls_do_not_overlap(workspace.get_node("ResourceRail"), ["Summary", "Objective", "Stock", "Production", "Tips"]), "all resource-rail regions remain non-overlapping")
+	_expect(_controls_do_not_overlap(workspace.get_node("InspectorPanel"), ["Title", "Details", "InputBuffers", "OutputBuffers", "RecipeHeading", "RecipeList", "StartConnectionButton", "DeleteButton"]), "all inspector regions remain non-overlapping")
+	_expect(_controls_do_not_overlap(workspace.get_node("ConstructionDock"), ["Points", "Mode", "BuildingButtons"]), "all construction-dock regions remain non-overlapping")
 	workspace.call("_on_building_pressed", "miner")
 	_expect(workspace.call("get_selected_building_type") == "" and workspace.call("get_placement_building_type") == "miner", "dock enters placement mode without conflating selection")
 	_expect(placements == ["miner"], "dock emits a placement request for miner")
@@ -219,6 +244,8 @@ func _test_main_scene_integration_contract() -> void:
 	add_child(test_viewport)
 	var main := main_scene.instantiate()
 	test_viewport.add_child(main)
+	var release_observer := UnhandledReleaseObserver.new()
+	test_viewport.add_child(release_observer)
 	await get_tree().process_frame
 
 	var world_camera := main.get_node_or_null("WorldCamera") as Camera2D
@@ -273,6 +300,15 @@ func _test_main_scene_integration_contract() -> void:
 		await get_tree().process_frame
 		_expect(input_handler.get("selected_building_id") == "" and workspace.call("get_selected_building_type") == "" and inspector_title.text == "工厂概览", "real blank canvas click clears input and workspace inspector selection")
 
+		var state := GameManager.get_game_state()
+		var covered_target_position: Vector2 = input_handler.call("_screen_to_world", Vector2(1000, 228))
+		var covered_target: Dictionary = state.try_place_building("smelter", covered_target_position)
+		var existing_connection: Dictionary = state.try_add_connection(placed_id, covered_target.id)
+		_expect(covered_target.ok and existing_connection.ok and state.connections.size() == 1, "UI-release fixture creates one existing connection to a target covered by the inspector")
+		var release_notices: Array[Dictionary] = []
+		var release_notice_listener: Callable = func(message: String, tone: String) -> void:
+			release_notices.append({"message": message, "tone": tone})
+		EventBus.notice_requested.connect(release_notice_listener)
 		var output_screen_position: Vector2 = canvas_transform * (placed_card_world_position + Vector2(232, 72))
 		var inspector_panel := workspace.get_node("InspectorPanel") as Control
 		test_viewport.push_input(_mouse_button_event(MOUSE_BUTTON_LEFT, true, output_screen_position))
@@ -282,10 +318,30 @@ func _test_main_scene_integration_contract() -> void:
 		await get_tree().process_frame
 		var hovered_control := test_viewport.gui_get_hovered_control()
 		_expect(hovered_control != null and (hovered_control == inspector_panel or inspector_panel.is_ancestor_of(hovered_control)), "the dragged pointer reaches a real inspector control")
+		release_observer.release_count = 0
 		test_viewport.push_input(_mouse_button_event(MOUSE_BUTTON_LEFT, false, Vector2(1000, 300)))
 		await get_tree().process_frame
 		var toast_message := workspace.get_node("Toast/Message") as Label
-		_expect(input_handler.call("get_mode_name") == "idle" and toast_message.text == "连接已取消：请在输入端口释放", "a connection release over the inspector still clears the active operation")
+		var cancellation_count := 0
+		var duplicate_count := 0
+		for notice in release_notices:
+			if notice.message == "连接已取消：请在输入端口释放":
+				cancellation_count += 1
+			elif notice.message == "连接已存在":
+				duplicate_count += 1
+		_expect(release_observer.release_count == 0, "an early-handled connection release never leaks into the unhandled-input phase")
+		_expect(input_handler.call("get_mode_name") == "idle" and state.connections.size() == 1 and cancellation_count == 1 and duplicate_count == 0 and toast_message.text == "连接已取消：请在输入端口释放", "a release over the inspector cancels exactly once instead of retrying the covered existing connection")
+		var pause_button_position := Vector2(164, 26)
+		test_viewport.push_input(_mouse_button_event(MOUSE_BUTTON_LEFT, true, pause_button_position))
+		test_viewport.push_input(_mouse_button_event(MOUSE_BUTTON_LEFT, false, pause_button_position))
+		await get_tree().process_frame
+		_expect(state.paused, "ordinary idle UI clicks remain available after adding the early-release guard")
+		test_viewport.push_input(_mouse_button_event(MOUSE_BUTTON_LEFT, true, pause_button_position))
+		test_viewport.push_input(_mouse_button_event(MOUSE_BUTTON_LEFT, false, pause_button_position))
+		await get_tree().process_frame
+		_expect(not state.paused, "a second ordinary UI click restores the prior pause state")
+		if EventBus.notice_requested.is_connected(release_notice_listener):
+			EventBus.notice_requested.disconnect(release_notice_listener)
 
 		GameManager.get_game_state().remove_building(placed_id)
 		_expect(input_handler.get("selected_building_id") == "" and workspace.call("get_selected_building_type") == "", "removing the selected card clears input and inspector selection")
@@ -584,6 +640,11 @@ func _test_canvas_input_contract() -> void:
 	_expect(gesture_handler.call("get_mode_name") == "idle" and gesture_notices[-1] == {"message": "连接已取消：请在输入端口释放", "tone": "error"}, "blank connection release cancels and publishes its failure result")
 	gesture_handler.call("start_connection", gesture_source.id)
 	gesture_ui_state.pointer_over_ui = true
+	var supports_early_release := gesture_handler.has_method("_input")
+	if supports_early_release:
+		gesture_handler.call("_input", _mouse_button_event(MOUSE_BUTTON_LEFT, false, Vector2(1000, 300)))
+	_expect(supports_early_release and gesture_handler.call("get_mode_name") == "idle" and gesture_notices[-1].message == "连接已取消：请在输入端口释放", "pending connection release is finalized before GUI can consume it")
+	gesture_handler.call("start_connection", gesture_source.id)
 	gesture_handler.call("_unhandled_input", _mouse_button_event(MOUSE_BUTTON_LEFT, false, Vector2(300, 80)))
 	_expect(gesture_handler.call("get_mode_name") == "idle" and gesture_notices[-1].message == "连接已取消：请在输入端口释放", "UI connection release cancels and publishes its failure result")
 	gesture_ui_state.pointer_over_ui = false
@@ -614,6 +675,19 @@ func _mouse_button_event(button_index: MouseButton, pressed: bool, position: Vec
 	event.position = position
 	event.global_position = position
 	return event
+
+func _controls_do_not_overlap(parent: Control, child_names: Array[String]) -> bool:
+	var controls: Array[Control] = []
+	for child_name in child_names:
+		var control := parent.get_node_or_null(child_name) as Control
+		if control == null or not control.visible:
+			return false
+		controls.append(control)
+	for left_index in range(controls.size()):
+		for right_index in range(left_index + 1, controls.size()):
+			if controls[left_index].get_rect().intersects(controls[right_index].get_rect(), false):
+				return false
+	return true
 
 func _mouse_motion_event(position: Vector2, relative: Vector2, button_mask: MouseButtonMask) -> InputEventMouseMotion:
 	var event := InputEventMouseMotion.new()

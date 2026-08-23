@@ -85,6 +85,12 @@ func cancel_operation() -> void:
 	drag_offset = Vector2.ZERO
 	queue_redraw()
 
+func _input(event: InputEvent) -> void:
+	if not (event is InputEventMouseButton) or event.pressed or not _has_pending_pointer_release(event.button_index):
+		return
+	_handle_mouse_button(event, _get_event_screen_position(event))
+	get_viewport().set_input_as_handled()
+
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
 		_handle_key_press(event)
@@ -101,6 +107,13 @@ func _unhandled_input(event: InputEvent) -> void:
 		_handle_mouse_button(event, screen_position)
 	elif event is InputEventMouseMotion:
 		_handle_mouse_motion(event, screen_position)
+
+func _has_pending_pointer_release(button_index: MouseButton) -> bool:
+	if button_index == MOUSE_BUTTON_LEFT:
+		return current_mode == Mode.CONNECTING or current_mode == Mode.DRAGGING or not press_candidate_building_id.is_empty()
+	if button_index == MOUSE_BUTTON_RIGHT or button_index == MOUSE_BUTTON_MIDDLE:
+		return current_mode == Mode.PANNING
+	return false
 
 func _handle_key_press(event: InputEventKey) -> void:
 	match event.keycode:

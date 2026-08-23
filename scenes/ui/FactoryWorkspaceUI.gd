@@ -424,8 +424,8 @@ func _format_buffer(buffer: Dictionary) -> String:
 			parts.append("%s %.1f" % [item_id, amount])
 	return "无" if parts.is_empty() else ", ".join(parts)
 
-func _create_panel(node_name: String, color: Color) -> PanelContainer:
-	var panel := PanelContainer.new()
+func _create_panel(node_name: String, color: Color) -> Panel:
+	var panel := Panel.new()
 	panel.name = node_name
 	panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	panel.add_theme_stylebox_override("panel", _panel_style(color))
