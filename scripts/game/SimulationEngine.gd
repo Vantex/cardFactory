@@ -64,5 +64,5 @@ func get_power_info() -> Dictionary:
 
 func get_statistics() -> Dictionary:
     if statistics_system:
-        return statistics_system.get_all_statistics()
+        return statistics_system.get_statistics_summary()
     return {}

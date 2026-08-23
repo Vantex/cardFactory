@@ -68,9 +68,15 @@ func _update_time():
 
 func _update_statistics():
     var stats = GameManager.get_simulation_engine().get_statistics()
-    if stats.has("item_totals"):
-        var totals = stats["item_totals"]
-        var stats_text = "生产: "
-        for item_id in totals:
-            stats_text += item_id + ":" + str(snapped(totals[item_id], 0.1)) + " "
-        stats_label.text = stats_text
+    var production: Dictionary = stats.get("production", {})
+    var total_buildings = int(stats.get("total_buildings", 0))
+    var total_connections = int(stats.get("total_connections", 0))
+    var stats_text = "建筑: %d | 连接: %d | 生产: " % [total_buildings, total_connections]
+
+    if production.is_empty():
+        stats_label.text = stats_text + "-"
+        return
+
+    for item_id in production:
+        stats_text += "%s:%s " % [item_id, snapped(production[item_id], 0.1)]
+    stats_label.text = stats_text
