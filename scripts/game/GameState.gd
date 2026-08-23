@@ -126,6 +126,7 @@ func remove_building(building_id: String):
 func add_connection(connection_data: Dictionary) -> String:
     var id = generate_id("conn")
     connection_data["id"] = id
+    connection_data["active"] = bool(connection_data.get("active", true))
     connections[id] = connection_data
     EventBus.connection_created.emit(id, connection_data.source_id, connection_data.target_id)
     return id

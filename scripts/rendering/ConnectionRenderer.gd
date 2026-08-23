@@ -10,7 +10,7 @@ func set_game_state(game_state: GameState) -> void:
 	queue_redraw()
 
 func is_connection_active(connection: Dictionary) -> bool:
-	return connection.get("active", true)
+	return connection.get("active", false)
 
 func _draw() -> void:
 	var game_state := _get_game_state()

@@ -9,6 +9,7 @@ func _ready() -> void:
 	print("FACTORY WORKSPACE TESTS STARTED")
 	_test_explicit_building_costs()
 	_test_existing_recipe_connection_rules()
+	_test_connection_activity_contract()
 	_test_renderer_geometry_contract()
 	await _test_workspace_chrome_contract()
 	_test_canvas_input_contract()
@@ -117,6 +118,38 @@ func _test_existing_recipe_connection_rules() -> void:
 	incompatible_state.get_building(incompatible_smelter.id)["progress"] = 0.5
 	var incompatible_connection: Dictionary = incompatible_state.try_add_connection(incompatible_miner.id, incompatible_smelter.id)
 	_expect(not incompatible_connection.ok and incompatible_state.connections.is_empty() and incompatible_state.get_building(incompatible_smelter.id).recipe_id == "copper_ingot_recipe" and incompatible_state.get_building(incompatible_smelter.id).progress == 0.5, "incompatible existing recipes reject connections without state changes")
+
+func _test_connection_activity_contract() -> void:
+	var state := GameState.new()
+	GameManager.game_state = state
+	var source: Dictionary = state.try_place_building("miner", Vector2(100, 100))
+	var target: Dictionary = state.try_place_building("smelter", Vector2(420, 100))
+	var normal_result: Dictionary = state.try_add_connection(source.id, target.id)
+	var normal_connection: Dictionary = state.connections[normal_result.id]
+	_expect(normal_result.ok and normal_connection.get("active", false), "normally created connections are explicitly active")
+
+	var disabled_id := state.add_connection({
+		"source_id": source.id,
+		"target_id": target.id,
+		"item_id": "iron_ore",
+		"active": false,
+	})
+	var defaulted_id := state.add_connection({
+		"source_id": source.id,
+		"target_id": target.id,
+		"item_id": "iron_ore",
+	})
+	var disabled_connection: Dictionary = state.connections[disabled_id]
+	var defaulted_connection: Dictionary = state.connections[defaulted_id]
+	_expect(not disabled_connection.get("active", true), "explicitly inactive connections remain inactive")
+	_expect(defaulted_connection.get("active", false), "directly added connections are explicitly active")
+
+	var connection_renderer := ConnectionRenderer.new()
+	_expect(connection_renderer.is_connection_active(normal_connection) and connection_renderer.is_connection_active(defaulted_connection) and not connection_renderer.is_connection_active(disabled_connection), "renderer follows normalized connection activity")
+	connection_renderer.queue_free()
+
+	var statistics := StatisticsSystem.new(state)
+	_expect(is_equal_approx(statistics.get_logistics_efficiency(), 2.0 / 3.0), "statistics follows normalized connection activity")
 
 func _test_renderer_geometry_contract() -> void:
 	_expect(CardRenderer.CARD_SIZE == Vector2(232, 144), "card geometry is stable")
