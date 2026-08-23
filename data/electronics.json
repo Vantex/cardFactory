@@ -37,6 +37,13 @@
                                "color":  "#b0b0b0",
                                "description":  "机械零件"
                            },
+                  "magnet":  {
+                                 "id":  "magnet",
+                                 "name":  "磁铁",
+                                 "symbol":  "Mg",
+                                 "color":  "#8f9aa3",
+                                 "description":  "磁性材料"
+                             },
                   "electric_motor":  {
                                          "id":  "electric_motor",
                                          "name":  "电动机",
@@ -51,6 +58,13 @@
                                         "color":  "#c0c0c0",
                                         "description":  "电磁元件"
                                     },
+                  "diamond":  {
+                                  "id":  "diamond",
+                                  "name":  "金刚石",
+                                  "symbol":  "Dm",
+                                  "color":  "#b9f2ff",
+                                  "description":  "高强度晶体材料"
+                              },
                   "gravity_lens":  {
                                        "id":  "gravity_lens",
                                        "name":  "引力透镜",
@@ -134,24 +148,6 @@
                                                       }
                   },
     "recipes":  {
-                    "gear_recipe":  {
-                                        "id":  "gear_recipe",
-                                        "name":  "齿轮制造",
-                                        "building_id":  "assembler",
-                                        "inputs":  [
-                                                       {
-                                                           "item_id":  "iron_ingot",
-                                                           "amount":  1
-                                                       }
-                                                   ],
-                                        "outputs":  [
-                                                        {
-                                                            "item_id":  "gear",
-                                                            "amount":  1
-                                                        }
-                                                    ],
-                                        "duration":  1.0
-                                    },
                     "circuit_recipe":  {
                                            "id":  "circuit_recipe",
                                            "name":  "电路板组装",

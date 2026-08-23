@@ -4,20 +4,38 @@ extends Node
 var all_items: Dictionary = {}
 var all_buildings: Dictionary = {}
 var all_recipes: Dictionary = {}
+var _item_sources: Dictionary = {}
+var _building_sources: Dictionary = {}
+var _recipe_sources: Dictionary = {}
+var _validation_errors: Array = []
 
 func _ready():
     _load_all_data()
     print("DataManager loaded: ", all_items.size(), " items, ", all_buildings.size(), " buildings, ", all_recipes.size(), " recipes")
 
 func _load_all_data():
+    all_items.clear()
+    all_buildings.clear()
+    all_recipes.clear()
+    _item_sources.clear()
+    _building_sources.clear()
+    _recipe_sources.clear()
+    _validation_errors.clear()
+
     var dir = DirAccess.open("res://data")
     if dir:
+        var file_names: Array[String] = []
         dir.list_dir_begin()
         var file_name = dir.get_next()
         while file_name != "":
             if file_name.ends_with(".json"):
-                _load_data_file("res://data/" + file_name)
+                file_names.append(file_name)
             file_name = dir.get_next()
+        dir.list_dir_end()
+        file_names.sort()
+        for data_file_name in file_names:
+            _load_data_file("res://data/" + data_file_name)
+        _validate_recipe_references()
     else:
         print("ERROR: Could not open data directory")
 
@@ -28,24 +46,58 @@ func _load_data_file(path: String):
         var error = json.parse(file.get_as_text())
         if error == OK:
             var data = json.data
-            
-            # 加载物品
-            for item_id in data.get("items", {}):
-                all_items[item_id] = data.items[item_id]
-            
-            # 加载建筑
-            for building_id in data.get("buildings", {}):
-                all_buildings[building_id] = data.buildings[building_id]
-            
-            # 加载配方
-            for recipe_id in data.get("recipes", {}):
-                all_recipes[recipe_id] = data.recipes[recipe_id]
+
+            _load_entries(data.get("items", {}), all_items, _item_sources, "items", path)
+            _load_entries(data.get("buildings", {}), all_buildings, _building_sources, "buildings", path)
+            _load_entries(data.get("recipes", {}), all_recipes, _recipe_sources, "recipes", path)
             
             print("Loaded data file: ", path)
         else:
             print("Error parsing JSON: ", path)
     else:
         print("Error opening file: ", path)
+
+func _load_entries(entries: Dictionary, destination: Dictionary, sources: Dictionary, kind: String, source: String):
+    for entry_id in entries:
+        if destination.has(entry_id):
+            _validation_errors.append({
+                "code": "duplicate_id",
+                "source": source,
+                "id": "%s/%s" % [kind, entry_id],
+                "message": "Duplicate %s ID '%s'; first defined in %s" % [kind, entry_id, sources[entry_id]],
+            })
+            continue
+        destination[entry_id] = entries[entry_id]
+        sources[entry_id] = source
+
+func _validate_recipe_references():
+    var recipe_ids := all_recipes.keys()
+    recipe_ids.sort()
+    for recipe_id in recipe_ids:
+        var recipe: Dictionary = all_recipes[recipe_id]
+        var source: String = _recipe_sources[recipe_id]
+        var building_id: String = recipe.get("building_id", "")
+        if not all_buildings.has(building_id):
+            _validation_errors.append({
+                "code": "missing_building_reference",
+                "source": source,
+                "id": building_id,
+                "message": "Recipe '%s' references undefined building '%s'" % [recipe_id, building_id],
+            })
+
+        for list_name in ["inputs", "outputs"]:
+            for item_reference in recipe.get(list_name, []):
+                var item_id: String = item_reference.get("item_id", "")
+                if not all_items.has(item_id):
+                    _validation_errors.append({
+                        "code": "missing_item_reference",
+                        "source": source,
+                        "id": item_id,
+                        "message": "Recipe '%s' %s references undefined item '%s'" % [recipe_id, list_name, item_id],
+                    })
+
+func get_validation_errors() -> Array:
+    return _validation_errors.duplicate()
 
 func get_item(item_id: String) -> Dictionary:
     return all_items.get(item_id, {})

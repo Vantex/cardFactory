@@ -14,6 +14,17 @@ func _ready() -> void:
 		for key in ["total_buildings", "total_connections", "elapsed_time", "production", "consumption"]:
 			_expect(statistics.has(key), "statistics contains %s" % key)
 
+	var validation_errors = DataManager.get_validation_errors()
+	_expect(validation_errors is Array, "DataManager validation errors are an Array")
+	if validation_errors is Array:
+		_expect(validation_errors.is_empty(), "DataManager validation errors are empty")
+		for validation_error in validation_errors:
+			print("VALIDATION ERROR: %s" % validation_error)
+			_expect(validation_error is Dictionary, "DataManager validation error is a Dictionary")
+			if validation_error is Dictionary:
+				for key in ["code", "source", "id", "message"]:
+					_expect(validation_error.has(key), "DataManager validation error contains %s" % key)
+
 	if _failures > 0:
 		printerr("BASELINE TESTS FAILED")
 		get_tree().quit(1)
