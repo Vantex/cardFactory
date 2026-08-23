@@ -1,5 +1,7 @@
 extends Node2D
 
+const CardRenderer = preload("res://scripts/rendering/CardRenderer.gd")
+
 enum Mode {
 	IDLE,
 	PLACING,
@@ -8,8 +10,8 @@ enum Mode {
 	PANNING,
 }
 
-const CARD_SIZE := Vector2(200, 150)
-const PORT_SIZE := Vector2(18, 36)
+const CARD_SIZE := CardRenderer.CARD_SIZE
+const PORT_SIZE := CardRenderer.PORT_SIZE
 const DRAG_THRESHOLD := 5.0
 const MIN_ZOOM := 0.45
 const MAX_ZOOM := 1.8
@@ -217,10 +219,10 @@ func _get_output_port_at_position(world_position: Vector2) -> String:
 	return ""
 
 func _get_input_port_rect(card_position: Vector2) -> Rect2:
-	return Rect2(card_position + Vector2(0, (CARD_SIZE.y - PORT_SIZE.y) * 0.5), PORT_SIZE)
+	return CardRenderer.get_input_port_rect(card_position)
 
 func _get_output_port_rect(card_position: Vector2) -> Rect2:
-	return Rect2(card_position + Vector2(CARD_SIZE.x - PORT_SIZE.x, (CARD_SIZE.y - PORT_SIZE.y) * 0.5), PORT_SIZE)
+	return CardRenderer.get_output_port_rect(card_position)
 
 func _get_event_screen_position(event: InputEvent) -> Vector2:
 	if event is InputEventMouse:

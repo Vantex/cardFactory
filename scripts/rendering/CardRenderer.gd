@@ -15,10 +15,21 @@ const STATUS_COLORS := {
 }
 
 var _game_state: GameState
+var _input_handler: Node
 
 func set_game_state(game_state: GameState) -> void:
 	_game_state = game_state
 	queue_redraw()
+
+func set_input_handler(input_handler: Node) -> void:
+	_input_handler = input_handler
+	queue_redraw()
+
+func is_building_selected(building_id: String) -> bool:
+	if building_id.is_empty():
+		return false
+	var input_handler := _get_input_handler()
+	return input_handler != null and input_handler.get("selected_building_id") == building_id
 
 static func get_input_port_rect(card_position: Vector2) -> Rect2:
 	return Rect2(card_position + Vector2(0, (CARD_SIZE.y - PORT_SIZE.y) * 0.5), PORT_SIZE)
@@ -81,7 +92,7 @@ func _draw_building(building: Dictionary) -> void:
 
 	_draw_port(get_input_port_rect(position), Color("3a8fb7"), false)
 	_draw_port(get_output_port_rect(position), Color("d89b42"), true)
-	if building.get("selected", false):
+	if is_building_selected(building.get("id", "")):
 		draw_rect(card_rect.grow(3.0), Color("ffe585"), false, 2.0, true)
 
 func _draw_buffer_summary(font: Font, position: Vector2, label: String, buffer: Dictionary, color: Color) -> void:
@@ -125,6 +136,9 @@ func _symbol_for_type(building_type: String) -> String:
 
 func _get_game_state() -> GameState:
 	return _game_state if _game_state != null else GameManager.get_game_state()
+
+func _get_input_handler() -> Node:
+	return _input_handler if _input_handler != null else get_node_or_null("../InputHandler")
 
 func _process(_delta: float) -> void:
 	queue_redraw()

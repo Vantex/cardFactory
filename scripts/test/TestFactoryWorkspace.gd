@@ -1,6 +1,7 @@
 extends Node
 
 const CardRenderer = preload("res://scripts/rendering/CardRenderer.gd")
+const ConnectionRenderer = preload("res://scripts/rendering/ConnectionRenderer.gd")
 
 var _failures := 0
 
@@ -121,6 +122,25 @@ func _test_renderer_geometry_contract() -> void:
 	_expect(CardRenderer.CARD_SIZE == Vector2(232, 144), "card geometry is stable")
 	_expect(CardRenderer.get_input_port_rect(Vector2.ZERO).has_point(Vector2(0, 72)), "input port hit area matches drawing")
 	_expect(CardRenderer.get_output_port_rect(Vector2.ZERO).has_point(Vector2(232, 72)), "output port hit area matches drawing")
+	_test_renderer_selection_contract()
+
+func _test_renderer_selection_contract() -> void:
+	var main_scene := load("res://scenes/main/Main.tscn") as PackedScene
+	_expect(main_scene != null, "main scene is available for renderer selection")
+	if main_scene == null:
+		return
+	var main := main_scene.instantiate()
+	var card_renderer := main.get_node_or_null("CardRenderer")
+	var input_handler := main.get_node_or_null("InputHandler")
+	_expect(card_renderer != null and input_handler != null, "main wires card rendering and input together")
+	if card_renderer == null or input_handler == null:
+		main.queue_free()
+		return
+	input_handler.set("selected_building_id", "selected_card")
+	_expect(card_renderer.has_method("is_building_selected"), "card renderer exposes selection state")
+	if card_renderer.has_method("is_building_selected"):
+		_expect(card_renderer.call("is_building_selected", "selected_card"), "input selection drives the card outline state")
+	main.queue_free()
 
 func _test_canvas_input_contract() -> void:
 	var input_script := load("res://scripts/input/InputHandler.gd") as Script
@@ -144,10 +164,16 @@ func _test_canvas_input_contract() -> void:
 	GameManager.game_state = GameState.new()
 	var source: Dictionary = GameManager.get_game_state().try_place_building("miner", Vector2(100, 100))
 	var target: Dictionary = GameManager.get_game_state().try_place_building("smelter", Vector2(420, 100))
+	_expect(input_handler.call("_get_output_port_at_position", Vector2(332, 172)) == source.id, "visible card output port is clickable through input handling")
 	input_handler.call("start_connection", source.id)
 	_expect(input_handler.call("get_mode_name") == "connecting", "connection mode starts")
 	_expect(input_handler.call("complete_connection", target.id), "legal connection completes through the input handler")
 	_expect(input_handler.call("get_mode_name") == "idle" and GameManager.get_game_state().connections.size() == 1, "completed connection clears input state")
+	var connection_renderer := ConnectionRenderer.new()
+	_expect(connection_renderer.has_method("is_connection_active"), "connection renderer exposes activity semantics")
+	if connection_renderer.has_method("is_connection_active"):
+		_expect(connection_renderer.call("is_connection_active", GameManager.get_game_state().connections.values()[0]), "normally created connections animate by default")
+	connection_renderer.queue_free()
 
 	var main_scene := load("res://scenes/main/Main.tscn") as PackedScene
 	_expect(main_scene != null, "main scene is available")

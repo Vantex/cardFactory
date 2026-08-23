@@ -9,6 +9,9 @@ func set_game_state(game_state: GameState) -> void:
 	_game_state = game_state
 	queue_redraw()
 
+func is_connection_active(connection: Dictionary) -> bool:
+	return connection.get("active", true)
+
 func _draw() -> void:
 	var game_state := _get_game_state()
 	if game_state == null:
@@ -24,7 +27,7 @@ func _draw_connection(connection: Dictionary, game_state: GameState) -> void:
 		return
 	var start := CardRenderer.get_output_port_rect(source.get("position", Vector2.ZERO)).get_center()
 	var end := CardRenderer.get_input_port_rect(target.get("position", Vector2.ZERO)).get_center()
-	var active: bool = connection.get("active", false)
+	var active := is_connection_active(connection)
 	var color := Color("38e6c2") if active else Color("6e90ad")
 	var control := _curve_control(start, end)
 	draw_polyline(_curve_points(start, end), color, 3.0 if active else 2.0, true)
