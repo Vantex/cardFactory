@@ -25,6 +25,21 @@ func _ready() -> void:
 				for key in ["code", "source", "id", "message"]:
 					_expect(validation_error.has(key), "DataManager validation error contains %s" % key)
 
+	var expected_loaded_data_files: Array[String] = [
+		"res://data/advanced_buildings.json",
+		"res://data/base_metals.json",
+		"res://data/chemicals.json",
+		"res://data/electronics.json",
+	]
+	var loaded_data_files = DataManager.get_loaded_data_files()
+	_expect(loaded_data_files is Array, "DataManager loaded data files are an Array")
+	if loaded_data_files is Array:
+		_expect(loaded_data_files.size() == expected_loaded_data_files.size(), "DataManager loaded exactly four data files")
+		for expected_path in expected_loaded_data_files:
+			_expect(loaded_data_files.has(expected_path), "DataManager loaded %s" % expected_path)
+		loaded_data_files.clear()
+		_expect(DataManager.get_loaded_data_files() == expected_loaded_data_files, "DataManager loaded data files API returns a shallow copy")
+
 	var unavailable_save_system := SaveSystem.new("invalid://baseline/")
 	_expect(not unavailable_save_system.is_storage_available(), "SaveSystem reports invalid storage as unavailable")
 	_expect(not unavailable_save_system.save_game(0, GameState.new()), "SaveSystem safely rejects saves when storage is unavailable")

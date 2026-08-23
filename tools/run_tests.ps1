@@ -52,8 +52,17 @@ try {
 [Console]::Out.Write($standardOutput)
 [Console]::Error.Write($standardError)
 $outputText = $standardOutput + $standardError
+$outputLines = ($standardOutput + [Environment]::NewLine + $standardError) -split "\r?\n"
+$successMarker = "BASELINE TESTS PASSED"
+$successMarkerCount = @($outputLines | Where-Object { $_ -ceq $successMarker }).Count
 
-if ($godotExitCode -ne 0 -or $outputText -match "SCRIPT ERROR|Parse Error|BASELINE TESTS FAILED") {
+if ($successMarkerCount -eq 0) {
+    [Console]::Error.WriteLine("Baseline success marker missing: expected exactly one complete line '$successMarker'.")
+} elseif ($successMarkerCount -ne 1) {
+    [Console]::Error.WriteLine("Baseline success marker count invalid: expected exactly one complete line '$successMarker', found $successMarkerCount.")
+}
+
+if ($godotExitCode -ne 0 -or $outputText -match "SCRIPT ERROR|Parse Error|BASELINE TESTS FAILED" -or $successMarkerCount -ne 1) {
     exit 1
 }
 

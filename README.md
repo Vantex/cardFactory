@@ -36,7 +36,7 @@ Godot 不在默认位置时，通过 `-GodotPath` 覆盖：
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1 -GodotPath 'D:\Tools\Godot\Godot.exe'
 ```
 
-门禁运行真实 Godot 测试场景，捕获标准输出和错误输出；非零 Godot 退出码，或输出包含 `SCRIPT ERROR`、`Parse Error`、`BASELINE TESTS FAILED`，都会使脚本退出 1。引擎级 `--quit-after 600` 保证测试脚本来不及自行退出时进程仍有界结束。
+门禁运行真实 Godot 测试场景，并显式转发捕获的标准输出和错误输出。正常通过必须同时满足：Godot 退出码为 0；输出不包含 `SCRIPT ERROR`、`Parse Error`、`BASELINE TESTS FAILED`；完整行 `BASELINE TESTS PASSED` 恰好出现一次。成功标记缺失或重复都会使脚本给出诊断并退出 1。引擎级 `--quit-after 600` 保证测试脚本来不及自行退出时进程仍有界结束。
 
 ## 当前原型
 

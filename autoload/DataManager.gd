@@ -8,6 +8,7 @@ var _item_sources: Dictionary = {}
 var _building_sources: Dictionary = {}
 var _recipe_sources: Dictionary = {}
 var _validation_errors: Array = []
+var _loaded_data_files: Array[String] = []
 
 func _ready():
     _load_all_data()
@@ -21,6 +22,7 @@ func _load_all_data():
     _building_sources.clear()
     _recipe_sources.clear()
     _validation_errors.clear()
+    _loaded_data_files.clear()
 
     var dir = DirAccess.open("res://data")
     if dir:
@@ -37,6 +39,12 @@ func _load_all_data():
             _load_data_file("res://data/" + data_file_name)
         _validate_recipe_references()
     else:
+        _validation_errors.append({
+            "code": "data_directory_unavailable",
+            "source": "res://data",
+            "id": "res://data",
+            "message": "Could not open data directory",
+        })
         print("ERROR: Could not open data directory")
 
 func _load_data_file(path: String):
@@ -46,15 +54,37 @@ func _load_data_file(path: String):
         var error = json.parse(file.get_as_text())
         if error == OK:
             var data = json.data
+            if not data is Dictionary:
+                _validation_errors.append({
+                    "code": "data_file_root_not_dictionary",
+                    "source": path,
+                    "id": path,
+                    "message": "JSON root is not a Dictionary: %s" % path,
+                })
+                print("Error parsing JSON root: ", path)
+                return
 
             _load_entries(data.get("items", {}), all_items, _item_sources, "items", path)
             _load_entries(data.get("buildings", {}), all_buildings, _building_sources, "buildings", path)
             _load_entries(data.get("recipes", {}), all_recipes, _recipe_sources, "recipes", path)
-            
+
+            _loaded_data_files.append(path)
             print("Loaded data file: ", path)
         else:
+            _validation_errors.append({
+                "code": "data_file_parse_failed",
+                "source": path,
+                "id": path,
+                "message": "Error parsing JSON: %s" % path,
+            })
             print("Error parsing JSON: ", path)
     else:
+        _validation_errors.append({
+            "code": "data_file_open_failed",
+            "source": path,
+            "id": path,
+            "message": "Error opening file: %s" % path,
+        })
         print("Error opening file: ", path)
 
 func _load_entries(entries: Dictionary, destination: Dictionary, sources: Dictionary, kind: String, source: String):
@@ -98,6 +128,9 @@ func _validate_recipe_references():
 
 func get_validation_errors() -> Array:
     return _validation_errors.duplicate()
+
+func get_loaded_data_files() -> Array[String]:
+    return _loaded_data_files.duplicate()
 
 func get_item(item_id: String) -> Dictionary:
     return all_items.get(item_id, {})

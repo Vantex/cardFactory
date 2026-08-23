@@ -10,7 +10,7 @@
 
 **已验证环境：** Godot 默认路径为 `C:\Program Files\Godot\Godot.exe`；统一测试命令和 `-GodotPath` 覆盖方法见根目录 `README.md`。
 
-**执行修订：** Task 3 为兼容 Windows PowerShell 5.1，改用 `System.Diagnostics.Process` 异步捕获并分别转发 Godot stdout/stderr，保留原失败标记语义；Task 6 增加引擎级 `--quit-after 600`，使测试脚本异常、无法自行调用 `quit()` 时门禁仍有界退出。
+**执行修订：** Task 3 为兼容 Windows PowerShell 5.1，改用 `System.Diagnostics.Process` 异步捕获并分别转发 Godot stdout/stderr，保留原失败标记语义；Task 6 增加引擎级 `--quit-after 600`，使测试脚本异常、无法自行调用 `quit()` 时门禁仍有界退出。终审补强为 DataManager 增加文件级结构化失败与成功加载清单，并要求 TestBaseline 精确见证四个当前 JSON；PowerShell 门禁还要求完整行 `BASELINE TESTS PASSED` 恰好出现一次，关闭 Godot 提前退出或测试场景未完成时的假绿，但不扩展为通用 JSON schema 校验。
 
 ---
 
