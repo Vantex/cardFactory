@@ -12,7 +12,9 @@ func _ready() -> void:
 	_test_connection_activity_contract()
 	_test_renderer_geometry_contract()
 	await _test_workspace_chrome_contract()
+	await _test_main_scene_integration_contract()
 	_test_canvas_input_contract()
+	_test_real_production_loop()
 
 	var state := GameState.new()
 	_expect(state.construction_points == 12, "new workspaces start with 12 construction points")
@@ -85,6 +87,79 @@ func _test_workspace_chrome_contract() -> void:
 	if EventBus.has_signal("placement_requested") and EventBus.is_connected("placement_requested", listener):
 		EventBus.disconnect("placement_requested", listener)
 	workspace.queue_free()
+
+func _test_main_scene_integration_contract() -> void:
+	GameManager.game_state = GameState.new()
+	var main_scene := load("res://scenes/main/Main.tscn") as PackedScene
+	_expect(main_scene != null, "main scene is available for workspace integration")
+	if main_scene == null:
+		return
+
+	var main := main_scene.instantiate()
+	add_child(main)
+	await get_tree().process_frame
+
+	var world_camera := main.get_node_or_null("WorldCamera") as Camera2D
+	var card_renderer := main.get_node_or_null("CardRenderer")
+	var connection_renderer := main.get_node_or_null("ConnectionRenderer")
+	var input_handler := main.get_node_or_null("InputHandler")
+	var workspace := main.get_node_or_null("FactoryWorkspaceUI")
+	_expect(world_camera != null, "main scene exposes the named world camera")
+	_expect(card_renderer != null and connection_renderer != null and input_handler != null and workspace != null, "main scene composes renderers, input, and workspace UI")
+	_expect(main.get_node_or_null("HUD") == null and main.get_node_or_null("BuildingPanel") == null, "main scene no longer mounts legacy UI")
+	_expect(GameManager.get_game_state().buildings.is_empty() and GameManager.get_game_state().connections.is_empty(), "main scene starts with an empty factory")
+
+	if card_renderer != null and connection_renderer != null:
+		_expect(card_renderer.get("_game_state") == GameManager.get_game_state() and connection_renderer.get("_game_state") == GameManager.get_game_state(), "main injects the active game state into both renderers")
+	if input_handler != null and workspace != null:
+		_expect(input_handler.call("_is_pointer_over_ui", Vector2(10, 10)), "main routes workspace hit testing into canvas input")
+		workspace.call("_on_building_pressed", "miner")
+		_expect(input_handler.call("get_mode_name") == "placing" and input_handler.get("placing_building_type") == "miner", "workspace placement requests enter real canvas placement mode")
+
+		input_handler.call("_place_card", Vector2(320, 180))
+		var placed_id: String = input_handler.get("selected_building_id")
+		_expect(not placed_id.is_empty() and GameManager.get_game_state().buildings.size() == 1, "real canvas placement adds and selects the requested card")
+		var resource_summary := workspace.get_node("ResourceRail/Summary") as Label
+		_expect("POINTS  11" in resource_summary.text and "BUILDINGS  01" in resource_summary.text, "placing a card refreshes workspace resource totals immediately")
+		var inspector_title := workspace.get_node("InspectorPanel/Title") as Label
+		_expect(inspector_title.text == "矿机", "real canvas placement selects the new card in the workspace inspector")
+
+		input_handler.set("selected_building_id", "")
+		EventBus.card_selected.emit(placed_id)
+		_expect(input_handler.get("selected_building_id") == placed_id and workspace.call("get_selected_building_type") == "miner", "card selection synchronizes input and workspace inspector")
+		GameManager.get_game_state().remove_building(placed_id)
+		_expect(input_handler.get("selected_building_id") == "" and workspace.call("get_selected_building_type") == "", "removing the selected card clears input and inspector selection")
+
+		var pause_event := InputEventKey.new()
+		pause_event.keycode = KEY_SPACE
+		pause_event.pressed = true
+		input_handler.call("_handle_key_press", pause_event)
+		var speed_event := InputEventKey.new()
+		speed_event.keycode = KEY_3
+		speed_event.pressed = true
+		input_handler.call("_handle_key_press", speed_event)
+		_expect(GameManager.get_game_state().paused and is_equal_approx(GameManager.get_game_state().speed, 3.0), "workspace input controls write pause and speed to game state")
+
+	main.queue_free()
+	await get_tree().process_frame
+
+func _test_real_production_loop() -> void:
+	var state := GameState.new()
+	var miner: Dictionary = state.try_place_building("miner", Vector2(100, 100))
+	var smelter: Dictionary = state.try_place_building("smelter", Vector2(420, 100))
+	var connection: Dictionary = state.try_add_connection(miner.get("id", ""), smelter.get("id", ""))
+	_expect(miner.get("ok", false) and smelter.get("ok", false) and connection.get("ok", false), "real production loop can be constructed through atomic commands")
+	if not miner.get("ok", false) or not smelter.get("ok", false) or not connection.get("ok", false):
+		return
+
+	var engine := SimulationEngine.new(state)
+	engine.update(6.0)
+	engine.update(0.5)
+	var buffered_ore: float = state.get_building(smelter.id).get("input_buffer", {}).get("iron_ore", 0.0)
+	_expect(buffered_ore >= 1.0, "belt update moves mined iron ore into the smelter")
+	engine.update(0.5)
+	var produced_ingots: float = state.get_building(smelter.id).get("output_buffer", {}).get("iron_ingot", 0.0)
+	_expect(produced_ingots >= 1.0, "production update consumes ore and produces an iron ingot")
 
 func _test_explicit_building_costs() -> void:
 	var cost_cases := [
@@ -213,7 +288,7 @@ func _test_canvas_input_contract() -> void:
 	if main_scene == null:
 		return
 	var main := main_scene.instantiate()
-	var camera := main.get_node_or_null("Camera2D") as Camera2D
+	var camera := main.get_node_or_null("WorldCamera") as Camera2D
 	_expect(camera != null, "main scene provides a world camera")
 	if camera != null:
 		_expect(is_equal_approx(camera.get_meta("min_zoom", 0.0), 0.45) and is_equal_approx(camera.get_meta("max_zoom", 0.0), 1.8), "world camera exposes the 0.45 to 1.8 zoom range")

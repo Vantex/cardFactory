@@ -4,57 +4,39 @@ extends Node2D
 @onready var card_renderer: Node2D = $CardRenderer
 @onready var connection_renderer: Node2D = $ConnectionRenderer
 @onready var input_handler: Node2D = $InputHandler
-@onready var hud: CanvasLayer = $HUD
-@onready var building_panel: PanelContainer = $BuildingPanel
+@onready var factory_workspace_ui: CanvasLayer = $FactoryWorkspaceUI
 
-func _ready():
-	print("Main scene ready!")
-	
-	# 测试数据加载
-	print("Items: ", DataManager.all_items.size())
-	print("Buildings: ", DataManager.all_buildings.size())
-	print("Recipes: ", DataManager.all_recipes.size())
-	
-	# 连接信号
+func _ready() -> void:
+	var game_state := GameManager.get_game_state()
+	card_renderer.set_game_state(game_state)
+	card_renderer.set_input_handler(input_handler)
+	connection_renderer.set_game_state(game_state)
+	input_handler.set_ui_hit_test(factory_workspace_ui.is_pointer_over_ui)
+
+	EventBus.card_placed.connect(_on_card_placed)
 	EventBus.card_selected.connect(_on_card_selected)
-	
-	# 自动放置测试建筑
-	_place_initial_buildings()
+	EventBus.card_removed.connect(_on_card_removed)
+	EventBus.placement_requested.connect(_on_placement_requested)
+	factory_workspace_ui.refresh_now()
 
-func _place_initial_buildings():
-	# 放置矿机
-	var miner_id = GameManager.get_game_state().add_building({
-		"type": "miner",
-		"position": Vector2(100, 200),
-		"status": "idle",
-		"output_item": "iron_ore",
-		"output_rate": 60.0,
-		"output_buffer": {}
-	})
-	print("Placed miner at (100, 200)")
-	
-	# 放置熔炉
-	var smelter_id = GameManager.get_game_state().add_building({
-		"type": "smelter",
-		"position": Vector2(400, 200),
-		"status": "idle",
-		"recipe_id": "iron_ingot_recipe",
-		"input_buffer": {},
-		"output_buffer": {},
-		"speed": 1.0
-	})
-	print("Placed smelter at (400, 200)")
-	
-	# 创建连接
-	GameManager.get_game_state().add_connection({
-		"source_id": miner_id,
-		"target_id": smelter_id,
-		"item_id": "iron_ore",
-		"flow_rate": 60.0
-	})
-	print("Created connection: miner -> smelter")
+func _on_card_placed(card_id: String, _position: Vector2) -> void:
+	if input_handler.get_mode_name() == "placing":
+		input_handler.selected_building_id = card_id
+		factory_workspace_ui.set_selected_building(card_id)
+		return
+	factory_workspace_ui.refresh_now()
 
-func _on_card_selected(card_id: String):
-	print("Card selected: ", card_id)
-	if building_panel:
-		building_panel.update_building_info(card_id)
+func _on_card_selected(card_id: String) -> void:
+	input_handler.selected_building_id = card_id
+	factory_workspace_ui.set_selected_building(card_id)
+
+func _on_card_removed(card_id: String) -> void:
+	if input_handler.selected_building_id != card_id:
+		factory_workspace_ui.refresh_now()
+		return
+	input_handler.selected_building_id = ""
+	input_handler.cancel_operation()
+	factory_workspace_ui.set_selected_building("")
+
+func _on_placement_requested(building_type: String) -> void:
+	input_handler.start_placing_card(building_type)
