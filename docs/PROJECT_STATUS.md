@@ -61,6 +61,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1
 - 科技、空间站、行星、星系、戴森球及高级物流功能多数没有进入当前主场景和活跃模拟编排，部分实现只是占位或局部 API。
 - `TestCompletedFeatures.gd`、`TestPhase*.gd` 等旧测试主要打印计数或结果，没有统一非零失败语义，不属于权威门禁。
 - 正式门禁和主场景验证目前仍会在 Godot 退出时报告 ObjectDB/resource 未释放警告；它们不包含脚本或解析错误，但资源生命周期清理还没有达到零警告。
+- 全新检出或新建 worktree 必须先运行一次无窗口编辑器导入来生成全局脚本类缓存；`tools/run_tests.ps1` 尚未自动完成这个引导步骤，直接运行会出现 `GameState`、`SimulationEngine` 等类型解析失败。
 
 ## 下一阶段建议
 

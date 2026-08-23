@@ -20,6 +20,14 @@ CardFactory 是一个使用卡牌式二维界面表达工厂生产链的 Godot �
 
 项目唯一的自动化测试门禁是：
 
+全新检出或新建 worktree 后，先让 Godot 建立导入缓存和全局脚本类缓存：
+
+```powershell
+& 'C:\Program Files\Godot\Godot.exe' --headless --path . --editor --quit
+```
+
+然后运行门禁：
+
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1
 ```
@@ -36,7 +44,7 @@ Godot 不在默认位置时，通过 `-GodotPath` 覆盖：
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1 -GodotPath 'D:\Tools\Godot\Godot.exe'
 ```
 
-门禁运行真实 Godot 测试场景：`TestBaseline` 与 `TestFactoryWorkspace`。正常通过必须同时满足：Godot 退出码为 0；每个场景的完整成功标记各出现一次；输出不包含 `SCRIPT ERROR`、`Parse Error` 或对应失败标记。引擎级 `--quit-after 600` 保证测试进程有界结束。
+门禁运行真实 Godot 测试场景：`TestBaseline` 与 `TestFactoryWorkspace`。正常通过必须同时满足：Godot 退出码为 0；每个场景的完整成功标记各出现一次；输出不包含 `SCRIPT ERROR`、`Parse Error` 或对应失败标记。引擎级 `--quit-after 600` 保证测试进程有界结束。当前门禁不会自动执行首次导入；跳过上述导入步骤时，全新工作树可能因全局脚本类缓存尚未建立而解析失败。
 
 ## 当前可玩工作区（Phase 2）
 
