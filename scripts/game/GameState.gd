@@ -2,10 +2,17 @@
 class_name GameState
 extends RefCounted
 
+const DEFAULT_BUILDING_COST: int = 1
+const BUILDING_COSTS: Dictionary = {
+    "miner": 1,
+    "smelter": 1,
+}
+
 # 游戏状态
 var paused: bool = false
 var speed: float = 1.0
 var elapsed_time: float = 0.0
+var construction_points: int = 12
 
 # 所有建筑（卡牌）
 var buildings: Dictionary = {}
@@ -69,6 +76,36 @@ func add_building(building_data: Dictionary) -> String:
     EventBus.card_placed.emit(id, building_data.get("position", Vector2.ZERO))
     return id
 
+func try_place_building(building_type: String, position: Vector2) -> Dictionary:
+    var building_definition := DataManager.get_building(building_type)
+    if building_definition.is_empty():
+        return {"ok": false, "message": "Unknown building type"}
+
+    var cost: int = BUILDING_COSTS.get(building_type, DEFAULT_BUILDING_COST)
+    if construction_points < cost:
+        return {"ok": false, "message": "Insufficient construction points"}
+
+    for existing_building in buildings.values():
+        if existing_building.get("position", Vector2.ZERO) == position:
+            return {"ok": false, "message": "Building position is already occupied"}
+
+    var building_data := {
+        "type": building_type,
+        "position": position,
+        "status": "idle",
+        "recipe_id": "",
+        "progress": 0.0,
+        "input_buffer": {},
+        "output_buffer": {},
+        "speed": building_definition.get("speed", 1.0),
+    }
+    if building_type == "miner":
+        building_data["output_item"] = "iron_ore"
+
+    construction_points -= cost
+    var building_id := add_building(building_data)
+    return {"ok": true, "message": "Building placed", "id": building_id}
+
 func remove_building(building_id: String):
     if buildings.has(building_id):
         buildings.erase(building_id)
@@ -88,6 +125,77 @@ func add_connection(connection_data: Dictionary) -> String:
     connections[id] = connection_data
     EventBus.connection_created.emit(id, connection_data.source_id, connection_data.target_id)
     return id
+
+func try_add_connection(source_id: String, target_id: String) -> Dictionary:
+    if not buildings.has(source_id) or not buildings.has(target_id):
+        return {"ok": false, "message": "Connection buildings must exist"}
+    if source_id == target_id:
+        return {"ok": false, "message": "Cannot connect a building to itself"}
+
+    for connection in connections.values():
+        if connection.get("source_id", "") == source_id and connection.get("target_id", "") == target_id:
+            return {"ok": false, "message": "Connection already exists"}
+
+    var output_item := get_building_output_item(source_id)
+    if output_item.is_empty():
+        return {"ok": false, "message": "Source building has no output item"}
+
+    var target_type: String = buildings[target_id].get("type", "")
+    var compatible_recipes := get_compatible_recipes(target_type, output_item)
+    if compatible_recipes.is_empty():
+        return {"ok": false, "message": "Target building cannot accept the source output"}
+
+    var selected_recipe: Dictionary = compatible_recipes[0]
+    var selected_recipe_id: String = selected_recipe.get("id", "")
+    if buildings[target_id].get("recipe_id", "") != selected_recipe_id:
+        set_entity_recipe(target_id, selected_recipe_id)
+
+    var connection_id := add_connection({
+        "source_id": source_id,
+        "target_id": target_id,
+        "type": "conveyor_belt_mk1",
+        "item_id": output_item,
+    })
+    return {"ok": true, "message": "Connection added", "id": connection_id}
+
+func get_compatible_recipes(building_type: String, input_item_id: String = "") -> Array:
+    var compatible_recipes: Array = []
+    for recipe in DataManager.get_recipes_for_building(building_type):
+        if input_item_id.is_empty():
+            compatible_recipes.append(recipe)
+            continue
+
+        for input in recipe.get("inputs", []):
+            if input.get("item_id", "") == input_item_id:
+                compatible_recipes.append(recipe)
+                break
+
+    compatible_recipes.sort_custom(func(left: Dictionary, right: Dictionary) -> bool:
+        return left.get("id", "") < right.get("id", "")
+    )
+    return compatible_recipes
+
+func get_building_output_item(building_id: String) -> String:
+    var building := get_building(building_id)
+    if building.is_empty():
+        return ""
+
+    var output_item: String = building.get("output_item", "")
+    if not output_item.is_empty():
+        return output_item
+
+    var recipe := DataManager.get_recipe(building.get("recipe_id", ""))
+    var outputs: Array = recipe.get("outputs", [])
+    if outputs.is_empty():
+        return ""
+    return outputs[0].get("item_id", "")
+
+func get_building_display_name(building_id: String) -> String:
+    var building := get_building(building_id)
+    if building.is_empty():
+        return ""
+    var building_type: String = building.get("type", "")
+    return DataManager.get_building(building_type).get("name", building_type)
 
 func remove_connection(connection_id: String):
     if connections.has(connection_id):
