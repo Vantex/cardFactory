@@ -19,7 +19,7 @@ if (-not (Test-Path -LiteralPath $scenePath -PathType Leaf)) {
 
 $startInfo = New-Object System.Diagnostics.ProcessStartInfo
 $startInfo.FileName = $GodotPath
-$startInfo.Arguments = '--headless --path "{0}" "res://scenes/test/TestBaseline.tscn"' -f $repoRoot
+$startInfo.Arguments = '--headless --path "{0}" --quit-after 600 "res://scenes/test/TestBaseline.tscn"' -f $repoRoot
 $startInfo.WorkingDirectory = $repoRoot
 $startInfo.UseShellExecute = $false
 $startInfo.RedirectStandardOutput = $true

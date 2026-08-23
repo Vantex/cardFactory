@@ -1,5 +1,7 @@
 ﻿# CardFactory 第二阶段实现计划
 
+> **历史资料：** 本计划保留当时设想，不证明当前完成状态；请以 [`docs/PROJECT_STATUS.md`](../../PROJECT_STATUS.md) 为准。
+
 > **面向 AI 代理的工作者：** 必需子技能：使用 superpowers:subagent-driven-development（推荐）或 superpowers:executing-plans 逐任务实现此计划。步骤使用复选框（`- [ ]`）语法来跟踪进度。
 
 **目标：** 扩展游戏功能，添加更多生产线、电力系统、传送带系统，完善UI界面

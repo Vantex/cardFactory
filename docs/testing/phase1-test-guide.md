@@ -1,5 +1,7 @@
 ﻿# CardFactory 第一阶段测试指南
 
+> **历史资料：** 本文保留当时测试说明，不是当前门禁；请以 [`docs/PROJECT_STATUS.md`](../PROJECT_STATUS.md) 为准。
+
 **创建日期：** '$timestamp'  
 **测试范围：** 27个已实现功能  
 **测试环境：** Godot 4.7.2

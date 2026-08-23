@@ -1,5 +1,7 @@
 ﻿# CardFactory 第三阶段实现计划
 
+> **历史资料：** 本计划保留当时设想，不证明当前完成状态；请以 [`docs/PROJECT_STATUS.md`](../../PROJECT_STATUS.md) 为准。
+
 **目标：** 性能优化、视觉升级、统计系统、存档系统
 
 **架构：** Canvas 2D + Shader特效 + 索引优化
