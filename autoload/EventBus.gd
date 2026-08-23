@@ -13,6 +13,9 @@ signal connection_removed(connection_id: String)
 # 实体移动信号
 signal entity_moved(entity_id: String, new_position: Vector2)
 
+# 工厂工作区交互信号
+signal placement_requested(building_type: String)
+
 # 科技相关信号
 signal technology_research_started(tech_id: String)
 signal technology_research_completed(tech_id: String)

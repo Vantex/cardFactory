@@ -6,6 +6,7 @@ func _ready() -> void:
 	print("FACTORY WORKSPACE TESTS STARTED")
 	_test_explicit_building_costs()
 	_test_existing_recipe_connection_rules()
+	await _test_workspace_chrome_contract()
 
 	var state := GameState.new()
 	_expect(state.construction_points == 12, "new workspaces start with 12 construction points")
@@ -48,6 +49,36 @@ func _ready() -> void:
 
 	print("FACTORY WORKSPACE TESTS PASSED")
 	get_tree().quit(0)
+
+func _test_workspace_chrome_contract() -> void:
+	var workspace_script := load("res://scenes/ui/FactoryWorkspaceUI.gd") as Script
+	_expect(workspace_script != null, "workspace UI script is available")
+	if workspace_script == null:
+		return
+
+	var workspace := workspace_script.new() as CanvasLayer
+	_expect(workspace != null, "workspace UI is a CanvasLayer")
+	if workspace == null:
+		return
+
+	var placements: Array[String] = []
+	var listener: Callable = func(building_type: String) -> void:
+		placements.append(building_type)
+	_expect(EventBus.has_signal("placement_requested"), "workspace placement event is available")
+	if EventBus.has_signal("placement_requested"):
+		EventBus.connect("placement_requested", listener)
+
+	add_child(workspace)
+	await get_tree().process_frame
+	for path in ["TopBar", "ResourceRail", "InspectorPanel", "ConstructionDock", "Toast"]:
+		_expect(workspace.get_node_or_null(path) != null, "workspace exposes %s" % path)
+	workspace.call("_on_building_pressed", "miner")
+	_expect(workspace.call("get_selected_building_type") == "miner", "dock enters placement mode")
+	_expect(placements == ["miner"], "dock emits a placement request for miner")
+
+	if EventBus.has_signal("placement_requested") and EventBus.is_connected("placement_requested", listener):
+		EventBus.disconnect("placement_requested", listener)
+	workspace.queue_free()
 
 func _test_explicit_building_costs() -> void:
 	var cost_cases := [
