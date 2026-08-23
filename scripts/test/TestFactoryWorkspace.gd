@@ -7,6 +7,7 @@ func _ready() -> void:
 	_test_explicit_building_costs()
 	_test_existing_recipe_connection_rules()
 	await _test_workspace_chrome_contract()
+	_test_canvas_input_contract()
 
 	var state := GameState.new()
 	_expect(state.construction_points == 12, "new workspaces start with 12 construction points")
@@ -112,6 +113,44 @@ func _test_existing_recipe_connection_rules() -> void:
 	incompatible_state.get_building(incompatible_smelter.id)["progress"] = 0.5
 	var incompatible_connection: Dictionary = incompatible_state.try_add_connection(incompatible_miner.id, incompatible_smelter.id)
 	_expect(not incompatible_connection.ok and incompatible_state.connections.is_empty() and incompatible_state.get_building(incompatible_smelter.id).recipe_id == "copper_ingot_recipe" and incompatible_state.get_building(incompatible_smelter.id).progress == 0.5, "incompatible existing recipes reject connections without state changes")
+
+func _test_canvas_input_contract() -> void:
+	var input_script := load("res://scripts/input/InputHandler.gd") as Script
+	_expect(input_script != null, "canvas input script is available")
+	if input_script == null:
+		return
+
+	var input_handler: Node = input_script.new()
+	_expect(input_handler.has_method("get_mode_name"), "canvas input exposes its mode contract")
+	_expect(input_handler.has_method("cancel_operation"), "canvas input exposes its cancellation contract")
+	_expect(input_handler.has_method("complete_connection"), "canvas input exposes connection completion")
+	if not input_handler.has_method("get_mode_name") or not input_handler.has_method("cancel_operation") or not input_handler.has_method("complete_connection"):
+		input_handler.queue_free()
+		return
+	_expect(input_handler.call("get_mode_name") == "idle", "canvas input starts idle")
+	input_handler.call("start_placing_card", "miner")
+	_expect(input_handler.call("get_mode_name") == "placing", "placement mode starts")
+	input_handler.call("cancel_operation")
+	_expect(input_handler.call("get_mode_name") == "idle", "escape contract cancels")
+
+	GameManager.game_state = GameState.new()
+	var source: Dictionary = GameManager.get_game_state().try_place_building("miner", Vector2(100, 100))
+	var target: Dictionary = GameManager.get_game_state().try_place_building("smelter", Vector2(420, 100))
+	input_handler.call("start_connection", source.id)
+	_expect(input_handler.call("get_mode_name") == "connecting", "connection mode starts")
+	_expect(input_handler.call("complete_connection", target.id), "legal connection completes through the input handler")
+	_expect(input_handler.call("get_mode_name") == "idle" and GameManager.get_game_state().connections.size() == 1, "completed connection clears input state")
+
+	var main_scene := load("res://scenes/main/Main.tscn") as PackedScene
+	_expect(main_scene != null, "main scene is available")
+	if main_scene == null:
+		return
+	var main := main_scene.instantiate()
+	var camera := main.get_node_or_null("Camera2D") as Camera2D
+	_expect(camera != null, "main scene provides a world camera")
+	if camera != null:
+		_expect(is_equal_approx(camera.get_meta("min_zoom", 0.0), 0.45) and is_equal_approx(camera.get_meta("max_zoom", 0.0), 1.8), "world camera exposes the 0.45 to 1.8 zoom range")
+	main.queue_free()
 
 func _expect(condition: bool, description: String) -> void:
 	if condition:

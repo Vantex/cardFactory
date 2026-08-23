@@ -16,6 +16,11 @@ script = ExtResource("2_card")
 [node name="ConnectionRenderer" type="Node2D" parent="."]
 script = ExtResource("3_conn")
 
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(576, 324)
+metadata/min_zoom = 0.45
+metadata/max_zoom = 1.8
+
 [node name="InputHandler" type="Node2D" parent="."]
 script = ExtResource("4_input")
 
