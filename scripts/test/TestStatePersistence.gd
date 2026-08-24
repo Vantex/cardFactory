@@ -8,7 +8,10 @@ func _ready() -> void:
 	_test_validation_rejects_corrupt_state()
 	_test_migrations_and_version_boundaries()
 	_test_digest_is_stable_and_ignores_runtime_state()
+	_test_durable_save_slots()
 	_test_game_manager_replaces_authoritative_state()
+	_test_game_session_coordinator()
+	_test_session_ui_contract()
 
 	if _failures > 0:
 		printerr("STATE PERSISTENCE TESTS FAILED")
@@ -155,6 +158,93 @@ func _test_digest_is_stable_and_ignores_runtime_state() -> void:
 	_expect(first_digest == second_digest, "state digest ignores runtime-only values and dictionary insertion order")
 	_expect(JSON.stringify(first_digest) == JSON.stringify(second_digest), "state digest has stable JSON ordering")
 
+func _test_durable_save_slots() -> void:
+	var test_path := "res://.godot/test_saves/state_persistence_%d/" % Time.get_ticks_usec()
+	var save_system := SaveSystem.new(test_path)
+	var required_methods := ["save_slot", "load_slot", "delete_slot", "get_slot_info"]
+	for method_name in required_methods:
+		_expect(save_system.has_method(method_name), "SaveSystem exposes %s" % method_name)
+	if required_methods.any(func(method_name: String) -> bool: return not save_system.has_method(method_name)):
+		_remove_test_save_directory(test_path)
+		return
+
+	var source := _make_fixture_state()
+	var source_digest := JSON.stringify(GameStateCodec.state_digest_payload(source)).sha256_text()
+	var save_result: Dictionary = save_system.save_slot(0, source, {"active_planet": "home"})
+	_expect(save_result.get("ok") == true, "slot save writes a validated canonical state")
+	var saved_metadata: Dictionary = save_result.get("metadata", {})
+	_expect(saved_metadata.get("schema_version") == GameState.SCHEMA_VERSION, "slot metadata records the schema version")
+	_expect(saved_metadata.get("elapsed_time") == source.elapsed_time, "slot metadata records played time")
+	_expect(saved_metadata.get("active_planet") == "home", "slot metadata records the active planet")
+	_expect(saved_metadata.get("digest") == source_digest, "slot metadata records the canonical state digest")
+	_expect(float(saved_metadata.get("saved_at", 0.0)) > 0.0, "slot metadata records a wall-clock save time")
+
+	var load_result: Dictionary = save_system.load_slot(0)
+	var loaded_state: Variant = load_result.get("state")
+	_expect(load_result.get("ok") == true and loaded_state is GameState, "slot load returns a fully decoded GameState")
+	if loaded_state is GameState:
+		_expect(GameStateCodec.state_digest_payload(loaded_state) == GameStateCodec.state_digest_payload(source), "slot round trip preserves the authoritative digest")
+		_expect(loaded_state.buildings.get("building_10", {}).get("position") == Vector2(10.5, -3.25), "slot round trip restores building positions")
+		_expect(loaded_state.buildings.get("building_10", {}).get("input_buffer", {}).get("iron_ore") == 4.5, "slot round trip restores inventory")
+		_expect(loaded_state.completed_technologies == ["automation", "smelting"], "slot round trip restores research progress")
+	_expect(save_system.get_slot_info(0).get("digest") == source_digest, "slot listing reads validated metadata")
+
+	var invalid_save: Dictionary = save_system.save_slot(-1, source)
+	var invalid_load: Dictionary = save_system.load_slot(SaveSystem.MAX_SAVES)
+	_expect(_result_error_code(invalid_save) == "invalid_slot", "saving rejects an invalid slot with a structured error")
+	_expect(_result_error_code(invalid_load) == "invalid_slot", "loading rejects an invalid slot with a structured error")
+
+	_write_test_text(test_path + "save_1.json", "{broken json")
+	var corrupt_result: Dictionary = save_system.load_slot(1)
+	_expect(corrupt_result.get("ok") == false and _result_error_code(corrupt_result) == "invalid_json", "loading corrupt JSON fails without constructing a partial state")
+
+	var future_envelope := {
+		"format": "card_factory_save",
+		"metadata": {"schema_version": GameState.SCHEMA_VERSION + 1, "saved_at": Time.get_unix_time_from_system(), "elapsed_time": 0.0, "active_planet": "home", "digest": "invalid"},
+		"state": GameStateCodec.to_persistent_dict(GameState.new()),
+	}
+	future_envelope["state"]["schema_version"] = GameState.SCHEMA_VERSION + 1
+	_write_test_text(test_path + "save_2.json", JSON.stringify(future_envelope))
+	var future_result: Dictionary = save_system.load_slot(2)
+	_expect(_result_error_code(future_result) == "unsupported_future_version", "loading rejects an unknown future state version")
+
+	var metadata_payload := GameStateCodec.to_persistent_dict(source)
+	var malformed_metadata_envelope := {
+		"format": "card_factory_save",
+		"metadata": {
+			"schema_version": GameState.SCHEMA_VERSION,
+			"saved_at": {"not": "a timestamp"},
+			"elapsed_time": source.elapsed_time,
+			"active_planet": "home",
+			"digest": JSON.stringify(metadata_payload).sha256_text(),
+		},
+		"state": metadata_payload,
+	}
+	_write_test_text(test_path + "save_7.json", JSON.stringify(malformed_metadata_envelope))
+	var malformed_metadata_result: Dictionary = save_system.load_slot(7)
+	_expect(_result_error_code(malformed_metadata_result) == "invalid_metadata", "loading rejects malformed metadata before the slot list can consume it")
+
+	_expect(save_system.save_slot(3, source).get("ok") == true, "interruption fixture has a valid primary save")
+	_write_test_text(test_path + "save_3.json.tmp", "{interrupted write")
+	var interrupted_result: Dictionary = save_system.load_slot(3)
+	_expect(interrupted_result.get("ok") == true and interrupted_result.get("recovered_from_backup") == false, "an interrupted temp write never replaces a valid primary save")
+
+	var first_generation := _make_fixture_state()
+	first_generation.elapsed_time = 100.0
+	var second_generation := _make_fixture_state()
+	second_generation.elapsed_time = 200.0
+	_expect(save_system.save_slot(4, first_generation).get("ok") == true, "backup fixture writes its first generation")
+	_expect(save_system.save_slot(4, second_generation).get("ok") == true, "backup fixture rotates a second validated generation")
+	_write_test_text(test_path + "save_4.json", "{corrupt primary")
+	var recovered_result: Dictionary = save_system.load_slot(4)
+	var recovered_state: Variant = recovered_result.get("state")
+	_expect(recovered_result.get("ok") == true and recovered_result.get("recovered_from_backup") == true, "load recovers from the most recent validated backup")
+	_expect(recovered_state is GameState and recovered_state.elapsed_time == 100.0, "backup recovery returns the last known-good generation")
+
+	_expect(save_system.delete_slot(4).get("ok") == true, "slot deletion removes a populated slot")
+	_expect(not FileAccess.file_exists(test_path + "save_4.json") and not FileAccess.file_exists(test_path + "save_4.json.bak") and not FileAccess.file_exists(test_path + "save_4.json.tmp"), "slot deletion removes primary, backup, and interrupted temp files")
+	_remove_test_save_directory(test_path)
+
 func _test_game_manager_replaces_authoritative_state() -> void:
 	_expect(GameManager.has_method("replace_game_state"), "GameManager exposes an atomic state replacement boundary")
 	if not GameManager.has_method("replace_game_state"):
@@ -166,6 +256,93 @@ func _test_game_manager_replaces_authoritative_state() -> void:
 	_expect(GameManager.get_game_state() == replacement, "GameManager installs the decoded authoritative state")
 	_expect(GameManager.get_simulation_engine().game_state == replacement, "GameManager rebuilds simulation services for the replacement state")
 	GameManager.replace_game_state(original_state)
+
+func _test_game_session_coordinator() -> void:
+	_expect(get_tree().auto_accept_quit == false, "window close waits for the explicit save handshake")
+	var required_methods := ["configure_save_system", "get_save_system", "start_new_game", "continue_game", "save_current_game", "advance_autosave", "get_autosave_interval", "prepare_to_quit", "end_session", "is_session_active", "get_current_slot"]
+	for method_name in required_methods:
+		_expect(GameManager.has_method(method_name), "GameManager exposes %s" % method_name)
+	if required_methods.any(func(method_name: String) -> bool: return not GameManager.has_method(method_name)):
+		return
+
+	var test_path := "res://.godot/test_saves/session_%d/" % Time.get_ticks_usec()
+	var original_state: GameState = GameManager.get_game_state()
+	var original_save_system: SaveSystem = GameManager.get_save_system()
+	GameManager.configure_save_system(SaveSystem.new(test_path))
+
+	var new_game_result: Dictionary = GameManager.start_new_game(5)
+	_expect(new_game_result.get("ok") == true, "new game creates a validated initial slot")
+	_expect(GameManager.is_session_active() and GameManager.get_current_slot() == 5, "new game activates exactly one selected slot")
+
+	var session_state := _make_fixture_state()
+	session_state.paused = true
+	GameManager.replace_game_state(session_state)
+	var manual_result: Dictionary = GameManager.save_current_game("manual")
+	_expect(manual_result.get("ok") == true, "manual save uses the session save coordinator")
+	_expect(session_state.paused == true, "saving preserves the player's pause intent")
+	GameManager.set("_save_in_progress", true)
+	var overlapping_result: Dictionary = GameManager.save_current_game("overlap")
+	GameManager.set("_save_in_progress", false)
+	_expect(_result_error_code(overlapping_result) == "save_in_progress", "the session coordinator rejects overlapping writes")
+
+	var state_before_failed_load := GameManager.get_game_state()
+	_write_test_text(test_path + "save_6.json", "{broken session")
+	var failed_continue: Dictionary = GameManager.continue_game(6)
+	_expect(failed_continue.get("ok") == false, "continue reports a corrupt slot failure")
+	_expect(GameManager.get_game_state() == state_before_failed_load and GameManager.get_current_slot() == 5, "failed continue never installs a half-initialized session")
+
+	GameManager.replace_game_state(GameState.new())
+	var continue_result: Dictionary = GameManager.continue_game(5)
+	_expect(continue_result.get("ok") == true, "continue loads the selected valid slot")
+	_expect(GameManager.get_game_state().elapsed_time == 123.5, "continue atomically installs the persisted state")
+	_expect(GameManager.get_simulation_engine().game_state == GameManager.get_game_state(), "continue rebuilds simulation services against the loaded state")
+
+	GameManager.get_game_state().elapsed_time = 321.0
+	GameManager.advance_autosave(GameManager.get_autosave_interval())
+	var autosaved: Dictionary = GameManager.get_save_system().load_slot(5)
+	_expect(autosaved.get("ok") == true and autosaved.get("state").elapsed_time == 321.0, "autosave uses the same validated slot pipeline")
+
+	GameManager.get_game_state().elapsed_time = 654.0
+	var quit_result: Dictionary = GameManager.prepare_to_quit()
+	var exit_saved: Dictionary = GameManager.get_save_system().load_slot(5)
+	_expect(quit_result.get("ok") == true and exit_saved.get("state").elapsed_time == 654.0, "quit handshake durably saves the active session")
+
+	GameManager.configure_save_system(original_save_system)
+	GameManager.replace_game_state(original_state)
+	GameManager.end_session()
+	_remove_test_save_directory(test_path)
+
+func _test_session_ui_contract() -> void:
+	var script_paths := [
+		"res://scenes/ui/AppShell.gd",
+		"res://scenes/ui/StartMenu.gd",
+		"res://scenes/ui/SaveSlotsPanel.gd",
+	]
+	for script_path in script_paths:
+		_expect(ResourceLoader.exists(script_path), "session UI provides %s" % script_path.get_file())
+	if script_paths.any(func(script_path: String) -> bool: return not ResourceLoader.exists(script_path)):
+		return
+
+	var start_menu: Control = load("res://scenes/ui/StartMenu.gd").new()
+	add_child(start_menu)
+	_expect(start_menu.has_signal("new_game_requested") and start_menu.has_signal("continue_requested") and start_menu.has_signal("slots_requested"), "start menu exposes intent-only session signals")
+	_expect(start_menu.get_node_or_null("Layout/Card/Content/Actions/NewGameButton") is Button, "start menu provides a new-game action")
+	_expect(start_menu.get_node_or_null("Layout/Card/Content/Actions/ContinueButton") is Button, "start menu provides a continue action")
+	_expect(start_menu.get_node_or_null("Layout/Card/Content/Actions/SlotsButton") is Button, "start menu provides slot management")
+	start_menu.show_error("存档损坏，请选择备份或其他槽位")
+	var error_label := start_menu.get_node_or_null("Layout/Card/Content/ErrorLabel") as Label
+	_expect(error_label != null and error_label.visible and error_label.text.contains("存档损坏"), "start menu keeps load failures visible and actionable")
+	start_menu.free()
+
+	var slots_panel: Control = load("res://scenes/ui/SaveSlotsPanel.gd").new()
+	add_child(slots_panel)
+	_expect(slots_panel.has_signal("new_game_requested") and slots_panel.has_signal("continue_requested") and slots_panel.has_signal("delete_requested") and slots_panel.has_signal("back_requested"), "slot panel emits commands without mutating GameState")
+	slots_panel.refresh_slots([{"slot": 2, "saved_at": 1.0, "elapsed_time": 123.0, "building_count": 2, "active_planet": "home"}])
+	_expect(slots_panel.get_node_or_null("Layout/Card/Content/Slots/Slot2/Row/ContinueButton") is Button, "occupied slots expose continue")
+	_expect(slots_panel.get_node_or_null("Layout/Card/Content/Slots/Slot2/Row/DeleteButton") is Button, "occupied slots expose delete")
+	_expect(slots_panel.get_node_or_null("Layout/Card/Content/Slots/Slot0/Row/NewGameButton") is Button, "empty slots expose new game")
+	_expect(slots_panel.get_node_or_null("DeleteConfirmation") is ConfirmationDialog, "slot deletion requires explicit confirmation")
+	slots_panel.free()
 
 func _make_fixture_state(reverse_insertion_order: bool = false) -> GameState:
 	var state := GameState.new()
@@ -228,6 +405,30 @@ func _error_codes(errors: Array) -> Array:
 		if validation_error is Dictionary:
 			codes.append(validation_error.get("code", ""))
 	return codes
+
+func _result_error_code(result: Dictionary) -> String:
+	return String(result.get("error", {}).get("code", ""))
+
+func _write_test_text(path: String, contents: String) -> void:
+	var file := FileAccess.open(path, FileAccess.WRITE)
+	if file == null:
+		_expect(false, "test fixture can write %s" % path)
+		return
+	file.store_string(contents)
+	file.close()
+
+func _remove_test_save_directory(path: String) -> void:
+	var absolute_path := ProjectSettings.globalize_path(path.trim_suffix("/"))
+	var directory := DirAccess.open(absolute_path)
+	if directory != null:
+		directory.list_dir_begin()
+		var entry := directory.get_next()
+		while not entry.is_empty():
+			if not directory.current_is_dir():
+				directory.remove(entry)
+			entry = directory.get_next()
+		directory.list_dir_end()
+	DirAccess.remove_absolute(absolute_path)
 
 func _expect(condition: bool, description: String) -> void:
 	if condition:

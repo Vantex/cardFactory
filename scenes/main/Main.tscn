@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=3 uid="uid://main004"]
+[gd_scene load_steps=7 format=3 uid="uid://main004"]
 
 [ext_resource type="Script" path="res://scenes/main/Main.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/rendering/CardRenderer.gd" id="2_card"]
 [ext_resource type="Script" path="res://scripts/rendering/ConnectionRenderer.gd" id="3_conn"]
 [ext_resource type="Script" path="res://scripts/input/InputHandler.gd" id="4_input"]
 [ext_resource type="Script" path="res://scenes/ui/FactoryWorkspaceUI.gd" id="5_workspace"]
+[ext_resource type="Script" path="res://scenes/ui/AppShell.gd" id="6_shell"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_main")
@@ -26,3 +27,7 @@ script = ExtResource("4_input")
 [node name="FactoryWorkspaceUI" type="CanvasLayer" parent="."]
 layer = 10
 script = ExtResource("5_workspace")
+
+[node name="AppShell" type="CanvasLayer" parent="."]
+layer = 30
+script = ExtResource("6_shell")

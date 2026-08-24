@@ -9,6 +9,7 @@ extends Node2D
 var _synced_selected_building_id := ""
 
 func _ready() -> void:
+	GameManager.game_state_replaced.connect(_on_game_state_replaced)
 	var game_state := GameManager.get_game_state()
 	card_renderer.set_game_state(game_state)
 	card_renderer.set_input_handler(input_handler)
@@ -24,6 +25,15 @@ func _ready() -> void:
 	EventBus.pause_toggled_requested.connect(_on_pause_toggled_requested)
 	EventBus.speed_requested.connect(_on_speed_requested)
 	factory_workspace_ui.refresh_now()
+
+func _on_game_state_replaced(new_state: GameState) -> void:
+	card_renderer.set_game_state(new_state)
+	connection_renderer.set_game_state(new_state)
+	input_handler.cancel_operation()
+	input_handler.selected_building_id = ""
+	_synced_selected_building_id = ""
+	factory_workspace_ui.set_selected_building("")
+	EventBus.simulation_updated.emit()
 
 func _process(_delta: float) -> void:
 	var placement_building_type: String = input_handler.placing_building_type if input_handler.get_mode_name() == "placing" else ""

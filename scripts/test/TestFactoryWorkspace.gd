@@ -16,6 +16,10 @@ var _failures := 0
 
 func _ready() -> void:
 	print("FACTORY WORKSPACE TESTS STARTED")
+	var workspace_save_system := SaveSystem.new("res://.godot/test_saves/factory_workspace/")
+	workspace_save_system.delete_slot(9)
+	GameManager.configure_save_system(workspace_save_system)
+	_expect(GameManager.start_new_game(9).get("ok") == true, "workspace integration tests run inside an explicit local session")
 	_test_explicit_building_costs()
 	_test_existing_recipe_connection_rules()
 	_test_rectangle_overlap_contract()
@@ -63,6 +67,7 @@ func _ready() -> void:
 	state.remove_building(miner.id)
 	_expect(not state.buildings.has(miner.id) and state.connections.is_empty(), "removing a building cascades to its connections")
 
+	workspace_save_system.delete_slot(9)
 	if _failures > 0:
 		printerr("FACTORY WORKSPACE TESTS FAILED")
 		get_tree().quit(1)
@@ -373,6 +378,7 @@ func _test_selection_and_placement_mode_alignment() -> void:
 	var state := GameManager.get_game_state()
 	var input_handler := main.get_node("InputHandler")
 	var workspace := main.get_node("FactoryWorkspaceUI") as CanvasLayer
+	var app_shell := main.get_node("AppShell")
 	var miner: Dictionary = state.try_place_building("miner", Vector2(260, 100))
 	EventBus.card_selected.emit(miner.id)
 	workspace.call("_on_building_pressed", "smelter")
@@ -387,10 +393,18 @@ func _test_selection_and_placement_mode_alignment() -> void:
 	var escape_event := InputEventKey.new()
 	escape_event.keycode = KEY_ESCAPE
 	escape_event.pressed = true
-	input_handler.call("_handle_key_press", escape_event)
+	test_viewport.push_input(escape_event, true)
 	await get_tree().process_frame
 	var mode_label := workspace.get_node("ConstructionDock/Mode") as Label
 	_expect(input_handler.call("get_mode_name") == "idle" and (not workspace.has_method("get_placement_building_type") or workspace.call("get_placement_building_type") == "") and "选择建筑" in mode_label.text, "Escape clears the real placement mode and its visible dock state")
+	_expect(app_shell.call("get_screen_name") == "game" and GameManager.is_session_active(), "Escape consumed by an active canvas operation does not also leave the game session")
+	test_viewport.push_input(escape_event, true)
+	await get_tree().process_frame
+	var returned_save: Dictionary = GameManager.get_save_system().load_slot(9)
+	var returned_state: Variant = returned_save.get("state")
+	_expect(app_shell.call("get_screen_name") == "start" and not GameManager.is_session_active(), "Escape from an idle canvas saves and returns to the start menu")
+	_expect(returned_save.get("ok") == true and returned_state is GameState and returned_state.buildings.has(miner.id), "return-to-menu handshake persists the active factory before ending the session")
+	_expect(GameManager.start_new_game(9).get("ok") == true, "workspace tests resume an explicit session after exercising return-to-menu")
 	test_viewport.queue_free()
 	await get_tree().process_frame
 

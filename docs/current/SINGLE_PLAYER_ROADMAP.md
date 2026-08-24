@@ -161,34 +161,39 @@ git commit -m "feat: add versioned authoritative game state"
 - 创建：`scenes/ui/StartMenu.gd`
 - 创建：`scenes/ui/SaveSlotsPanel.gd`
 - 修改：`scenes/main/Main.tscn`
+- 修改：`scenes/main/Main.gd`
+- 修改：`scripts/input/InputHandler.gd`
 - 修改：`scripts/test/TestStatePersistence.gd`
+- 修改：`scripts/test/TestFactoryWorkspace.gd`
 
-- [ ] **步骤 1：写槽位往返失败测试**
+- [x] **步骤 1：写槽位往返失败测试**
 
 保存包含建筑位置、连接流状态、库存、研究进度和 elapsed time 的状态；加载后比较持久摘要。覆盖无效槽、损坏 JSON、未来版本、写入中断和备份恢复。
 
-- [ ] **步骤 2：原子写入本地档**
+- [x] **步骤 2：原子写入本地档**
 
 先写临时文件并读回校验，再替换主档；保留最近一个已验证备份。元数据包含 schema、时间、游玩时长、活动行星和摘要。
 
-- [ ] **步骤 3：实现开始菜单**
+- [x] **步骤 3：实现开始菜单**
 
 正式入口提供新游戏、继续、槽位管理、删除确认和返回。加载失败留在菜单并显示可操作原因，不创建半初始化会话。
 
-- [ ] **步骤 4：实现自动保存和退出握手**
+- [x] **步骤 4：实现自动保存和退出握手**
 
 定时保存、关键进度保存、退出前保存使用同一个协调器，禁止重叠写入。玩家暂停意图在保存前后不改变。
 
-- [ ] **步骤 5：验证真实流程**
+- [x] **步骤 5：验证真实流程**
 
 自动测试与一次手动流程：新游戏 → 建造生产线 → 保存 → 退出 → 继续 → 位置、库存和模拟状态一致。
 
-- [ ] **步骤 6：提交**
+- [x] **步骤 6：提交**
 
 ```powershell
-git add scripts/game/SaveSystem.gd autoload/GameManager.gd scenes/ui/AppShell.gd scenes/ui/StartMenu.gd scenes/ui/SaveSlotsPanel.gd scenes/main/Main.tscn scripts/test/TestStatePersistence.gd
+git add scripts/game/SaveSystem.gd autoload/GameManager.gd scenes/ui/AppShell.gd scenes/ui/StartMenu.gd scenes/ui/SaveSlotsPanel.gd scenes/main/Main.gd scenes/main/Main.tscn scripts/input/InputHandler.gd scripts/test/TestStatePersistence.gd scripts/test/TestFactoryWorkspace.gd README.md docs/PROJECT_STATUS.md docs/current/SINGLE_PLAYER_ROADMAP.md
 git commit -m "feat: add durable local save sessions"
 ```
+
+**完成记录（2026-08-24）：** 已交付 10 槽原子本地存档、最近有效备份、损坏/未来版本拒绝、开始菜单、槽位管理、120 秒自动保存和退出握手；自动门禁与用户手动流程均通过。UI 不直接修改权威状态，加载失败不会替换现有会话。
 
 ---
 

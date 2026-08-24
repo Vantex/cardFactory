@@ -4,7 +4,7 @@
 
 ## Phase 2：已完成
 
-Phase 2 的工厂工作区已接入主场景，并由正式测试门和无窗口主场景启动验证覆盖。该结论仅表示本阶段的建造、连接、配方和画布交互闭环已交付，不表示存档、目标、minimap 或高级系统已完成。
+Phase 2 的工厂工作区已接入主场景，并由正式测试门和无窗口主场景启动验证覆盖。Stage 0 的可信门禁、版本化权威状态和可靠本地存档入口也已完成；目标、minimap 和高级系统仍未交付。
 
 ## 活跃运行树与数据流
 
@@ -13,16 +13,17 @@ Phase 2 的工厂工作区已接入主场景，并由正式测试门和无窗口
 ```text
 project.godot
 ├─ DataManager → 按文件名排序加载 data/*.json → 重复 ID/配方引用校验
-├─ GameManager → GameState → SimulationEngine
+├─ GameManager → SaveSystem → GameState → SimulationEngine
 │                              ├─ PowerSystem
 │                              ├─ BeltSystem
 │                              ├─ ProductionSystem
 │                              └─ StatisticsSystem
-└─ Main.tscn → WorldCamera + CardRenderer + ConnectionRenderer
+└─ Main.tscn → AppShell → StartMenu + SaveSlotsPanel
+               + WorldCamera + CardRenderer + ConnectionRenderer
                + InputHandler + FactoryWorkspaceUI
 ```
 
-主场景不再自动放置测试生产线。`FactoryWorkspaceUI` 发出建造、连接、删除、暂停和速度意图，并动态显示电力、库存、生产、检查器和短时反馈；`InputHandler` 仲裁中央画布的放置、选择、拖动、端口连接、平移和缩放；两个 renderer 只读 `GameState` 绘制卡片和连接。`GameState` 负责建造点扣除、矩形重叠检查、放置和连接的原子验证，`SimulationEngine` 继续更新电力、物流、生产和统计。
+主场景先显示离线开始菜单和 10 个本地槽位；会话启动后才启用工厂输入与模拟。`AppShell` 只发送新游戏、继续、删除和返回意图，`GameManager` 统一协调保存、状态替换、自动保存和退出握手。`FactoryWorkspaceUI` 发出建造、连接、删除、暂停和速度意图；`InputHandler` 仲裁画布操作；两个 renderer 只读 `GameState`。`GameState` 负责原子规则，`SimulationEngine` 更新电力、物流、生产和统计。
 
 ## 已验证能力
 
@@ -46,6 +47,9 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1
 - 连接以 `enabled` 保存持久运输许可，以 `active` 表示当前帧实际物流；禁用连接不运输，启用但无货物的连接保持非活动。
 - 矿机到熔炉的模拟链路将铁矿传入熔炉并生产铁锭。
 - `GameState` 使用整数 schema 版本；`GameStateCodec` 生成稳定排序的 JSON 兼容快照并恢复 `Vector2`，`GameStateValidator` 拒绝悬空连接、负库存和不稳定 ID，`SaveMigrationRegistry` 逐版本迁移并拒绝未知未来版本。状态摘要排除暂停、倍速、节点引用、交互锁和当前帧连接流量；`GameManager` 替换状态时会同步重建模拟服务。
+- `SaveSystem` 使用临时档写入后校验、有效主档轮换备份和摘要验证完成原子槽位保存；覆盖无效槽、损坏 JSON、异常元数据、未来版本、中断临时档和损坏主档的备份恢复。加载失败不替换当前状态。
+- 新游戏立即落盘，活动会话每 120 秒自动保存，返回菜单和窗口关闭前使用同一保存协调器；保存不会改变玩家暂停意图，重叠写入会被拒绝。开始菜单提供继续最近游戏，槽位页提供新建、继续、删除确认和可操作错误提示。
+- 用户已手动验收开始菜单、槽位页面、进入游戏及保存/继续流程；真实窗口布局未复现旧的 UI 重叠问题。
 
 以下命令验证主场景能无窗口启动 120 帧；它不替代正式测试门：
 
@@ -57,7 +61,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1
 
 - 多选/框选、蓝图、建筑缩略图和高级检查器面板延期。
 - 移动端布局、云存档、正式目标/胜负系统和 minimap 未进入活跃主场景；资源栏中的新手目标只是上下文操作引导。
-- 版本化 codec 已解决规范状态的 `Vector2` JSON 往返，但旧 `SaveSystem` 仍直接序列化松散字段、尚未接入 codec、迁移和原子替换，因此不能将保存/加载视为已交付能力。
+- 本地存档已经交付，但当前没有单独的“立即保存”按钮；保存以新建、120 秒自动保存、返回菜单和退出握手触发。
 - 云同步、云备份、云恢复、存档压缩、解压和迁移均为延期能力，当前统一返回 `ERR_UNAVAILABLE`，不会伪装成功；`PerformanceSystem` 也明确报告未启用 Worker 支持。
 - `PowerSystem` 会计算并写入 `power_efficiency`，但 `ProductionSystem` 没有消费该值，电力不足尚不影响生产速度。
 - 科技、空间站、行星、星系、戴森球及高级物流功能多数没有进入当前主场景和活跃模拟编排，部分实现只是占位或局部 API。
@@ -65,7 +69,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1
 
 ## 下一阶段建议
 
-用户已批准继续对齐 DSPONLINE 的完整单机玩法，并明确排除账号、云存档、排行榜、在线社交和服务器运维。后续以新的[差距分析与续作设计](current/SINGLE_PLAYER_GAP_ANALYSIS.md)和[单机实施路线图](current/SINGLE_PLAYER_ROADMAP.md)为准：先完成版本化状态、可靠本地存档、固定步长和电力闭环，再依次建设完整行星工厂、科技推进、多行星物流、戴森终局及产品化。
+用户已批准继续对齐 DSPONLINE 的完整单机玩法，并明确排除账号、云存档、排行榜、在线社交和服务器运维。版本化状态与可靠本地存档已经完成；下一项按[单机实施路线图](current/SINGLE_PLAYER_ROADMAP.md)实施固定步长和真实电力闭环，再依次建设完整行星工厂、科技推进、多行星物流、戴森终局及产品化。
 
 `DSPONLINE` 只在其非商业许可范围内作为行为和架构参考；不复制其源码或素材，也不把账号、云档、多核 Worker、排行榜等高级能力作为 CardFactory 当前开发的前置条件。
 
