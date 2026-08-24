@@ -5,9 +5,12 @@ var game_state: GameState
 var simulation_engine: SimulationEngine
 
 func _ready():
-    game_state = GameState.new()
-    simulation_engine = SimulationEngine.new(game_state)
+    replace_game_state(GameState.new())
     print("GameManager initialized")
+
+func replace_game_state(new_state: GameState) -> void:
+    game_state = new_state
+    simulation_engine = SimulationEngine.new(game_state)
 
 func get_game_state() -> GameState:
     return game_state

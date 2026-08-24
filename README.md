@@ -38,7 +38,7 @@ Godot 不在默认位置时，通过 `-GodotPath` 覆盖：
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1 -GodotPath 'D:\Tools\Godot\Godot.exe'
 ```
 
-门禁会先自动执行无窗口编辑器导入，生成资产缓存和全局脚本类缓存，再运行真实 Godot 测试场景：`TestBaseline` 与 `TestFactoryWorkspace`。正常通过必须同时满足：Godot 退出码为 0；每个场景的完整成功标记各出现一次；输出不包含 `SCRIPT ERROR`、`Parse Error`、对应失败标记、ObjectDB 泄漏或仍被占用的资源。引擎级 `--quit-after 600` 保证测试进程有界结束。
+门禁会先自动执行无窗口编辑器导入，生成资产缓存和全局脚本类缓存，再运行真实 Godot 测试场景：`TestBaseline`、`TestFactoryWorkspace` 与 `TestStatePersistence`。正常通过必须同时满足：Godot 退出码为 0；每个场景的完整成功标记各出现一次；输出不包含 `SCRIPT ERROR`、`Parse Error`、对应失败标记、ObjectDB 泄漏或仍被占用的资源。引擎级 `--quit-after 600` 保证测试进程有界结束。
 
 ## 当前可玩工作区（Phase 2）
 
@@ -76,7 +76,7 @@ docs/           权威状态、规格、计划和交付记录
 
 当前已交付的第二阶段不包含多选或框选、蓝图、建筑缩略图、移动端布局、目标/胜负系统、minimap 或高级面板。仓库中存在的相关旧 UI 或局部 API 没有接入当前主场景，不能视为已交付功能。
 
-存档的 `Vector2` JSON 往返尚未解决；电力效率目前也不会调节生产速度。科技、空间站、行星、星系、戴森球和高级物流能力同样不在活跃工作区范围内。`scripts/test/` 中除 `TestBaseline.gd` 与 `TestFactoryWorkspace.gd` 外的旧打印式脚本不属于门禁。
+版本化 `GameState` codec 已能规范编码 `Vector2`、恢复运行类型、迁移旧 schema 并拒绝损坏状态，但旧 `SaveSystem` 尚未接入该 codec，因此真正的多槽本地存档仍未交付。电力效率目前也不会调节生产速度。科技、空间站、行星、星系、戴森球和高级物流能力同样不在活跃工作区范围内。`scripts/test/` 中除 `TestBaseline.gd`、`TestFactoryWorkspace.gd` 与 `TestStatePersistence.gd` 外的旧打印式脚本不属于门禁。
 
 后续已批准按完整单机玩法继续开发；账号、云存档、排行榜、在线社交和服务器运维明确排除。详细差距和实施顺序见[单机差距设计](docs/current/SINGLE_PLAYER_GAP_ANALYSIS.md)与[实施路线图](docs/current/SINGLE_PLAYER_ROADMAP.md)。
 

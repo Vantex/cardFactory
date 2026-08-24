@@ -126,28 +126,30 @@ git commit -m "test: establish trustworthy clean checkout gate"
 - 修改：`autoload/GameManager.gd`
 - 修改：`tools/run_tests.ps1`
 
-- [ ] **步骤 1：写 schema/codec 失败测试**
+- [x] **步骤 1：写 schema/codec 失败测试**
 
 覆盖：版本号、稳定 ID、`Vector2` 编码、建筑/连接字典、临时运行字段排除、解码后类型恢复、悬空连接拒绝、负库存拒绝。
 
-- [ ] **步骤 2：定义规范快照**
+- [x] **步骤 2：定义规范快照**
 
 `GameStateCodec.to_persistent_dict(state)` 只输出持久字段；位置编码为 `{x, y}`；字典键稳定排序；`from_persistent_dict` 创建新 GameState，不直接把 JSON 字典塞入运行对象。
 
-- [ ] **步骤 3：增加 schema 版本和迁移注册表**
+- [x] **步骤 3：增加 schema 版本和迁移注册表**
 
 定义单调整数版本。每个迁移只处理 `vN → vN+1`，未知未来版本拒绝加载；迁移完成后运行 validator。
 
-- [ ] **步骤 4：增加状态摘要**
+- [x] **步骤 4：增加状态摘要**
 
 提供稳定的 `state_digest_payload()`，用于固定步长、保存往返、优化前后差分测试；不包含帧时间、节点引用和 UI 选择。
 
-- [ ] **步骤 5：验证并提交**
+- [x] **步骤 5：验证并提交**
 
 ```powershell
 git add scripts/game/GameState.gd scripts/game/GameStateCodec.gd scripts/game/GameStateValidator.gd scripts/game/SaveMigrationRegistry.gd autoload/GameManager.gd scripts/test/TestStatePersistence.gd scenes/test/TestStatePersistence.tscn tools/run_tests.ps1
 git commit -m "feat: add versioned authoritative game state"
 ```
+
+**完成记录（2026-08-24）：** 已交付整数 schema、规范 codec、逐版本迁移、完整性验证、稳定状态摘要和 GameManager 原子替换边界；`TestStatePersistence` 已进入权威 runner。真正的磁盘存档接入继续由任务 3 负责。
 
 ### 任务 3：交付可靠本地存档和游戏会话入口
 

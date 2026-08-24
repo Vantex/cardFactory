@@ -3,6 +3,7 @@ class_name GameState
 extends RefCounted
 
 const FactoryGeometry = preload("res://scripts/game/FactoryGeometry.gd")
+const SCHEMA_VERSION: int = 1
 
 const BUILDING_COSTS: Dictionary = {
     "miner": 1,
@@ -649,8 +650,8 @@ func is_entity_interaction_locked(entity_id: String) -> bool:
     return entity.get("interaction_locked", false)
 
 # 6. 状态版本管理
-func get_state_version() -> String:
-    return "1.0.0"
+func get_state_version() -> int:
+    return SCHEMA_VERSION
 
 # 7. 模拟预算管理
 var simulation_budget: Dictionary = {
