@@ -78,13 +78,15 @@ tools/          唯一测试门禁脚本
 docs/           权威状态、规格、计划和交付记录
 ```
 
-## 非目标与未完成系统
+## 当前未完成系统与续作范围
 
-第二阶段不包含多选或框选、蓝图、建筑缩略图、移动端布局、云存档、目标/胜负系统、minimap 或高级面板。仓库中存在的相关旧 UI 或局部 API 没有接入当前主场景，不能视为已交付功能。
+当前已交付的第二阶段不包含多选或框选、蓝图、建筑缩略图、移动端布局、目标/胜负系统、minimap 或高级面板。仓库中存在的相关旧 UI 或局部 API 没有接入当前主场景，不能视为已交付功能。
 
 存档的 `Vector2` JSON 往返尚未解决；电力效率目前也不会调节生产速度。科技、空间站、行星、星系、戴森球和高级物流能力同样不在活跃工作区范围内。`scripts/test/` 中除 `TestBaseline.gd` 与 `TestFactoryWorkspace.gd` 外的旧打印式脚本不属于门禁。
 
-`DSPONLINE` 仅可在其非商业许可范围内作为行为和架构参考；本项目不复制其源码或素材，也不把其高级能力作为当前阶段的前置条件。
+后续已批准按完整单机玩法继续开发；账号、云存档、排行榜、在线社交和服务器运维明确排除。详细差距和实施顺序见新的[单机差距设计](docs/superpowers/specs/2026-08-24-cardfactory-dsponline-gap-analysis-design.md)与[实施路线图](docs/superpowers/plans/2026-08-24-cardfactory-dsponline-single-player-roadmap.md)。
+
+`DSPONLINE` 仅可在其非商业许可范围内作为行为和架构参考；本项目不复制其源码、素材或商标。
 
 ## 文档优先级
 
@@ -92,6 +94,7 @@ docs/           权威状态、规格、计划和交付记录
 
 1. 本 `README.md`；
 2. [`docs/PROJECT_STATUS.md`](docs/PROJECT_STATUS.md)；
-3. 已批准的 [Phase 2 设计规格](docs/superpowers/specs/2026-08-23-cardfactory-phase2-dsponline-ui-design.md) 与 [实现计划](docs/superpowers/plans/2026-08-23-cardfactory-phase2-dsponline-ui.md)。
+3. 已批准的[单机差距设计](docs/superpowers/specs/2026-08-24-cardfactory-dsponline-gap-analysis-design.md)与[实施路线图](docs/superpowers/plans/2026-08-24-cardfactory-dsponline-single-player-roadmap.md)；
+4. 已交付 Phase 2 的[设计规格](docs/superpowers/specs/2026-08-23-cardfactory-phase2-dsponline-ui-design.md)与[实现计划](docs/superpowers/plans/2026-08-23-cardfactory-phase2-dsponline-ui.md)。
 
 其余带日期的审计、测试指南、设计和阶段计划均为历史参考，不证明当前能力。
