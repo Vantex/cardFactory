@@ -52,6 +52,7 @@ static func validate_persistent_dict(payload: Variant) -> Array:
 		_validate_position(errors, building_id, building.get("position"))
 		_validate_inventory(errors, building_id, "input_buffer", building.get("input_buffer", {}))
 		_validate_inventory(errors, building_id, "output_buffer", building.get("output_buffer", {}))
+		_validate_power_state(errors, building_id, building)
 
 	for connection_key in connections:
 		var connection_id := String(connection_key)
@@ -93,6 +94,20 @@ static func _validate_inventory(errors: Array, building_id: String, buffer_name:
 			_add_error(errors, "invalid_inventory_amount", "inventory", "%s:%s" % [building_id, item_key], "库存数量必须是数字")
 		elif float(amount) < 0.0:
 			_add_error(errors, "negative_inventory", "inventory", "%s:%s" % [building_id, item_key], "库存数量不能为负数")
+
+static func _validate_power_state(errors: Array, building_id: String, building: Dictionary) -> void:
+	if building.has("fuel_remaining"):
+		var fuel_remaining: Variant = building["fuel_remaining"]
+		if not _is_number(fuel_remaining) or float(fuel_remaining) < 0.0:
+			_add_error(errors, "invalid_fuel_remaining", "building", building_id, "燃料剩余时间必须是非负数")
+	if building.has("generation_factor"):
+		var generation_factor: Variant = building["generation_factor"]
+		if not _is_number(generation_factor) or float(generation_factor) < 0.0 or float(generation_factor) > 1.0:
+			_add_error(errors, "invalid_generation_factor", "building", building_id, "可再生发电倍率必须在 0 到 1 之间")
+	if building.has("fuel_item"):
+		var fuel_item: Variant = building["fuel_item"]
+		if (typeof(fuel_item) != TYPE_STRING and typeof(fuel_item) != TYPE_STRING_NAME) or String(fuel_item).is_empty():
+			_add_error(errors, "invalid_fuel_item", "building", building_id, "燃料物品 ID 必须是非空字符串")
 
 static func _numeric_id_suffix(stable_id: String) -> int:
 	var separator := stable_id.rfind("_")

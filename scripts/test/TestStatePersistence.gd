@@ -24,6 +24,7 @@ func _ready() -> void:
 func _test_canonical_snapshot_and_round_trip() -> void:
 	var state := _make_fixture_state(false)
 	state.buildings["building_10"]["runtime_node"] = Node.new()
+	state.buildings["building_10"]["power_output"] = 500.0
 	var payload := GameStateCodec.to_persistent_dict(state)
 
 	_expect(state.get_state_version() == 1, "GameState exposes an integer schema version")
@@ -41,6 +42,7 @@ func _test_canonical_snapshot_and_round_trip() -> void:
 	_expect(not payload.get("buildings", {}).get("building_10", {}).has("status"), "derived building status is excluded")
 	_expect(not payload.get("buildings", {}).get("building_10", {}).has("interaction_locked"), "temporary interaction locks are excluded")
 	_expect(not payload.get("buildings", {}).get("building_10", {}).has("power_efficiency"), "derived power efficiency is excluded")
+	_expect(not payload.get("buildings", {}).get("building_10", {}).has("power_output"), "derived generator output is excluded")
 	_expect(not payload.get("buildings", {}).get("building_10", {}).has("runtime_node"), "Object references are excluded")
 	_expect(not payload.get("connections", {}).get("conn_9", {}).has("active"), "current-frame connection activity is excluded")
 	_expect(not payload.get("connections", {}).get("conn_9", {}).has("current_flow"), "current-frame connection flow is excluded")
@@ -87,7 +89,14 @@ func _test_validation_rejects_corrupt_state() -> void:
 	var next_id_errors := GameStateValidator.validate_persistent_dict(colliding_next_id)
 	_expect(_error_codes(next_id_errors).has("next_id_not_ahead"), "validator rejects a next ID that can collide with persisted IDs")
 
-	for validation_error in dangling_errors + inventory_errors + id_errors + next_id_errors:
+	var invalid_power_state := payload.duplicate(true)
+	invalid_power_state["buildings"]["building_10"]["fuel_remaining"] = -1.0
+	invalid_power_state["buildings"]["building_10"]["generation_factor"] = 1.5
+	var power_state_errors := GameStateValidator.validate_persistent_dict(invalid_power_state)
+	_expect(_error_codes(power_state_errors).has("invalid_fuel_remaining"), "validator rejects negative persisted fuel time")
+	_expect(_error_codes(power_state_errors).has("invalid_generation_factor"), "validator rejects renewable generation factors outside zero-to-one")
+
+	for validation_error in dangling_errors + inventory_errors + id_errors + next_id_errors + power_state_errors:
 		_expect(validation_error is Dictionary, "validation errors use structured dictionaries")
 		if validation_error is Dictionary:
 			for key in ["code", "source", "id", "message"]:

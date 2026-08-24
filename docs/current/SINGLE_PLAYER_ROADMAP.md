@@ -209,30 +209,38 @@ git commit -m "feat: add durable local save sessions"
 - 修改：`scripts/game/PowerSystem.gd`
 - 修改：`scripts/game/ProductionSystem.gd`
 - 修改：`scripts/game/BeltSystem.gd`
+- 修改：`scripts/game/GameState.gd`
+- 修改：`scripts/game/GameStateCodec.gd`
+- 修改：`scripts/game/GameStateValidator.gd`
+- 修改：`scenes/ui/FactoryWorkspaceUI.gd`
+- 修改：`scripts/test/TestFactoryWorkspace.gd`
+- 修改：`scripts/test/TestStatePersistence.gd`
 - 修改：`tools/run_tests.ps1`
 
-- [ ] **步骤 1：写帧率独立失败测试**
+- [x] **步骤 1：写帧率独立失败测试**
 
 对同一初态分别执行 60×1/60 秒、10×0.1 秒和 1×1 秒，比较持久摘要与产量；修改前应暴露差异或边界跳跃。
 
-- [ ] **步骤 2：增加固定模拟步长**
+- [x] **步骤 2：增加固定模拟步长**
 
 渲染 delta 进入 accumulator，以固定 tick 推进。定义每帧最大追赶步数，超额时间保留到下一帧而不是丢弃。
 
-- [ ] **步骤 3：让供电倍率进入生产和物流**
+- [x] **步骤 3：让供电倍率进入生产和物流**
 
 断电停止，欠电按倍率推进，恢复后保留进度。发电机没有燃料时不得发电；基础太阳能/风能使用明确规则。
 
-- [ ] **步骤 4：测试阶段顺序**
+- [x] **步骤 4：测试阶段顺序**
 
 固定 `电力 → 生产/采集 → 线路 → 研究 → 统计` 的边界，并用一 tick 和多 tick 用例证明没有同帧重复消费。
 
-- [ ] **步骤 5：提交**
+- [x] **步骤 5：提交**
 
 ```powershell
 git add scripts/game/SimulationEngine.gd scripts/game/PowerSystem.gd scripts/game/ProductionSystem.gd scripts/game/BeltSystem.gd scripts/test/TestSimulationCore.gd scenes/test/TestSimulationCore.tscn tools/run_tests.ps1
 git commit -m "feat: make factory simulation deterministic"
 ```
+
+**完成记录（2026-08-24）：** 已交付 60 Hz 固定 tick、每帧最多 10 步且保留超额时间的追赶预算、确定的“电力 → 生产/采集 → 线路 → 研究边界 → 统计”顺序，以及作用于生产和线路的真实供电倍率。燃料机无燃料不发电，太阳能/风能使用显式倍率；新放置基础发电机暂带 300 秒启动燃料，正式燃料库存与补给由任务 5 接续。规范存档排除可重建的电力输出和效率，并校验持久化燃料字段。`TestSimulationCore` 已进入权威 runner。
 
 ### 任务 5：行星库存、施工库存与手工制造
 

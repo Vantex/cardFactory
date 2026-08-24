@@ -170,8 +170,22 @@ func _test_workspace_live_content_and_actions() -> void:
 	var tips := workspace.get_node_or_null("ResourceRail/Tips") as Label
 	_expect(objective != null and "连接" in objective.text, "resource rail displays the current beginner objective")
 	_expect(stock != null and "iron_ore" in stock.text and "6" in stock.text, "resource rail aggregates nonzero buffers")
-	_expect(production != null and "运行 1" in production.text, "resource rail displays a production overview")
+	_expect(production != null and "运行 0" in production.text and "停电 1" in production.text, "resource rail distinguishes unpowered production from running buildings")
 	_expect(tips != null and "操作提示" in tips.text and "Q/W/E/R" in tips.text, "resource rail displays concise controls")
+	var empty_generator_id := state.add_building({
+		"type": "power_generator",
+		"position": Vector2(900, 400),
+		"status": "idle",
+		"recipe_id": "",
+		"progress": 0.0,
+		"input_buffer": {},
+		"output_buffer": {},
+		"speed": 1.0,
+	})
+	GameManager.get_simulation_engine().update(1.0 / 60.0)
+	workspace.refresh_now()
+	_expect("GEN 0" in metrics.text and "BAL -60" in metrics.text, "top bar reports actual fueled generation instead of static generator capacity")
+	state.remove_building(empty_generator_id)
 
 	workspace.set_selected_building(smelter.id)
 	await get_tree().process_frame
@@ -480,17 +494,19 @@ func _test_real_production_loop() -> void:
 	var state := GameState.new()
 	var miner: Dictionary = state.try_place_building("miner", Vector2(100, 100))
 	var smelter: Dictionary = state.try_place_building("smelter", Vector2(420, 100))
+	var generator: Dictionary = state.try_place_building("power_generator", Vector2(740, 100))
 	var connection: Dictionary = state.try_add_connection(miner.get("id", ""), smelter.get("id", ""))
-	_expect(miner.get("ok", false) and smelter.get("ok", false) and connection.get("ok", false), "real production loop can be constructed through atomic commands")
-	if not miner.get("ok", false) or not smelter.get("ok", false) or not connection.get("ok", false):
+	_expect(miner.get("ok", false) and smelter.get("ok", false) and generator.get("ok", false) and connection.get("ok", false), "real powered production loop can be constructed through atomic commands")
+	if not miner.get("ok", false) or not smelter.get("ok", false) or not generator.get("ok", false) or not connection.get("ok", false):
 		return
 
 	var engine := SimulationEngine.new(state)
-	engine.update(6.0)
-	engine.update(0.5)
+	for _tick in range(390):
+		engine.update(1.0 / 60.0)
 	var buffered_ore: float = state.get_building(smelter.id).get("input_buffer", {}).get("iron_ore", 0.0)
 	_expect(buffered_ore >= 1.0, "belt update moves mined iron ore into the smelter")
-	engine.update(0.5)
+	for _tick in range(70):
+		engine.update(1.0 / 60.0)
 	var produced_ingots: float = state.get_building(smelter.id).get("output_buffer", {}).get("iron_ingot", 0.0)
 	_expect(produced_ingots >= 1.0, "production update consumes ore and produces an iron ingot")
 

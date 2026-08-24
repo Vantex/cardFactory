@@ -325,6 +325,11 @@ func _create_toast() -> void:
 func _refresh_top_bar(state: GameState) -> void:
 	var generation := state.calculate_total_power_generation()
 	var consumption := state.calculate_total_power_demand()
+	var simulation_engine := GameManager.get_simulation_engine()
+	if GameManager.get_game_state() == state and simulation_engine != null and simulation_engine.game_state == state:
+		var power_info := simulation_engine.get_power_info()
+		generation = float(power_info.get("generation", generation))
+		consumption = float(power_info.get("consumption", consumption))
 	var balance := generation - consumption
 	var balance_text := "%.0f" % balance
 	if balance > 0.0:
@@ -341,11 +346,11 @@ func _refresh_resource_rail(state: GameState) -> void:
 	_resource_summary.text = "CONSTRUCTION\nPOINTS  %02d\nBUILDINGS  %02d  LINKS  %02d" % [state.construction_points, state.buildings.size(), state.connections.size()]
 	_objective_label.text = _beginner_objective(state)
 	_stock_label.text = "库存\n%s" % _format_stock(state)
-	var counts := {"running": 0, "idle": 0, "blocked": 0, "error": 0}
+	var counts := {"running": 0, "idle": 0, "blocked": 0, "no_power": 0, "error": 0}
 	for building in state.buildings.values():
 		var status: String = building.get("status", "idle")
 		counts[status] = counts.get(status, 0) + 1
-	_production_label.text = "生产概况\n运行 %d  空闲 %d\n阻塞 %d  异常 %d" % [counts.running, counts.idle, counts.blocked, counts.error]
+	_production_label.text = "生产概况\n运行 %d  空闲 %d\n阻塞 %d  停电 %d\n异常 %d" % [counts.running, counts.idle, counts.blocked, counts.no_power, counts.error]
 
 func _refresh_inspector(state: GameState) -> void:
 	var building := state.get_building(_selected_building_id)

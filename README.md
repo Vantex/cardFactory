@@ -38,7 +38,7 @@ Godot 不在默认位置时，通过 `-GodotPath` 覆盖：
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1 -GodotPath 'D:\Tools\Godot\Godot.exe'
 ```
 
-门禁会先自动执行无窗口编辑器导入，生成资产缓存和全局脚本类缓存，再运行真实 Godot 测试场景：`TestBaseline`、`TestFactoryWorkspace` 与 `TestStatePersistence`。正常通过必须同时满足：Godot 退出码为 0；每个场景的完整成功标记各出现一次；输出不包含 `SCRIPT ERROR`、`Parse Error`、对应失败标记、ObjectDB 泄漏或仍被占用的资源。引擎级 `--quit-after 600` 保证测试进程有界结束。
+门禁会先自动执行无窗口编辑器导入，生成资产缓存和全局脚本类缓存，再运行真实 Godot 测试场景：`TestBaseline`、`TestFactoryWorkspace`、`TestStatePersistence` 与 `TestSimulationCore`。正常通过必须同时满足：Godot 退出码为 0；每个场景的完整成功标记各出现一次；输出不包含 `SCRIPT ERROR`、`Parse Error`、对应失败标记、ObjectDB 泄漏或仍被占用的资源。引擎级 `--quit-after 600` 保证测试进程有界结束。
 
 ## 当前可玩工作区（Phase 2）
 
@@ -57,6 +57,8 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1 -G
 固定 UI 包含顶部状态栏、左侧资源栏、中央画布、右侧检查器、底部建造坞和短时通知。顶部按钮可暂停/继续并切换 1×/2×/3×；资源栏显示当前新手引导、聚合库存和生产概况；检查器提供配方、开始连接与删除动作。失败原因通过不拦截画布的短时通知显示。UI 面板会消费指针输入，中央画布保持可交互。
 
 连接的 `enabled` 字段表示持久运输许可，`active` 只表示当前模拟帧是否真的发生物流传输；新连接默认启用但在首次运输前不会显示为活动。
+
+模拟使用 60 Hz 固定步长，并在单个渲染帧最多追赶 10 个 tick；超出的模拟时间保留到后续帧，不会静默丢失。每个 tick 固定按“电力 → 生产/采集 → 线路 → 研究边界 → 统计”推进。断电会停止生产和物流，欠电按供电倍率减速，恢复供电后保留原进度。燃料发电机必须有燃料才能发电；新放置的基础发电机带有 300 秒启动燃料，后续补充燃料由行星库存任务接入。太阳能和风能使用可保存的 0～1 发电倍率。
 
 ## 本地存档
 
@@ -82,7 +84,7 @@ docs/           权威状态、规格、计划和交付记录
 
 当前已交付的第二阶段不包含多选或框选、蓝图、建筑缩略图、移动端布局、目标/胜负系统、minimap 或高级面板。仓库中存在的相关旧 UI 或局部 API 没有接入当前主场景，不能视为已交付功能。
 
-版本化 `GameState` codec 和多槽本地存档已经接入正式入口；云存档、存档压缩和独立的手动保存按钮仍不在当前范围。电力效率目前不会调节生产速度。科技、空间站、行星、星系、戴森球和高级物流能力同样不在活跃工作区范围内。`scripts/test/` 中除 `TestBaseline.gd`、`TestFactoryWorkspace.gd` 与 `TestStatePersistence.gd` 外的旧打印式脚本不属于门禁。
+版本化 `GameState` codec、多槽本地存档、固定步长和真实供电倍率已经接入正式入口；云存档、存档压缩和独立的手动保存按钮仍不在当前范围。科技、空间站、行星、星系、戴森球和高级物流能力同样不在活跃工作区范围内。`scripts/test/` 中除 `TestBaseline.gd`、`TestFactoryWorkspace.gd`、`TestStatePersistence.gd` 与 `TestSimulationCore.gd` 外的旧打印式脚本不属于门禁。
 
 后续已批准按完整单机玩法继续开发；账号、云存档、排行榜、在线社交和服务器运维明确排除。详细差距和实施顺序见[单机差距设计](docs/current/SINGLE_PLAYER_GAP_ANALYSIS.md)与[实施路线图](docs/current/SINGLE_PLAYER_ROADMAP.md)。
 

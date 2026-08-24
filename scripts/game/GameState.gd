@@ -110,6 +110,9 @@ func try_place_building(building_type: String, position: Vector2) -> Dictionary:
     }
     if building_type == "miner":
         building_data["output_item"] = "iron_ore"
+    elif building_type == "power_generator":
+        building_data["fuel_item"] = "coal"
+        building_data["fuel_remaining"] = 300.0
 
     construction_points -= cost
     var building_id := add_building(building_data)
