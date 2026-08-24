@@ -32,7 +32,7 @@ project.godot
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1
 ```
 
-它顺序运行 `TestBaseline` 与 `TestFactoryWorkspace`，要求各自唯一的成功标记。门禁会在 Godot 非零退出、`SCRIPT ERROR`、`Parse Error`、失败标记或成功标记缺失/重复时失败。
+它先自动执行一次无窗口编辑器导入，再顺序运行 `TestBaseline` 与 `TestFactoryWorkspace`，要求各自唯一的成功标记。门禁会在 Godot 非零退出、`SCRIPT ERROR`、`Parse Error`、失败标记、成功标记缺失/重复、ObjectDB 泄漏或资源仍被占用时失败。全新检出不再需要人工预热全局脚本类缓存。
 
 工作区测试覆盖：
 
@@ -57,11 +57,10 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1
 - 多选/框选、蓝图、建筑缩略图和高级检查器面板延期。
 - 移动端布局、云存档、正式目标/胜负系统和 minimap 未进入活跃主场景；资源栏中的新手目标只是上下文操作引导。
 - `SaveSystem` 直接将包含 `Vector2` 的状态交给 JSON；位置值的可靠序列化与加载后类型恢复尚未解决，因此不能将保存/加载视为已交付能力。
+- 云同步、云备份、云恢复、存档压缩、解压和迁移均为延期能力，当前统一返回 `ERR_UNAVAILABLE`，不会伪装成功；`PerformanceSystem` 也明确报告未启用 Worker 支持。
 - `PowerSystem` 会计算并写入 `power_efficiency`，但 `ProductionSystem` 没有消费该值，电力不足尚不影响生产速度。
 - 科技、空间站、行星、星系、戴森球及高级物流功能多数没有进入当前主场景和活跃模拟编排，部分实现只是占位或局部 API。
 - `TestCompletedFeatures.gd`、`TestPhase*.gd` 等旧测试主要打印计数或结果，没有统一非零失败语义，不属于权威门禁。
-- 正式门禁和主场景验证目前仍会在 Godot 退出时报告 ObjectDB/resource 未释放警告；它们不包含脚本或解析错误，但资源生命周期清理还没有达到零警告。
-- 全新检出或新建 worktree 必须先运行一次无窗口编辑器导入来生成全局脚本类缓存；`tools/run_tests.ps1` 尚未自动完成这个引导步骤，直接运行会出现 `GameState`、`SimulationEngine` 等类型解析失败。
 
 ## 下一阶段建议
 

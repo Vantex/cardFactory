@@ -34,6 +34,47 @@ foreach ($testCase in $testCases) {
     }
 }
 
+$importStartInfo = New-Object System.Diagnostics.ProcessStartInfo
+$importStartInfo.FileName = $GodotPath
+$importStartInfo.Arguments = '--headless --path "{0}" --editor --quit' -f $repoRoot
+$importStartInfo.WorkingDirectory = $repoRoot
+$importStartInfo.UseShellExecute = $false
+$importStartInfo.RedirectStandardOutput = $true
+$importStartInfo.RedirectStandardError = $true
+$importStartInfo.CreateNoWindow = $true
+
+$importProcess = New-Object System.Diagnostics.Process
+$importProcess.StartInfo = $importStartInfo
+
+try {
+    if (-not $importProcess.Start()) {
+        [Console]::Error.WriteLine("Failed to start Godot import: $GodotPath")
+        exit 1
+    }
+
+    $importStdoutTask = $importProcess.StandardOutput.ReadToEndAsync()
+    $importStderrTask = $importProcess.StandardError.ReadToEndAsync()
+    $importProcess.WaitForExit()
+
+    $importStandardOutput = $importStdoutTask.Result
+    $importStandardError = $importStderrTask.Result
+    $importExitCode = $importProcess.ExitCode
+} catch {
+    [Console]::Error.WriteLine("Failed to import the Godot project: $($_.Exception.Message)")
+    exit 1
+} finally {
+    $importProcess.Dispose()
+}
+
+[Console]::Out.Write($importStandardOutput)
+[Console]::Error.Write($importStandardError)
+$importOutputText = $importStandardOutput + $importStandardError
+
+if ($importExitCode -ne 0 -or $importOutputText -match "SCRIPT ERROR|Parse Error") {
+    [Console]::Error.WriteLine("Godot project import failed.")
+    exit 1
+}
+
 foreach ($testCase in $testCases) {
     $startInfo = New-Object System.Diagnostics.ProcessStartInfo
     $startInfo.FileName = $GodotPath
@@ -79,7 +120,9 @@ foreach ($testCase in $testCases) {
         [Console]::Error.WriteLine("$($testCase.Name) success marker count invalid: expected exactly one complete line '$($testCase.SuccessMarker)', found $successMarkerCount.")
     }
 
-    if ($godotExitCode -ne 0 -or $outputText -match "SCRIPT ERROR|Parse Error" -or $outputText.Contains($testCase.FailureMarker) -or $successMarkerCount -ne 1) {
+    $hasLifecycleLeak = $outputText -match "ObjectDB instances were leaked|resources still in use at exit"
+
+    if ($godotExitCode -ne 0 -or $outputText -match "SCRIPT ERROR|Parse Error" -or $hasLifecycleLeak -or $outputText.Contains($testCase.FailureMarker) -or $successMarkerCount -ne 1) {
         exit 1
     }
 }

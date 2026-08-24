@@ -160,70 +160,40 @@ func has_save(slot: int) -> bool:
     var file_path = _get_save_path(slot)
     return FileAccess.file_exists(file_path)
 
-# === 存档系统补完功能 ===
+# 延期能力必须返回明确错误，不能把占位实现报告为成功。
+func sync_to_cloud(_slot: int) -> Error:
+    return ERR_UNAVAILABLE
 
-# 1. 云同步功能（简化实现）
-func sync_to_cloud(slot: int) -> bool:
-    print("Syncing save slot ", slot, " to cloud...")
-    # 实际实现需要云服务API
-    return true
+func backup_to_cloud(_slot: int) -> Error:
+    return ERR_UNAVAILABLE
 
-# 2. 云备份功能
-func backup_to_cloud(slot: int) -> bool:
-    print("Backing up save slot ", slot, " to cloud...")
-    return true
+func restore_from_cloud(_slot: int) -> Error:
+    return ERR_UNAVAILABLE
 
-# 3. 云恢复功能
-func restore_from_cloud(slot: int) -> bool:
-    print("Restoring save slot ", slot, " from cloud...")
-    return true
+func compress_save(_slot: int) -> Error:
+    return ERR_UNAVAILABLE
 
-# 4. 存档压缩功能
-func compress_save(slot: int) -> bool:
-    if not _storage_available:
-        return false
-    var file_path = _get_save_path(slot)
-    if not FileAccess.file_exists(file_path):
-        return false
-    print("Compressing save slot ", slot, "...")
-    # 实际实现需要压缩算法
-    return true
+func decompress_save(_slot: int) -> Error:
+    return ERR_UNAVAILABLE
 
-# 5. 存档解压功能
-func decompress_save(slot: int) -> bool:
-    if not _storage_available:
-        return false
-    var file_path = _get_save_path(slot)
-    if not FileAccess.file_exists(file_path):
-        return false
-    print("Decompressing save slot ", slot, "...")
-    return true
+func migrate_save(_from_slot: int, _to_slot: int) -> Error:
+    return ERR_UNAVAILABLE
 
-# 6. 存档迁移功能
-func migrate_save(from_slot: int, to_slot: int) -> bool:
-    if not _storage_available:
-        return false
-    var from_path = _get_save_path(from_slot)
-    var to_path = _get_save_path(to_slot)
-    
-    if not FileAccess.file_exists(from_path):
-        return false
-    
-    print("Migrating save from slot ", from_slot, " to ", to_slot, "...")
-    # 实际实现需要复制文件
-    return true
-
-# 7. 获取存档大小
 func get_save_size(slot: int) -> int:
     if not _storage_available:
         return 0
     var file_path = _get_save_path(slot)
     if not FileAccess.file_exists(file_path):
         return 0
-    # 实际实现需要获取文件大小
-    return 0
 
-# 8. 检查存档完整性
+    var file = FileAccess.open(file_path, FileAccess.READ)
+    if file == null:
+        return 0
+
+    var file_size = file.get_length()
+    file.close()
+    return file_size
+
 func validate_save(slot: int) -> bool:
     if not _storage_available:
         return false

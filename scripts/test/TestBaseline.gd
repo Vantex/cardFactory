@@ -43,6 +43,27 @@ func _ready() -> void:
 	var unavailable_save_system := SaveSystem.new("invalid://baseline/")
 	_expect(not unavailable_save_system.is_storage_available(), "SaveSystem reports invalid storage as unavailable")
 	_expect(not unavailable_save_system.save_game(0, GameState.new()), "SaveSystem safely rejects saves when storage is unavailable")
+	var cloud_sync_result: Variant = unavailable_save_system.sync_to_cloud(0)
+	var cloud_backup_result: Variant = unavailable_save_system.backup_to_cloud(0)
+	var cloud_restore_result: Variant = unavailable_save_system.restore_from_cloud(0)
+	var compression_result: Variant = unavailable_save_system.compress_save(0)
+	var decompression_result: Variant = unavailable_save_system.decompress_save(0)
+	var migration_result: Variant = unavailable_save_system.migrate_save(0, 1)
+	_expect(typeof(cloud_sync_result) == TYPE_INT and int(cloud_sync_result) == ERR_UNAVAILABLE, "SaveSystem reports cloud sync as unavailable")
+	_expect(typeof(cloud_backup_result) == TYPE_INT and int(cloud_backup_result) == ERR_UNAVAILABLE, "SaveSystem reports cloud backup as unavailable")
+	_expect(typeof(cloud_restore_result) == TYPE_INT and int(cloud_restore_result) == ERR_UNAVAILABLE, "SaveSystem reports cloud restore as unavailable")
+	_expect(typeof(compression_result) == TYPE_INT and int(compression_result) == ERR_UNAVAILABLE, "SaveSystem reports save compression as unavailable")
+	_expect(typeof(decompression_result) == TYPE_INT and int(decompression_result) == ERR_UNAVAILABLE, "SaveSystem reports save decompression as unavailable")
+	_expect(typeof(migration_result) == TYPE_INT and int(migration_result) == ERR_UNAVAILABLE, "SaveSystem reports save migration as unavailable")
+
+	var performance_system := PerformanceSystem.new(game_state)
+	_expect(not performance_system.use_web_workers(), "PerformanceSystem does not report worker support as enabled")
+
+	var local_save_system := SaveSystem.new("res://.godot/test_saves/")
+	_expect(local_save_system.is_storage_available(), "SaveSystem creates an available local test storage")
+	_expect(local_save_system.save_game(0, GameState.new()), "SaveSystem writes a local save used for size verification")
+	_expect(local_save_system.get_save_size(0) > 0, "SaveSystem reports the stored file size")
+	_expect(local_save_system.delete_save(0), "SaveSystem removes the local size-verification save")
 
 	if _failures > 0:
 		printerr("BASELINE TESTS FAILED")

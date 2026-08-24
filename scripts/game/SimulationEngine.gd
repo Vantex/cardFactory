@@ -1,6 +1,6 @@
 # scripts/game/SimulationEngine.gd
 class_name SimulationEngine
-extends Node
+extends RefCounted
 
 var game_state: GameState
 var production_system: ProductionSystem
