@@ -80,27 +80,27 @@ git status --short --branch
 - 修改：`docs/PROJECT_STATUS.md`
 - 检查：`scripts/test/TestCompletedFeatures.gd`、`scripts/test/TestPhase*.gd`
 
-- [ ] **步骤 1：为全新检出编写失败门禁**
+- [x] **步骤 1：为全新检出编写失败门禁**
 
 在临时 worktree 直接运行 `tools/run_tests.ps1`，记录当前因全局脚本类缓存缺失而失败的复现；增加测试门自引导断言，预期修改前失败。
 
-- [ ] **步骤 2：让 runner 自动完成 Godot 导入**
+- [x] **步骤 2：让 runner 自动完成 Godot 导入**
 
 runner 在执行测试场景前运行一次 `--headless --editor --quit`，检查退出码和解析错误，再进入测试列表。Godot 路径只在 runner 中解析，不在各测试重复硬编码。
 
-- [ ] **步骤 3：修复主场景退出资源警告**
+- [x] **步骤 3：修复主场景退出资源警告**
 
 定位未释放的 `SimulationEngine`/动态脚本实例/信号连接；添加确定性 teardown。禁止用过滤日志隐藏 ObjectDB/resource 警告。
 
-- [ ] **步骤 4：删除假成功语义**
+- [x] **步骤 4：删除假成功语义**
 
 云同步、云备份、云恢复、伪压缩和伪迁移方法改为明确 `ERR_UNAVAILABLE` 风格结果，或移出单机公共接口。`PerformanceSystem` 的 Worker 占位不得报告已启用。
 
-- [ ] **步骤 5：标记历史测试为非权威**
+- [x] **步骤 5：标记历史测试为非权威**
 
 旧 `TestPhase*` 保留为历史夹具或迁入 `tests/legacy`，但 runner 只执行具有失败退出语义的正式测试。
 
-- [ ] **步骤 6：验证并提交**
+- [x] **步骤 6：验证并提交**
 
 运行全程质量门，并在全新临时 worktree 再运行一次 runner。
 
@@ -110,6 +110,8 @@ git commit -m "test: establish trustworthy clean checkout gate"
 ```
 
 **停止门：** 全新检出可一条命令测试，主场景零脚本错误且资源生命周期问题已解释或修复，任何未实现服务不会返回成功。
+
+**完成记录（2026-08-24）：** `9d060e7` 已建立自动导入与泄漏失败门，修正 `SimulationEngine` 生命周期，清除延期存档能力的假成功返回，并在无 `.godot` 的全新 worktree 中直接通过权威 runner。
 
 ### 任务 2：建立版本化 GameState 和完整性验证
 
