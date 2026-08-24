@@ -11,6 +11,7 @@ var production_system: ProductionSystem
 var belt_system: BeltSystem
 var power_system: PowerSystem
 var statistics_system: StatisticsSystem
+var handcraft_system: HandcraftSystem
 
 var _accumulator := 0.0
 var _last_step_count := 0
@@ -21,6 +22,7 @@ func _init(state: GameState) -> void:
 	belt_system = BeltSystem.new(state)
 	power_system = PowerSystem.new(state)
 	statistics_system = StatisticsSystem.new(state)
+	handcraft_system = HandcraftSystem.new(state)
 
 func update(delta: float) -> void:
 	_last_step_count = 0
@@ -42,6 +44,7 @@ func _run_fixed_tick() -> void:
 	game_state.elapsed_time += FIXED_DELTA
 	power_system.update(FIXED_DELTA)
 	production_system.update(FIXED_DELTA)
+	handcraft_system.update(FIXED_DELTA)
 	belt_system.update(FIXED_DELTA)
 	_update_research(FIXED_DELTA)
 	statistics_system.update(FIXED_DELTA)

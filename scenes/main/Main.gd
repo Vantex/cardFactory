@@ -77,11 +77,8 @@ func _on_start_connection_requested(building_id: String) -> void:
 
 func _on_delete_building_requested(building_id: String) -> void:
 	var state := GameManager.get_game_state()
-	if state.get_building(building_id).is_empty():
-		EventBus.notice_requested.emit("建筑不存在或已删除", "error")
-		return
-	state.remove_building(building_id)
-	EventBus.notice_requested.emit("建筑已删除", "success")
+	var result := state.remove_building(building_id)
+	EventBus.notice_requested.emit(String(result.get("message", "拆除命令失败")), "success" if result.get("ok", false) else "error")
 
 func _on_pause_toggled_requested() -> void:
 	var state := GameManager.get_game_state()

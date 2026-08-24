@@ -4,7 +4,7 @@
 
 ## Phase 2：已完成
 
-Phase 2 的工厂工作区已接入主场景，并由正式测试门和无窗口主场景启动验证覆盖。Stage 0 的可信门禁、版本化权威状态和可靠本地存档入口已经完成；Stage 1 的固定步长与真实电力任务也已实现。目标、minimap 和高级系统仍未交付。
+Phase 2 的工厂工作区已接入主场景，并由正式测试门和无窗口主场景启动验证覆盖。Stage 0 的可信门禁、版本化权威状态和可靠本地存档入口已经完成；Stage 1 已交付固定步长、真实电力、行星库存、施工库存与基础手工制造，完整基础科学链仍待任务 6。目标、minimap 和高级系统仍未交付。
 
 ## 活跃运行树与数据流
 
@@ -16,6 +16,7 @@ project.godot
 ├─ GameManager → SaveSystem → GameState → SimulationEngine
 │                              ├─ PowerSystem
 │                              ├─ ProductionSystem
+│                              ├─ HandcraftSystem
 │                              ├─ BeltSystem
 │                              └─ StatisticsSystem
 └─ Main.tscn → AppShell → StartMenu + SaveSlotsPanel
@@ -23,7 +24,7 @@ project.godot
                + InputHandler + FactoryWorkspaceUI
 ```
 
-主场景先显示离线开始菜单和 10 个本地槽位；会话启动后才启用工厂输入与模拟。`AppShell` 只发送新游戏、继续、删除和返回意图，`GameManager` 统一协调保存、状态替换、自动保存和退出握手。`FactoryWorkspaceUI` 发出建造、连接、删除、暂停和速度意图；`InputHandler` 仲裁画布操作；两个 renderer 只读 `GameState`。`GameState` 负责原子规则，`SimulationEngine` 以 60 Hz 固定 tick 按电力、生产、线路、研究边界和统计的顺序更新权威状态。
+主场景先显示离线开始菜单和 10 个本地槽位；会话启动后才启用工厂输入与模拟。`AppShell` 只发送新游戏、继续、删除和返回意图，`GameManager` 统一协调保存、状态替换、自动保存和退出握手。`FactoryWorkspaceUI` 发出建造、手工制造、连接、删除、暂停和速度意图；`InputHandler` 仲裁画布操作；两个 renderer 只读 `GameState`。`InventorySystem`、`ConstructionSystem` 和 `HandcraftSystem` 维护资源所有权与原子命令，`SimulationEngine` 以 60 Hz 固定 tick 更新权威状态。
 
 ## 已验证能力
 
@@ -33,25 +34,27 @@ project.godot
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1
 ```
 
-它先自动执行一次无窗口编辑器导入，再顺序运行 `TestBaseline`、`TestFactoryWorkspace`、`TestStatePersistence` 与 `TestSimulationCore`，要求各自唯一的成功标记。门禁会在 Godot 非零退出、`SCRIPT ERROR`、`Parse Error`、失败标记、成功标记缺失/重复、ObjectDB 泄漏或资源仍被占用时失败。全新检出不再需要人工预热全局脚本类缓存。
+它先自动执行一次无窗口编辑器导入，再顺序运行 `TestBaseline`、`TestFactoryWorkspace`、`TestStatePersistence`、`TestSimulationCore` 与 `TestInventoryConstruction`，要求各自唯一的成功标记。门禁会在 Godot 非零退出、`SCRIPT ERROR`、`Parse Error`、失败标记、成功标记缺失/重复、ObjectDB 泄漏或资源仍被占用时失败。全新检出不再需要人工预热全局脚本类缓存。
 
 工作区测试覆盖：
 
-- 初始 12 点建造点；成功放置才扣除成本，未知建筑、点数不足和任意 232×144 卡片矩形重叠均不改变状态，边缘相邻合法。
+- 新游戏拥有四类建筑各一件的施工套装；成功放置只消耗对应建筑件，未知建筑、缺少建筑件和任意 232×144 卡片矩形重叠均不改变状态，边缘相邻合法。
+- 行星库存、施工库存和光标载荷有明确容量、非负与唯一所有权约束；拆除建筑会先预检全部返还容量，再统一返还施工件和输入/输出缓存并级联删除连接，失败不改变任何状态。
+- 基础手工配方支持 1～99 批量需求、缺料与上游配方预览；排队时一次性保留整批输入，持久队列按固定 tick 推进并在暂停、保存和加载后继续，不重复或丢失产物。
 - 矿机到熔炉自动选择可兼容配方；自连接、重复连接和配方不兼容连接被拒绝；删除建筑级联删除连接。
 - 主场景包含 `WorldCamera`、`CardRenderer`、`ConnectionRenderer`、`InputHandler` 和 `FactoryWorkspaceUI`，不再挂载旧 `HUD` 或 `BuildingPanel`。
-- 顶栏动态显示运行/暂停、速度、电力、建造点、数量和时间；资源栏显示上下文新手引导、聚合库存、生产概况和操作提示；检查器显示建筑状态、进度、电力、缓冲区、配方以及连接/删除动作；建造坞显示快捷键、成本、用途和当前模式。
+- 顶栏动态显示运行/暂停、速度、电力、施工件、数量和时间；资源栏显示行星托盘、光标载荷、手工队列、生产概况和操作提示；空闲检查器提供手工配方，建筑检查器显示状态、进度、电力、缓冲区、设备配方以及连接/删除动作；建造坞显示已有/需要数量、缺料原因、快捷键和当前模式。
 - 失败放置及自连接、重复连接、配方不兼容等原因会以中文短时通知显示；通知自动隐藏且不参与 UI 命中测试，其他 UI 面板仍阻止输入穿透到画布。
 - 连接手势在非单位 Viewport、CanvasLayer 和世界 CanvasItem 变换下分别换算 UI 与世界坐标；在 Inspector 内松开会取消，不会误命中其下方建筑并报告“连接已存在”。
 - 画布支持 Q/W/E/R 放置、同次按压的左键选择/拖动、输出端口按下后在输入端口释放完成连接、右键/中键平移、滚轮缩放、`Escape` 取消、`Delete` 删除、`Space` 暂停与 `1` / `2` / `3` 速度切换。
 - 连接以 `enabled` 保存持久运输许可，以 `active` 表示当前帧实际物流；禁用连接不运输，启用但无货物的连接保持非活动。
 - 矿机到熔炉的模拟链路将铁矿传入熔炉并生产铁锭。
-- `GameState` 使用整数 schema 版本；`GameStateCodec` 生成稳定排序的 JSON 兼容快照并恢复 `Vector2`，`GameStateValidator` 拒绝悬空连接、负库存和不稳定 ID，`SaveMigrationRegistry` 逐版本迁移并拒绝未知未来版本。状态摘要排除暂停、倍速、节点引用、交互锁和当前帧连接流量；`GameManager` 替换状态时会同步重建模拟服务。
+- `GameState` 当前使用 schema v2；`GameStateCodec` 生成稳定排序的 JSON 兼容快照并恢复 `Vector2`，`GameStateValidator` 校验行星/施工/光标/手工队列及既有实体不变量，`SaveMigrationRegistry` 把旧建造点迁移为兼容施工额度并拒绝未知未来版本。状态摘要经过 JSON 写入/读回仍保持一致；`GameManager` 替换状态时会同步重建模拟服务。
 - `SaveSystem` 使用临时档写入后校验、有效主档轮换备份和摘要验证完成原子槽位保存；覆盖无效槽、损坏 JSON、异常元数据、未来版本、中断临时档和损坏主档的备份恢复。加载失败不替换当前状态。
 - 新游戏立即落盘，活动会话每 120 秒自动保存，返回菜单和窗口关闭前使用同一保存协调器；保存不会改变玩家暂停意图，重叠写入会被拒绝。开始菜单提供继续最近游戏，槽位页提供新建、继续、删除确认和可操作错误提示。
 - 模拟以 1/60 秒固定 tick 推进；60×1/60、10×0.1 与保留并排空追赶积压的 1×1 秒输入得到相同权威摘要。每个渲染帧最多追赶 10 个 tick，超额时间不会丢失。
 - 每个 tick 固定执行“电力 → 生产/采集 → 线路 → 研究边界 → 统计”。断电停止、欠电按倍率减速，恢复后沿用原生产进度；线路吞吐同时受两端供电倍率约束。
-- 燃料发电机无燃料时发电量为零并显示缺燃料状态；太阳能和风能使用显式的 0～1 发电倍率。新放置的基础发电机暂带 300 秒启动燃料，等待下一项库存与手工制造任务接入正式补给。
+- 燃料发电机无燃料时发电量为零并显示缺燃料状态；太阳能和风能使用显式的 0～1 发电倍率。放置基础发电机时最多从行星托盘转移 10 单位煤形成 300 秒启动燃料，拆除按剩余燃烧时间返还未用煤；正式补充燃料交互仍待后续任务接入。
 - `power_efficiency` 与实际 `power_output` 是可重建运行时字段，不写入规范存档；燃料剩余时间、燃料物品和可再生倍率会持久化并接受完整性校验。
 - 用户已手动验收开始菜单、槽位页面、进入游戏及保存/继续流程；真实窗口布局未复现旧的 UI 重叠问题。
 
@@ -73,7 +76,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1
 
 ## 下一阶段建议
 
-用户已批准继续对齐 DSPONLINE 的完整单机玩法，并明确排除账号、云存档、排行榜、在线社交和服务器运维。版本化状态、可靠本地存档、固定步长与真实电力闭环已经完成；下一项按[单机实施路线图](current/SINGLE_PLAYER_ROADMAP.md)建设行星库存、施工库存与手工制造，再依次扩展完整生产链、科技推进、多行星物流、戴森终局及产品化。
+用户已批准继续对齐 DSPONLINE 的完整单机玩法，并明确排除账号、云存档、排行榜、在线社交和服务器运维。版本化状态、可靠本地存档、固定步长、真实电力和守恒施工库存已经完成；下一项按[单机实施路线图](current/SINGLE_PLAYER_ROADMAP.md)补齐数据驱动生产目录与第一条完整科学链，再依次扩展画布效率、科技推进、多行星物流、戴森终局及产品化。
 
 `DSPONLINE` 只在其非商业许可范围内作为行为和架构参考；不复制其源码或素材，也不把账号、云档、多核 Worker、排行榜等高级能力作为 CardFactory 当前开发的前置条件。
 

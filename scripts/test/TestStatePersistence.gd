@@ -27,11 +27,14 @@ func _test_canonical_snapshot_and_round_trip() -> void:
 	state.buildings["building_10"]["power_output"] = 500.0
 	var payload := GameStateCodec.to_persistent_dict(state)
 
-	_expect(state.get_state_version() == 1, "GameState exposes an integer schema version")
-	_expect(payload.keys() == ["buildings", "completed_technologies", "connections", "construction_points", "elapsed_time", "next_id", "schema_version"], "persistent root keys use canonical order")
-	_expect(payload.get("schema_version") == 1, "persistent payload contains schema version 1")
+	_expect(state.get_state_version() == 2, "GameState exposes the current integer schema version")
+	_expect(payload.keys() == ["buildings", "completed_technologies", "connections", "construction_inventory", "cursor_payload", "elapsed_time", "handcraft_queue", "next_id", "planet_inventory", "schema_version"], "persistent root keys use canonical order")
+	_expect(payload.get("schema_version") == 2, "persistent payload contains schema version 2")
 	_expect(payload.get("next_id") == 11, "persistent payload preserves the next stable ID")
-	_expect(payload.get("construction_points") == 7, "persistent payload preserves construction points")
+	_expect(payload.get("planet_inventory") == {"gear": 2.0, "iron_ingot": 7.0}, "persistent payload preserves the planet tray")
+	_expect(payload.get("construction_inventory").get("miner") == 2.0, "persistent payload preserves construction items")
+	_expect(payload.get("cursor_payload") == {"amount": 3.0, "item_id": "coal"}, "persistent payload preserves cursor ownership")
+	_expect(payload.get("handcraft_queue")[0].get("progress") == 0.25, "persistent payload preserves handcraft progress")
 	_expect(payload.get("completed_technologies") == ["automation", "smelting"], "set-like technology IDs use stable order")
 	_expect(payload.get("buildings", {}).keys() == ["building_10", "building_2"], "building dictionary keys use stable order")
 	_expect(payload.get("connections", {}).keys() == ["conn_9"], "connection dictionary keys use stable order")
@@ -59,6 +62,8 @@ func _test_canonical_snapshot_and_round_trip() -> void:
 		_expect(decoded.connections.get("conn_9", {}).get("enabled") == true, "decode preserves connection permission")
 		_expect(decoded.connections.get("conn_9", {}).get("active") == false, "decode resets current-frame activity")
 		_expect(decoded.connections.get("conn_9", {}).get("current_flow") == 0.0, "decode resets current-frame flow")
+		_expect(decoded.planet_inventory == {"gear": 2.0, "iron_ingot": 7.0} and decoded.construction_inventory.get("miner") == 2.0, "decode restores authoritative inventories")
+		_expect(decoded.cursor_payload == {"amount": 3.0, "item_id": "coal"} and decoded.handcraft_queue[0].get("progress") == 0.25, "decode restores cursor ownership and queued work")
 		_expect(decoded.paused == false and decoded.speed == 1.0, "decode uses fresh session controls")
 		_expect(decoded.generate_id("building") == "building_11", "decoded state continues stable ID generation")
 		decoded.buildings["building_10"]["input_buffer"]["iron_ore"] = 1.0
@@ -96,7 +101,23 @@ func _test_validation_rejects_corrupt_state() -> void:
 	_expect(_error_codes(power_state_errors).has("invalid_fuel_remaining"), "validator rejects negative persisted fuel time")
 	_expect(_error_codes(power_state_errors).has("invalid_generation_factor"), "validator rejects renewable generation factors outside zero-to-one")
 
-	for validation_error in dangling_errors + inventory_errors + id_errors + next_id_errors + power_state_errors:
+	var invalid_authoritative_inventory := payload.duplicate(true)
+	invalid_authoritative_inventory["planet_inventory"]["iron_ingot"] = -1.0
+	invalid_authoritative_inventory["construction_inventory"]["miner"] = 100.0
+	invalid_authoritative_inventory["cursor_payload"] = {"item_id": "gear", "amount": 0.0}
+	invalid_authoritative_inventory["handcraft_queue"][0]["quantity_remaining"] = 0
+	var authoritative_inventory_errors := GameStateValidator.validate_persistent_dict(invalid_authoritative_inventory)
+	_expect(_error_codes(authoritative_inventory_errors).has("negative_inventory"), "validator rejects negative planet inventory")
+	_expect(_error_codes(authoritative_inventory_errors).has("inventory_overflow"), "validator rejects construction inventory overflow")
+	_expect(_error_codes(authoritative_inventory_errors).has("invalid_cursor_ownership"), "validator rejects cursor items without owned quantity")
+	_expect(_error_codes(authoritative_inventory_errors).has("invalid_handcraft_remaining"), "validator rejects completed jobs left inside the persistent queue")
+
+	var invalid_handcraft_progress := payload.duplicate(true)
+	invalid_handcraft_progress["handcraft_queue"][0]["progress"] = NAN
+	var handcraft_progress_errors := GameStateValidator.validate_persistent_dict(invalid_handcraft_progress)
+	_expect(_error_codes(handcraft_progress_errors).has("invalid_handcraft_progress"), "validator rejects non-finite handcraft progress")
+
+	for validation_error in dangling_errors + inventory_errors + id_errors + next_id_errors + power_state_errors + authoritative_inventory_errors + handcraft_progress_errors:
 		_expect(validation_error is Dictionary, "validation errors use structured dictionaries")
 		if validation_error is Dictionary:
 			for key in ["code", "source", "id", "message"]:
@@ -113,11 +134,12 @@ func _test_migrations_and_version_boundaries() -> void:
 	}
 	var migration_result := SaveMigrationRegistry.migrate_to_current(legacy_payload)
 	_expect(migration_result.get("ok") == true, "migration registry upgrades a known version-zero payload")
-	_expect(migration_result.get("data", {}).get("schema_version") == 1, "version-zero migration advances exactly to schema version 1")
+	_expect(migration_result.get("data", {}).get("schema_version") == 2, "version-zero migration advances through every registered step to schema version 2")
+	_expect(migration_result.get("data", {}).get("construction_inventory", {}).get("legacy_credit") == 9.0, "legacy construction points become migration-only credit")
 	_expect(GameStateCodec.from_persistent_dict(legacy_payload) is GameState, "codec accepts a valid migrated legacy payload")
 
 	var future_payload := GameStateCodec.to_persistent_dict(GameState.new())
-	future_payload["schema_version"] = 2
+	future_payload["schema_version"] = 3
 	var future_result := SaveMigrationRegistry.migrate_to_current(future_payload)
 	_expect(future_result.get("ok") == false, "migration registry rejects unknown future versions")
 	_expect(_error_codes(future_result.get("errors", [])).has("unsupported_future_version"), "future-version rejection has an explicit error code")
@@ -167,8 +189,16 @@ func _test_digest_is_stable_and_ignores_runtime_state() -> void:
 	_expect(first_digest == second_digest, "state digest ignores runtime-only values and dictionary insertion order")
 	_expect(JSON.stringify(first_digest) == JSON.stringify(second_digest), "state digest has stable JSON ordering")
 
+	var serialized_digest: Variant = JSON.parse_string(JSON.stringify(first_digest))
+	var migrated_digest := SaveMigrationRegistry.migrate_to_current(serialized_digest)
+	_expect(migrated_digest.get("ok") == true, "serialized digest payload remains a valid current save")
+	if migrated_digest.get("ok") == true:
+		var before_json := JSON.stringify(first_digest)
+		var after_json := JSON.stringify(migrated_digest.get("data", {}))
+		_expect(before_json == after_json, "state digest survives a JSON write/read round trip")
+
 func _test_durable_save_slots() -> void:
-	var test_path := "res://.godot/test_saves/state_persistence_%d/" % Time.get_ticks_usec()
+	var test_path := "res://.godot/test_saves/state_persistence_%d_%d/" % [OS.get_process_id(), Time.get_ticks_usec()]
 	var save_system := SaveSystem.new(test_path)
 	var required_methods := ["save_slot", "load_slot", "delete_slot", "get_slot_info"]
 	for method_name in required_methods:
@@ -178,7 +208,8 @@ func _test_durable_save_slots() -> void:
 		return
 
 	var source := _make_fixture_state()
-	var source_digest := JSON.stringify(GameStateCodec.state_digest_payload(source)).sha256_text()
+	var source_payload := GameStateCodec.state_digest_payload(source)
+	var source_digest := JSON.stringify(source_payload).sha256_text()
 	var save_result: Dictionary = save_system.save_slot(0, source, {"active_planet": "home"})
 	_expect(save_result.get("ok") == true, "slot save writes a validated canonical state")
 	var saved_metadata: Dictionary = save_result.get("metadata", {})
@@ -233,6 +264,32 @@ func _test_durable_save_slots() -> void:
 	var malformed_metadata_result: Dictionary = save_system.load_slot(7)
 	_expect(_result_error_code(malformed_metadata_result) == "invalid_metadata", "loading rejects malformed metadata before the slot list can consume it")
 
+	var legacy_state := {
+		"buildings": {},
+		"completed_technologies": [],
+		"connections": {},
+		"construction_points": 7,
+		"elapsed_time": 42.0,
+		"next_id": 1,
+		"schema_version": 1,
+	}
+	var legacy_envelope := {
+		"format": "card_factory_save",
+		"metadata": {
+			"schema_version": 1,
+			"saved_at": Time.get_unix_time_from_system(),
+			"elapsed_time": 42.0,
+			"active_planet": "home",
+			"digest": JSON.stringify(legacy_state).sha256_text(),
+		},
+		"state": legacy_state,
+	}
+	_write_test_text(test_path + "save_6.json", JSON.stringify(legacy_envelope))
+	var legacy_envelope_result: Dictionary = save_system.load_slot(6)
+	_expect(legacy_envelope_result.get("ok") == true, "a valid version-one envelope verifies before migration and loads")
+	if legacy_envelope_result.get("ok") == true:
+		_expect(legacy_envelope_result.get("state").construction_inventory.get("legacy_credit") == 7.0, "a verified version-one envelope migrates its construction credit")
+
 	_expect(save_system.save_slot(3, source).get("ok") == true, "interruption fixture has a valid primary save")
 	_write_test_text(test_path + "save_3.json.tmp", "{interrupted write")
 	var interrupted_result: Dictionary = save_system.load_slot(3)
@@ -274,7 +331,7 @@ func _test_game_session_coordinator() -> void:
 	if required_methods.any(func(method_name: String) -> bool: return not GameManager.has_method(method_name)):
 		return
 
-	var test_path := "res://.godot/test_saves/session_%d/" % Time.get_ticks_usec()
+	var test_path := "res://.godot/test_saves/session_%d_%d/" % [OS.get_process_id(), Time.get_ticks_usec()]
 	var original_state: GameState = GameManager.get_game_state()
 	var original_save_system: SaveSystem = GameManager.get_save_system()
 	GameManager.configure_save_system(SaveSystem.new(test_path))
@@ -356,7 +413,16 @@ func _test_session_ui_contract() -> void:
 func _make_fixture_state(reverse_insertion_order: bool = false) -> GameState:
 	var state := GameState.new()
 	state.elapsed_time = 123.5
-	state.construction_points = 7
+	state.planet_inventory = {"gear": 2.0, "iron_ingot": 7.0}
+	state.construction_inventory = {"assembling_machine_mk1": 1.0, "miner": 2.0, "power_generator": 1.0, "smelter": 1.0}
+	state.cursor_payload = {"item_id": "coal", "amount": 3.0}
+	state.handcraft_queue = [{
+		"id": "craft_8",
+		"recipe_id": "handcraft_miner",
+		"quantity_total": 2,
+		"quantity_remaining": 1,
+		"progress": 0.25,
+	}]
 	state.completed_technologies = ["smelting", "automation"]
 	state._next_id = 11
 	state.paused = true

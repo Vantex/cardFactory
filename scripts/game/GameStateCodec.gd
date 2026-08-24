@@ -24,7 +24,10 @@ static func to_persistent_dict(state: GameState) -> Dictionary:
 		"schema_version": GameState.SCHEMA_VERSION,
 		"next_id": state._next_id,
 		"elapsed_time": state.elapsed_time,
-		"construction_points": state.construction_points,
+		"planet_inventory": state.planet_inventory,
+		"construction_inventory": state.construction_inventory,
+		"cursor_payload": state.cursor_payload,
+		"handcraft_queue": state.handcraft_queue,
 		"completed_technologies": completed_technologies,
 		"buildings": _encode_entity_collection(state.buildings, BUILDING_RUNTIME_FIELDS),
 		"connections": _encode_entity_collection(state.connections, CONNECTION_RUNTIME_FIELDS),
@@ -39,7 +42,10 @@ static func from_persistent_dict(payload: Variant) -> GameState:
 	var data: Dictionary = migration_result["data"]
 	var state := GameState.new()
 	state.elapsed_time = float(data["elapsed_time"])
-	state.construction_points = int(data["construction_points"])
+	state.planet_inventory = data["planet_inventory"].duplicate(true)
+	state.construction_inventory = data["construction_inventory"].duplicate(true)
+	state.cursor_payload = data["cursor_payload"].duplicate(true)
+	state.handcraft_queue = data["handcraft_queue"].duplicate(true)
 	state.completed_technologies = data["completed_technologies"].duplicate(true)
 	state._next_id = int(data["next_id"])
 	state.buildings = _decode_buildings(data["buildings"])

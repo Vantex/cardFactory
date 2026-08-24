@@ -250,9 +250,11 @@ func _publish_command_result(result: Dictionary) -> void:
 func _delete_selected() -> void:
 	if selected_building_id.is_empty():
 		return
-	GameManager.get_game_state().remove_building(selected_building_id)
-	selected_building_id = ""
-	cancel_operation()
+	var result := GameManager.get_game_state().remove_building(selected_building_id)
+	_publish_command_result(result)
+	if result.get("ok", false):
+		selected_building_id = ""
+		cancel_operation()
 
 func _get_building_at_position(world_position: Vector2) -> Dictionary:
 	for building in GameManager.get_game_state().buildings.values():

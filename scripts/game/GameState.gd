@@ -2,21 +2,27 @@
 class_name GameState
 extends RefCounted
 
-const FactoryGeometry = preload("res://scripts/game/FactoryGeometry.gd")
-const SCHEMA_VERSION: int = 1
-
-const BUILDING_COSTS: Dictionary = {
-    "miner": 1,
-    "smelter": 2,
-    "assembling_machine_mk1": 3,
-    "power_generator": 2,
-}
+const SCHEMA_VERSION: int = 2
 
 # 游戏状态
 var paused: bool = false
 var speed: float = 1.0
 var elapsed_time: float = 0.0
-var construction_points: int = 12
+var planet_inventory: Dictionary = {
+    "coal": 10.0,
+    "copper_ingot": 4.0,
+    "gear": 4.0,
+    "iron_ingot": 12.0,
+    "stone": 4.0,
+}
+var construction_inventory: Dictionary = {
+    "miner": 1.0,
+    "smelter": 1.0,
+    "assembling_machine_mk1": 1.0,
+    "power_generator": 1.0,
+}
+var cursor_payload: Dictionary = {"item_id": "", "amount": 0.0}
+var handcraft_queue: Array = []
 
 # 所有建筑（卡牌）
 var buildings: Dictionary = {}
@@ -81,55 +87,10 @@ func add_building(building_data: Dictionary) -> String:
     return id
 
 func try_place_building(building_type: String, position: Vector2) -> Dictionary:
-    var building_definition := DataManager.get_building(building_type)
-    if building_definition.is_empty():
-        return {"ok": false, "message": "未知建筑类型"}
+    return ConstructionSystem.new(self).try_place_building(building_type, position)
 
-    if not BUILDING_COSTS.has(building_type):
-        return {"ok": false, "message": "未配置建造成本"}
-
-    var cost: int = BUILDING_COSTS[building_type]
-    if construction_points < cost:
-        return {"ok": false, "message": "建造点不足"}
-
-    var placement_rect := FactoryGeometry.card_rect(position)
-    for existing_building in buildings.values():
-        var existing_rect := FactoryGeometry.card_rect(existing_building.get("position", Vector2.ZERO))
-        if placement_rect.intersects(existing_rect, false):
-            return {"ok": false, "message": "建筑卡片重叠"}
-
-    var building_data := {
-        "type": building_type,
-        "position": position,
-        "status": "idle",
-        "recipe_id": "",
-        "progress": 0.0,
-        "input_buffer": {},
-        "output_buffer": {},
-        "speed": building_definition.get("speed", 1.0),
-    }
-    if building_type == "miner":
-        building_data["output_item"] = "iron_ore"
-    elif building_type == "power_generator":
-        building_data["fuel_item"] = "coal"
-        building_data["fuel_remaining"] = 300.0
-
-    construction_points -= cost
-    var building_id := add_building(building_data)
-    return {"ok": true, "message": "建筑已放置", "id": building_id}
-
-func remove_building(building_id: String):
-    if buildings.has(building_id):
-        buildings.erase(building_id)
-        # 删除相关连接
-        var connections_to_remove = []
-        for conn_id in connections:
-            var conn = connections[conn_id]
-            if conn.source_id == building_id or conn.target_id == building_id:
-                connections_to_remove.append(conn_id)
-        for conn_id in connections_to_remove:
-            remove_connection(conn_id)
-        EventBus.card_removed.emit(building_id)
+func remove_building(building_id: String) -> Dictionary:
+    return ConstructionSystem.new(self).try_remove_building(building_id)
 
 func add_connection(connection_data: Dictionary) -> String:
     var id = generate_id("conn")
@@ -269,8 +230,9 @@ func remove_entities(entity_ids: Array) -> int:
     var removed_count = 0
     for entity_id in entity_ids:
         if buildings.has(entity_id):
-            remove_building(entity_id)
-            removed_count += 1
+            var result := remove_building(entity_id)
+            if result.get("ok", false):
+                removed_count += 1
     return removed_count
 
 # 功能4: 设置实体配方
@@ -643,6 +605,12 @@ func copy_state() -> GameState:
     new_state.elapsed_time = elapsed_time
     new_state.paused = paused
     new_state.speed = speed
+    new_state.planet_inventory = planet_inventory.duplicate(true)
+    new_state.construction_inventory = construction_inventory.duplicate(true)
+    new_state.cursor_payload = cursor_payload.duplicate(true)
+    new_state.handcraft_queue = handcraft_queue.duplicate(true)
+    new_state.completed_technologies = completed_technologies.duplicate(true)
+    new_state._next_id = _next_id
     return new_state
 
 # 5. 实体锁定检查

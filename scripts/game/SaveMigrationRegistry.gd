@@ -22,13 +22,25 @@ static func migrate_to_current(payload: Variant) -> Dictionary:
 			0:
 				migrated = _migrate_v0_to_v1(migrated)
 				version = 1
+			1:
+				migrated = _migrate_v1_to_v2(migrated)
+				version = 2
 			_:
 				return _failure("missing_migration", "缺少从版本 %d 开始的迁移" % version)
 
-	for integer_field in ["next_id", "construction_points"]:
+	for integer_field in ["next_id"]:
 		var field_value: Variant = migrated.get(integer_field)
 		if _is_integral_number(field_value):
 			migrated[integer_field] = int(field_value)
+	var handcraft_queue_value: Variant = migrated.get("handcraft_queue")
+	if handcraft_queue_value is Array:
+		for job_value in handcraft_queue_value:
+			if not job_value is Dictionary:
+				continue
+			for quantity_field in ["quantity_total", "quantity_remaining"]:
+				var quantity_value: Variant = job_value.get(quantity_field)
+				if _is_integral_number(quantity_value):
+					job_value[quantity_field] = int(quantity_value)
 
 	var validation_errors := GameStateValidator.validate_persistent_dict(migrated)
 	if not validation_errors.is_empty():
@@ -59,6 +71,23 @@ static func _migrate_v0_to_v1(legacy: Dictionary) -> Dictionary:
 			if building_value is Dictionary and building_value.get("position") is Vector2:
 				var position: Vector2 = building_value["position"]
 				building_value["position"] = {"x": position.x, "y": position.y}
+	return migrated
+
+static func _migrate_v1_to_v2(legacy: Dictionary) -> Dictionary:
+	var migrated: Dictionary = legacy.duplicate(true)
+	var legacy_points := maxf(float(migrated.get("construction_points", 0.0)), 0.0)
+	migrated.erase("construction_points")
+	migrated["schema_version"] = 2
+	if not migrated.has("planet_inventory"):
+		migrated["planet_inventory"] = {}
+	if not migrated.has("construction_inventory"):
+		migrated["construction_inventory"] = {}
+	if legacy_points > 0.0:
+		migrated["construction_inventory"]["legacy_credit"] = legacy_points
+	if not migrated.has("cursor_payload"):
+		migrated["cursor_payload"] = {"item_id": "", "amount": 0.0}
+	if not migrated.has("handcraft_queue"):
+		migrated["handcraft_queue"] = []
 	return migrated
 
 static func _failure(code: String, message: String) -> Dictionary:

@@ -34,25 +34,26 @@ func _ready() -> void:
 	_test_real_production_loop()
 
 	var state := GameState.new()
-	_expect(state.construction_points == 12, "new workspaces start with 12 construction points")
+	_expect(state.construction_inventory.get("miner") == 1.0 and state.construction_inventory.get("smelter") == 1.0, "new workspaces start with a real construction kit")
 
 	var miner: Dictionary = state.try_place_building("miner", Vector2(100, 100))
-	_expect(miner.ok and state.construction_points == 11, "miner placement is atomic")
+	_expect(miner.ok and state.construction_inventory.get("miner") == 0.0, "miner placement atomically consumes its construction item")
 	_expect(state.buildings.size() == 1, "successful placement adds one building")
 	_expect(state.get_building_display_name(miner.id) == "矿机", "building display names come from building data")
 
-	var points_before_rejection: int = state.construction_points
+	var inventory_before_rejection: Dictionary = state.construction_inventory.duplicate(true)
 	var buildings_before_rejection: int = state.buildings.size()
 	_expect(not state.try_place_building("unknown_building", Vector2(240, 100)).ok, "unknown buildings are rejected")
-	_expect(state.construction_points == points_before_rejection and state.buildings.size() == buildings_before_rejection, "unknown building rejection leaves state unchanged")
+	_expect(state.construction_inventory == inventory_before_rejection and state.buildings.size() == buildings_before_rejection, "unknown building rejection leaves state unchanged")
 
-	state.construction_points = 0
-	_expect(not state.try_place_building("smelter", Vector2(240, 100)).ok, "placements without points are rejected")
-	_expect(state.construction_points == 0 and state.buildings.size() == buildings_before_rejection, "insufficient-point rejection leaves state unchanged")
+	state.construction_inventory["smelter"] = 0.0
+	_expect(not state.try_place_building("smelter", Vector2(240, 100)).ok, "placements without a matching construction item are rejected")
+	_expect(state.construction_inventory.get("smelter") == 0.0 and state.buildings.size() == buildings_before_rejection, "missing construction-item rejection leaves state unchanged")
 
-	state.construction_points = points_before_rejection
+	state.construction_inventory["smelter"] = 1.0
+	state.construction_inventory["miner"] = 1.0
 	_expect(not state.try_place_building("miner", Vector2(100, 100)).ok, "overlapping placements are rejected")
-	_expect(state.construction_points == points_before_rejection and state.buildings.size() == buildings_before_rejection, "overlap rejection leaves state unchanged")
+	_expect(state.construction_inventory.get("miner") == 1.0 and state.buildings.size() == buildings_before_rejection, "overlap rejection preserves the construction item")
 
 	var smelter: Dictionary = state.try_place_building("smelter", Vector2(420, 100))
 	_expect(smelter.ok, "smelter placement succeeds in free space")
@@ -77,6 +78,7 @@ func _ready() -> void:
 	get_tree().quit(0)
 
 func _test_workspace_chrome_contract() -> void:
+	GameManager.replace_game_state(GameState.new())
 	var workspace_script := load("res://scenes/ui/FactoryWorkspaceUI.gd") as Script
 	_expect(workspace_script != null, "workspace UI script is available")
 	if workspace_script == null:
@@ -98,7 +100,7 @@ func _test_workspace_chrome_contract() -> void:
 	await get_tree().process_frame
 	for path in ["TopBar", "ResourceRail", "InspectorPanel", "ConstructionDock", "Toast"]:
 		_expect(workspace.get_node_or_null(path) != null, "workspace exposes %s" % path)
-	for path in ["TopBar/PauseButton", "TopBar/SpeedButtons/Speed1", "TopBar/SpeedButtons/Speed2", "TopBar/SpeedButtons/Speed3", "ResourceRail/Objective", "ResourceRail/Stock", "ResourceRail/Production", "ResourceRail/Tips", "InspectorPanel/Details", "InspectorPanel/InputBuffers", "InspectorPanel/OutputBuffers", "InspectorPanel/StartConnectionButton", "InspectorPanel/DeleteButton", "ConstructionDock/Mode"]:
+	for path in ["TopBar/PauseButton", "TopBar/SpeedButtons/Speed1", "TopBar/SpeedButtons/Speed2", "TopBar/SpeedButtons/Speed3", "ResourceRail/Objective", "ResourceRail/Stock", "ResourceRail/Cursor", "ResourceRail/Handcraft", "ResourceRail/Production", "ResourceRail/Tips", "InspectorPanel/Details", "InspectorPanel/InputBuffers", "InspectorPanel/OutputBuffers", "InspectorPanel/StartConnectionButton", "InspectorPanel/DeleteButton", "ConstructionDock/Mode"]:
 		_expect(workspace.get_node_or_null(path) != null, "workspace exposes live control %s" % path)
 	var brand := workspace.get_node("TopBar/Brand") as Label
 	var pause_button := workspace.get_node("TopBar/PauseButton") as Button
@@ -113,14 +115,14 @@ func _test_workspace_chrome_contract() -> void:
 	_expect(inspector_title.get_rect() == Rect2(18, 14, 250, 28) and inspector_details.get_rect() == Rect2(18, 46, 250, 76) and not inspector_title.get_rect().intersects(inspector_details.get_rect()), "inspector sections keep distinct non-overlapping rectangles")
 	_expect(dock_points.position == Vector2(14, 12) and dock_buttons.get_rect() == Rect2(126, 13, 510, 64), "construction-dock labels and buttons keep separate authored regions")
 	_expect(_controls_do_not_overlap(workspace.get_node("TopBar"), ["Brand", "PauseButton", "SpeedButtons", "Status"]), "all top-bar regions remain non-overlapping")
-	_expect(_controls_do_not_overlap(workspace.get_node("ResourceRail"), ["Summary", "Objective", "Stock", "Production", "Tips"]), "all resource-rail regions remain non-overlapping")
+	_expect(_controls_do_not_overlap(workspace.get_node("ResourceRail"), ["Summary", "Objective", "Stock", "Cursor", "Handcraft", "Production", "Tips"]), "all resource-rail regions remain non-overlapping")
 	_expect(_controls_do_not_overlap(workspace.get_node("InspectorPanel"), ["Title", "Details", "InputBuffers", "OutputBuffers", "RecipeHeading", "RecipeList", "StartConnectionButton", "DeleteButton"]), "all inspector regions remain non-overlapping")
 	_expect(_controls_do_not_overlap(workspace.get_node("ConstructionDock"), ["Points", "Mode", "BuildingButtons"]), "all construction-dock regions remain non-overlapping")
 	workspace.call("_on_building_pressed", "miner")
 	_expect(workspace.call("get_selected_building_type") == "" and workspace.call("get_placement_building_type") == "miner", "dock enters placement mode without conflating selection")
 	_expect(placements == ["miner"], "dock emits a placement request for miner")
 	var miner_button := workspace.get_node_or_null("ConstructionDock/BuildingButtons/MinerButton") as Button
-	_expect(miner_button != null and "Q" in miner_button.text and "1" in miner_button.text, "dock shows the miner shortcut and cost")
+	_expect(miner_button != null and "Q" in miner_button.text and "已有 1 / 需要 1" in miner_button.text, "dock shows the miner shortcut and owned construction item")
 	_expect(miner_button != null and not miner_button.tooltip_text.is_empty(), "dock exposes each building purpose")
 	var mode_label := workspace.get_node_or_null("ConstructionDock/Mode") as Label
 	_expect(mode_label != null and "矿机" in mode_label.text, "dock displays the current placement mode")
@@ -146,6 +148,7 @@ func _test_workspace_live_content_and_actions() -> void:
 	var input_handler := main.get_node("InputHandler")
 	var miner: Dictionary = state.try_place_building("miner", Vector2(260, 100))
 	var smelter: Dictionary = state.try_place_building("smelter", Vector2(600, 100))
+	state.planet_inventory["iron_ore"] = 6.0
 	state.get_building(miner.id)["output_buffer"] = {"iron_ore": 4.0}
 	state.get_building(smelter.id)["input_buffer"] = {"iron_ore": 2.0}
 	state.get_building(miner.id)["status"] = "running"
@@ -154,7 +157,7 @@ func _test_workspace_live_content_and_actions() -> void:
 	await get_tree().process_frame
 
 	var metrics := workspace.get_node_or_null("TopBar/Status") as Label
-	_expect(metrics != null and "RUN" in metrics.text and "1x" in metrics.text and "GEN 0" in metrics.text and "USE 60" in metrics.text and "BAL -60" in metrics.text and "POINTS 09" in metrics.text and "BUILDINGS 02" in metrics.text and "LINKS 00" in metrics.text and "01:05" in metrics.text, "top bar displays live simulation, power, count, point, and time state")
+	_expect(metrics != null and "RUN" in metrics.text and "1x" in metrics.text and "GEN 0" in metrics.text and "USE 60" in metrics.text and "BAL -60" in metrics.text and "KITS 02" in metrics.text and "BUILDINGS 02" in metrics.text and "LINKS 00" in metrics.text and "01:05" in metrics.text, "top bar displays live simulation, power, count, construction kit, and time state")
 	var pause_button := workspace.get_node_or_null("TopBar/PauseButton") as Button
 	if pause_button != null:
 		pause_button.emit_signal("pressed")
@@ -169,7 +172,7 @@ func _test_workspace_live_content_and_actions() -> void:
 	var production := workspace.get_node_or_null("ResourceRail/Production") as Label
 	var tips := workspace.get_node_or_null("ResourceRail/Tips") as Label
 	_expect(objective != null and "连接" in objective.text, "resource rail displays the current beginner objective")
-	_expect(stock != null and "iron_ore" in stock.text and "6" in stock.text, "resource rail aggregates nonzero buffers")
+	_expect(stock != null and "行星托盘" in stock.text and "iron_ore" in stock.text and "6" in stock.text, "resource rail displays authoritative planet inventory")
 	_expect(production != null and "运行 0" in production.text and "停电 1" in production.text, "resource rail distinguishes unpowered production from running buildings")
 	_expect(tips != null and "操作提示" in tips.text and "Q/W/E/R" in tips.text, "resource rail displays concise controls")
 	var empty_generator_id := state.add_building({
@@ -195,7 +198,7 @@ func _test_workspace_live_content_and_actions() -> void:
 	var output_buffers := workspace.get_node_or_null("InspectorPanel/OutputBuffers") as Label
 	_expect(inspector_title.text == "熔炉" and details != null and "smelter" in details.text and "idle" in details.text and "0%" in details.text and "50" in details.text, "inspector displays selected identity, type, status, progress, and power")
 	_expect(input_buffers != null and "iron_ore" in input_buffers.text and "2" in input_buffers.text and output_buffers != null, "inspector displays input and output buffers")
-	var recipe_list := workspace.get_node("InspectorPanel/RecipeList") as VBoxContainer
+	var recipe_list := workspace.get_node("InspectorPanel/RecipeList") as GridContainer
 	_expect(recipe_list.get_child_count() > 0, "smelter inspector exposes real recipe controls")
 	if recipe_list.get_child_count() > 0:
 		var first_recipe_control := recipe_list.get_child(0)
@@ -205,7 +208,7 @@ func _test_workspace_live_content_and_actions() -> void:
 		_expect(false, "unchanged refresh does not rebuild recipe controls")
 	workspace.set_selected_building("")
 	await get_tree().process_frame
-	_expect(recipe_list.get_child_count() == 0, "smelter recipe controls are cleaned one frame after selection is cancelled")
+	_expect(recipe_list.get_child_count() > 0, "clearing a building selection replaces machine recipes with handcraft controls")
 	workspace.set_selected_building(smelter.id)
 	await get_tree().process_frame
 
@@ -234,12 +237,12 @@ func _test_workspace_live_content_and_actions() -> void:
 	await get_tree().process_frame
 	_expect(delete_button != null and not state.buildings.has(smelter.id) and inspector_title.text == "工厂概览", "inspector delete action removes the selected building and returns to overview")
 
-	_expect(recipe_list.get_child_count() == 0, "deleted selection leaves no stale recipe controls")
+	_expect(recipe_list.get_child_count() > 0, "deleted selection leaves handcraft controls instead of stale machine recipes")
 
-	state.construction_points = 0
+	state.construction_inventory["smelter"] = 0.0
 	input_handler.call("start_placing_card", "smelter")
 	input_handler.call("_unhandled_input", _mouse_button_event(MOUSE_BUTTON_LEFT, true, Vector2(500, 300)))
-	_expect(toast.visible and toast_message.text == "建造点不足" and toast_message.get_theme_color("font_color") == Color("df7666"), "failed real placement displays the Chinese command message with error tone")
+	_expect(toast.visible and toast_message.text == "缺少熔炉施工件" and toast_message.get_theme_color("font_color") == Color("df7666"), "failed real placement displays the construction-inventory reason with error tone")
 	_expect(not workspace.is_pointer_over_ui(toast.get_global_rect().get_center()), "visible toast does not block the world canvas")
 	var hide_timer := workspace.get_node_or_null("Toast/HideTimer") as Timer
 	_expect(hide_timer != null, "toast owns an auto-hide timer")
@@ -300,7 +303,7 @@ func _test_main_scene_integration_contract() -> void:
 		var placed_id: String = input_handler.get("selected_building_id")
 		_expect(not placed_id.is_empty() and GameManager.get_game_state().buildings.size() == 1, "real canvas placement adds and selects the requested card")
 		var resource_summary := workspace.get_node("ResourceRail/Summary") as Label
-		_expect("POINTS  11" in resource_summary.text and "BUILDINGS  01" in resource_summary.text, "placing a card refreshes workspace resource totals immediately")
+		_expect("KITS  03" in resource_summary.text and "BUILDINGS  01" in resource_summary.text, "placing a card refreshes workspace construction inventory immediately")
 		var inspector_title := workspace.get_node("InspectorPanel/Title") as Label
 		_expect(inspector_title.text == "矿机", "real canvas placement selects the new card in the workspace inspector")
 
@@ -390,6 +393,8 @@ func _test_selection_and_placement_mode_alignment() -> void:
 	test_viewport.add_child(main)
 	await get_tree().process_frame
 	var state := GameManager.get_game_state()
+	state.construction_inventory["miner"] = 2.0
+	state.construction_inventory["smelter"] = 2.0
 	var input_handler := main.get_node("InputHandler")
 	var workspace := main.get_node("FactoryWorkspaceUI") as CanvasLayer
 	var app_shell := main.get_node("AppShell")
@@ -446,6 +451,8 @@ func _test_transformed_coordinate_connection_gestures() -> void:
 	var workspace := main.get_node("FactoryWorkspaceUI") as CanvasLayer
 	workspace.transform = Transform2D(Vector2(1.05, 0), Vector2(0, 1.05), Vector2(-150, 0))
 	await get_tree().process_frame
+	state.construction_inventory["miner"] = 2.0
+	state.construction_inventory["smelter"] = 2.0
 
 	var inspector_source: Dictionary = state.try_place_building("miner", Vector2(260, 100))
 	var inspector_target: Dictionary = state.try_place_building("smelter", Vector2(800, 100))
@@ -511,20 +518,15 @@ func _test_real_production_loop() -> void:
 	_expect(produced_ingots >= 1.0, "production update consumes ore and produces an iron ingot")
 
 func _test_explicit_building_costs() -> void:
-	var cost_cases := [
-		{"building_type": "miner", "remaining_points": 11},
-		{"building_type": "smelter", "remaining_points": 10},
-		{"building_type": "assembling_machine_mk1", "remaining_points": 9},
-		{"building_type": "power_generator", "remaining_points": 10},
-	]
-	for cost_case in cost_cases:
+	for building_type in ["miner", "smelter", "assembling_machine_mk1", "power_generator"]:
 		var state := GameState.new()
-		var result: Dictionary = state.try_place_building(cost_case.building_type, Vector2(100, 100))
-		_expect(result.ok and state.construction_points == cost_case.remaining_points, "%s uses its configured construction cost" % cost_case.building_type)
+		var result: Dictionary = state.try_place_building(building_type, Vector2(100, 100))
+		_expect(result.ok and state.construction_inventory.get(building_type) == 0.0, "%s consumes exactly one matching construction item" % building_type)
 
 	var unconfigured_state := GameState.new()
+	var inventory_before := unconfigured_state.construction_inventory.duplicate(true)
 	var unconfigured_result: Dictionary = unconfigured_state.try_place_building("solar_panel", Vector2(100, 100))
-	_expect(not unconfigured_result.ok and unconfigured_state.construction_points == 12 and unconfigured_state.buildings.is_empty(), "buildings without configured costs are rejected without state changes")
+	_expect(not unconfigured_result.ok and unconfigured_state.construction_inventory == inventory_before and unconfigured_state.buildings.is_empty(), "buildings without configured construction items are rejected without state changes")
 
 func _test_existing_recipe_connection_rules() -> void:
 	var compatible_state := GameState.new()
@@ -553,6 +555,7 @@ func _test_rectangle_overlap_contract() -> void:
 	_expect(not containment_state.try_place_building("miner", Vector2(120, 120)).ok, "contained card rectangle is rejected")
 
 	var adjacent_state := GameState.new()
+	adjacent_state.construction_inventory["miner"] = 2.0
 	_expect(adjacent_state.try_place_building("miner", Vector2(100, 100)).ok, "adjacency fixture places its first card")
 	_expect(adjacent_state.try_place_building("miner", Vector2(332, 100)).ok, "cards sharing an exact edge are legal")
 

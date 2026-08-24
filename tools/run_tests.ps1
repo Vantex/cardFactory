@@ -33,6 +33,13 @@ $testCases = @(
         ResourcePath = "res://scenes/test/TestSimulationCore.tscn"
         SuccessMarker = "SIMULATION CORE TESTS PASSED"
         FailureMarker = "SIMULATION CORE TESTS FAILED"
+    },
+    @{
+        Name = "Inventory construction"
+        ScenePath = Join-Path $repoRoot "scenes\test\TestInventoryConstruction.tscn"
+        ResourcePath = "res://scenes/test/TestInventoryConstruction.tscn"
+        SuccessMarker = "INVENTORY CONSTRUCTION TESTS PASSED"
+        FailureMarker = "INVENTORY CONSTRUCTION TESTS FAILED"
     }
 )
 

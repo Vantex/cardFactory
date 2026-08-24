@@ -240,7 +240,7 @@ git add scripts/game/SimulationEngine.gd scripts/game/PowerSystem.gd scripts/gam
 git commit -m "feat: make factory simulation deterministic"
 ```
 
-**完成记录（2026-08-24）：** 已交付 60 Hz 固定 tick、每帧最多 10 步且保留超额时间的追赶预算、确定的“电力 → 生产/采集 → 线路 → 研究边界 → 统计”顺序，以及作用于生产和线路的真实供电倍率。燃料机无燃料不发电，太阳能/风能使用显式倍率；新放置基础发电机暂带 300 秒启动燃料，正式燃料库存与补给由任务 5 接续。规范存档排除可重建的电力输出和效率，并校验持久化燃料字段。`TestSimulationCore` 已进入权威 runner。
+**完成记录（2026-08-24）：** 已交付 60 Hz 固定 tick、每帧最多 10 步且保留超额时间的追赶预算、确定的“电力 → 生产/采集 → 线路 → 研究边界 → 统计”顺序，以及作用于生产和线路的真实供电倍率。燃料机无燃料不发电，太阳能/风能使用显式倍率；任务 5 已把基础发电机启动燃料接入守恒的行星煤炭库存，正式补充燃料交互仍属后续范围。规范存档排除可重建的电力输出和效率，并校验持久化燃料字段。`TestSimulationCore` 已进入权威 runner。
 
 ### 任务 5：行星库存、施工库存与手工制造
 
@@ -252,31 +252,42 @@ git commit -m "feat: make factory simulation deterministic"
 - 创建：`scripts/test/TestInventoryConstruction.gd`
 - 创建：`scenes/test/TestInventoryConstruction.tscn`
 - 修改：`scripts/game/GameState.gd`
+- 修改：`scripts/game/GameStateCodec.gd`
+- 修改：`scripts/game/GameStateValidator.gd`
+- 修改：`scripts/game/SaveMigrationRegistry.gd`
+- 修改：`scripts/game/SaveSystem.gd`
+- 修改：`scripts/game/SimulationEngine.gd`
+- 修改：`scenes/main/Main.gd`
 - 修改：`scenes/ui/FactoryWorkspaceUI.gd`
+- 修改：`scripts/input/InputHandler.gd`
+- 修改：`scripts/test/TestFactoryWorkspace.gd`
+- 修改：`scripts/test/TestStatePersistence.gd`
 - 修改：`tools/run_tests.ps1`
 
-- [ ] **步骤 1：写资源守恒失败测试**
+- [x] **步骤 1：写资源守恒失败测试**
 
 覆盖物资加入/取出、施工件消费、建筑拆除返还、手工制造、材料不足原子失败、缓存上限和非负约束。
 
-- [ ] **步骤 2：用真实库存替换建造点**
+- [x] **步骤 2：用真实库存替换建造点**
 
 保留旧建造点只作为迁移输入或删除；正式建造从施工库存扣除对应建筑件。新游戏初始套装足以建成第一条电力—采矿—熔炼—制造链。
 
-- [ ] **步骤 3：实现手工制造**
+- [x] **步骤 3：实现手工制造**
 
 支持可手工配方、批量数量、上游材料预览和原子扣料；长任务进入持久队列，暂停/保存/加载后继续。
 
-- [ ] **步骤 4：接入资源栏与建造坞**
+- [x] **步骤 4：接入资源栏与建造坞**
 
 资源栏显示行星托盘和光标载荷；建造坞显示已有/需要数量与缺料原因。UI 不直接改库存字典。
 
-- [ ] **步骤 5：提交**
+- [x] **步骤 5：提交**
 
 ```powershell
-git add scripts/game/GameState.gd scripts/game/InventorySystem.gd scripts/game/ConstructionSystem.gd scripts/game/HandcraftSystem.gd scenes/ui/FactoryWorkspaceUI.gd scripts/test/TestInventoryConstruction.gd scenes/test/TestInventoryConstruction.tscn tools/run_tests.ps1
+git add scenes/main/Main.gd scenes/ui/FactoryWorkspaceUI.gd scripts/game/GameState.gd scripts/game/GameStateCodec.gd scripts/game/GameStateValidator.gd scripts/game/SaveMigrationRegistry.gd scripts/game/SaveSystem.gd scripts/game/SimulationEngine.gd scripts/game/InventorySystem.gd scripts/game/ConstructionSystem.gd scripts/game/HandcraftSystem.gd scripts/input/InputHandler.gd scripts/test/TestFactoryWorkspace.gd scripts/test/TestStatePersistence.gd scripts/test/TestInventoryConstruction.gd scenes/test/TestInventoryConstruction.tscn tools/run_tests.ps1 README.md docs/PROJECT_STATUS.md docs/current/SINGLE_PLAYER_GAP_ANALYSIS.md docs/current/SINGLE_PLAYER_ROADMAP.md
 git commit -m "feat: add conserved construction inventory"
 ```
+
+**完成记录（2026-08-24）：** 已用行星托盘、施工库存和光标载荷替换运行时建造点，四类初始施工件足以搭建第一条基础链。放置与拆除会原子消费/返还施工件、建筑缓存和发电机未燃煤，容量不足时不产生半状态。基础手工配方支持 1～99 批量需求、缺料与上游配方预览，整批输入在排队时统一保留，持久队列按固定 tick 推进并支持暂停、保存和加载续作。schema v2 保存全部新领域状态，合法 v1 封装先校验原版本摘要再迁移，建造点转为界面可见的兼容施工额度。资源栏、空闲检查器和建造坞已显示托盘、光标、手工队列、已有/需要数量及缺料原因；`TestInventoryConstruction` 已进入五场景权威 runner。
 
 ### 任务 6：补齐数据驱动生产目录
 

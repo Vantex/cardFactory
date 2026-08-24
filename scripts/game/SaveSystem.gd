@@ -160,7 +160,10 @@ func load_game(slot: int, game_state: GameState) -> bool:
 	game_state.buildings = loaded_state.buildings.duplicate(true)
 	game_state.connections = loaded_state.connections.duplicate(true)
 	game_state.elapsed_time = loaded_state.elapsed_time
-	game_state.construction_points = loaded_state.construction_points
+	game_state.planet_inventory = loaded_state.planet_inventory.duplicate(true)
+	game_state.construction_inventory = loaded_state.construction_inventory.duplicate(true)
+	game_state.cursor_payload = loaded_state.cursor_payload.duplicate(true)
+	game_state.handcraft_queue = loaded_state.handcraft_queue.duplicate(true)
 	game_state.completed_technologies = loaded_state.completed_technologies.duplicate(true)
 	game_state._next_id = loaded_state._next_id
 	return true
@@ -241,6 +244,16 @@ func _read_slot_file(path: String) -> Dictionary:
 			"digest": "",
 		}
 
+	if has_envelope:
+		var stored_version: Variant = state_payload.get("schema_version", 0)
+		if not _is_integral_number(stored_version) or int(stored_version) < 0 or int(stored_version) > GameState.SCHEMA_VERSION:
+			var version_result := SaveMigrationRegistry.migrate_to_current(state_payload)
+			return _failure_from_validation(version_result.get("errors", []))
+		var expected_stored_digest := String(metadata.get("digest", ""))
+		var actual_stored_digest := _digest_payload(_normalize_stored_digest_types(state_payload))
+		if expected_stored_digest.is_empty() or expected_stored_digest != actual_stored_digest:
+			return _failure("digest_mismatch", "存档摘要校验失败")
+
 	var migration_result := SaveMigrationRegistry.migrate_to_current(state_payload)
 	if not migration_result.get("ok", false):
 		return _failure_from_validation(migration_result.get("errors", []))
@@ -250,9 +263,6 @@ func _read_slot_file(path: String) -> Dictionary:
 		return _failure("decode_failed", "存档状态无法恢复")
 
 	var actual_digest := _digest_payload(migrated_payload)
-	var expected_digest := String(metadata.get("digest", ""))
-	if has_envelope and (expected_digest.is_empty() or expected_digest != actual_digest):
-		return _failure("digest_mismatch", "存档摘要校验失败")
 	metadata["schema_version"] = GameState.SCHEMA_VERSION
 	metadata["elapsed_time"] = decoded_state.elapsed_time
 	metadata["digest"] = actual_digest
@@ -344,6 +354,23 @@ func _ensure_save_directory() -> bool:
 
 func _digest_payload(payload: Dictionary) -> String:
 	return JSON.stringify(payload).sha256_text()
+
+func _normalize_stored_digest_types(payload: Dictionary) -> Dictionary:
+	var normalized := payload.duplicate(true)
+	for integer_field in ["schema_version", "next_id", "construction_points"]:
+		var field_value: Variant = normalized.get(integer_field)
+		if _is_integral_number(field_value):
+			normalized[integer_field] = int(field_value)
+	var handcraft_queue_value: Variant = normalized.get("handcraft_queue")
+	if handcraft_queue_value is Array:
+		for job_value in handcraft_queue_value:
+			if not job_value is Dictionary:
+				continue
+			for quantity_field in ["quantity_total", "quantity_remaining"]:
+				var quantity_value: Variant = job_value.get(quantity_field)
+				if _is_integral_number(quantity_value):
+					job_value[quantity_field] = int(quantity_value)
+	return normalized
 
 func _is_number(value: Variant) -> bool:
 	return typeof(value) == TYPE_INT or typeof(value) == TYPE_FLOAT

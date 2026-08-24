@@ -31,17 +31,22 @@ var _speed_buttons: Array[Button] = []
 var _resource_summary: Label
 var _objective_label: Label
 var _stock_label: Label
+var _cursor_label: Label
+var _handcraft_label: Label
 var _production_label: Label
 var _tips_label: Label
 var _inspector_title: Label
 var _inspector_details: Label
 var _input_buffers: Label
 var _output_buffers: Label
-var _recipe_list: VBoxContainer
+var _recipe_heading: Label
+var _handcraft_quantity: SpinBox
+var _recipe_list: GridContainer
 var _start_connection_button: Button
 var _delete_button: Button
-var _construction_points: Label
+var _construction_stock: Label
 var _construction_mode: Label
+var _dock_buttons: Dictionary = {}
 var _toast_label: Label
 var _toast_timer: Timer
 var _recipe_signature := ""
@@ -105,8 +110,9 @@ func refresh_now(_arg_1 = null, _arg_2 = null, _arg_3 = null) -> void:
 	var state := _get_game_state()
 	_refresh_top_bar(state)
 	_refresh_resource_rail(state)
-	_construction_points.text = "建造点 %02d" % state.construction_points
+	_construction_stock.text = "施工件 %s" % _construction_stock_summary(state)
 	_construction_mode.text = "当前：%s" % ("选择建筑" if _placement_building_type.is_empty() else "放置 %s" % _building_name(_placement_building_type))
+	_refresh_construction_dock(state)
 	_refresh_inspector(state)
 
 func _on_building_pressed(building_type: String) -> void:
@@ -124,6 +130,17 @@ func _on_recipe_pressed(recipe_id: String) -> void:
 		show_notice("配方已配置", "success")
 	else:
 		show_notice("配方不可用", "error")
+	_recipe_signature = ""
+	refresh_now()
+
+func _on_handcraft_pressed(recipe_id: String) -> void:
+	var quantity := maxi(int(_handcraft_quantity.value), 1)
+	var result := HandcraftSystem.new(_get_game_state()).queue_craft(recipe_id, quantity)
+	show_notice(String(result.get("message", "手工制造命令失败")), "success" if result.get("ok", false) else "error")
+	_recipe_signature = ""
+	refresh_now()
+
+func _on_handcraft_quantity_changed(_value: float) -> void:
 	_recipe_signature = ""
 	refresh_now()
 
@@ -206,16 +223,25 @@ func _create_resource_rail() -> void:
 	resource_rail.add_child(_objective_label)
 	_stock_label = _create_label("Stock", "", 12, ACCENT_CYAN)
 	_stock_label.position = Vector2(16, 146)
-	_stock_label.size = Vector2(184, 106)
+	_stock_label.size = Vector2(184, 78)
 	_stock_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	resource_rail.add_child(_stock_label)
+	_cursor_label = _create_label("Cursor", "", 11, ACCENT_YELLOW)
+	_cursor_label.position = Vector2(16, 226)
+	_cursor_label.size = Vector2(184, 24)
+	resource_rail.add_child(_cursor_label)
+	_handcraft_label = _create_label("Handcraft", "", 11, ACCENT_CYAN)
+	_handcraft_label.position = Vector2(16, 252)
+	_handcraft_label.size = Vector2(184, 46)
+	_handcraft_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	resource_rail.add_child(_handcraft_label)
 	_production_label = _create_label("Production", "", 12, ACCENT_GREEN)
-	_production_label.position = Vector2(16, 262)
+	_production_label.position = Vector2(16, 302)
 	_production_label.size = Vector2(184, 76)
 	resource_rail.add_child(_production_label)
-	_tips_label = _create_label("Tips", "操作提示\nQ/W/E/R 建造\n拖动卡片移动\n拖动端口连接\nSpace 暂停", 11, Color("#9fb1aa"))
-	_tips_label.position = Vector2(16, 350)
-	_tips_label.size = Vector2(184, 120)
+	_tips_label = _create_label("Tips", "操作提示\nQ/W/E/R 建造\n空闲检查器手工制造\n拖动卡片/端口\nSpace 暂停", 11, Color("#9fb1aa"))
+	_tips_label.position = Vector2(16, 382)
+	_tips_label.size = Vector2(184, 110)
 	resource_rail.add_child(_tips_label)
 
 func _create_inspector_panel() -> void:
@@ -244,13 +270,28 @@ func _create_inspector_panel() -> void:
 	_output_buffers.size = Vector2(250, 42)
 	_output_buffers.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	inspector.add_child(_output_buffers)
-	var recipe_heading := _create_label("RecipeHeading", "配方", 12, ACCENT_YELLOW)
-	recipe_heading.position = Vector2(18, 212)
-	inspector.add_child(recipe_heading)
-	_recipe_list = VBoxContainer.new()
+	_recipe_heading = _create_label("RecipeHeading", "配方", 12, ACCENT_YELLOW)
+	_recipe_heading.position = Vector2(18, 212)
+	inspector.add_child(_recipe_heading)
+	_handcraft_quantity = SpinBox.new()
+	_handcraft_quantity.name = "HandcraftQuantity"
+	_handcraft_quantity.position = Vector2(176, 204)
+	_handcraft_quantity.size = Vector2(92, 30)
+	_handcraft_quantity.min_value = 1.0
+	_handcraft_quantity.max_value = 99.0
+	_handcraft_quantity.step = 1.0
+	_handcraft_quantity.value = 1.0
+	_handcraft_quantity.allow_greater = false
+	_handcraft_quantity.allow_lesser = false
+	_handcraft_quantity.value_changed.connect(_on_handcraft_quantity_changed)
+	inspector.add_child(_handcraft_quantity)
+	_recipe_list = GridContainer.new()
 	_recipe_list.name = "RecipeList"
+	_recipe_list.columns = 2
 	_recipe_list.position = Vector2(18, 236)
 	_recipe_list.size = Vector2(INSPECTOR_WIDTH - 36.0, 126.0)
+	_recipe_list.add_theme_constant_override("h_separation", 4)
+	_recipe_list.add_theme_constant_override("v_separation", 4)
 	inspector.add_child(_recipe_list)
 	_start_connection_button = Button.new()
 	_start_connection_button.name = "StartConnectionButton"
@@ -276,9 +317,9 @@ func _create_construction_dock() -> void:
 	dock.offset_left = RESOURCE_RAIL_WIDTH
 	dock.offset_right = -INSPECTOR_WIDTH
 	dock.offset_top = -CONSTRUCTION_DOCK_HEIGHT
-	_construction_points = _create_label("Points", "", 13, ACCENT_YELLOW)
-	_construction_points.position = Vector2(14, 12)
-	dock.add_child(_construction_points)
+	_construction_stock = _create_label("Points", "", 13, ACCENT_YELLOW)
+	_construction_stock.position = Vector2(14, 12)
+	dock.add_child(_construction_stock)
 	_construction_mode = _create_label("Mode", "", 11, ACCENT_CYAN)
 	_construction_mode.position = Vector2(14, 42)
 	_construction_mode.size = Vector2(112, 38)
@@ -294,11 +335,12 @@ func _create_construction_dock() -> void:
 		var definition := DataManager.get_building(building_type)
 		var button := Button.new()
 		button.name = "%sButton" % building_type.capitalize()
-		button.text = "%s %s\n%d 点" % [DOCK_SHORTCUTS[building_type], _building_name(building_type), GameState.BUILDING_COSTS[building_type]]
+		button.text = "%s %s\n已有 0 / 需要 1" % [DOCK_SHORTCUTS[building_type], _building_name(building_type)]
 		button.tooltip_text = definition.get("description", "")
 		button.custom_minimum_size = Vector2(116, 56)
 		button.pressed.connect(_on_building_pressed.bind(building_type))
 		buttons.add_child(button)
+		_dock_buttons[building_type] = button
 
 func _create_toast() -> void:
 	var toast := _create_panel("Toast", PANEL_DARK)
@@ -337,15 +379,17 @@ func _refresh_top_bar(state: GameState) -> void:
 	var speed_text := "%d" % int(state.speed) if is_equal_approx(state.speed, roundf(state.speed)) else "%.1f" % state.speed
 	var total_seconds := int(state.elapsed_time)
 	var time_text := "%02d:%02d" % [total_seconds / 60, total_seconds % 60]
-	_top_status.text = "%s  %sx | GEN %.0f | USE %.0f | BAL %s | POINTS %02d | BUILDINGS %02d | LINKS %02d | %s" % ["PAUSED" if state.paused else "RUN", speed_text, generation, consumption, balance_text, state.construction_points, state.buildings.size(), state.connections.size(), time_text]
+	_top_status.text = "%s  %sx | GEN %.0f | USE %.0f | BAL %s | KITS %s | BUILDINGS %02d | LINKS %02d | %s" % ["PAUSED" if state.paused else "RUN", speed_text, generation, consumption, balance_text, _construction_stock_summary(state), state.buildings.size(), state.connections.size(), time_text]
 	_pause_button.text = "继续" if state.paused else "暂停"
 	for index in range(_speed_buttons.size()):
 		_speed_buttons[index].button_pressed = is_equal_approx(state.speed, float(index + 1))
 
 func _refresh_resource_rail(state: GameState) -> void:
-	_resource_summary.text = "CONSTRUCTION\nPOINTS  %02d\nBUILDINGS  %02d  LINKS  %02d" % [state.construction_points, state.buildings.size(), state.connections.size()]
+	_resource_summary.text = "CONSTRUCTION\nKITS  %s\nBUILDINGS  %02d  LINKS  %02d" % [_construction_stock_summary(state), state.buildings.size(), state.connections.size()]
 	_objective_label.text = _beginner_objective(state)
-	_stock_label.text = "库存\n%s" % _format_stock(state)
+	_stock_label.text = "行星托盘\n%s" % _format_buffer(state.planet_inventory)
+	_cursor_label.text = "光标  %s" % _format_cursor_payload(state.cursor_payload)
+	_handcraft_label.text = "手工队列\n%s" % _format_handcraft_queue(state.handcraft_queue)
 	var counts := {"running": 0, "idle": 0, "blocked": 0, "no_power": 0, "error": 0}
 	for building in state.buildings.values():
 		var status: String = building.get("status", "idle")
@@ -359,9 +403,9 @@ func _refresh_inspector(state: GameState) -> void:
 			_selected_building_id = ""
 			_selected_building_type = ""
 		_inspector_title.text = "工厂概览"
-		_inspector_details.text = "建筑 %d\n连接 %d\n建造点 %d" % [state.buildings.size(), state.connections.size(), state.construction_points]
-		_input_buffers.text = "选择建筑查看输入"
-		_output_buffers.text = "选择建筑查看输出"
+		_inspector_details.text = "建筑 %d\n连接 %d\n施工件 %d" % [state.buildings.size(), state.connections.size(), _construction_item_total(state)]
+		_input_buffers.text = "行星托盘  %s" % _format_buffer(state.planet_inventory)
+		_output_buffers.text = "光标载荷  %s" % _format_cursor_payload(state.cursor_payload)
 		_start_connection_button.disabled = true
 		_delete_button.disabled = true
 		_refresh_recipe_controls(state, {})
@@ -380,9 +424,13 @@ func _refresh_inspector(state: GameState) -> void:
 	_refresh_recipe_controls(state, building)
 
 func _refresh_recipe_controls(_state: GameState, building: Dictionary) -> void:
+	if building.is_empty():
+		_refresh_handcraft_controls(_state)
+		return
+	_recipe_heading.text = "配方"
+	_handcraft_quantity.hide()
 	var recipes: Array = []
-	if not building.is_empty():
-		recipes = DataManager.get_recipes_for_building(building.get("type", ""))
+	recipes = DataManager.get_recipes_for_building(building.get("type", ""))
 	var recipe_ids: Array[String] = []
 	for recipe in recipes:
 		recipe_ids.append(recipe.get("id", ""))
@@ -397,8 +445,33 @@ func _refresh_recipe_controls(_state: GameState, building: Dictionary) -> void:
 		var recipe_id: String = recipe.get("id", "")
 		var recipe_button := Button.new()
 		recipe_button.text = "%s%s" % ["✓ " if recipe_id == building.get("recipe_id", "") else "", recipe.get("name", recipe_id)]
+		recipe_button.custom_minimum_size = Vector2(120, 34)
 		recipe_button.pressed.connect(_on_recipe_pressed.bind(recipe_id))
 		_recipe_list.add_child(recipe_button)
+
+func _refresh_handcraft_controls(state: GameState) -> void:
+	_recipe_heading.text = "手工制造"
+	_handcraft_quantity.show()
+	var quantity := maxi(int(_handcraft_quantity.value), 1)
+	var signature := "handcraft|%s|%s|%s|%d" % [JSON.stringify(state.planet_inventory), JSON.stringify(state.construction_inventory), JSON.stringify(state.handcraft_queue), quantity]
+	if signature == _recipe_signature:
+		return
+	_recipe_signature = signature
+	for child in _recipe_list.get_children():
+		_recipe_list.remove_child(child)
+		child.queue_free()
+	var handcraft := HandcraftSystem.new(state)
+	for recipe_id_value in handcraft.get_recipe_ids():
+		var recipe_id := String(recipe_id_value)
+		var recipe := handcraft.get_recipe(recipe_id)
+		var preview := handcraft.preview_craft(recipe_id, quantity)
+		var button := Button.new()
+		button.text = "%s ×%d" % [recipe.get("name", recipe_id), quantity]
+		button.custom_minimum_size = Vector2(120, 34)
+		button.disabled = not preview.get("can_queue", false)
+		button.tooltip_text = _format_handcraft_preview(preview)
+		button.pressed.connect(_on_handcraft_pressed.bind(recipe_id))
+		_recipe_list.add_child(button)
 
 func _beginner_objective(state: GameState) -> String:
 	if state.buildings.is_empty() or state.get_buildings_by_type("miner").is_empty():
@@ -409,16 +482,6 @@ func _beginner_objective(state: GameState) -> String:
 		return "新手目标\n连接矿机与熔炉"
 	return "新手目标\n让生产链持续运行"
 
-func _format_stock(state: GameState) -> String:
-	var aggregate := {}
-	for building in state.buildings.values():
-		for buffer_name in ["input_buffer", "output_buffer"]:
-			for item_id in building.get(buffer_name, {}):
-				var amount := float(building[buffer_name][item_id])
-				if amount > 0.0:
-					aggregate[item_id] = aggregate.get(item_id, 0.0) + amount
-	return _format_buffer(aggregate)
-
 func _format_buffer(buffer: Dictionary) -> String:
 	var item_ids := buffer.keys()
 	item_ids.sort()
@@ -428,6 +491,51 @@ func _format_buffer(buffer: Dictionary) -> String:
 		if amount > 0.0:
 			parts.append("%s %.1f" % [item_id, amount])
 	return "无" if parts.is_empty() else ", ".join(parts)
+
+func _format_cursor_payload(cursor: Dictionary) -> String:
+	var item_id := String(cursor.get("item_id", ""))
+	var amount := float(cursor.get("amount", 0.0))
+	return "无" if item_id.is_empty() or amount <= 0.0 else "%s %.1f" % [item_id, amount]
+
+func _format_handcraft_queue(queue: Array) -> String:
+	if queue.is_empty():
+		return "空"
+	var job: Dictionary = queue[0]
+	var recipe := HandcraftSystem.new(_get_game_state()).get_recipe(String(job.get("recipe_id", "")))
+	return "%s ×%d  %.0f%%" % [recipe.get("name", job.get("recipe_id", "")), int(job.get("quantity_remaining", 0)), float(job.get("progress", 0.0)) / maxf(float(recipe.get("duration", 1.0)), 0.0000001) * 100.0]
+
+func _format_handcraft_preview(preview: Dictionary) -> String:
+	if not preview.get("ok", false):
+		return String(preview.get("message", "配方不可用"))
+	var missing: Dictionary = preview.get("missing", {})
+	return "材料齐备" if missing.is_empty() else "缺少 %s" % _format_buffer(missing)
+
+func _construction_item_total(state: GameState) -> int:
+	var total := 0.0
+	for building_type in DOCK_BUILDINGS:
+		total += float(state.construction_inventory.get(building_type, 0.0))
+	return int(floor(total))
+
+func _construction_stock_summary(state: GameState) -> String:
+	var summary := "%02d" % _construction_item_total(state)
+	var legacy_credit := int(floor(float(state.construction_inventory.get("legacy_credit", 0.0))))
+	return "%s+L%02d" % [summary, legacy_credit] if legacy_credit > 0 else summary
+
+func _refresh_construction_dock(state: GameState) -> void:
+	var construction := ConstructionSystem.new(state)
+	for building_type in DOCK_BUILDINGS:
+		var button := _dock_buttons.get(building_type) as Button
+		if button == null:
+			continue
+		var owned := int(floor(construction.get_owned_count(building_type)))
+		var missing_reason := construction.get_missing_reason(building_type)
+		var legacy_credit := int(floor(float(state.construction_inventory.get("legacy_credit", 0.0))))
+		var legacy_cost := int(ConstructionSystem.LEGACY_COSTS.get(building_type, 0.0))
+		button.text = "%s %s\n已有 %d / 需要 1" % [DOCK_SHORTCUTS[building_type], _building_name(building_type), owned]
+		if owned < 1 and legacy_credit > 0:
+			button.text = "%s %s\n旧额度 %d / 需要 %d" % [DOCK_SHORTCUTS[building_type], _building_name(building_type), legacy_credit, legacy_cost]
+		button.disabled = not missing_reason.is_empty()
+		button.tooltip_text = DataManager.get_building(building_type).get("description", "") if missing_reason.is_empty() else missing_reason
 
 func _create_panel(node_name: String, color: Color) -> Panel:
 	var panel := Panel.new()

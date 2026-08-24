@@ -19,12 +19,14 @@ static func validate_persistent_dict(payload: Variant) -> Array:
 	if not _is_number(elapsed_time) or float(elapsed_time) < 0.0:
 		_add_error(errors, "invalid_elapsed_time", "state", "", "累计时间必须是非负数")
 
-	var construction_points: Variant = data.get("construction_points")
-	if not _is_integral_number(construction_points) or int(construction_points) < 0:
-		_add_error(errors, "invalid_construction_points", "state", "", "建造点必须是非负整数")
-
 	if not data.get("completed_technologies") is Array:
 		_add_error(errors, "invalid_completed_technologies", "state", "", "已完成科技必须是数组")
+	_validate_root_inventory(errors, "planet_inventory", data.get("planet_inventory"), InventorySystem.MAX_PLANET_STACK)
+	_validate_root_inventory(errors, "construction_inventory", data.get("construction_inventory"), 99.0, true)
+	_validate_cursor_payload(errors, data.get("cursor_payload"))
+	var handcraft_queue_value: Variant = data.get("handcraft_queue")
+	if not handcraft_queue_value is Array:
+		_add_error(errors, "invalid_handcraft_queue", "state", "", "手工制造队列必须是数组")
 
 	var buildings_value: Variant = data.get("buildings")
 	var connections_value: Variant = data.get("connections")
@@ -72,6 +74,18 @@ static func validate_persistent_dict(payload: Variant) -> Array:
 		if not buildings.has(target_id):
 			_add_error(errors, "dangling_connection_target", "connection", connection_id, "连接目标建筑不存在")
 
+	if handcraft_queue_value is Array:
+		var seen_job_ids: Dictionary = {}
+		for job_value in handcraft_queue_value:
+			if not job_value is Dictionary:
+				_add_error(errors, "invalid_handcraft_job", "handcraft", "", "手工制造任务必须是字典")
+				continue
+			var job: Dictionary = job_value
+			var job_id := String(job.get("id", ""))
+			highest_id = maxi(highest_id, _numeric_id_suffix(job_id))
+			_validate_handcraft_job(errors, job, seen_job_ids)
+			seen_job_ids[job_id] = true
+
 	if _is_integral_number(next_id) and int(next_id) <= highest_id:
 		_add_error(errors, "next_id_not_ahead", "state", "", "下一实体 ID 必须大于所有已保存 ID")
 
@@ -94,6 +108,57 @@ static func _validate_inventory(errors: Array, building_id: String, buffer_name:
 			_add_error(errors, "invalid_inventory_amount", "inventory", "%s:%s" % [building_id, item_key], "库存数量必须是数字")
 		elif float(amount) < 0.0:
 			_add_error(errors, "negative_inventory", "inventory", "%s:%s" % [building_id, item_key], "库存数量不能为负数")
+
+static func _validate_root_inventory(errors: Array, inventory_name: String, inventory: Variant, max_amount: float, allow_legacy_credit: bool = false) -> void:
+	if not inventory is Dictionary:
+		_add_error(errors, "invalid_%s" % inventory_name, "state", "", "%s 必须是字典" % inventory_name)
+		return
+	for item_key in inventory:
+		var item_id := String(item_key)
+		var amount: Variant = inventory[item_key]
+		if item_id.is_empty():
+			_add_error(errors, "invalid_inventory_item", "inventory", inventory_name, "库存物品 ID 不能为空")
+		elif not _is_number(amount) or is_nan(float(amount)) or is_inf(float(amount)):
+			_add_error(errors, "invalid_inventory_amount", "inventory", "%s:%s" % [inventory_name, item_id], "库存数量必须是有限数字")
+		elif float(amount) < 0.0:
+			_add_error(errors, "negative_inventory", "inventory", "%s:%s" % [inventory_name, item_id], "库存数量不能为负数")
+		elif not (allow_legacy_credit and item_id == "legacy_credit") and float(amount) > max_amount:
+			_add_error(errors, "inventory_overflow", "inventory", "%s:%s" % [inventory_name, item_id], "库存数量超过容量上限")
+
+static func _validate_cursor_payload(errors: Array, cursor: Variant) -> void:
+	if not cursor is Dictionary:
+		_add_error(errors, "invalid_cursor_payload", "state", "", "光标载荷必须是字典")
+		return
+	var item_value: Variant = cursor.get("item_id")
+	var amount_value: Variant = cursor.get("amount")
+	if (typeof(item_value) != TYPE_STRING and typeof(item_value) != TYPE_STRING_NAME) or not _is_number(amount_value):
+		_add_error(errors, "invalid_cursor_payload", "state", "", "光标载荷需要合法物品 ID 和数量")
+		return
+	var item_id := String(item_value)
+	var amount := float(amount_value)
+	if is_nan(amount) or is_inf(amount) or amount < 0.0 or amount > InventorySystem.MAX_CURSOR_STACK:
+		_add_error(errors, "invalid_cursor_amount", "state", "", "光标载荷数量超出合法范围")
+	elif (item_id.is_empty() and amount != 0.0) or (not item_id.is_empty() and amount <= 0.0):
+		_add_error(errors, "invalid_cursor_ownership", "state", "", "光标物品与数量必须同时为空或同时有效")
+
+static func _validate_handcraft_job(errors: Array, job: Dictionary, seen_job_ids: Dictionary) -> void:
+	var job_id := String(job.get("id", ""))
+	if job_id.is_empty() or seen_job_ids.has(job_id):
+		_add_error(errors, "invalid_handcraft_job_id", "handcraft", job_id, "手工制造任务 ID 必须非空且唯一")
+	var recipe_id := String(job.get("recipe_id", ""))
+	var recipe: Dictionary = HandcraftSystem.RECIPES.get(recipe_id, {})
+	if recipe.is_empty():
+		_add_error(errors, "invalid_handcraft_recipe", "handcraft", job_id, "手工制造任务引用未知配方")
+	var total: Variant = job.get("quantity_total")
+	var remaining: Variant = job.get("quantity_remaining")
+	if not _is_integral_number(total) or int(total) < 1:
+		_add_error(errors, "invalid_handcraft_quantity", "handcraft", job_id, "手工制造总数必须是正整数")
+	if not _is_integral_number(remaining) or int(remaining) < 1 or (_is_integral_number(total) and int(remaining) > int(total)):
+		_add_error(errors, "invalid_handcraft_remaining", "handcraft", job_id, "手工制造剩余数必须在合法范围内")
+	var progress: Variant = job.get("progress")
+	var duration := float(recipe.get("duration", 0.0))
+	if not _is_number(progress) or is_nan(float(progress)) or is_inf(float(progress)) or float(progress) < 0.0 or (not recipe.is_empty() and float(progress) > duration + 0.0000001):
+		_add_error(errors, "invalid_handcraft_progress", "handcraft", job_id, "手工制造进度超出合法范围")
 
 static func _validate_power_state(errors: Array, building_id: String, building: Dictionary) -> void:
 	if building.has("fuel_remaining"):
