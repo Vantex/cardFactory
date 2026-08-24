@@ -65,10 +65,10 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1
 
 ## 下一阶段建议
 
-用户已批准继续对齐 DSPONLINE 的完整单机玩法，并明确排除账号、云存档、排行榜、在线社交和服务器运维。后续以新的[差距分析与续作设计](superpowers/specs/2026-08-24-cardfactory-dsponline-gap-analysis-design.md)和[单机实施路线图](superpowers/plans/2026-08-24-cardfactory-dsponline-single-player-roadmap.md)为准：先完成版本化状态、可靠本地存档、固定步长和电力闭环，再依次建设完整行星工厂、科技推进、多行星物流、戴森终局及产品化。
+用户已批准继续对齐 DSPONLINE 的完整单机玩法，并明确排除账号、云存档、排行榜、在线社交和服务器运维。后续以新的[差距分析与续作设计](current/SINGLE_PLAYER_GAP_ANALYSIS.md)和[单机实施路线图](current/SINGLE_PLAYER_ROADMAP.md)为准：先完成版本化状态、可靠本地存档、固定步长和电力闭环，再依次建设完整行星工厂、科技推进、多行星物流、戴森终局及产品化。
 
 `DSPONLINE` 只在其非商业许可范围内作为行为和架构参考；不复制其源码或素材，也不把账号、云档、多核 Worker、排行榜等高级能力作为 CardFactory 当前开发的前置条件。
 
 ## 文档口径
 
-根 `README.md` 与本文是开发者入口。2026-08-24 单机差距设计和实施路线图定义后续范围；2026-08-23 Phase 2 设计规格和实现计划记录已交付工作区的验收依据。其余日期文档是历史材料，不能单独证明功能已经接入或通过测试。
+根 `README.md`、[文档索引](README.md)与本文是开发者入口。`docs/current/` 定义后续范围；`docs/history/` 只保存已结束批次的背景与交付记录，不能单独证明功能已经接入或通过测试。

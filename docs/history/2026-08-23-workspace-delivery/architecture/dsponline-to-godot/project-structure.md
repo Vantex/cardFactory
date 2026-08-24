@@ -1,5 +1,7 @@
 # Project Structure
 
+> **历史归档（2026-08-23 工作区交付）：** 本结构只服务当时 Phase 2 迁移，不定义当前后续架构；请以[项目状态](../../../../PROJECT_STATUS.md)和[当前设计](../../../../current/SINGLE_PLAYER_GAP_ANALYSIS.md)为准。
+
 ## Project type
 
 DSPONLINE 是浏览器/Electron 驱动的单页工厂模拟器；CardFactory 是 Godot 4 桌面项目。本阶段不是全量移植，而是把前者的主工厂工作区信息架构和交互语言重新实现到后者的活动主场景。

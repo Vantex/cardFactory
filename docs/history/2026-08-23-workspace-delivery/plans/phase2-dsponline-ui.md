@@ -1,5 +1,7 @@
 # CardFactory Phase 2 DSPONLINE 风格工作区实现计划
 
+> **历史归档（2026-08-23 工作区交付）：** 本计划记录当时已结束的交付批次，复选框不代表当前路线；请以[项目状态](../../../PROJECT_STATUS.md)和[当前路线](../../../current/SINGLE_PLAYER_ROADMAP.md)为准。
+
 > **面向 AI 代理的工作者：** 必需子技能：使用 superpowers:subagent-driven-development（推荐）或 superpowers:executing-plans 逐任务实现此计划。步骤使用复选框（`- [ ]`）语法来跟踪进度。
 
 **目标：** 在 Godot 主场景中交付一个 DSPONLINE 风格的可玩工厂工作区，使玩家可从空白画布完成建造、选择、移动、配方配置、连接和删除，并看到真实模拟反馈。

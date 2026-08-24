@@ -1,5 +1,7 @@
 # CardFactory Phase 2: DSPONLINE-Inspired Godot Workspace Design
 
+> **历史归档（2026-08-23 工作区交付）：** 本设计是已交付工厂工作区的历史依据，不定义后续完整单机范围；请以[项目状态](../../../PROJECT_STATUS.md)和[当前设计](../../../current/SINGLE_PLAYER_GAP_ANALYSIS.md)为准。
+
 ## Status and authority
 
 用户已明确要求直接参考 DSPONLINE 的成熟 UI/设计并在 Godot 中实现，不再进行方案讨论。本规格因此记录自主选择的实现方案，并作为第二阶段验收依据。参考范围是布局、信息层级和交互行为；不复制 DSPONLINE 源码或素材。

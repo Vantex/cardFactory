@@ -1,5 +1,7 @@
 # Inspector 松开连接坐标修复实现计划
 
+> **历史归档（2026-08-23 工作区交付）：** 本计划记录当时的修复与剩余退出告警，不是当前待办清单；请以[项目状态](../../../PROJECT_STATUS.md)和[当前路线](../../../current/SINGLE_PLAYER_ROADMAP.md)为准。
+
 > **面向 AI 代理的工作者：** 必需子技能：使用 superpowers:subagent-driven-development（推荐）或 superpowers:executing-plans 逐任务实现此计划。步骤使用复选框（`- [ ]`）语法来跟踪进度。
 
 **目标：** 保证连接手势在窗口拉伸、嵌入和 DPI 缩放下使用正确坐标，Inspector 内松开稳定取消。

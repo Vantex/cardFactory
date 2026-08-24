@@ -4,7 +4,7 @@
 
 **目标：** 在 Godot 4 中把 CardFactory 建设为完整的离线单机工厂游戏，覆盖可靠存档、确定性生产、电力、物流、科技、多行星、戴森工程、离线结算和终局；不实现账号、云存档、排行榜、在线社交或服务器运维。
 
-**设计依据：** `docs/superpowers/specs/2026-08-24-cardfactory-dsponline-gap-analysis-design.md`
+**设计依据：** `docs/current/SINGLE_PLAYER_GAP_ANALYSIS.md`
 
 **架构方向：** 保留当前 `Main + GameManager + GameState + SimulationEngine` 主干，但先建立版本化状态、codec、迁移和固定步长。领域系统只接受权威 GameState，通过原子命令修改状态；UI 只发送意图和展示结果。各阶段必须交付一个从正式入口可触发的纵向闭环。
 
@@ -813,7 +813,7 @@ git commit -m "perf: add deterministic large factory budgets"
 - [ ] **步骤 6：更新权威文档并提交**
 
 ```powershell
-git add README.md docs/PROJECT_STATUS.md docs/CONTENT_PARITY.md docs/testing/single-player-release-checklist.md docs/superpowers/plans/2026-08-24-cardfactory-dsponline-single-player-roadmap.md
+git add README.md docs/PROJECT_STATUS.md docs/CONTENT_PARITY.md docs/testing/single-player-release-checklist.md docs/current/SINGLE_PLAYER_ROADMAP.md
 git commit -m "docs: complete single player parity roadmap"
 ```
 

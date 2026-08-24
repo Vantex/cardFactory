@@ -1,6 +1,6 @@
 ﻿# CardFactory 第二阶段代码审计报告
 
-> **历史资料：** 本文保留当时审计结论，不代表当前状态；请以 [`docs/PROJECT_STATUS.md`](../PROJECT_STATUS.md) 为准。
+> **历史归档（2026-08-21 初始开发）：** 本文保留当时审计结论，不代表当前状态；请以[项目状态](../../PROJECT_STATUS.md)和[当前路线](../../current/SINGLE_PLAYER_ROADMAP.md)为准。
 
 **审计日期：** 2026-08-21  
 **审计范围：** 所有脚本文件（15个）

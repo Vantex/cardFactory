@@ -1,5 +1,7 @@
 # Data Model
 
+> **历史归档（2026-08-23 工作区交付）：** 本模型只描述当时 Phase 2 工厂工作区，不是当前完整状态模型；请以[项目状态](../../../../PROJECT_STATUS.md)和[当前设计](../../../../current/SINGLE_PLAYER_GAP_ANALYSIS.md)为准。
+
 ## Key entities
 
 | Entity | Owner | Relevant fields | Phase 2 role |

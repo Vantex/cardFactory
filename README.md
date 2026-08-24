@@ -84,17 +84,14 @@ docs/           权威状态、规格、计划和交付记录
 
 存档的 `Vector2` JSON 往返尚未解决；电力效率目前也不会调节生产速度。科技、空间站、行星、星系、戴森球和高级物流能力同样不在活跃工作区范围内。`scripts/test/` 中除 `TestBaseline.gd` 与 `TestFactoryWorkspace.gd` 外的旧打印式脚本不属于门禁。
 
-后续已批准按完整单机玩法继续开发；账号、云存档、排行榜、在线社交和服务器运维明确排除。详细差距和实施顺序见新的[单机差距设计](docs/superpowers/specs/2026-08-24-cardfactory-dsponline-gap-analysis-design.md)与[实施路线图](docs/superpowers/plans/2026-08-24-cardfactory-dsponline-single-player-roadmap.md)。
+后续已批准按完整单机玩法继续开发；账号、云存档、排行榜、在线社交和服务器运维明确排除。详细差距和实施顺序见[单机差距设计](docs/current/SINGLE_PLAYER_GAP_ANALYSIS.md)与[实施路线图](docs/current/SINGLE_PLAYER_ROADMAP.md)。
 
 `DSPONLINE` 仅可在其非商业许可范围内作为行为和架构参考；本项目不复制其源码、素材或商标。
 
-## 文档优先级
+## 文档权威边界
 
-发生冲突时依次以以下资料为准：
+- 安装、运行、操作和测试命令以本 `README.md` 与 `tools/run_tests.ps1` 为准。
+- 当前功能完成度、已知缺口和测试证据以 [`docs/PROJECT_STATUS.md`](docs/PROJECT_STATUS.md) 为准。
+- 后续范围、优先级和实施步骤以 [`docs/README.md`](docs/README.md) 指向的 `docs/current/` 文档为准。
 
-1. 本 `README.md`；
-2. [`docs/PROJECT_STATUS.md`](docs/PROJECT_STATUS.md)；
-3. 已批准的[单机差距设计](docs/superpowers/specs/2026-08-24-cardfactory-dsponline-gap-analysis-design.md)与[实施路线图](docs/superpowers/plans/2026-08-24-cardfactory-dsponline-single-player-roadmap.md)；
-4. 已交付 Phase 2 的[设计规格](docs/superpowers/specs/2026-08-23-cardfactory-phase2-dsponline-ui-design.md)与[实现计划](docs/superpowers/plans/2026-08-23-cardfactory-phase2-dsponline-ui.md)。
-
-其余带日期的审计、测试指南、设计和阶段计划均为历史参考，不证明当前能力。
+带日期的审计、测试指南、设计和阶段计划统一保存在 [`docs/history/`](docs/history/README.md)，只用于追溯，不证明当前能力，也不自动成为当前待办。

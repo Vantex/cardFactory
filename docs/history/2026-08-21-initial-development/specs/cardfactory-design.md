@@ -1,6 +1,6 @@
 ﻿# CardFactory - 卡牌化工厂模拟游戏 设计文档
 
-> **历史资料：** 本设计保留当时设想，不证明当前完成状态；请以 [`docs/PROJECT_STATUS.md`](../../PROJECT_STATUS.md) 为准。
+> **历史归档（2026-08-21 初始开发）：** 本设计保留当时设想，不证明当前完成状态；请以[项目状态](../../../PROJECT_STATUS.md)和[当前设计](../../../current/SINGLE_PLAYER_GAP_ANALYSIS.md)为准。
 
 **文档版本**: 1.0.0  
 **创建日期**: 2026-08-21  

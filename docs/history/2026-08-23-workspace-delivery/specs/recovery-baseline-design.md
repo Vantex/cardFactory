@@ -1,5 +1,7 @@
 # CardFactory 恢复可信基线设计
 
+> **历史归档（2026-08-23 工作区交付）：** 本设计只说明当时的可信基线范围；请以[项目状态](../../../PROJECT_STATUS.md)和[当前设计](../../../current/SINGLE_PLAYER_GAP_ANALYSIS.md)为准。
+
 **日期：** 2026-08-23  
 **状态：** 已批准  
 **范围：** `card-factory`；`DSPONLINE` 只作为行为参考，不修改

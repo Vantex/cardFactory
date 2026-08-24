@@ -1,5 +1,7 @@
 # Architecture Index
 
+> **历史归档（2026-08-23 工作区交付）：** 本索引及同目录 YAML 只覆盖当时的单一工厂工作区迁移，不是完整单机架构；请以[项目状态](../../../../PROJECT_STATUS.md)和[当前设计](../../../../current/SINGLE_PLAYER_GAP_ANALYSIS.md)为准。
+
 ## Implementation Guide
 
 This index is not the full contract. Do not implement from this file alone; follow the artifact paths below.

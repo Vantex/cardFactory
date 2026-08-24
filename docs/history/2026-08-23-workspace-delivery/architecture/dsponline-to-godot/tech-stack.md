@@ -1,5 +1,7 @@
 # Tech Stack
 
+> **历史归档（2026-08-23 工作区交付）：** 本技术转换说明只用于当时工厂工作区交付；请以[项目状态](../../../../PROJECT_STATUS.md)和[当前设计](../../../../current/SINGLE_PLAYER_GAP_ANALYSIS.md)为准。
+
 ## Reference application
 
 - React 19 + TypeScript + Vite。

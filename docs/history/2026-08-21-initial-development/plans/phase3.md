@@ -1,6 +1,6 @@
 ﻿# CardFactory 第三阶段实现计划
 
-> **历史资料：** 本计划保留当时设想，不证明当前完成状态；请以 [`docs/PROJECT_STATUS.md`](../../PROJECT_STATUS.md) 为准。
+> **历史归档（2026-08-21 初始开发）：** 本计划保留当时设想，未勾选项不是当前待办；请以[项目状态](../../../PROJECT_STATUS.md)和[当前路线](../../../current/SINGLE_PLAYER_ROADMAP.md)为准。
 
 **目标：** 性能优化、视觉升级、统计系统、存档系统
 
