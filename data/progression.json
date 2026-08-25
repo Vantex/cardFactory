@@ -1,0 +1,70 @@
+{
+  "line_id": "progression",
+  "name": "基础研究进程",
+  "items": {
+    "matrix_science_1": {
+      "id": "matrix_science_1",
+      "name": "基础研究矩阵",
+      "symbol": "◇1",
+      "color": "#62b5ae",
+      "description": "由基础电磁元件编码而成的第一类研究载体"
+    }
+  },
+  "recipes": {
+    "magnet_recipe": {
+      "id": "magnet_recipe",
+      "name": "磁体烧结",
+      "building_id": "smelter",
+      "inputs": [{"item_id": "iron_ore", "amount": 1}],
+      "outputs": [{"item_id": "magnet", "amount": 1}],
+      "duration": 1.5
+    },
+    "basic_matrix_recipe": {
+      "id": "basic_matrix_recipe",
+      "name": "基础研究矩阵编码",
+      "building_id": "matrix_lab",
+      "inputs": [
+        {"item_id": "circuit", "amount": 1},
+        {"item_id": "magnetic_coil", "amount": 1}
+      ],
+      "outputs": [{"item_id": "matrix_science_1", "amount": 1}],
+      "duration": 4.0
+    }
+  },
+  "technologies": {
+    "factory_foundations": {
+      "id": "factory_foundations",
+      "name": "工厂基础理论",
+      "description": "建立稳定生产与分流的基础模型",
+      "cost": {"matrix_science_1": 5},
+      "duration": 10.0,
+      "prerequisites": [],
+      "unlocks": [{"kind": "building", "id": "splitter"}],
+      "effects": {"recipe_speed": 1.05}
+    },
+    "fluid_handling": {
+      "id": "fluid_handling",
+      "name": "流体处理",
+      "description": "解锁原油采集与精炼设备",
+      "cost": {"matrix_science_1": 10},
+      "duration": 20.0,
+      "prerequisites": ["factory_foundations"],
+      "unlocks": [
+        {"kind": "building", "id": "oil_extractor"},
+        {"kind": "building", "id": "oil_refinery"}
+      ],
+      "effects": {"fluid_speed": 1.05}
+    },
+    "advanced_materials": {
+      "id": "advanced_materials",
+      "name": "进阶材料学",
+      "description": "解锁碳基复合材料生产",
+      "cost": {"matrix_science_1": 20},
+      "duration": 30.0,
+      "prerequisites": ["fluid_handling"],
+      "unlocks": [{"kind": "recipe", "id": "graphene_recipe"}],
+      "effects": {"material_speed": 1.05}
+    }
+  },
+  "mandatory_items": ["matrix_science_1"]
+}

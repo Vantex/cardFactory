@@ -2,7 +2,7 @@ class_name ProductionSystem
 extends RefCounted
 
 const PROGRESS_EPSILON := 0.0000001
-const MAX_BUFFER_AMOUNT := 60.0
+const DEFAULT_BUFFER_CAPACITY := 60.0
 
 var game_state: GameState
 
@@ -21,13 +21,13 @@ func _update_building(building: Dictionary, delta: float) -> void:
 	if building_definition.get("kind", "") == "generator":
 		if float(building.get("power_output", 0.0)) > 0.0:
 			building["status"] = "running"
-		elif building_type == "power_generator" or building_type == "antimatter_generator":
+		elif not building_definition.get("fuel", {}).is_empty():
 			building["status"] = "no_fuel"
 		else:
 			building["status"] = "idle"
 		return
-	if building_type == "miner":
-		_update_miner(building, delta)
+	if building_definition.get("kind", "") == "extractor":
+		_update_extractor(building, building_definition, delta)
 		return
 	var recipe_id := String(building.get("recipe_id", ""))
 	if recipe_id.is_empty():
@@ -59,19 +59,24 @@ func _update_building(building: Dictionary, delta: float) -> void:
 		_emit_production_completed(building, recipe)
 	building["progress"] = progress
 
-func _update_miner(building: Dictionary, delta: float) -> void:
+func _update_extractor(building: Dictionary, building_definition: Dictionary, delta: float) -> void:
 	var power_efficiency := clampf(float(building.get("power_efficiency", 1.0)), 0.0, 1.0)
 	if power_efficiency <= 0.0:
 		building["status"] = "no_power"
 		return
-	var output_item := String(building.get("output_item", "iron_ore"))
-	var output_rate := maxf(float(building.get("output_rate", 10.0)), 0.0) / 60.0
+	var extraction: Dictionary = building_definition.get("extraction", {})
+	var output_item := String(building.get("output_item", extraction.get("item_id", "")))
+	var output_rate := maxf(float(building.get("output_rate", extraction.get("rate_per_minute", 0.0))), 0.0) / 60.0
+	if output_item.is_empty() or output_rate <= 0.0:
+		building["status"] = "error"
+		return
 	var speed := maxf(float(building.get("speed", 1.0)), 0.0)
 	var output_buffer: Dictionary = building.get("output_buffer", {})
 	var current_amount := float(output_buffer.get(output_item, 0.0))
-	output_buffer[output_item] = minf(current_amount + output_rate * delta * speed * power_efficiency, MAX_BUFFER_AMOUNT)
+	var capacity := _get_buffer_capacity(building, building_definition, "output")
+	output_buffer[output_item] = minf(current_amount + output_rate * delta * speed * power_efficiency, capacity)
 	building["output_buffer"] = output_buffer
-	building["status"] = "running"
+	building["status"] = "blocked" if current_amount >= capacity else "running"
 
 func _has_required_inputs(building: Dictionary, recipe: Dictionary) -> bool:
 	var input_buffer: Dictionary = building.get("input_buffer", {})
@@ -84,10 +89,12 @@ func _has_required_inputs(building: Dictionary, recipe: Dictionary) -> bool:
 
 func _has_output_space(building: Dictionary, recipe: Dictionary) -> bool:
 	var output_buffer: Dictionary = building.get("output_buffer", {})
+	var building_definition := DataManager.get_building(String(building.get("type", "")))
+	var capacity := _get_buffer_capacity(building, building_definition, "output")
 	for output_value in recipe.get("outputs", []):
 		var item_id := String(output_value.get("item_id", ""))
 		var amount := float(output_value.get("amount", 0.0))
-		if float(output_buffer.get(item_id, 0.0)) + amount > MAX_BUFFER_AMOUNT + PROGRESS_EPSILON:
+		if float(output_buffer.get(item_id, 0.0)) + amount > capacity + PROGRESS_EPSILON:
 			return false
 	return true
 
@@ -107,7 +114,10 @@ func _produce_outputs(building: Dictionary, recipe: Dictionary) -> void:
 
 func _emit_production_completed(building: Dictionary, recipe: Dictionary) -> void:
 	var outputs: Array = recipe.get("outputs", [])
-	if outputs.is_empty():
-		return
-	var first_output: Dictionary = outputs[0]
-	EventBus.production_completed.emit(String(building.get("id", "")), String(first_output.get("item_id", "")), int(first_output.get("amount", 0)))
+	for output_value in outputs:
+		var output: Dictionary = output_value
+		EventBus.production_completed.emit(String(building.get("id", "")), String(output.get("item_id", "")), int(output.get("amount", 0)))
+
+func _get_buffer_capacity(building: Dictionary, building_definition: Dictionary, direction: String) -> float:
+	var key := "%s_buffer_capacity" % direction
+	return maxf(float(building.get(key, building_definition.get(key, DEFAULT_BUFFER_CAPACITY))), PROGRESS_EPSILON)

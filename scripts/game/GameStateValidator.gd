@@ -55,6 +55,7 @@ static func validate_persistent_dict(payload: Variant) -> Array:
 		_validate_inventory(errors, building_id, "input_buffer", building.get("input_buffer", {}))
 		_validate_inventory(errors, building_id, "output_buffer", building.get("output_buffer", {}))
 		_validate_power_state(errors, building_id, building)
+		_validate_catalog_configuration(errors, building_id, building)
 
 	for connection_key in connections:
 		var connection_id := String(connection_key)
@@ -90,6 +91,32 @@ static func validate_persistent_dict(payload: Variant) -> Array:
 		_add_error(errors, "next_id_not_ahead", "state", "", "下一实体 ID 必须大于所有已保存 ID")
 
 	return errors
+
+static func _validate_catalog_configuration(errors: Array, building_id: String, building: Dictionary) -> void:
+	var building_type := String(building.get("type", ""))
+	var definition := DataManager.get_building(building_type)
+	var recipe_id := String(building.get("recipe_id", ""))
+	if not recipe_id.is_empty():
+		var recipe := DataManager.get_recipe(recipe_id)
+		if recipe.is_empty():
+			_add_error(errors, "invalid_recipe_reference", "building", building_id, "建筑引用的配方不存在")
+		elif not DataManager.is_recipe_supported_by_building(recipe, building_type):
+			_add_error(errors, "invalid_building_recipe", "building", building_id, "配方与建筑类型不匹配")
+	if definition.get("kind", "") == "extractor":
+		var extraction: Dictionary = definition.get("extraction", {})
+		var allowed_items: Array = extraction.get("items", [extraction.get("item_id", "")])
+		var output_item := String(building.get("output_item", extraction.get("item_id", "")))
+		if not allowed_items.has(output_item):
+			_add_error(errors, "invalid_extraction_item", "building", building_id, "采集目标不在建筑目录许可范围内")
+	elif building.has("output_item") and not recipe_id.is_empty():
+		var allowed_outputs: Array = []
+		for output_value in DataManager.get_recipe(recipe_id).get("outputs", []):
+			allowed_outputs.append(String(output_value.get("item_id", "")))
+		if not allowed_outputs.has(String(building.get("output_item", ""))):
+			_add_error(errors, "invalid_output_item", "building", building_id, "连接输出不在当前配方产物范围内")
+	var fuel_rule: Dictionary = definition.get("fuel", {})
+	if not fuel_rule.is_empty() and building.has("fuel_item") and String(building.get("fuel_item", "")) != String(fuel_rule.get("item_id", "")):
+		_add_error(errors, "invalid_fuel_item", "building", building_id, "燃料物品与建筑目录不匹配")
 
 static func _validate_position(errors: Array, building_id: String, position: Variant) -> void:
 	if not position is Dictionary:

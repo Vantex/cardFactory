@@ -1,15 +1,6 @@
 class_name PowerSystem
 extends RefCounted
 
-const FUEL_RULES := {
-	"power_generator": {"item_id": "coal", "burn_duration": 30.0},
-	"antimatter_generator": {"item_id": "antimatter", "burn_duration": 120.0},
-}
-const RENEWABLE_GENERATORS := {
-	"solar_panel": true,
-	"wind_turbine": true,
-}
-
 var game_state: GameState
 var total_generation := 0.0
 var total_consumption := 0.0
@@ -40,18 +31,17 @@ func _calculate_power(delta: float) -> void:
 		var base_generation := maxf(float(building_definition.get("power_generation", 0.0)), 0.0)
 		if base_generation <= 0.0:
 			continue
-		var actual_generation := _building_generation(building, building_type, base_generation, delta)
+		var actual_generation := _building_generation(building, building_definition, base_generation, delta)
 		building["power_output"] = actual_generation
 		total_generation += actual_generation
 	power_balance = total_generation - total_consumption
 	power_ratio = 1.0 if total_consumption <= 0.0 else clampf(total_generation / total_consumption, 0.0, 1.0)
 
-func _building_generation(building: Dictionary, building_type: String, base_generation: float, delta: float) -> float:
+func _building_generation(building: Dictionary, building_definition: Dictionary, base_generation: float, delta: float) -> float:
 	var generation_factor := clampf(float(building.get("generation_factor", 1.0)), 0.0, 1.0)
-	if FUEL_RULES.has(building_type):
-		return base_generation * generation_factor * _consume_fuel_time(building, FUEL_RULES[building_type], delta)
-	if RENEWABLE_GENERATORS.has(building_type):
-		return base_generation * generation_factor
+	var fuel_rule: Dictionary = building_definition.get("fuel", {})
+	if not fuel_rule.is_empty():
+		return base_generation * generation_factor * _consume_fuel_time(building, fuel_rule, delta)
 	return base_generation * generation_factor
 
 func _consume_fuel_time(building: Dictionary, rule: Dictionary, delta: float) -> float:

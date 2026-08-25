@@ -151,7 +151,8 @@
                     "circuit_recipe":  {
                                            "id":  "circuit_recipe",
                                            "name":  "电路板组装",
-                                           "building_id":  "assembler",
+                                           "building_id":  "assembling_machine_mk1",
+                                           "building_ids":  ["assembling_machine_mk1", "assembler"],
                                            "inputs":  [
                                                           {
                                                               "item_id":  "iron_ingot",
@@ -173,7 +174,8 @@
                     "magnetic_coil_recipe":  {
                                                  "id":  "magnetic_coil_recipe",
                                                  "name":  "磁线圈制造",
-                                                 "building_id":  "assembler",
+                                                 "building_id":  "assembling_machine_mk1",
+                                                 "building_ids":  ["assembling_machine_mk1", "assembler"],
                                                  "inputs":  [
                                                                 {
                                                                     "item_id":  "copper_ingot",

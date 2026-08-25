@@ -39,6 +39,13 @@ const RECIPES := {
 		"output_target": "construction",
 		"duration": 2.0,
 	},
+	"handcraft_matrix_lab": {
+		"name": "矩阵研究站施工件",
+		"inputs": {"circuit": 2.0, "copper_ingot": 2.0, "iron_ingot": 4.0},
+		"outputs": {"matrix_lab": 1.0},
+		"output_target": "construction",
+		"duration": 3.0,
+	},
 }
 
 var game_state: GameState

@@ -94,7 +94,9 @@
       "power_demand": 0,
       "power_generation": 50000,
       "input_slots": 1,
-      "output_slots": 0
+      "output_slots": 0,
+      "input_buffer_capacity": 12,
+      "fuel": {"item_id": "antimatter", "burn_duration": 120.0}
     },
     "dyson_sphere_launcher": {
       "id": "dyson_sphere_launcher",

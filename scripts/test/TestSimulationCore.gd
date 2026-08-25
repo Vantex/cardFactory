@@ -10,6 +10,8 @@ func _ready() -> void:
 	_test_catch_up_budget_preserves_time()
 	_test_power_controls_production_and_logistics()
 	_test_generation_rules()
+	_test_catalog_driven_production_rules()
+	_test_first_science_chain_from_raw_ore()
 	_test_phase_order_and_tick_boundaries()
 
 	if _failures > 0:
@@ -112,6 +114,66 @@ func _test_generation_rules() -> void:
 	_expect(renewable_engine.get_power_info().get("generation") == 480.0, "solar and wind generation use explicit deterministic availability factors without fuel")
 	_expect(renewable_state.buildings["solar"].get("status") == "running" and renewable_state.buildings["wind"].get("status") == "running", "renewable generators expose their active generation state")
 
+func _test_catalog_driven_production_rules() -> void:
+	var extraction_state := GameState.new()
+	_add_building(extraction_state, "solar_a", "solar_panel")
+	_add_building(extraction_state, "solar_b", "solar_panel")
+	_add_building(extraction_state, "solar_c", "solar_panel")
+	_add_building(extraction_state, "oil", "oil_extractor")
+	_run_seconds(SimulationEngine.new(extraction_state), 2.0)
+	_expect(is_equal_approx(extraction_state.buildings["oil"].get("output_buffer", {}).get("crude_oil", 0.0), 1.0), "any catalog extractor uses its declared resource and rate")
+
+	var refinery_state := GameState.new()
+	_add_building(refinery_state, "generator_a", "power_generator", {"input_buffer": {"coal": 1.0}})
+	_add_building(refinery_state, "generator_b", "power_generator", {"input_buffer": {"coal": 1.0}})
+	_add_building(refinery_state, "refinery", "oil_refinery", {"recipe_id": "refined_oil_recipe", "input_buffer": {"crude_oil": 2.0}})
+	_run_seconds(SimulationEngine.new(refinery_state), 2.0)
+	_expect(refinery_state.buildings["refinery"].get("output_buffer", {}) == {"hydrogen": 1.0, "refined_oil": 1.0}, "a catalog recipe emits every declared main product and byproduct")
+
+	var capacity_state := GameState.new()
+	_add_building(capacity_state, "solar", "solar_panel")
+	_add_building(capacity_state, "smelter", "smelter", {"recipe_id": "iron_ingot_recipe", "input_buffer": {"iron_ore": 1.0}, "output_buffer": {"iron_ingot": 24.0}})
+	_run_seconds(SimulationEngine.new(capacity_state), 2.0)
+	_expect(capacity_state.buildings["smelter"].get("status") == "blocked" and capacity_state.buildings["smelter"].get("output_buffer", {}).get("iron_ingot") == 24.0, "each building enforces its catalog output-buffer capacity")
+
+	var science_state := GameState.new()
+	_add_building(science_state, "generator", "power_generator", {"input_buffer": {"coal": 1.0}})
+	_add_building(science_state, "lab", "matrix_lab", {"recipe_id": "basic_matrix_recipe", "input_buffer": {"circuit": 1.0, "magnetic_coil": 1.0}})
+	_run_seconds(SimulationEngine.new(science_state), 4.0)
+	_expect(science_state.buildings["lab"].get("output_buffer", {}).get("matrix_science_1", 0.0) == 1.0, "research equipment completes the first science-matrix recipe")
+
+	var byproduct_connection_state := GameState.new()
+	_add_building(byproduct_connection_state, "refinery", "oil_refinery", {"recipe_id": "refined_oil_recipe"})
+	_add_building(byproduct_connection_state, "fractionator", "fractionator")
+	var invalid_output_connection := byproduct_connection_state.try_add_connection("refinery", "fractionator", "iron_ingot")
+	_expect(not invalid_output_connection.get("ok", false) and byproduct_connection_state.connections.is_empty(), "the formal connection command rejects an item the source recipe does not produce")
+	var byproduct_connection := byproduct_connection_state.try_add_connection("refinery", "fractionator", "hydrogen")
+	_expect(byproduct_connection.get("ok", false) and byproduct_connection_state.connections.values()[0].get("item_id", "") == "hydrogen" and byproduct_connection_state.buildings["fractionator"].get("recipe_id", "") == "deuterium_recipe", "the formal connection command routes a selected recipe byproduct")
+
+func _test_first_science_chain_from_raw_ore() -> void:
+	var state := GameState.new()
+	_add_building(state, "generator_a", "power_generator", {"input_buffer": {"coal": 5.0}})
+	_add_building(state, "generator_b", "power_generator", {"input_buffer": {"coal": 5.0}})
+	_add_building(state, "iron_miner", "miner", {"output_item": "iron_ore", "output_rate": 3600.0})
+	_add_building(state, "copper_miner", "miner", {"output_item": "copper_ore", "output_rate": 3600.0})
+	_add_building(state, "iron_smelter", "smelter", {"recipe_id": "iron_ingot_recipe"})
+	_add_building(state, "magnet_smelter", "smelter", {"recipe_id": "magnet_recipe"})
+	_add_building(state, "copper_smelter", "smelter", {"recipe_id": "copper_ingot_recipe"})
+	_add_building(state, "circuit_assembler", "assembling_machine_mk1", {"recipe_id": "circuit_recipe"})
+	_add_building(state, "coil_assembler", "assembling_machine_mk1", {"recipe_id": "magnetic_coil_recipe"})
+	_add_building(state, "lab", "matrix_lab", {"recipe_id": "basic_matrix_recipe"})
+	_add_connection(state, "iron_to_ingot", "iron_miner", "iron_smelter", 60.0, "iron_ore")
+	_add_connection(state, "iron_to_magnet", "iron_miner", "magnet_smelter", 60.0, "iron_ore")
+	_add_connection(state, "copper_to_ingot", "copper_miner", "copper_smelter", 60.0, "copper_ore")
+	_add_connection(state, "ingot_to_circuit", "iron_smelter", "circuit_assembler", 60.0, "iron_ingot")
+	_add_connection(state, "copper_to_circuit", "copper_smelter", "circuit_assembler", 60.0, "copper_ingot")
+	_add_connection(state, "copper_to_coil", "copper_smelter", "coil_assembler", 60.0, "copper_ingot")
+	_add_connection(state, "magnet_to_coil", "magnet_smelter", "coil_assembler", 60.0, "magnet")
+	_add_connection(state, "circuit_to_lab", "circuit_assembler", "lab", 60.0, "circuit")
+	_add_connection(state, "coil_to_lab", "coil_assembler", "lab", 60.0, "magnetic_coil")
+	_run_seconds(SimulationEngine.new(state), 90.0)
+	_expect(float(state.buildings["lab"].get("output_buffer", {}).get("matrix_science_1", 0.0)) >= 1.0, "the catalog runs end-to-end from iron and copper ore to the mandatory research matrix")
+
 func _test_phase_order_and_tick_boundaries() -> void:
 	var state := GameState.new()
 	_add_building(state, "solar", "solar_panel")
@@ -152,12 +214,12 @@ func _add_building(state: GameState, id: String, type: String, overrides: Dictio
 	building.merge(overrides, true)
 	state.buildings[id] = building
 
-func _add_connection(state: GameState, id: String, source_id: String, target_id: String, flow_rate: float) -> void:
+func _add_connection(state: GameState, id: String, source_id: String, target_id: String, flow_rate: float, item_id: String = "iron_ore") -> void:
 	state.connections[id] = {
 		"id": id,
 		"source_id": source_id,
 		"target_id": target_id,
-		"item_id": "iron_ore",
+		"item_id": item_id,
 		"flow_rate": flow_rate,
 		"enabled": true,
 		"active": false,

@@ -46,10 +46,25 @@ func _test_authoritative_starter_state() -> void:
 	if not _has_property(state, "construction_inventory"):
 		return
 	var construction_inventory: Dictionary = state.get("construction_inventory")
-	for building_type in ["miner", "smelter", "assembling_machine_mk1", "power_generator"]:
+	for building_type in ["miner", "smelter", "assembling_machine_mk1", "power_generator", "matrix_lab"]:
 		_expect(float(construction_inventory.get(building_type, 0.0)) >= 1.0, "starter construction inventory contains one %s" % building_type)
 	_expect(state.get("cursor_payload") == {"item_id": "", "amount": 0.0}, "new cursor payload starts empty")
 	_expect(state.get("handcraft_queue") == [], "new handcraft queue starts empty")
+	var lab_recipe: Dictionary = HandcraftSystem.RECIPES.get("handcraft_matrix_lab", {})
+	_expect(lab_recipe.get("outputs", {}).get("matrix_lab", 0.0) == 1.0, "the first research building has a conserved handcraft construction recipe")
+	var smelter_id := state.add_building({"type": "smelter", "position": Vector2.ZERO, "recipe_id": "", "input_buffer": {}, "output_buffer": {}})
+	_expect(not state.set_entity_recipe(smelter_id, "circuit_recipe"), "a building rejects a catalog recipe assigned to another machine")
+	state.get_building(smelter_id)["recipe_id"] = "circuit_recipe"
+	var invalid_recipe_errors := GameStateValidator.validate_persistent_dict(GameStateCodec.to_persistent_dict(state))
+	_expect(_has_error_code(invalid_recipe_errors, "invalid_building_recipe"), "save validation rejects a mismatched building recipe")
+	var legacy_v2_state := GameState.new()
+	var legacy_assembler_id := legacy_v2_state.add_building({"type": "assembler", "position": Vector2.ZERO, "recipe_id": "circuit_recipe", "input_buffer": {}, "output_buffer": {}})
+	var legacy_v2_payload := GameStateCodec.to_persistent_dict(legacy_v2_state)
+	_expect(not _has_error_code(GameStateValidator.validate_persistent_dict(legacy_v2_payload), "invalid_building_recipe") and GameStateCodec.from_persistent_dict(legacy_v2_payload) != null, "a baseline schema-v2 assembler save remains loadable without migration")
+	var invalid_fuel_state := GameState.new()
+	var invalid_generator_id := invalid_fuel_state.add_building({"type": "power_generator", "position": Vector2.ZERO, "recipe_id": "", "input_buffer": {}, "output_buffer": {}, "fuel_item": "iron_ore", "fuel_remaining": 30.0})
+	var invalid_fuel_errors := GameStateValidator.validate_persistent_dict(GameStateCodec.to_persistent_dict(invalid_fuel_state))
+	_expect(_has_error_code(invalid_fuel_errors, "invalid_fuel_item"), "save validation rejects fuel outside the generator catalog rule")
 
 func _test_planet_inventory_is_atomic_and_bounded() -> void:
 	var state := GameState.new()
@@ -196,7 +211,7 @@ func _test_workspace_inventory_contract() -> void:
 		return
 	state.set("planet_inventory", {"gear": 2.0, "iron_ingot": 7.0})
 	state.set("cursor_payload", {"item_id": "gear", "amount": 2.0})
-	state.set("construction_inventory", {"miner": 1.0, "smelter": 0.0, "assembling_machine_mk1": 0.0, "power_generator": 0.0})
+	state.set("construction_inventory", {"miner": 1.0, "smelter": 0.0, "assembling_machine_mk1": 0.0, "power_generator": 0.0, "matrix_lab": 1.0})
 	GameManager.replace_game_state(state)
 	var workspace_script := load("res://scenes/ui/FactoryWorkspaceUI.gd") as Script
 	var workspace := workspace_script.new() as CanvasLayer
@@ -206,12 +221,14 @@ func _test_workspace_inventory_contract() -> void:
 	var cursor := workspace.get_node_or_null("ResourceRail/Cursor") as Label
 	var queue := workspace.get_node_or_null("ResourceRail/Handcraft") as Label
 	var miner_button := workspace.get_node_or_null("ConstructionDock/BuildingButtons/MinerButton") as Button
+	var matrix_lab_button := workspace.get_node_or_null("ConstructionDock/BuildingButtons/MatrixLabButton") as Button
 	var handcraft_quantity := workspace.get_node_or_null("InspectorPanel/HandcraftQuantity") as SpinBox
 	var recipe_list := workspace.get_node_or_null("InspectorPanel/RecipeList") as GridContainer
 	_expect(stock != null and "行星托盘" in stock.text and "iron_ingot 7.0" in stock.text, "resource rail displays the authoritative planet tray")
 	_expect(cursor != null and "gear 2.0" in cursor.text, "resource rail displays the cursor payload")
 	_expect(queue != null and "手工队列" in queue.text, "resource rail displays persistent handcraft queue status")
 	_expect(miner_button != null and "已有 1 / 需要 1" in miner_button.text and not miner_button.disabled, "construction dock displays owned and required building items")
+	_expect(matrix_lab_button != null and "T" in matrix_lab_button.text and "已有 1 / 需要 1" in matrix_lab_button.text and not matrix_lab_button.disabled, "construction dock exposes the playable research-station construction item")
 	_expect(handcraft_quantity != null, "empty inspector exposes a handcraft batch quantity control")
 	var miner_craft_button: Button
 	if recipe_list != null:
@@ -226,6 +243,35 @@ func _test_workspace_inventory_contract() -> void:
 		_expect(state.get("planet_inventory").get("iron_ingot", 0.0) == 3.0 and state.get("planet_inventory").get("gear", 0.0) == 0.0, "handcraft UI atomically reserves the selected batch materials")
 	else:
 		_expect(false, "handcraft batch controls include a miner construction recipe")
+	var miner_id := state.add_building({
+		"type": "miner",
+		"position": Vector2.ZERO,
+		"status": "idle",
+		"recipe_id": "",
+		"progress": 0.0,
+		"input_buffer": {},
+		"output_buffer": {},
+		"speed": 1.0,
+	})
+	workspace.set_selected_building(miner_id)
+	var copper_resource_button: Button
+	for child in recipe_list.get_children():
+		if child is Button and "铜矿石" in child.text:
+			copper_resource_button = child
+			break
+	if copper_resource_button != null:
+		copper_resource_button.pressed.emit()
+	_expect(copper_resource_button != null and state.get_building(miner_id).get("output_item", "") == "copper_ore", "extractor inspector switches a miner to the copper branch needed by the science chain")
+	var refinery_id := state.add_building({"type": "oil_refinery", "position": Vector2(320, 0), "status": "idle", "recipe_id": "refined_oil_recipe", "progress": 0.0, "input_buffer": {}, "output_buffer": {}, "speed": 1.0})
+	workspace.set_selected_building(refinery_id)
+	var hydrogen_output_button: Button
+	for child in recipe_list.get_children():
+		if child is Button and "输出：氢" in child.text:
+			hydrogen_output_button = child
+			break
+	if hydrogen_output_button != null:
+		hydrogen_output_button.pressed.emit()
+	_expect(hydrogen_output_button != null and state.get_building(refinery_id).get("output_item", "") == "hydrogen", "processor inspector selects a byproduct for the next formal connection")
 	state.get("construction_inventory")["miner"] = 0.0
 	state.get("construction_inventory")["legacy_credit"] = 7.0
 	workspace.refresh_now()
@@ -242,6 +288,12 @@ func _domain_scripts_ready() -> bool:
 func _has_property(object: Object, property_name: String) -> bool:
 	for property_info in object.get_property_list():
 		if String(property_info.get("name", "")) == property_name:
+			return true
+	return false
+
+func _has_error_code(errors: Array, code: String) -> bool:
+	for error_value in errors:
+		if error_value.get("code", "") == code:
 			return true
 	return false
 

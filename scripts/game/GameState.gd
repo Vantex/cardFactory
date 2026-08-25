@@ -20,6 +20,7 @@ var construction_inventory: Dictionary = {
     "smelter": 1.0,
     "assembling_machine_mk1": 1.0,
     "power_generator": 1.0,
+    "matrix_lab": 1.0,
 }
 var cursor_payload: Dictionary = {"item_id": "", "amount": 0.0}
 var handcraft_queue: Array = []
@@ -102,7 +103,7 @@ func add_connection(connection_data: Dictionary) -> String:
     EventBus.connection_created.emit(id, connection_data.source_id, connection_data.target_id)
     return id
 
-func try_add_connection(source_id: String, target_id: String) -> Dictionary:
+func try_add_connection(source_id: String, target_id: String, requested_output_item: String = "") -> Dictionary:
     if not buildings.has(source_id) or not buildings.has(target_id):
         return {"ok": false, "message": "连接建筑不存在"}
     if source_id == target_id:
@@ -112,9 +113,12 @@ func try_add_connection(source_id: String, target_id: String) -> Dictionary:
         if connection.get("source_id", "") == source_id and connection.get("target_id", "") == target_id:
             return {"ok": false, "message": "连接已存在"}
 
-    var output_item := get_building_output_item(source_id)
+    var available_output_items := get_building_output_items(source_id)
+    var output_item := requested_output_item if not requested_output_item.is_empty() else get_building_output_item(source_id)
     if output_item.is_empty():
         return {"ok": false, "message": "源建筑没有输出物品"}
+    if not available_output_items.has(output_item):
+        return {"ok": false, "message": "源建筑不提供所选输出物品"}
 
     var target_building: Dictionary = buildings[target_id]
     var existing_recipe_id: String = target_building.get("recipe_id", "")
@@ -175,6 +179,21 @@ func get_building_output_item(building_id: String) -> String:
     if outputs.is_empty():
         return ""
     return outputs[0].get("item_id", "")
+
+func get_building_output_items(building_id: String) -> Array:
+    var building := get_building(building_id)
+    if building.is_empty():
+        return []
+    var definition := DataManager.get_building(String(building.get("type", "")))
+    var extraction: Dictionary = definition.get("extraction", {})
+    if definition.get("kind", "") == "extractor":
+        var selected_item := String(building.get("output_item", extraction.get("item_id", "")))
+        return [] if selected_item.is_empty() else [selected_item]
+    var recipe := DataManager.get_recipe(String(building.get("recipe_id", "")))
+    var output_items: Array = []
+    for output_value in recipe.get("outputs", []):
+        output_items.append(String(output_value.get("item_id", "")))
+    return output_items
 
 func get_building_display_name(building_id: String) -> String:
     var building := get_building(building_id)
@@ -240,15 +259,39 @@ func set_entity_recipe(entity_id: String, recipe_id: String) -> bool:
     if not buildings.has(entity_id):
         print("ERROR: Entity not found: ", entity_id)
         return false
-    
+
     var recipe = DataManager.get_recipe(recipe_id)
     if recipe.is_empty():
         print("ERROR: Recipe not found: ", recipe_id)
         return false
-    
+    if not DataManager.is_recipe_supported_by_building(recipe, String(buildings[entity_id].get("type", ""))):
+        print("ERROR: Recipe does not belong to entity: ", recipe_id)
+        return false
+
     buildings[entity_id]["recipe_id"] = recipe_id
     buildings[entity_id]["progress"] = 0.0
+    var selected_output := String(buildings[entity_id].get("output_item", ""))
+    if not selected_output.is_empty() and not get_building_output_items(entity_id).has(selected_output):
+        buildings[entity_id].erase("output_item")
     print("Set recipe ", recipe_id, " for entity ", entity_id)
+    return true
+
+func set_entity_extraction_item(entity_id: String, item_id: String) -> bool:
+    if not buildings.has(entity_id):
+        return false
+    var building: Dictionary = buildings[entity_id]
+    var definition := DataManager.get_building(String(building.get("type", "")))
+    var extraction: Dictionary = definition.get("extraction", {})
+    var allowed_items: Array = extraction.get("items", [extraction.get("item_id", "")])
+    if definition.get("kind", "") != "extractor" or not allowed_items.has(item_id):
+        return false
+    building["output_item"] = item_id
+    return true
+
+func set_entity_output_item(entity_id: String, item_id: String) -> bool:
+    if not get_building_output_items(entity_id).has(item_id):
+        return false
+    buildings[entity_id]["output_item"] = item_id
     return true
 
 # 功能5: 批量设置实体配方

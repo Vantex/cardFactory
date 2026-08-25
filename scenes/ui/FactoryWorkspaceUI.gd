@@ -14,12 +14,13 @@ const ACCENT_GREEN := Color("#70bb85")
 const ACCENT_YELLOW := Color("#e1b452")
 const ACCENT_ERROR := Color("#df7666")
 
-const DOCK_BUILDINGS := ["miner", "smelter", "assembling_machine_mk1", "power_generator"]
+const DOCK_BUILDINGS := ["miner", "smelter", "assembling_machine_mk1", "power_generator", "matrix_lab"]
 const DOCK_SHORTCUTS := {
 	"miner": "Q",
 	"smelter": "W",
 	"assembling_machine_mk1": "E",
 	"power_generator": "R",
+	"matrix_lab": "T",
 }
 
 var _selected_building_id := ""
@@ -133,6 +134,22 @@ func _on_recipe_pressed(recipe_id: String) -> void:
 	_recipe_signature = ""
 	refresh_now()
 
+func _on_extraction_pressed(item_id: String) -> void:
+	if _get_game_state().set_entity_extraction_item(_selected_building_id, item_id):
+		show_notice("采集目标已切换", "success")
+	else:
+		show_notice("采集目标不可用", "error")
+	_recipe_signature = ""
+	refresh_now()
+
+func _on_output_item_pressed(item_id: String) -> void:
+	if _get_game_state().set_entity_output_item(_selected_building_id, item_id):
+		show_notice("连接输出已切换", "success")
+	else:
+		show_notice("输出物品不可用", "error")
+	_recipe_signature = ""
+	refresh_now()
+
 func _on_handcraft_pressed(recipe_id: String) -> void:
 	var quantity := maxi(int(_handcraft_quantity.value), 1)
 	var result := HandcraftSystem.new(_get_game_state()).queue_craft(recipe_id, quantity)
@@ -239,7 +256,7 @@ func _create_resource_rail() -> void:
 	_production_label.position = Vector2(16, 302)
 	_production_label.size = Vector2(184, 76)
 	resource_rail.add_child(_production_label)
-	_tips_label = _create_label("Tips", "操作提示\nQ/W/E/R 建造\n空闲检查器手工制造\n拖动卡片/端口\nSpace 暂停", 11, Color("#9fb1aa"))
+	_tips_label = _create_label("Tips", "操作提示\nQ/W/E/R/T 建造\n空闲检查器手工制造\n拖动卡片/端口\nSpace 暂停", 11, Color("#9fb1aa"))
 	_tips_label.position = Vector2(16, 382)
 	_tips_label.size = Vector2(184, 110)
 	resource_rail.add_child(_tips_label)
@@ -334,10 +351,11 @@ func _create_construction_dock() -> void:
 	for building_type in DOCK_BUILDINGS:
 		var definition := DataManager.get_building(building_type)
 		var button := Button.new()
-		button.name = "%sButton" % building_type.capitalize()
+		button.name = _building_button_name(building_type)
 		button.text = "%s %s\n已有 0 / 需要 1" % [DOCK_SHORTCUTS[building_type], _building_name(building_type)]
+		button.clip_text = true
 		button.tooltip_text = definition.get("description", "")
-		button.custom_minimum_size = Vector2(116, 56)
+		button.custom_minimum_size = Vector2(94, 56)
 		button.pressed.connect(_on_building_pressed.bind(building_type))
 		buttons.add_child(button)
 		_dock_buttons[building_type] = button
@@ -427,6 +445,10 @@ func _refresh_recipe_controls(_state: GameState, building: Dictionary) -> void:
 	if building.is_empty():
 		_refresh_handcraft_controls(_state)
 		return
+	var definition := DataManager.get_building(String(building.get("type", "")))
+	if definition.get("kind", "") == "extractor":
+		_refresh_extraction_controls(building, definition)
+		return
 	_recipe_heading.text = "配方"
 	_handcraft_quantity.hide()
 	var recipes: Array = []
@@ -434,7 +456,7 @@ func _refresh_recipe_controls(_state: GameState, building: Dictionary) -> void:
 	var recipe_ids: Array[String] = []
 	for recipe in recipes:
 		recipe_ids.append(recipe.get("id", ""))
-	var signature := "%s|%s|%s" % [_selected_building_id, building.get("recipe_id", ""), ",".join(recipe_ids)]
+	var signature := "%s|%s|%s|%s" % [_selected_building_id, building.get("recipe_id", ""), building.get("output_item", ""), ",".join(recipe_ids)]
 	if signature == _recipe_signature:
 		return
 	_recipe_signature = signature
@@ -448,6 +470,40 @@ func _refresh_recipe_controls(_state: GameState, building: Dictionary) -> void:
 		recipe_button.custom_minimum_size = Vector2(120, 34)
 		recipe_button.pressed.connect(_on_recipe_pressed.bind(recipe_id))
 		_recipe_list.add_child(recipe_button)
+	var current_recipe := DataManager.get_recipe(String(building.get("recipe_id", "")))
+	var outputs: Array = current_recipe.get("outputs", [])
+	if outputs.size() > 1:
+		var selected_output := _get_game_state().get_building_output_item(_selected_building_id)
+		for output_value in outputs:
+			var item_id := String(output_value.get("item_id", ""))
+			var item := DataManager.get_item(item_id)
+			var output_button := Button.new()
+			output_button.text = "%s输出：%s" % ["✓ " if item_id == selected_output else "", item.get("name", item_id)]
+			output_button.custom_minimum_size = Vector2(120, 34)
+			output_button.pressed.connect(_on_output_item_pressed.bind(item_id))
+			_recipe_list.add_child(output_button)
+
+func _refresh_extraction_controls(building: Dictionary, definition: Dictionary) -> void:
+	_recipe_heading.text = "采集目标"
+	_handcraft_quantity.hide()
+	var extraction: Dictionary = definition.get("extraction", {})
+	var item_ids: Array = extraction.get("items", [extraction.get("item_id", "")])
+	var selected_item := String(building.get("output_item", extraction.get("item_id", "")))
+	var signature := "%s|extract|%s|%s" % [_selected_building_id, selected_item, ",".join(item_ids)]
+	if signature == _recipe_signature:
+		return
+	_recipe_signature = signature
+	for child in _recipe_list.get_children():
+		_recipe_list.remove_child(child)
+		child.queue_free()
+	for item_value in item_ids:
+		var item_id := String(item_value)
+		var item := DataManager.get_item(item_id)
+		var button := Button.new()
+		button.text = "%s%s" % ["✓ " if item_id == selected_item else "", item.get("name", item_id)]
+		button.custom_minimum_size = Vector2(120, 34)
+		button.pressed.connect(_on_extraction_pressed.bind(item_id))
+		_recipe_list.add_child(button)
 
 func _refresh_handcraft_controls(state: GameState) -> void:
 	_recipe_heading.text = "手工制造"
@@ -480,7 +536,15 @@ func _beginner_objective(state: GameState) -> String:
 		return "新手目标\n放置熔炉（W）"
 	if state.connections.is_empty():
 		return "新手目标\n连接矿机与熔炉"
-	return "新手目标\n让生产链持续运行"
+	if state.get_buildings_by_type("assembling_machine_mk1").is_empty():
+		return "新手目标\n放置制造台（E）"
+	if state.get_buildings_by_type("matrix_lab").is_empty():
+		return "新手目标\n放置矩阵研究站（T）"
+	for building_value in state.buildings.values():
+		var building: Dictionary = building_value
+		if float(building.get("output_buffer", {}).get("matrix_science_1", 0.0)) > 0.0:
+			return "新手目标\n基础科学链已完成"
+	return "新手目标\n生产基础研究矩阵"
 
 func _format_buffer(buffer: Dictionary) -> String:
 	var item_ids := buffer.keys()
@@ -562,6 +626,12 @@ func _panel_style(color: Color) -> StyleBoxFlat:
 
 func _building_name(building_type: String) -> String:
 	return DataManager.get_building(building_type).get("name", building_type)
+
+func _building_button_name(building_type: String) -> String:
+	var result := ""
+	for part in building_type.split("_", false):
+		result += part.capitalize().replace(" ", "")
+	return "%sButton" % result
 
 func _get_game_state() -> GameState:
 	return GameManager.get_game_state()

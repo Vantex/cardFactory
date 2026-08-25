@@ -42,11 +42,11 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1 -G
 
 ## 当前可玩工作区（Phase 2）
 
-主场景从离线开始菜单进入。玩家可在 10 个本地槽位中新建或继续游戏，并在工厂画布放置矿机、熔炉、制造台和发电机，选择配方、移动卡片，以及从输出端口连接到输入端口；矿机到熔炉的链路会将 `iron_ore` 送入熔炉并生产 `iron_ingot`。正式建造从施工库存消耗对应建筑件；放置、拆除和连接由领域命令原子验证，失败不会扣件、丢失缓存物资或留下半条连接。
+主场景从离线开始菜单进入。玩家可在 10 个本地槽位中新建或继续游戏，并在工厂画布放置矿机、熔炉、制造台、发电机和矩阵研究站，选择采集目标或设备配方、移动卡片，以及从输出端口连接到输入端口。铁矿与铜矿可经过冶炼和组装形成电路、磁线圈，最终在矩阵研究站产出基础研究矩阵。正式建造从施工库存消耗对应建筑件；放置、拆除和连接由领域命令原子验证，失败不会扣件、丢失缓存物资或留下半条连接。
 
 操作如下：
 
-- `Q` / `W` / `E` / `R`：分别进入矿机、熔炉、制造台、发电机的放置模式。
+- `Q` / `W` / `E` / `R` / `T`：分别进入矿机、熔炉、制造台、发电机、矩阵研究站的放置模式。
 - 左键：在放置模式确认放置；空闲时选择卡片，按住卡片拖动；在右侧输出端口按下，拖到另一张卡片左侧输入端口并释放以创建连接。空白或 UI 上释放会取消连接并显示原因。
 - 右键或中键拖动：平移画布。
 - 滚轮：以指针为中心缩放画布。
@@ -70,7 +70,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1 -G
 
 ```text
 autoload/       全局事件、游戏管理和静态数据加载
-data/           物品、建筑与配方 JSON
+data/           物品、建筑、配方、科技与解锁 JSON
 scenes/         主场景、工作区 UI 和测试场景
 scripts/game/   状态与模拟系统
 scripts/input/  世界画布输入仲裁
@@ -84,7 +84,7 @@ docs/           权威状态、规格、计划和交付记录
 
 当前已交付的第二阶段不包含多选或框选、蓝图、建筑缩略图、移动端布局、目标/胜负系统、minimap 或高级面板。仓库中存在的相关旧 UI 或局部 API 没有接入当前主场景，不能视为已交付功能。
 
-版本化 `GameState` codec、多槽本地存档、固定步长、真实供电倍率、守恒库存和基础手工制造已经接入正式入口；云存档、存档压缩和独立的手动保存按钮仍不在当前范围。科技、空间站、行星、星系、戴森球和高级物流能力同样不在活跃工作区范围内。`scripts/test/` 中除 `TestBaseline.gd`、`TestFactoryWorkspace.gd`、`TestStatePersistence.gd`、`TestSimulationCore.gd` 与 `TestInventoryConstruction.gd` 外的旧打印式脚本不属于门禁。
+版本化 `GameState` codec、多槽本地存档、固定步长、真实供电倍率、守恒库存、基础手工制造和第一条研究矩阵生产链已经接入正式入口；云存档、存档压缩和独立的手动保存按钮仍不在当前范围。科技目录与解锁映射已经数据化，但研究资源扣除、完整科技推进、空间站、行星、星系、戴森球和高级物流仍未接入活跃工作区。`scripts/test/` 中除 `TestBaseline.gd`、`TestFactoryWorkspace.gd`、`TestStatePersistence.gd`、`TestSimulationCore.gd` 与 `TestInventoryConstruction.gd` 外的旧打印式脚本不属于门禁。
 
 后续已批准按完整单机玩法继续开发；账号、云存档、排行榜、在线社交和服务器运维明确排除。详细差距和实施顺序见[单机差距设计](docs/current/SINGLE_PLAYER_GAP_ANALYSIS.md)与[实施路线图](docs/current/SINGLE_PLAYER_ROADMAP.md)。
 

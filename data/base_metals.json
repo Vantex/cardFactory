@@ -57,7 +57,18 @@
                                                  "height":  1
                                              },
                                     "power_demand":  10,
-                                    "speed":  1.0
+                                    "speed":  1.0,
+                                    "output_buffer_capacity":  60,
+                                    "extraction":  {
+                                                       "item_id":  "iron_ore",
+                                                       "items":  [
+                                                                      "iron_ore",
+                                                                      "copper_ore",
+                                                                      "coal",
+                                                                      "stone"
+                                                                  ],
+                                                       "rate_per_minute":  10
+                                                   }
                                 },
                       "smelter":  {
                                       "id":  "smelter",
@@ -72,7 +83,9 @@
                                       "power_demand":  50,
                                       "speed":  1.0,
                                       "input_slots":  1,
-                                      "output_slots":  1
+                                      "output_slots":  1,
+                                      "input_buffer_capacity":  24,
+                                      "output_buffer_capacity":  24
                                   },
                       "assembling_machine_mk1":  {
                                                      "id":  "assembling_machine_mk1",
@@ -87,7 +100,9 @@
                                                      "power_demand":  30,
                                                      "speed":  0.75,
                                                      "input_slots":  3,
-                                                     "output_slots":  1
+                                                     "output_slots":  1,
+                                                     "input_buffer_capacity":  36,
+                                                     "output_buffer_capacity":  24
                                                  },
                       "power_generator":  {
                                               "id":  "power_generator",
@@ -102,7 +117,12 @@
                                               "power_demand":  0,
                                               "power_generation":  500,
                                               "input_slots":  1,
-                                              "output_slots":  0
+                                              "output_slots":  0,
+                                              "input_buffer_capacity":  24,
+                                              "fuel":  {
+                                                           "item_id":  "coal",
+                                                           "burn_duration":  30
+                                                       }
                                           },
                       "solar_panel":  {
                                           "id":  "solar_panel",
@@ -207,7 +227,9 @@
                                          "power_demand":  480,
                                          "speed":  1,
                                          "input_slots":  2,
-                                         "output_slots":  1
+                                         "output_slots":  1,
+                                         "input_buffer_capacity":  24,
+                                         "output_buffer_capacity":  12
                                      },
                       "tesla_coil":  {
                                          "id":  "tesla_coil",
@@ -259,7 +281,12 @@
                                                              "width":  2
                                                          },
                                                 "power_demand":  0,
-                                                "speed":  1
+                                                "speed":  1,
+                                                "output_buffer_capacity":  120,
+                                                "extraction":  {
+                                                                   "item_id":  "hydrogen",
+                                                                   "rate_per_minute":  60
+                                                               }
                                             },
                       "spray_coater":  {
                                            "id":  "spray_coater",

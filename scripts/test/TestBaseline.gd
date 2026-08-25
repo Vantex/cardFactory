@@ -30,15 +30,18 @@ func _ready() -> void:
 		"res://data/base_metals.json",
 		"res://data/chemicals.json",
 		"res://data/electronics.json",
+		"res://data/progression.json",
 	]
 	var loaded_data_files = DataManager.get_loaded_data_files()
 	_expect(loaded_data_files is Array, "DataManager loaded data files are an Array")
 	if loaded_data_files is Array:
-		_expect(loaded_data_files.size() == expected_loaded_data_files.size(), "DataManager loaded exactly four data files")
+		_expect(loaded_data_files.size() == expected_loaded_data_files.size(), "DataManager loaded exactly five data files")
 		for expected_path in expected_loaded_data_files:
 			_expect(loaded_data_files.has(expected_path), "DataManager loaded %s" % expected_path)
 		loaded_data_files.clear()
 		_expect(DataManager.get_loaded_data_files() == expected_loaded_data_files, "DataManager loaded data files API returns a shallow copy")
+
+	_test_catalog_validation_contract()
 
 	var unavailable_save_system := SaveSystem.new("invalid://baseline/")
 	_expect(not unavailable_save_system.is_storage_available(), "SaveSystem reports invalid storage as unavailable")
@@ -72,6 +75,38 @@ func _ready() -> void:
 
 	print("BASELINE TESTS PASSED")
 	get_tree().quit(0)
+
+func _test_catalog_validation_contract() -> void:
+	_expect(DataManager.get_item("matrix_science_1").get("name", "") != "", "catalog defines the first research matrix")
+	_expect(DataManager.get_recipe("basic_matrix_recipe").get("building_id", "") == "matrix_lab", "catalog maps the first matrix recipe to research equipment")
+	_expect(DataManager.is_recipe_supported_by_building(DataManager.get_recipe("circuit_recipe"), "assembler"), "catalog preserves the legacy assembler recipe mapping for schema-v2 saves")
+	_expect(DataManager.get_technology("factory_foundations").get("prerequisites", null) is Array, "technologies are loaded through DataManager")
+	_expect(DataManager.get_mandatory_items().has("matrix_science_1"), "catalog declares the tutorial matrix as mandatory progression content")
+
+	var invalid_catalog := {
+		"items": {"ore": {"id": "ore"}},
+		"buildings": {"processor": {"id": "processor", "kind": "processor", "power_demand": 0.0, "speed": 1.0}},
+		"recipes": {
+			"broken": {
+				"id": "broken",
+				"building_id": "missing_building",
+				"inputs": [{"item_id": "missing_item", "amount": 0.0}],
+				"outputs": [{"item_id": "ore", "amount": -1.0}],
+				"duration": 0.0,
+			},
+		},
+		"technologies": {
+			"cycle_a": {"id": "cycle_a", "cost": {"ore": 1.0}, "duration": 1.0, "prerequisites": ["cycle_b"], "unlocks": []},
+			"cycle_b": {"id": "cycle_b", "cost": {"ore": 1.0}, "duration": 1.0, "prerequisites": ["cycle_a"], "unlocks": []},
+		},
+		"mandatory_items": ["ore"],
+	}
+	var errors: Array = DataManager.validate_catalog(invalid_catalog)
+	var codes: Array[String] = []
+	for error_value in errors:
+		codes.append(String(error_value.get("code", "")))
+	for expected_code in ["missing_building_reference", "missing_item_reference", "invalid_amount", "invalid_duration", "technology_cycle", "uncraftable_mandatory_item"]:
+		_expect(codes.has(expected_code), "catalog validation rejects %s" % expected_code)
 
 func _expect(condition: bool, description: String) -> void:
 	if condition:

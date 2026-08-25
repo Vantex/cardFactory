@@ -68,7 +68,9 @@
       "description": "从原油矿脉提取原油",
       "size": {"width": 2, "height": 2},
       "power_demand": 840,
-      "speed": 1.0
+      "speed": 1.0,
+      "output_buffer_capacity": 120,
+      "extraction": {"item_id": "crude_oil", "rate_per_minute": 30}
     },
     "oil_refinery": {
       "id": "oil_refinery",
@@ -80,7 +82,9 @@
       "power_demand": 960,
       "speed": 1.0,
       "input_slots": 2,
-      "output_slots": 2
+      "output_slots": 2,
+      "input_buffer_capacity": 120,
+      "output_buffer_capacity": 120
     },
     "chemical_plant": {
       "id": "chemical_plant",
@@ -102,7 +106,9 @@
       "description": "抽取水资源",
       "size": {"width": 1, "height": 1},
       "power_demand": 300,
-      "speed": 1.0
+      "speed": 1.0,
+      "output_buffer_capacity": 120,
+      "extraction": {"item_id": "water", "rate_per_minute": 60}
     },
     "fractionator": {
       "id": "fractionator",

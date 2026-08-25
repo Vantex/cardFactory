@@ -4,14 +4,13 @@ extends RefCounted
 const FactoryGeometry = preload("res://scripts/game/FactoryGeometry.gd")
 const MAX_CONSTRUCTION_STACK := 99.0
 const AMOUNT_EPSILON := 0.0000001
-const GENERATOR_FUEL_ITEM := "coal"
 const GENERATOR_STARTUP_FUEL_UNITS := 10.0
-const GENERATOR_FUEL_SECONDS_PER_UNIT := 30.0
 const LEGACY_COSTS := {
 	"miner": 1.0,
 	"smelter": 2.0,
 	"assembling_machine_mk1": 3.0,
 	"power_generator": 2.0,
+	"matrix_lab": 4.0,
 }
 
 var game_state: GameState
@@ -44,14 +43,18 @@ func try_place_building(building_type: String, position: Vector2) -> Dictionary:
 		"output_buffer": {},
 		"speed": building_definition.get("speed", 1.0),
 	}
-	if building_type == "miner":
-		building_data["output_item"] = "iron_ore"
-	elif building_type == "power_generator":
-		var startup_fuel := minf(float(game_state.planet_inventory.get(GENERATOR_FUEL_ITEM, 0.0)), GENERATOR_STARTUP_FUEL_UNITS)
+	var extraction: Dictionary = building_definition.get("extraction", {})
+	if building_definition.get("kind", "") == "extractor":
+		building_data["output_item"] = String(extraction.get("item_id", ""))
+	var fuel_rule: Dictionary = building_definition.get("fuel", {})
+	if not fuel_rule.is_empty():
+		var fuel_item := String(fuel_rule.get("item_id", ""))
+		var burn_duration := float(fuel_rule.get("burn_duration", 0.0))
+		var startup_fuel := minf(float(game_state.planet_inventory.get(fuel_item, 0.0)), GENERATOR_STARTUP_FUEL_UNITS)
 		if startup_fuel > AMOUNT_EPSILON:
-			InventorySystem.new(game_state).try_remove(GENERATOR_FUEL_ITEM, startup_fuel)
-		building_data["fuel_item"] = GENERATOR_FUEL_ITEM
-		building_data["fuel_remaining"] = startup_fuel * GENERATOR_FUEL_SECONDS_PER_UNIT
+			InventorySystem.new(game_state).try_remove(fuel_item, startup_fuel)
+		building_data["fuel_item"] = fuel_item
+		building_data["fuel_remaining"] = startup_fuel * burn_duration
 	var building_id := game_state.add_building(building_data)
 	return {"ok": true, "message": "建筑已放置", "id": building_id}
 
@@ -117,9 +120,12 @@ func _collect_buffered_materials(building: Dictionary) -> Dictionary:
 			if amount > AMOUNT_EPSILON:
 				var item_id := String(item_key)
 				refund[item_id] = float(refund.get(item_id, 0.0)) + amount
-	if String(building.get("type", "")) == "power_generator":
-		var fuel_item := String(building.get("fuel_item", GENERATOR_FUEL_ITEM))
-		var unburned_fuel := maxf(float(building.get("fuel_remaining", 0.0)), 0.0) / GENERATOR_FUEL_SECONDS_PER_UNIT
+	var building_definition := DataManager.get_building(String(building.get("type", "")))
+	var fuel_rule: Dictionary = building_definition.get("fuel", {})
+	if not fuel_rule.is_empty():
+		var fuel_item := String(building.get("fuel_item", fuel_rule.get("item_id", "")))
+		var burn_duration := maxf(float(fuel_rule.get("burn_duration", 0.0)), AMOUNT_EPSILON)
+		var unburned_fuel := maxf(float(building.get("fuel_remaining", 0.0)), 0.0) / burn_duration
 		if not fuel_item.is_empty() and unburned_fuel > AMOUNT_EPSILON:
 			refund[fuel_item] = float(refund.get(fuel_item, 0.0)) + unburned_fuel
 	return refund

@@ -2,6 +2,8 @@
 class_name BeltSystem
 extends RefCounted
 
+const DEFAULT_BUFFER_CAPACITY := 60.0
+
 var game_state: GameState
 
 func _init(state: GameState):
@@ -43,7 +45,9 @@ func _update_connection(connection: Dictionary, delta: float):
 
 	var available = source.get("output_buffer", {}).get(item_id, 0.0)
 	var target_buffer = target.get("input_buffer", {}).get(item_id, 0.0)
-	var max_transfer = min(available, 60.0 - target_buffer)
+	var target_definition := DataManager.get_building(String(target.get("type", "")))
+	var target_capacity := maxf(float(target.get("input_buffer_capacity", target_definition.get("input_buffer_capacity", DEFAULT_BUFFER_CAPACITY))), 0.0)
+	var max_transfer = min(available, target_capacity - target_buffer)
 	var transfer_amount = min(max_transfer, flow_rate * delta * power_efficiency)
 
 	if transfer_amount > 0:

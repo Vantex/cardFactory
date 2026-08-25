@@ -144,6 +144,8 @@ func _handle_key_press(event: InputEventKey) -> void:
 			start_placing_card("assembling_machine_mk1")
 		KEY_R:
 			start_placing_card("power_generator")
+		KEY_T:
+			start_placing_card("matrix_lab")
 
 func _handle_mouse_button(event: InputEventMouseButton, screen_position: Vector2) -> void:
 	if event.button_index == MOUSE_BUTTON_WHEEL_UP or event.button_index == MOUSE_BUTTON_WHEEL_DOWN:

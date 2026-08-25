@@ -300,32 +300,34 @@ git commit -m "feat: add conserved construction inventory"
 - 修改：`scripts/test/TestSimulationCore.gd`
 - 修改：`scripts/test/TestInventoryConstruction.gd`
 
-- [ ] **步骤 1：建立内容清单**
+- [x] **步骤 1：建立内容清单**
 
 创建物品、配方、建筑、科技和解锁映射表。DSPONLINE 的 78/78/37/67 用于覆盖度检查，不复制其名字、素材或源码；CardFactory 可使用原创命名和视觉。
 
-- [ ] **步骤 2：先完成一条完整科学链**
+- [x] **步骤 2：先完成一条完整科学链**
 
 实现从原矿到基础研究矩阵的全部设备、配方、电力和施工件，使第一章教程可以完整游玩。
 
-- [ ] **步骤 3：扩展设备规则**
+- [x] **步骤 3：扩展设备规则**
 
 支持多输入/输出、燃料、副产物、不同缓存、速度倍率、资源采集器和研究设备。每种新 `kind` 至少有一个领域测试。
 
-- [ ] **步骤 4：加强 DataManager 校验**
+- [x] **步骤 4：加强 DataManager 校验**
 
 启动时拒绝重复 ID、缺失物品、非法数量/持续时间、无效建筑引用、科技循环和无法制造的强制任务物品。
 
-- [ ] **步骤 5：分批补齐目录**
+- [x] **步骤 5：分批补齐目录**
 
 按基础金属 → 石油化工 → 电子 → 星际材料 → 戴森材料分批提交。每批都保持现有存档可迁移，避免一次性导入全部内容。
 
-- [ ] **步骤 6：提交第一批完整生产目录**
+- [x] **步骤 6：提交第一批完整生产目录**
 
 ```powershell
 git add autoload/DataManager.gd data scripts/game/ProductionSystem.gd scripts/game/GameStateValidator.gd scripts/test/TestSimulationCore.gd scripts/test/TestInventoryConstruction.gd
 git commit -m "feat: expand data driven production catalog"
 ```
+
+**完成记录（2026-08-25）：** 新增 [`CONTENT_CATALOG.md`](CONTENT_CATALOG.md) 作为当前 39 个物品、30 个建筑、22 个配方和 3 项科技的权威映射。第一条科学链已从可切换铁/铜采集目标，经铁锭、铜锭、磁体、电路和磁线圈，接入可施工的矩阵研究站并产出基础研究矩阵；固定步长测试会运行完整连接图而非只检查 JSON。采集资源/速率、燃料/燃烧时间、输入输出缓存、速度、多输入、多输出和副产物均由目录字段驱动，检查器可选择副产物进入正式连接。`DataManager` 启动门禁覆盖跨文件重复 ID、引用、数量/时间/容量、科技循环和强制物品可制造性，`GameStateValidator` 拒绝存档中的配方错配、非法燃料与非法采集/输出目标。目录按基础、化工、电子、进阶和进程文件保持可分批扩展；电路配方保留旧 `assembler` 设备映射，新增字段及矩阵施工件不提升 schema v2，基线 v2 存档仍可直接加载。
 
 ---
 

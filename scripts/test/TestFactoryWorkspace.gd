@@ -157,7 +157,7 @@ func _test_workspace_live_content_and_actions() -> void:
 	await get_tree().process_frame
 
 	var metrics := workspace.get_node_or_null("TopBar/Status") as Label
-	_expect(metrics != null and "RUN" in metrics.text and "1x" in metrics.text and "GEN 0" in metrics.text and "USE 60" in metrics.text and "BAL -60" in metrics.text and "KITS 02" in metrics.text and "BUILDINGS 02" in metrics.text and "LINKS 00" in metrics.text and "01:05" in metrics.text, "top bar displays live simulation, power, count, construction kit, and time state")
+	_expect(metrics != null and "RUN" in metrics.text and "1x" in metrics.text and "GEN 0" in metrics.text and "USE 60" in metrics.text and "BAL -60" in metrics.text and "KITS 03" in metrics.text and "BUILDINGS 02" in metrics.text and "LINKS 00" in metrics.text and "01:05" in metrics.text, "top bar displays live simulation, power, count, construction kit, and time state")
 	var pause_button := workspace.get_node_or_null("TopBar/PauseButton") as Button
 	if pause_button != null:
 		pause_button.emit_signal("pressed")
@@ -174,7 +174,7 @@ func _test_workspace_live_content_and_actions() -> void:
 	_expect(objective != null and "连接" in objective.text, "resource rail displays the current beginner objective")
 	_expect(stock != null and "行星托盘" in stock.text and "iron_ore" in stock.text and "6" in stock.text, "resource rail displays authoritative planet inventory")
 	_expect(production != null and "运行 0" in production.text and "停电 1" in production.text, "resource rail distinguishes unpowered production from running buildings")
-	_expect(tips != null and "操作提示" in tips.text and "Q/W/E/R" in tips.text, "resource rail displays concise controls")
+	_expect(tips != null and "操作提示" in tips.text and "Q/W/E/R/T" in tips.text, "resource rail displays concise controls")
 	var empty_generator_id := state.add_building({
 		"type": "power_generator",
 		"position": Vector2(900, 400),
@@ -303,7 +303,7 @@ func _test_main_scene_integration_contract() -> void:
 		var placed_id: String = input_handler.get("selected_building_id")
 		_expect(not placed_id.is_empty() and GameManager.get_game_state().buildings.size() == 1, "real canvas placement adds and selects the requested card")
 		var resource_summary := workspace.get_node("ResourceRail/Summary") as Label
-		_expect("KITS  03" in resource_summary.text and "BUILDINGS  01" in resource_summary.text, "placing a card refreshes workspace construction inventory immediately")
+		_expect("KITS  04" in resource_summary.text and "BUILDINGS  01" in resource_summary.text, "placing a card refreshes workspace construction inventory immediately")
 		var inspector_title := workspace.get_node("InspectorPanel/Title") as Label
 		_expect(inspector_title.text == "矿机", "real canvas placement selects the new card in the workspace inspector")
 
