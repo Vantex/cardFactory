@@ -30,7 +30,7 @@ func _update_connection(connection: Dictionary, delta: float):
 	var source_id = connection.get("source_id", "")
 	var target_id = connection.get("target_id", "")
 	var item_id = connection.get("item_id", "")
-	var flow_rate = connection.get("flow_rate", 10.0)
+	var flow_rate := _effective_throughput(connection)
 
 	var source = game_state.get_building(source_id)
 	var target = game_state.get_building(target_id)
@@ -60,6 +60,17 @@ func _update_connection(connection: Dictionary, delta: float):
 		target.input_buffer[item_id] = target.input_buffer.get(item_id, 0.0) + transfer_amount
 		connection["current_flow"] = transfer_amount / delta
 		connection["active"] = true
+		if connection.get("monitor_enabled", false):
+			connection["total_transferred"] = float(connection.get("total_transferred", 0.0)) + transfer_amount
+
+func _effective_throughput(connection: Dictionary) -> float:
+	var connection_type := String(connection.get("type", "belt"))
+	if connection_type == "belt":
+		return maxf(float(connection.get("flow_rate", 10.0)), 0.0)
+	var configuration := game_state.get_belt_configuration(String(connection.get("id", "")))
+	if configuration.is_empty():
+		return maxf(float(connection.get("flow_rate", 10.0)), 0.0)
+	return maxf(float(configuration.get("effective_throughput", 10.0)), 0.0)
 
 func create_belt(source_id: String, target_id: String, item_id: String, flow_rate: float = 10.0) -> String:
 	var connection_data = {
@@ -67,7 +78,7 @@ func create_belt(source_id: String, target_id: String, item_id: String, flow_rat
 		"target_id": target_id,
 		"item_id": item_id,
 		"flow_rate": flow_rate,
-		"type": "belt",
+		"type": "conveyor_belt_mk1",
 		"current_flow": 0.0,
 		"enabled": true,
 		"active": false

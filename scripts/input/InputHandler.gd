@@ -8,7 +8,11 @@ enum Mode {
 	DRAGGING,
 	CONNECTING,
 	PANNING,
+	BOX_SELECTING,
 }
+
+signal selection_changed(entity_ids: Array)
+signal delete_confirmation_requested(entity_ids: Array)
 
 const CARD_SIZE := CardRenderer.CARD_SIZE
 const PORT_SIZE := CardRenderer.PORT_SIZE
@@ -24,13 +28,30 @@ const CANVAS_MARGIN_BOTTOM := 92.0
 var current_mode: Mode = Mode.IDLE
 var placing_building_type := ""
 var connecting_source_id := ""
-var selected_building_id := ""
+var selected_entity_ids: Array[String] = []
+var selected_building_id := "":
+	set(value):
+		selected_building_id = value
+		if _syncing_selection:
+			return
+		if not value.is_empty() and selected_entity_ids.size() > 1 and selected_entity_ids.has(value):
+			return
+		selected_entity_ids.clear()
+		if not value.is_empty():
+			selected_entity_ids.append(value)
+		selection_changed.emit(selected_entity_ids.duplicate())
+		queue_redraw()
 var dragging_building_id := ""
 var press_candidate_building_id := ""
 var drag_start_screen_position := Vector2.ZERO
 var drag_offset := Vector2.ZERO
+var drag_start_positions: Dictionary = {}
+var selection_box_start := Vector2.ZERO
+var selection_box_end := Vector2.ZERO
+var selection_box_additive := false
 var pan_last_screen_position := Vector2.ZERO
 var _ui_hit_test := Callable()
+var _syncing_selection := false
 
 func set_ui_hit_test(hit_test: Callable) -> void:
 	_ui_hit_test = hit_test
@@ -45,13 +66,67 @@ func get_mode_name() -> String:
 			return "connecting"
 		Mode.PANNING:
 			return "panning"
+		Mode.BOX_SELECTING:
+			return "box_selecting"
 		_:
 			return "idle"
+
+func get_selected_entity_ids() -> Array[String]:
+	return selected_entity_ids.duplicate()
+
+func set_selected_entities(entity_ids: Array) -> void:
+	var state := GameManager.get_game_state()
+	var normalized: Array[String] = []
+	for id_value in entity_ids:
+		var entity_id := String(id_value)
+		if entity_id.is_empty() or normalized.has(entity_id):
+			continue
+		if state.buildings.has(entity_id) or state.connections.has(entity_id):
+			normalized.append(entity_id)
+	selected_entity_ids = normalized
+	_sync_primary_building_selection()
+	selection_changed.emit(selected_entity_ids.duplicate())
+	queue_redraw()
+
+func toggle_entity_selection(entity_id: String) -> void:
+	var next_selection := selected_entity_ids.duplicate()
+	if next_selection.has(entity_id):
+		next_selection.erase(entity_id)
+	else:
+		next_selection.append(entity_id)
+	set_selected_entities(next_selection)
+
+func select_entities_in_rect(first_corner: Vector2, second_corner: Vector2, additive: bool = false) -> void:
+	var selection_rect := Rect2(first_corner, second_corner - first_corner).abs()
+	var matches: Array[String] = []
+	var state := GameManager.get_game_state()
+	var building_ids: Array = state.buildings.keys()
+	building_ids.sort()
+	for building_id_value in building_ids:
+		var building_id := String(building_id_value)
+		var building: Dictionary = state.buildings[building_id]
+		if selection_rect.intersects(Rect2(building.get("position", Vector2.ZERO), CARD_SIZE), true):
+			matches.append(building_id)
+	var next_selection: Array = selected_entity_ids.duplicate() if additive else []
+	for building_id in matches:
+		if not next_selection.has(building_id):
+			next_selection.append(building_id)
+	set_selected_entities(next_selection)
+
+func _sync_primary_building_selection() -> void:
+	var primary := ""
+	for entity_id in selected_entity_ids:
+		if GameManager.get_game_state().buildings.has(entity_id):
+			primary = entity_id
+			break
+	_syncing_selection = true
+	selected_building_id = primary
+	_syncing_selection = false
 
 func start_placing_card(building_type: String) -> void:
 	placing_building_type = building_type
 	connecting_source_id = ""
-	selected_building_id = ""
+	set_selected_entities([])
 	dragging_building_id = ""
 	press_candidate_building_id = ""
 	current_mode = Mode.PLACING
@@ -83,6 +158,9 @@ func cancel_operation() -> void:
 	press_candidate_building_id = ""
 	drag_start_screen_position = Vector2.ZERO
 	drag_offset = Vector2.ZERO
+	drag_start_positions.clear()
+	selection_box_start = Vector2.ZERO
+	selection_box_end = Vector2.ZERO
 	queue_redraw()
 
 func _input(event: InputEvent) -> void:
@@ -113,7 +191,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _has_pending_pointer_release(button_index: MouseButton) -> bool:
 	if button_index == MOUSE_BUTTON_LEFT:
-		return current_mode == Mode.CONNECTING or current_mode == Mode.DRAGGING or not press_candidate_building_id.is_empty()
+		return current_mode == Mode.CONNECTING or current_mode == Mode.DRAGGING or current_mode == Mode.BOX_SELECTING or not press_candidate_building_id.is_empty()
 	if button_index == MOUSE_BUTTON_RIGHT or button_index == MOUSE_BUTTON_MIDDLE:
 		return current_mode == Mode.PANNING
 	return false
@@ -163,7 +241,7 @@ func _handle_mouse_button(event: InputEventMouseButton, screen_position: Vector2
 		return
 	if event.pressed:
 		if _is_inside_world_canvas(screen_position):
-			_handle_left_press(screen_position)
+			_handle_left_press(screen_position, event.ctrl_pressed)
 	else:
 		_handle_left_release(screen_position)
 
@@ -179,8 +257,15 @@ func _handle_mouse_motion(event: InputEventMouseMotion, screen_position: Vector2
 		current_mode = Mode.DRAGGING
 	if current_mode == Mode.DRAGGING:
 		_update_drag(_screen_to_world(screen_position))
+	elif current_mode == Mode.BOX_SELECTING:
+		selection_box_end = _screen_to_world(screen_position)
+		queue_redraw()
 
-func _handle_left_press(screen_position: Vector2) -> void:
+func _handle_left_press(screen_position: Vector2, additive: bool = false) -> void:
+	if current_mode == Mode.BOX_SELECTING:
+		current_mode = Mode.IDLE
+		selection_box_start = Vector2.ZERO
+		selection_box_end = Vector2.ZERO
 	press_candidate_building_id = ""
 	var world_position := _screen_to_world(screen_position)
 	match current_mode:
@@ -195,32 +280,67 @@ func _handle_left_press(screen_position: Vector2) -> void:
 				return
 			var building := _get_building_at_position(world_position)
 			if building.is_empty():
-				selected_building_id = ""
-				EventBus.card_selected.emit("")
+				var connection_id := _get_connection_at_position(world_position)
+				if not connection_id.is_empty():
+					if additive:
+						toggle_entity_selection(connection_id)
+					else:
+						set_selected_entities([connection_id])
+					EventBus.card_selected.emit("")
+					return
+				selection_box_start = world_position
+				selection_box_end = world_position
+				selection_box_additive = additive
+				if not additive:
+					set_selected_entities([])
+					EventBus.card_selected.emit("")
+				current_mode = Mode.BOX_SELECTING
 				return
-			selected_building_id = building.get("id", "")
+			var clicked_id := String(building.get("id", ""))
+			if additive:
+				toggle_entity_selection(clicked_id)
+				if not selected_entity_ids.has(clicked_id):
+					EventBus.card_selected.emit(selected_building_id)
+					return
+			elif not selected_entity_ids.has(clicked_id):
+				set_selected_entities([clicked_id])
+			_syncing_selection = true
+			selected_building_id = clicked_id
+			_syncing_selection = false
 			press_candidate_building_id = selected_building_id
 			drag_start_screen_position = screen_position
 			drag_offset = world_position - building.get("position", Vector2.ZERO)
+			drag_start_positions.clear()
+			for selected_id in selected_entity_ids:
+				if GameManager.get_game_state().buildings.has(selected_id):
+					drag_start_positions[selected_id] = GameManager.get_game_state().buildings[selected_id].get("position", Vector2.ZERO)
 			EventBus.card_selected.emit(selected_building_id)
 
 func _place_card(world_position: Vector2) -> void:
 	var result: Dictionary = GameManager.get_game_state().try_place_building(placing_building_type, world_position)
 	if result.get("ok", false):
-		selected_building_id = result.get("id", "")
+		set_selected_entities([result.get("id", "")])
 	_publish_command_result(result)
 	cancel_operation()
 
 func _update_drag(world_position: Vector2) -> void:
 	if dragging_building_id.is_empty():
 		return
-	GameManager.get_game_state().move_entity(dragging_building_id, world_position - drag_offset)
+	var primary_start: Vector2 = drag_start_positions.get(dragging_building_id, GameManager.get_game_state().get_building(dragging_building_id).get("position", Vector2.ZERO))
+	var delta := world_position - drag_offset - primary_start
+	var positions: Array = []
+	for entity_id in drag_start_positions:
+		positions.append({"id": entity_id, "position": Vector2(drag_start_positions[entity_id]) + delta})
+	var result := GameManager.get_game_state().try_move_entities(positions)
+	if not result.get("ok", false):
+		_publish_command_result(result)
 	queue_redraw()
 
 func _finish_drag() -> void:
 	current_mode = Mode.IDLE
 	dragging_building_id = ""
 	press_candidate_building_id = ""
+	drag_start_positions.clear()
 	queue_redraw()
 
 func _handle_left_release(screen_position: Vector2) -> void:
@@ -239,6 +359,15 @@ func _handle_left_release(screen_position: Vector2) -> void:
 		return
 	if current_mode == Mode.DRAGGING:
 		_finish_drag()
+		return
+	if current_mode == Mode.BOX_SELECTING:
+		selection_box_end = _screen_to_world(screen_position)
+		select_entities_in_rect(selection_box_start, selection_box_end, selection_box_additive)
+		current_mode = Mode.IDLE
+		selection_box_start = Vector2.ZERO
+		selection_box_end = Vector2.ZERO
+		EventBus.card_selected.emit(selected_building_id)
+		queue_redraw()
 
 func _is_left_button_held(event: InputEventMouseMotion) -> bool:
 	return event.button_mask & MOUSE_BUTTON_MASK_LEFT != 0 or Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT)
@@ -250,13 +379,19 @@ func _publish_command_result(result: Dictionary) -> void:
 	EventBus.notice_requested.emit(message, "success" if result.get("ok", false) else "error")
 
 func _delete_selected() -> void:
-	if selected_building_id.is_empty():
+	var building_ids: Array[String] = []
+	for entity_id in selected_entity_ids:
+		if GameManager.get_game_state().buildings.has(entity_id):
+			building_ids.append(entity_id)
+	if not selected_entity_ids.is_empty() and building_ids.size() != selected_entity_ids.size():
+		EventBus.notice_requested.emit("混合选择没有共同的删除命令", "warning")
 		return
-	var result := GameManager.get_game_state().remove_building(selected_building_id)
-	_publish_command_result(result)
-	if result.get("ok", false):
-		selected_building_id = ""
-		cancel_operation()
+	if building_ids.is_empty() and not selected_building_id.is_empty():
+		building_ids.append(selected_building_id)
+	if building_ids.is_empty():
+		return
+	delete_confirmation_requested.emit(building_ids)
+	EventBus.notice_requested.emit("请在检查器中确认删除 %d 个建筑" % building_ids.size(), "warning")
 
 func _get_building_at_position(world_position: Vector2) -> Dictionary:
 	for building in GameManager.get_game_state().buildings.values():
@@ -274,6 +409,12 @@ func _get_output_port_at_position(world_position: Vector2) -> String:
 	for building in GameManager.get_game_state().buildings.values():
 		if _get_output_port_rect(building.get("position", Vector2.ZERO)).has_point(world_position):
 			return building.get("id", "")
+	return ""
+
+func _get_connection_at_position(world_position: Vector2) -> String:
+	var renderer := get_node_or_null("../ConnectionRenderer")
+	if renderer != null and renderer.has_method("get_connection_at_position"):
+		return String(renderer.call("get_connection_at_position", world_position))
 	return ""
 
 func _get_input_port_rect(card_position: Vector2) -> Rect2:
@@ -321,8 +462,10 @@ func _zoom_at_pointer(screen_position: Vector2, factor: float) -> void:
 	camera.force_update_scroll()
 
 func _draw() -> void:
-	if selected_building_id.is_empty():
-		return
-	var selected := GameManager.get_game_state().get_building(selected_building_id)
-	if not selected.is_empty():
-		draw_rect(Rect2(selected.get("position", Vector2.ZERO), CARD_SIZE), Color(1.0, 0.85, 0.2, 0.25))
+	for entity_id in selected_entity_ids:
+		var selected := GameManager.get_game_state().get_building(entity_id)
+		if not selected.is_empty():
+			draw_rect(Rect2(selected.get("position", Vector2.ZERO), CARD_SIZE), Color(1.0, 0.85, 0.2, 0.25))
+	if current_mode == Mode.BOX_SELECTING:
+		draw_rect(Rect2(selection_box_start, selection_box_end - selection_box_start).abs(), Color(0.38, 0.71, 0.68, 0.18), true)
+		draw_rect(Rect2(selection_box_start, selection_box_end - selection_box_start).abs(), Color("62b5ae"), false, 1.5, true)

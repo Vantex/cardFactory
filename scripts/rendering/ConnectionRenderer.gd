@@ -2,15 +2,46 @@ extends Node2D
 
 const CardRenderer = preload("res://scripts/rendering/CardRenderer.gd")
 const CURVE_STEPS := 20
+const HIT_DISTANCE := 8.0
 
 var _game_state: GameState
+var _input_handler: Node
 
 func set_game_state(game_state: GameState) -> void:
 	_game_state = game_state
 	queue_redraw()
 
+func set_input_handler(input_handler: Node) -> void:
+	_input_handler = input_handler
+	queue_redraw()
+
 func is_connection_active(connection: Dictionary) -> bool:
 	return connection.get("active", false)
+
+func is_connection_selected(connection_id: String) -> bool:
+	var input_handler := _get_input_handler()
+	return input_handler != null and input_handler.has_method("get_selected_entity_ids") and input_handler.call("get_selected_entity_ids").has(connection_id)
+
+func get_connection_at_position(world_position: Vector2) -> String:
+	var state := _get_game_state()
+	if state == null:
+		return ""
+	var connection_ids: Array = state.connections.keys()
+	connection_ids.sort()
+	for connection_id_value in connection_ids:
+		var connection_id := String(connection_id_value)
+		var connection: Dictionary = state.connections[connection_id]
+		var source: Dictionary = state.get_building(connection.get("source_id", ""))
+		var target: Dictionary = state.get_building(connection.get("target_id", ""))
+		if source.is_empty() or target.is_empty():
+			continue
+		var start := CardRenderer.get_output_port_rect(source.get("position", Vector2.ZERO)).get_center()
+		var end := CardRenderer.get_input_port_rect(target.get("position", Vector2.ZERO)).get_center()
+		var points := _curve_points_for_connection(start, end, connection)
+		for index in range(points.size() - 1):
+			if Geometry2D.get_closest_point_to_segment(world_position, points[index], points[index + 1]).distance_to(world_position) <= HIT_DISTANCE:
+				return connection_id
+	return ""
 
 func _draw() -> void:
 	var game_state := _get_game_state()
@@ -28,11 +59,16 @@ func _draw_connection(connection: Dictionary, game_state: GameState) -> void:
 	var start := CardRenderer.get_output_port_rect(source.get("position", Vector2.ZERO)).get_center()
 	var end := CardRenderer.get_input_port_rect(target.get("position", Vector2.ZERO)).get_center()
 	var active := is_connection_active(connection)
-	var color := Color("38e6c2") if active else Color("6e90ad")
-	var control := _curve_control(start, end)
-	draw_polyline(_curve_points(start, end), color, 3.0 if active else 2.0, true)
+	var selected := is_connection_selected(String(connection.get("id", "")))
+	var color := Color("ffe585") if selected else Color("38e6c2") if active else Color("6e90ad")
+	var control := _curve_control_for_connection(start, end, connection)
+	draw_polyline(_curve_points_for_connection(start, end, connection), color, 4.0 if selected else 3.0 if active else 2.0, true)
 	_draw_arrow(_quadratic_point(start, control, end, 0.92), _quadratic_tangent(start, control, end, 0.92), color)
-	_draw_connection_label(connection.get("item_id", ""), _quadratic_point(start, control, end, 0.5), color)
+	var config := game_state.get_belt_configuration(String(connection.get("id", "")))
+	var label := String(connection.get("item_id", ""))
+	if not config.is_empty():
+		label = "%s  %.0f/s" % [label, config.get("effective_throughput", 10.0)]
+	_draw_connection_label(label, _quadratic_point(start, control, end, 0.5), color)
 	if active:
 		_draw_flow_particles(start, end)
 
@@ -53,6 +89,24 @@ func _curve_points(start: Vector2, end: Vector2) -> PackedVector2Array:
 	for step in range(CURVE_STEPS + 1):
 		points.append(_quadratic_point(start, control, end, float(step) / float(CURVE_STEPS)))
 	return points
+
+func _curve_points_for_connection(start: Vector2, end: Vector2, connection: Dictionary) -> PackedVector2Array:
+	var control := _curve_control_for_connection(start, end, connection)
+	var points := PackedVector2Array()
+	for step in range(CURVE_STEPS + 1):
+		points.append(_quadratic_point(start, control, end, float(step) / float(CURVE_STEPS)))
+	return points
+
+func _curve_control_for_connection(start: Vector2, end: Vector2, connection: Dictionary) -> Vector2:
+	var control := _curve_control(start, end)
+	var route_mode := String(connection.get("route_mode", "auto"))
+	if route_mode == "upper":
+		control.y = minf(start.y, end.y) - 72.0
+	elif route_mode == "lower":
+		control.y = maxf(start.y, end.y) + 72.0
+	elif route_mode == "manual":
+		control.y += float(connection.get("route_offset_y", 0.0))
+	return control
 
 func _curve_control(start: Vector2, end: Vector2) -> Vector2:
 	var bend := clampf(absf(end.x - start.x) * 0.18, 28.0, 96.0)
@@ -89,6 +143,9 @@ func _draw_flow_particles(start: Vector2, end: Vector2) -> void:
 
 func _get_game_state() -> GameState:
 	return _game_state if _game_state != null else GameManager.get_game_state()
+
+func _get_input_handler() -> Node:
+	return _input_handler if _input_handler != null else get_node_or_null("../InputHandler")
 
 func _process(_delta: float) -> void:
 	queue_redraw()

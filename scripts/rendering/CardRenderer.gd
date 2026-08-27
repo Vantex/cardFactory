@@ -30,7 +30,11 @@ func is_building_selected(building_id: String) -> bool:
 	if building_id.is_empty():
 		return false
 	var input_handler := _get_input_handler()
-	return input_handler != null and input_handler.get("selected_building_id") == building_id
+	if input_handler == null:
+		return false
+	if input_handler.has_method("get_selected_entity_ids"):
+		return input_handler.call("get_selected_entity_ids").has(building_id)
+	return input_handler.get("selected_building_id") == building_id
 
 static func get_input_port_rect(card_position: Vector2) -> Rect2:
 	return Rect2(card_position + Vector2(0, (CARD_SIZE.y - PORT_SIZE.y) * 0.5), PORT_SIZE)

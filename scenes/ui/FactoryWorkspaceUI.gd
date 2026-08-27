@@ -25,6 +25,7 @@ const DOCK_SHORTCUTS := {
 
 var _selected_building_id := ""
 var _selected_building_type := ""
+var _selected_entity_ids: Array[String] = []
 var _placement_building_type := ""
 var _top_status: Label
 var _pause_button: Button
@@ -45,6 +46,7 @@ var _handcraft_quantity: SpinBox
 var _recipe_list: GridContainer
 var _start_connection_button: Button
 var _delete_button: Button
+var _delete_confirmation: ConfirmationDialog
 var _construction_stock: Label
 var _construction_mode: Label
 var _dock_buttons: Dictionary = {}
@@ -54,6 +56,11 @@ var _recipe_signature := ""
 
 func _ready() -> void:
 	_create_workspace()
+	var input_handler := _get_input_handler()
+	if input_handler != null and input_handler.has_signal("selection_changed"):
+		input_handler.selection_changed.connect(_on_shared_selection_changed)
+	if input_handler != null and input_handler.has_signal("delete_confirmation_requested"):
+		input_handler.delete_confirmation_requested.connect(_request_delete_confirmation)
 	EventBus.notice_requested.connect(show_notice)
 	EventBus.simulation_updated.connect(refresh_now)
 	EventBus.card_placed.connect(_on_state_changed)
@@ -63,14 +70,45 @@ func _ready() -> void:
 	refresh_now()
 
 func set_selected_building(building_id: String) -> void:
+	var input_handler := _get_input_handler()
+	if input_handler != null and input_handler.has_method("get_selected_entity_ids"):
+		var shared_selection: Array = input_handler.call("get_selected_entity_ids")
+		if not shared_selection.is_empty() and (building_id.is_empty() or shared_selection.has(building_id)):
+			set_selected_entities(shared_selection)
+			return
+	_selected_entity_ids.clear()
 	_selected_building_id = building_id
 	var building := _get_game_state().get_building(building_id)
 	if building.is_empty():
 		_selected_building_id = ""
 	_selected_building_type = building.get("type", "")
+	if not _selected_building_id.is_empty():
+		_selected_entity_ids.append(_selected_building_id)
 	if not building.is_empty():
 		_placement_building_type = ""
 	refresh_now()
+
+func set_selected_entities(entity_ids: Array) -> void:
+	_selected_entity_ids.clear()
+	var state := _get_game_state()
+	for id_value in entity_ids:
+		var entity_id := String(id_value)
+		if not _selected_entity_ids.has(entity_id) and (state.buildings.has(entity_id) or state.connections.has(entity_id)):
+			_selected_entity_ids.append(entity_id)
+	_selected_building_id = ""
+	_selected_building_type = ""
+	for entity_id in _selected_entity_ids:
+		if state.buildings.has(entity_id):
+			_selected_building_id = entity_id
+			_selected_building_type = String(state.buildings[entity_id].get("type", ""))
+			break
+	refresh_now()
+
+func _on_shared_selection_changed(entity_ids: Array) -> void:
+	if not entity_ids.is_empty():
+		set_selected_entities(entity_ids)
+	else:
+		refresh_now()
 
 func get_selected_building_type() -> String:
 	return _selected_building_type
@@ -150,6 +188,47 @@ func _on_output_item_pressed(item_id: String) -> void:
 	_recipe_signature = ""
 	refresh_now()
 
+func _on_belt_config_pressed(action: String, belt_id: String) -> void:
+	var state := _get_game_state()
+	var config := state.get_belt_configuration(belt_id)
+	if config.is_empty():
+		show_notice("线路不存在", "error")
+		return
+	var result: Dictionary
+	match action:
+		"upgrade":
+			var ok := state.upgrade_belt(belt_id)
+			result = {"ok": ok, "message": "线路等级已升级" if ok else "线路升级失败"}
+		"parallel":
+			var next_parallel := int(config.parallel_count) % 4 + 1
+			result = state.try_configure_belt(belt_id, {"parallel_count": next_parallel})
+		"stack":
+			var stack_values: Array[int] = [1, 2, 4]
+			var next_stack: int = stack_values[(stack_values.find(int(config.stack_size)) + 1) % stack_values.size()]
+			result = state.try_configure_belt(belt_id, {"stack_size": next_stack})
+		"priority":
+			result = state.try_configure_belt(belt_id, {"priority": (int(config.priority) + 1) % 3})
+		"route":
+			var route_values: Array[String] = ["auto", "upper", "lower", "manual", "bezier"]
+			var next_route: String = route_values[(route_values.find(String(config.route_mode)) + 1) % route_values.size()]
+			result = state.try_configure_belt(belt_id, {"route_mode": next_route})
+		"monitor":
+			result = state.try_configure_belt(belt_id, {"monitor_enabled": not bool(config.monitor_enabled)})
+		"enabled":
+			result = state.try_configure_belt(belt_id, {"enabled": not bool(config.enabled)})
+		"sync_network":
+			result = state.apply_belt_configuration_to_network(belt_id)
+		"upgrade_network":
+			result = state.upgrade_belt_network(belt_id)
+		_:
+			result = {"ok": false, "message": "未知线路命令"}
+	var message := String(result.get("message", "命令成功" if result.get("ok", false) else "命令失败"))
+	if result.has("results"):
+		message = "成功 %d / 跳过 %d / 失败 %d" % [result.get("success", 0), result.get("skipped", 0), result.get("failed", 0)]
+	show_notice(message, "success" if result.get("ok", false) else "error")
+	_recipe_signature = ""
+	refresh_now()
+
 func _on_handcraft_pressed(recipe_id: String) -> void:
 	var quantity := maxi(int(_handcraft_quantity.value), 1)
 	var result := HandcraftSystem.new(_get_game_state()).queue_craft(recipe_id, quantity)
@@ -172,8 +251,41 @@ func _on_start_connection_pressed() -> void:
 		EventBus.start_connection_requested.emit(_selected_building_id)
 
 func _on_delete_pressed() -> void:
-	if not _selected_building_id.is_empty():
+	var input_handler := _get_input_handler()
+	if input_handler != null and input_handler.has_method("get_selected_entity_ids") and input_handler.call("get_selected_entity_ids").is_empty() and not _selected_building_id.is_empty():
 		EventBus.delete_building_requested.emit(_selected_building_id)
+		return
+	var selected_ids := _current_selected_entity_ids()
+	var building_ids := _current_selected_building_ids()
+	if building_ids.size() != selected_ids.size():
+		show_notice("混合选择没有共同的删除命令", "warning")
+		return
+	_request_delete_confirmation(building_ids)
+
+func _request_delete_confirmation(entity_ids: Array) -> void:
+	var building_ids: Array[String] = []
+	for id_value in entity_ids:
+		var entity_id := String(id_value)
+		if _get_game_state().buildings.has(entity_id) and not building_ids.has(entity_id):
+			building_ids.append(entity_id)
+	if building_ids.is_empty():
+		return
+	_delete_confirmation.set_meta("entity_ids", building_ids)
+	_delete_confirmation.dialog_text = "确认删除 %d 个建筑？此操作会返还施工件和缓存。" % building_ids.size()
+	_delete_confirmation.popup_centered(Vector2i(420, 160))
+
+func _on_delete_confirmed() -> void:
+	var entity_ids: Array = _delete_confirmation.get_meta("entity_ids", [])
+	var result := _get_game_state().try_remove_entities(entity_ids)
+	show_notice(String(result.get("message", "拆除命令失败")), "success" if result.get("ok", false) else "error")
+	if result.get("ok", false):
+		_selected_entity_ids.clear()
+		_selected_building_id = ""
+		_selected_building_type = ""
+		var input_handler := _get_input_handler()
+		if input_handler != null and input_handler.has_method("set_selected_entities"):
+			input_handler.call("set_selected_entities", [])
+	refresh_now()
 
 func _on_state_changed(_arg_1 = null, _arg_2 = null, _arg_3 = null) -> void:
 	refresh_now()
@@ -187,6 +299,11 @@ func _create_workspace() -> void:
 	_create_inspector_panel()
 	_create_construction_dock()
 	_create_toast()
+	_delete_confirmation = ConfirmationDialog.new()
+	_delete_confirmation.name = "DeleteConfirmation"
+	_delete_confirmation.title = "确认批量删除"
+	_delete_confirmation.confirmed.connect(_on_delete_confirmed)
+	add_child(_delete_confirmation)
 
 func _create_top_bar() -> void:
 	var top_bar := _create_panel("TopBar", PANEL_DARK)
@@ -415,7 +532,18 @@ func _refresh_resource_rail(state: GameState) -> void:
 	_production_label.text = "生产概况\n运行 %d  空闲 %d\n阻塞 %d  停电 %d\n异常 %d" % [counts.running, counts.idle, counts.blocked, counts.no_power, counts.error]
 
 func _refresh_inspector(state: GameState) -> void:
+	var selected_ids := _current_selected_entity_ids()
+	if selected_ids.size() > 1:
+		_refresh_multi_inspector(state, selected_ids)
+		return
+	if selected_ids.size() == 1 and state.connections.has(selected_ids[0]):
+		_refresh_belt_inspector(state, selected_ids[0])
+		return
+	if selected_ids.size() == 1 and state.buildings.has(selected_ids[0]):
+		_selected_building_id = selected_ids[0]
 	var building := state.get_building(_selected_building_id)
+	_recipe_list.show()
+	_delete_button.text = "删除建筑"
 	if building.is_empty():
 		if not _selected_building_id.is_empty():
 			_selected_building_id = ""
@@ -441,7 +569,77 @@ func _refresh_inspector(state: GameState) -> void:
 	_delete_button.disabled = false
 	_refresh_recipe_controls(state, building)
 
+func _refresh_belt_inspector(state: GameState, belt_id: String) -> void:
+	var connection: Dictionary = state.connections[belt_id]
+	var config := state.get_belt_configuration(belt_id)
+	var tier_label := _belt_tier_label(String(config.get("tier", "conveyor_belt_mk1")))
+	_inspector_title.text = "线路 %s" % belt_id
+	_inspector_details.text = "%s 额定 %.0f/s  有效 %.0f/s\n并联 %d  堆叠 %d  优先级 %d\n路由 %s  监控 %s  %s" % [tier_label, config.get("rated_throughput", 10.0), config.get("effective_throughput", 10.0), config.get("parallel_count", 1), config.get("stack_size", 1), config.get("priority", 0), config.get("route_mode", "auto"), "开" if config.get("monitor_enabled", false) else "关", "启用" if config.get("enabled", true) else "禁用"]
+	_input_buffers.text = "源  %s" % connection.get("source_id", "")
+	_output_buffers.text = "目标  %s  |  物品 %s" % [connection.get("target_id", ""), connection.get("item_id", "")]
+	_start_connection_button.disabled = true
+	_delete_button.disabled = true
+	_recipe_heading.text = "线路配置"
+	_handcraft_quantity.hide()
+	_refresh_belt_controls(belt_id, config)
+
+func _refresh_belt_controls(belt_id: String, config: Dictionary) -> void:
+	_recipe_list.show()
+	_recipe_list.columns = 3
+	var signature := "%s|%s" % [belt_id, JSON.stringify(config)]
+	if signature == _recipe_signature:
+		return
+	_recipe_signature = signature
+	for child in _recipe_list.get_children():
+		_recipe_list.remove_child(child)
+		child.queue_free()
+	var actions := [
+		["upgrade", "等级 +"],
+		["parallel", "并联 +"],
+		["stack", "堆叠切换"],
+		["priority", "优先级"],
+		["route", "路由切换"],
+		["monitor", "监控开关"],
+		["enabled", "启停"],
+		["sync_network", "同步整网"],
+		["upgrade_network", "升级整网"],
+	]
+	for action in actions:
+		var button := Button.new()
+		button.text = action[1]
+		button.custom_minimum_size = Vector2(78, 34)
+		button.pressed.connect(_on_belt_config_pressed.bind(action[0], belt_id))
+		_recipe_list.add_child(button)
+
+func _refresh_multi_inspector(state: GameState, selected_ids: Array[String]) -> void:
+	var building_count := 0
+	var belt_count := 0
+	var movable_count := 0
+	for entity_id in selected_ids:
+		if state.buildings.has(entity_id):
+			building_count += 1
+			if not state.is_entity_interaction_locked(entity_id):
+				movable_count += 1
+		elif state.connections.has(entity_id):
+			belt_count += 1
+	var all_buildings := building_count == selected_ids.size()
+	var common_commands := "无共同批量命令"
+	if all_buildings:
+		common_commands = "移动 / 锁定 / 确认删除" if movable_count == building_count else "确认删除"
+	_inspector_title.text = "已选择 %d 项" % selected_ids.size()
+	_inspector_details.text = "建筑 %d  线路 %d\n可移动 %d  锁定 %d\n交集命令：%s" % [building_count, belt_count, movable_count, building_count - movable_count, common_commands]
+	_input_buffers.text = "交集命令  %s" % common_commands
+	_output_buffers.text = "线路配置仅在单选线路时显示"
+	_start_connection_button.disabled = true
+	_delete_button.disabled = not all_buildings
+	_delete_button.text = "确认删除 (%d)" % building_count if all_buildings else "无共同删除"
+	_recipe_heading.text = "批量命令"
+	_handcraft_quantity.hide()
+	_recipe_list.hide()
+
 func _refresh_recipe_controls(_state: GameState, building: Dictionary) -> void:
+	_recipe_list.show()
+	_recipe_list.columns = 2
 	if building.is_empty():
 		_refresh_handcraft_controls(_state)
 		return
@@ -632,6 +830,44 @@ func _building_button_name(building_type: String) -> String:
 	for part in building_type.split("_", false):
 		result += part.capitalize().replace(" ", "")
 	return "%sButton" % result
+
+func _current_selected_entity_ids() -> Array[String]:
+	var input_handler := _get_input_handler()
+	if input_handler != null and input_handler.has_method("get_selected_entity_ids"):
+		var shared: Array = input_handler.call("get_selected_entity_ids")
+		if not shared.is_empty():
+			var normalized: Array[String] = []
+			for id_value in shared:
+				normalized.append(String(id_value))
+			return normalized
+	if not _selected_entity_ids.is_empty():
+		var local_selection: Array[String] = []
+		local_selection.assign(_selected_entity_ids)
+		return local_selection
+	var fallback: Array[String] = []
+	if not _selected_building_id.is_empty():
+		fallback.append(_selected_building_id)
+	return fallback
+
+func _current_selected_building_ids() -> Array[String]:
+	var result: Array[String] = []
+	for entity_id in _current_selected_entity_ids():
+		if _get_game_state().buildings.has(entity_id):
+			result.append(entity_id)
+	return result
+
+func _belt_tier_label(tier: String) -> String:
+	match tier:
+		"conveyor_belt_mk2":
+			return "Mk.II"
+		"conveyor_belt_mk3":
+			return "Mk.III"
+		_:
+			return "Mk.I"
+
+func _get_input_handler() -> Node:
+	var parent := get_parent()
+	return parent.get_node_or_null("InputHandler") if parent != null else null
 
 func _get_game_state() -> GameState:
 	return GameManager.get_game_state()

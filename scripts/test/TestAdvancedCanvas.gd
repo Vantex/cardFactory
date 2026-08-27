@@ -1,0 +1,339 @@
+extends Node
+
+const CardRendererScript = preload("res://scripts/rendering/CardRenderer.gd")
+const ConnectionRendererScript = preload("res://scripts/rendering/ConnectionRenderer.gd")
+const InputHandlerScript = preload("res://scripts/input/InputHandler.gd")
+const WorkspaceScript = preload("res://scenes/ui/FactoryWorkspaceUI.gd")
+
+var _failures := 0
+
+func _ready() -> void:
+	print("ADVANCED CANVAS TESTS STARTED")
+	await _test_shared_selection_and_reverse_marquee()
+	await _test_real_main_preserves_shared_selection()
+	_test_atomic_batch_move()
+	_test_atomic_batch_delete_rollback()
+	await _test_confirmed_atomic_batch_delete()
+	_test_belt_configuration_and_throughput()
+	_test_legacy_v2_defaults_and_persistence()
+	_test_connected_network_results_preserve_runtime_state()
+	await _test_advanced_inspector_and_renderer_contract()
+	if _failures > 0:
+		printerr("ADVANCED CANVAS TESTS FAILED")
+		get_tree().quit(1)
+		return
+	print("ADVANCED CANVAS TESTS PASSED")
+	get_tree().quit(0)
+
+func _test_shared_selection_and_reverse_marquee() -> void:
+	var state := GameState.new()
+	var left_id := _add_building(state, "left", "miner", Vector2(100, 100))
+	var right_id := _add_building(state, "right", "smelter", Vector2(420, 100))
+	GameManager.replace_game_state(state)
+	var input_handler := InputHandlerScript.new()
+	add_child(input_handler)
+	await get_tree().process_frame
+	_expect(input_handler.has_method("set_selected_entities") and input_handler.has_method("toggle_entity_selection") and input_handler.has_method("select_entities_in_rect"), "input exposes one session selection collection")
+	if not input_handler.has_method("set_selected_entities") or not input_handler.has_method("toggle_entity_selection") or not input_handler.has_method("select_entities_in_rect"):
+		input_handler.queue_free()
+		await get_tree().process_frame
+		return
+	input_handler.call("set_selected_entities", [left_id])
+	input_handler.call("toggle_entity_selection", right_id)
+	_expect(input_handler.call("get_selected_entity_ids") == [left_id, right_id], "Ctrl-style toggling adds an entity to the shared selection")
+	input_handler.call("toggle_entity_selection", left_id)
+	_expect(input_handler.call("get_selected_entity_ids") == [right_id], "Ctrl-style toggling removes an entity from the shared selection")
+	input_handler.call("select_entities_in_rect", Vector2(700, 300), Vector2(50, 50), false)
+	_expect(input_handler.call("get_selected_entity_ids") == [left_id, right_id], "a marquee dragged from bottom-right to top-left selects both cards")
+	var renderer := CardRendererScript.new()
+	renderer.set_game_state(state)
+	renderer.set_input_handler(input_handler)
+	_expect(renderer.is_building_selected(left_id) and renderer.is_building_selected(right_id), "card renderer consumes the same selection collection")
+	renderer.queue_free()
+	input_handler.queue_free()
+	await get_tree().process_frame
+
+func _test_real_main_preserves_shared_selection() -> void:
+	var state := GameState.new()
+	var source_id := _add_building(state, "main_source", "miner", Vector2(100, 100))
+	var target_id := _add_building(state, "main_target", "smelter", Vector2(500, 100))
+	var belt_id := state.add_connection({"source_id": source_id, "target_id": target_id, "type": "conveyor_belt_mk1", "item_id": "iron_ore"})
+	GameManager.replace_game_state(state)
+	var main_scene := load("res://scenes/main/Main.tscn") as PackedScene
+	var viewport := SubViewport.new()
+	viewport.size = Vector2i(1152, 648)
+	add_child(viewport)
+	var main := main_scene.instantiate()
+	viewport.add_child(main)
+	await get_tree().process_frame
+	var input_handler := main.get_node("InputHandler")
+	var workspace := main.get_node("FactoryWorkspaceUI")
+	var connection_renderer := main.get_node("ConnectionRenderer")
+	var title := workspace.get_node("InspectorPanel/Title") as Label
+	input_handler.call("set_selected_entities", [source_id, target_id])
+	await get_tree().process_frame
+	await get_tree().process_frame
+	_expect(input_handler.call("get_selected_entity_ids") == [source_id, target_id] and "已选择 2 项" in title.text, "real Main keeps the inspector on the shared multi-selection after legacy synchronization")
+	input_handler.call("set_selected_entities", [belt_id])
+	EventBus.card_selected.emit("")
+	await get_tree().process_frame
+	_expect(input_handler.call("get_selected_entity_ids") == [belt_id] and "线路" in title.text and connection_renderer.call("is_connection_selected", belt_id), "real Main keeps a selected line shared by input, renderer, and inspector")
+	var replacement := GameState.new()
+	_add_building(replacement, "main_source", "miner", Vector2(100, 100))
+	_add_building(replacement, "main_target", "smelter", Vector2(500, 100))
+	replacement.add_connection({"source_id": source_id, "target_id": target_id, "type": "conveyor_belt_mk1", "item_id": "iron_ore"})
+	GameManager.replace_game_state(replacement)
+	await get_tree().process_frame
+	_expect(input_handler.call("get_selected_entity_ids").is_empty() and title.text == "工厂概览", "replacing GameState clears session selection even when the new save reuses the same entity IDs")
+	viewport.queue_free()
+	await get_tree().process_frame
+
+func _test_atomic_batch_move() -> void:
+	var state := GameState.new()
+	var movable_id := _add_building(state, "movable", "miner", Vector2(100, 100))
+	var locked_id := _add_building(state, "locked", "smelter", Vector2(420, 100))
+	state.buildings[locked_id]["interaction_locked"] = true
+	_expect(state.has_method("try_move_entities"), "GameState exposes an authoritative atomic batch move command")
+	if not state.has_method("try_move_entities"):
+		return
+	var rejected: Dictionary = state.call("try_move_entities", [
+		{"id": movable_id, "position": Vector2(200, 180)},
+		{"id": locked_id, "position": Vector2(520, 180)},
+	])
+	_expect(not rejected.get("ok", true) and state.buildings[movable_id].position == Vector2(100, 100) and state.buildings[locked_id].position == Vector2(420, 100), "a locked member rejects a batch move without moving any card")
+	state.buildings[locked_id]["interaction_locked"] = false
+	var observed_snapshots: Array = []
+	var observer := func(_entity_id: String, _position: Vector2) -> void:
+		observed_snapshots.append([state.buildings[movable_id].position, state.buildings[locked_id].position])
+	EventBus.entity_moved.connect(observer)
+	var accepted: Dictionary = state.call("try_move_entities", [
+		{"id": movable_id, "position": Vector2(200, 180)},
+		{"id": locked_id, "position": Vector2(520, 180)},
+	])
+	EventBus.entity_moved.disconnect(observer)
+	_expect(accepted.get("ok", false) and accepted.get("success", 0) == 2 and state.buildings[movable_id].position == Vector2(200, 180) and state.buildings[locked_id].position == Vector2(520, 180), "a valid batch move commits every card together")
+	_expect(observed_snapshots == [[Vector2(200, 180), Vector2(520, 180)], [Vector2(200, 180), Vector2(520, 180)]], "batch move observers only see the fully committed authoritative positions")
+
+func _test_atomic_batch_delete_rollback() -> void:
+	var state := GameState.new()
+	state.construction_inventory = {"miner": 0.0, "smelter": 0.0, "conveyor_belt_mk1": 0.0}
+	state.planet_inventory = {"iron_ore": 998.5}
+	var first_id := _add_building(state, "rollback_first", "miner", Vector2.ZERO)
+	var second_id := _add_building(state, "rollback_second", "smelter", Vector2(400, 0))
+	state.buildings[first_id]["output_buffer"] = {"iron_ore": 0.3}
+	state.buildings[second_id]["input_buffer"] = {"iron_ore": 0.3}
+	state.add_connection({"source_id": first_id, "target_id": second_id, "type": "conveyor_belt_mk1", "item_id": "iron_ore"})
+	var buildings_before := state.buildings.duplicate(true)
+	var connections_before := state.connections.duplicate(true)
+	var planet_before := state.planet_inventory.duplicate(true)
+	var construction_before := state.construction_inventory.duplicate(true)
+	var removal_events: Array[String] = []
+	var card_observer := func(entity_id: String) -> void:
+		removal_events.append(entity_id)
+	EventBus.card_removed.connect(card_observer)
+	var result := state.try_remove_entities([first_id, second_id])
+	EventBus.card_removed.disconnect(card_observer)
+	_expect(not result.get("ok", true) and result.get("reason", "") == "planet_inventory_full" and state.buildings == buildings_before and state.connections == connections_before and state.planet_inventory == planet_before and state.construction_inventory == construction_before and removal_events.is_empty(), "a failed batch delete rolls back every building, line, inventory, and removal event")
+
+func _test_confirmed_atomic_batch_delete() -> void:
+	var state := GameState.new()
+	state.construction_inventory = {"miner": 0.0, "smelter": 0.0}
+	var first_id := _add_building(state, "first", "miner", Vector2(100, 100))
+	var second_id := _add_building(state, "second", "smelter", Vector2(420, 100))
+	GameManager.replace_game_state(state)
+	var host := Node2D.new()
+	add_child(host)
+	var input_handler := InputHandlerScript.new()
+	input_handler.name = "InputHandler"
+	host.add_child(input_handler)
+	var workspace := WorkspaceScript.new()
+	workspace.name = "FactoryWorkspaceUI"
+	host.add_child(workspace)
+	await get_tree().process_frame
+	_expect(input_handler.has_method("set_selected_entities") and workspace.has_method("set_selected_entities"), "workspace and input can share a multi-selection")
+	if input_handler.has_method("set_selected_entities"):
+		input_handler.call("set_selected_entities", [first_id, second_id])
+	workspace.call("_on_delete_pressed")
+	var confirmation := workspace.get_node_or_null("DeleteConfirmation") as ConfirmationDialog
+	_expect(state.buildings.size() == 2 and confirmation != null and confirmation.visible, "delete requests leave authoritative state untouched until explicit UI confirmation")
+	var observed_snapshots: Array = []
+	var observer := func(_entity_id: String) -> void:
+		observed_snapshots.append([state.buildings.size(), state.construction_inventory.get("miner", 0.0), state.construction_inventory.get("smelter", 0.0)])
+	EventBus.card_removed.connect(observer)
+	if confirmation != null:
+		confirmation.confirmed.emit()
+	EventBus.card_removed.disconnect(observer)
+	_expect(state.buildings.is_empty() and state.construction_inventory.get("miner", 0.0) == 1.0 and state.construction_inventory.get("smelter", 0.0) == 1.0, "confirmed multi-delete atomically refunds and removes every selected building")
+	_expect(observed_snapshots == [[0, 1.0, 1.0], [0, 1.0, 1.0]], "batch delete observers only see the fully committed authoritative removals and refunds")
+	host.queue_free()
+	await get_tree().process_frame
+
+func _test_belt_configuration_and_throughput() -> void:
+	var state := GameState.new()
+	state.construction_inventory = {
+		"conveyor_belt_mk1": 3.0,
+		"conveyor_belt_mk2": 4.0,
+		"conveyor_belt_mk3": 0.0,
+	}
+	var source_id := _add_building(state, "source", "miner", Vector2.ZERO)
+	var target_id := _add_building(state, "target", "smelter", Vector2(400, 0))
+	state.buildings[source_id]["output_buffer"] = {"iron_ore": 200.0}
+	state.buildings[target_id]["input_buffer_capacity"] = 200.0
+	var belt_id := state.add_connection({"source_id": source_id, "target_id": target_id, "type": "conveyor_belt_mk1", "item_id": "iron_ore", "active": true, "current_flow": 7.0, "total_transferred": 33.0})
+	_expect(state.has_method("try_configure_belt") and state.has_method("get_belt_configuration"), "GameState exposes validated belt configuration commands")
+	if not state.has_method("try_configure_belt") or not state.has_method("get_belt_configuration"):
+		return
+	var invalid_before := state.copy_state()
+	var invalid: Dictionary = state.call("try_configure_belt", belt_id, {"parallel_count": 5, "stack_size": 3, "priority": 9, "route_mode": "random"})
+	_expect(not invalid.get("ok", true) and state.connections[belt_id] == invalid_before.connections[belt_id] and state.construction_inventory == invalid_before.construction_inventory, "invalid belt values are rejected without partial changes")
+	var invalid_cases := [
+		[{"tier": "conveyor_belt_mk4"}, "invalid_tier"],
+		[{"parallel_count": 0}, "invalid_parallel_count"],
+		[{"stack_size": 3}, "invalid_stack_size"],
+		[{"priority": 3}, "invalid_priority"],
+		[{"route_mode": "random"}, "invalid_route_mode"],
+		[{"monitor_enabled": "true"}, "invalid_toggle"],
+		[{"enabled": 1}, "invalid_toggle"],
+	]
+	for invalid_case in invalid_cases:
+		var connection_before: Dictionary = state.connections[belt_id].duplicate(true)
+		var inventory_before: Dictionary = state.construction_inventory.duplicate(true)
+		var rejected: Dictionary = state.call("try_configure_belt", belt_id, invalid_case[0])
+		_expect(not rejected.get("ok", true) and rejected.get("reason", "") == invalid_case[1] and state.connections[belt_id] == connection_before and state.construction_inventory == inventory_before, "belt configuration explicitly rejects %s without mutation" % invalid_case[1])
+	var inventory_before_total := float(state.construction_inventory.conveyor_belt_mk1) + float(state.construction_inventory.conveyor_belt_mk2) + 1.0
+	var configured: Dictionary = state.call("try_configure_belt", belt_id, {"tier": "conveyor_belt_mk2", "parallel_count": 2, "stack_size": 4, "priority": 2, "route_mode": "upper", "monitor_enabled": true, "enabled": true})
+	var config: Dictionary = state.call("get_belt_configuration", belt_id)
+	_expect(configured.get("ok", false) and config.get("rated_throughput") == 20.0 and config.get("effective_throughput") == 160.0, "Mk.II throughput is 20 items/s times two parallels times stack four")
+	_expect(state.construction_inventory.get("conveyor_belt_mk1") == 4.0 and state.construction_inventory.get("conveyor_belt_mk2") == 2.0, "tier and parallel adjustment refunds old pieces and consumes installed pieces")
+	_expect(inventory_before_total == float(state.construction_inventory.conveyor_belt_mk1) + float(state.construction_inventory.conveyor_belt_mk2) + 2.0, "construction inventory plus installed belt pieces remains conserved")
+	_expect(state.connections[belt_id].get("active") == true and state.connections[belt_id].get("current_flow") == 7.0 and state.connections[belt_id].get("total_transferred") == 33.0, "belt configuration leaves runtime flow and cumulative statistics untouched")
+	var inventory_before_pure := state.construction_inventory.duplicate(true)
+	state.call("try_configure_belt", belt_id, {"priority": 1, "route_mode": "lower", "monitor_enabled": false, "enabled": false, "stack_size": 2})
+	_expect(state.construction_inventory == inventory_before_pure, "pure belt configuration does not alter construction inventory")
+	state.call("try_configure_belt", belt_id, {"enabled": true, "stack_size": 4})
+	BeltSystem.new(state).update(0.5)
+	_expect(is_equal_approx(state.buildings[source_id].output_buffer.iron_ore, 120.0) and is_equal_approx(state.buildings[target_id].input_buffer.iron_ore, 80.0), "BeltSystem transports cargo at the configured effective throughput")
+
+func _test_legacy_v2_defaults_and_persistence() -> void:
+	var state := GameState.new()
+	var source_id := _add_building(state, "source", "miner", Vector2.ZERO)
+	var target_id := _add_building(state, "target", "smelter", Vector2(400, 0))
+	var extra_target_id := _add_building(state, "extra_target", "smelter", Vector2(800, 0))
+	state.buildings[source_id]["output_item"] = "iron_ore"
+	var belt_id := state.add_connection({"source_id": source_id, "target_id": target_id, "type": "conveyor_belt_mk1", "item_id": "iron_ore"})
+	_expect(state.has_method("get_belt_configuration"), "legacy line defaults are exposed through the authoritative state")
+	if not state.has_method("get_belt_configuration"):
+		return
+	var defaults: Dictionary = state.call("get_belt_configuration", belt_id)
+	_expect(defaults.get("parallel_count") == 1 and defaults.get("stack_size") == 1 and defaults.get("priority") == 0 and defaults.get("route_mode") == "auto" and not defaults.get("monitor_enabled", true) and defaults.get("enabled", false), "old schema-v2 lines receive deterministic compatible defaults")
+	state.construction_inventory["conveyor_belt_mk2"] = 2.0
+	state.call("try_configure_belt", belt_id, {"tier": "conveyor_belt_mk2", "parallel_count": 2, "stack_size": 2, "priority": 1, "route_mode": "manual", "monitor_enabled": true, "enabled": false})
+	var payload := GameStateCodec.to_persistent_dict(state)
+	_expect(not payload.has("selected_entity_ids"), "workspace selection remains absent from schema-v2 persistence")
+	var restored := GameStateCodec.from_persistent_dict(payload)
+	var restored_config: Dictionary = restored.call("get_belt_configuration", belt_id) if restored != null else {}
+	_expect(restored != null and restored.get_state_version() == 2 and restored_config.get("tier") == "conveyor_belt_mk2" and restored_config.get("parallel_count") == 2 and restored_config.get("stack_size") == 2 and restored_config.get("route_mode") == "manual" and restored_config.get("enabled") == false, "new line fields round-trip without changing schema version")
+	for tier in ["conveyor_belt_mk1", "conveyor_belt_mk2", "conveyor_belt_mk3"]:
+		payload.construction_inventory.erase(tier)
+	var legacy_without_belt_inventory := GameStateCodec.from_persistent_dict(payload)
+	var inventory_before := legacy_without_belt_inventory.construction_inventory.duplicate(true) if legacy_without_belt_inventory != null else {}
+	var connections_before := legacy_without_belt_inventory.connections.size() if legacy_without_belt_inventory != null else -1
+	var missing_piece_result: Dictionary = legacy_without_belt_inventory.try_add_connection(source_id, extra_target_id) if legacy_without_belt_inventory != null else {}
+	var effective_mk1_before := float(inventory_before.get("conveyor_belt_mk1", 1.0))
+	var effective_mk1_after := float(legacy_without_belt_inventory.construction_inventory.get("conveyor_belt_mk1", 1.0)) if legacy_without_belt_inventory != null else -1.0
+	_expect(legacy_without_belt_inventory != null and missing_piece_result.get("ok", false) and legacy_without_belt_inventory.connections.size() == connections_before + 1 and effective_mk1_before == effective_mk1_after + 1.0, "an old v2 save without new belt inventory keys loads with a deterministic conserved Mk.I compatibility piece")
+
+func _test_connected_network_results_preserve_runtime_state() -> void:
+	var state := GameState.new()
+	state.construction_inventory = {"conveyor_belt_mk1": 8.0, "conveyor_belt_mk2": 8.0, "conveyor_belt_mk3": 8.0}
+	for spec in [["a", Vector2(0, 0)], ["b", Vector2(300, 0)], ["c", Vector2(600, 0)], ["x", Vector2(0, 300)], ["y", Vector2(300, 300)]]:
+		_add_building(state, spec[0], "miner" if spec[0] in ["a", "x"] else "smelter", spec[1])
+	var template_id := state.add_connection({"source_id": "a", "target_id": "b", "type": "conveyor_belt_mk2", "item_id": "iron_ore", "parallel_count": 2, "stack_size": 2, "priority": 2, "route_mode": "upper", "monitor_enabled": true, "enabled": false, "active": true, "current_flow": 5.0, "total_transferred": 40.0, "in_transit": [{"amount": 3.0}]})
+	var chained_id := state.add_connection({"source_id": "b", "target_id": "c", "type": "conveyor_belt_mk1", "item_id": "iron_ore", "active": true, "current_flow": 6.0, "total_transferred": 21.0, "in_transit": [{"amount": 2.0}]})
+	var isolated_id := state.add_connection({"source_id": "x", "target_id": "y", "type": "conveyor_belt_mk1", "item_id": "iron_ore"})
+	_expect(state.has_method("apply_belt_configuration_to_network"), "GameState exposes structured connected-network synchronization")
+	if not state.has_method("apply_belt_configuration_to_network"):
+		return
+	var result_value: Variant = state.call("apply_belt_configuration_to_network", template_id)
+	var result: Dictionary = result_value if result_value is Dictionary else {}
+	var chained_config: Dictionary = state.call("get_belt_configuration", chained_id)
+	_expect(result.get("ok", false) and result.get("results", []).size() == 2 and result.get("success", 0) == 1 and result.get("skipped", 0) == 1 and result.get("failed", 0) == 0, "network synchronization returns one structured result per connected line")
+	_expect(chained_config.get("tier") == "conveyor_belt_mk2" and chained_config.get("parallel_count") == 2 and chained_config.get("stack_size") == 2 and chained_config.get("route_mode") == "upper", "network synchronization follows actual shared endpoints across different sources")
+	_expect(state.connections[isolated_id].get("type") == "conveyor_belt_mk1", "network synchronization does not touch a disconnected line")
+	_expect(state.connections[chained_id].get("active") == true and state.connections[chained_id].get("current_flow") == 6.0 and state.connections[chained_id].get("total_transferred") == 21.0 and state.connections[chained_id].get("in_transit") == [{"amount": 2.0}], "network synchronization preserves flow, cumulative statistics, and in-transit cargo")
+	var missing_template: Dictionary = state.call("apply_belt_configuration_to_network", "")
+	_expect(not missing_template.get("ok", true) and missing_template.get("failed", 0) == 1, "network commands require an explicit valid template line")
+
+func _test_advanced_inspector_and_renderer_contract() -> void:
+	var state := GameState.new()
+	state.construction_inventory = {"conveyor_belt_mk1": 4.0}
+	var source_id := _add_building(state, "source", "miner", Vector2(100, 100))
+	var target_id := _add_building(state, "target", "smelter", Vector2(500, 100))
+	var belt_id := state.add_connection({"source_id": source_id, "target_id": target_id, "type": "conveyor_belt_mk1", "item_id": "iron_ore", "parallel_count": 2, "stack_size": 4, "priority": 2, "route_mode": "manual", "monitor_enabled": true, "enabled": false})
+	GameManager.replace_game_state(state)
+	var host := Node2D.new()
+	add_child(host)
+	var input_handler := InputHandlerScript.new()
+	input_handler.name = "InputHandler"
+	host.add_child(input_handler)
+	var connection_renderer := ConnectionRendererScript.new()
+	connection_renderer.name = "ConnectionRenderer"
+	connection_renderer.set_game_state(state)
+	host.add_child(connection_renderer)
+	var workspace := WorkspaceScript.new()
+	workspace.name = "FactoryWorkspaceUI"
+	host.add_child(workspace)
+	await get_tree().process_frame
+	if input_handler.has_method("set_selected_entities"):
+		input_handler.call("set_selected_entities", [belt_id])
+	workspace.refresh_now()
+	var title := workspace.get_node_or_null("InspectorPanel/Title") as Label
+	var details := workspace.get_node_or_null("InspectorPanel/Details") as Label
+	_expect(title != null and details != null and "线路" in title.text and "Mk.I" in details.text and "10" in details.text and "并联 2" in details.text and "堆叠 4" in details.text and "禁用" in details.text, "single-line inspector displays its complete effective configuration")
+	var belt_controls := workspace.get_node_or_null("InspectorPanel/RecipeList") as GridContainer
+	var enabled_button: Button
+	if belt_controls != null:
+		for child in belt_controls.get_children():
+			if child is Button and child.text == "启停":
+				enabled_button = child
+				break
+	if enabled_button != null:
+		enabled_button.pressed.emit()
+	_expect(belt_controls != null and belt_controls.visible and belt_controls.get_child_count() == 9 and enabled_button != null and state.connections[belt_id].enabled, "single-line inspector routes its nine editing commands through authoritative belt state")
+	_expect(connection_renderer.has_method("is_connection_selected") and connection_renderer.call("is_connection_selected", belt_id), "connection renderer consumes the same selection collection")
+	if input_handler.has_method("set_selected_entities"):
+		input_handler.call("set_selected_entities", [source_id, target_id, belt_id])
+	workspace.refresh_now()
+	var recipe_list := workspace.get_node_or_null("InspectorPanel/RecipeList") as Control
+	_expect(title != null and "已选择 3 项" in title.text and details != null and "建筑 2" in details.text and "线路 1" in details.text and "可移动 2" in details.text, "multi-selection inspector shows a summary preview")
+	_expect(recipe_list != null and not recipe_list.visible, "multi-selection hides commands that are not shared by every selected entity")
+	var panel := workspace.get_node_or_null("InspectorPanel") as Control
+	var delete_button := workspace.get_node_or_null("InspectorPanel/DeleteButton") as Button
+	_expect(delete_button != null and delete_button.disabled and "无共同批量命令" in details.text, "mixed building and line selection exposes no partial-set batch commands")
+	input_handler.call("_delete_selected")
+	var confirmation := workspace.get_node_or_null("DeleteConfirmation") as ConfirmationDialog
+	_expect(confirmation != null and not confirmation.visible and state.buildings.size() == 2, "Delete never silently consumes only the building subset of a mixed selection")
+	_expect(panel != null and delete_button != null and Rect2(Vector2.ZERO, panel.size).encloses(delete_button.get_rect()), "advanced inspector controls remain inside the existing panel")
+	host.queue_free()
+	await get_tree().process_frame
+
+func _add_building(state: GameState, id: String, type: String, position: Vector2) -> String:
+	state.buildings[id] = {
+		"id": id,
+		"type": type,
+		"position": position,
+		"status": "idle",
+		"recipe_id": "",
+		"progress": 0.0,
+		"input_buffer": {},
+		"output_buffer": {},
+		"speed": 1.0,
+	}
+	return id
+
+func _expect(condition: bool, description: String) -> void:
+	if condition:
+		print("PASS: %s" % description)
+		return
+	_failures += 1
+	printerr("FAIL: %s" % description)

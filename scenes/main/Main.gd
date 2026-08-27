@@ -30,7 +30,10 @@ func _on_game_state_replaced(new_state: GameState) -> void:
 	card_renderer.set_game_state(new_state)
 	connection_renderer.set_game_state(new_state)
 	input_handler.cancel_operation()
-	input_handler.selected_building_id = ""
+	if input_handler.has_method("set_selected_entities"):
+		input_handler.set_selected_entities([])
+	else:
+		input_handler.selected_building_id = ""
 	_synced_selected_building_id = ""
 	factory_workspace_ui.set_selected_building("")
 	EventBus.simulation_updated.emit()
@@ -53,6 +56,11 @@ func _on_card_placed(card_id: String, _position: Vector2) -> void:
 	factory_workspace_ui.refresh_now()
 
 func _on_card_selected(card_id: String) -> void:
+	if card_id.is_empty() and input_handler.has_method("get_selected_entity_ids"):
+		var shared_selection: Array = input_handler.get_selected_entity_ids()
+		if not shared_selection.is_empty():
+			factory_workspace_ui.set_selected_entities(shared_selection)
+			return
 	input_handler.selected_building_id = card_id
 	_synced_selected_building_id = card_id
 	factory_workspace_ui.set_selected_building(card_id)
