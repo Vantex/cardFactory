@@ -235,6 +235,11 @@ func _test_workspace_live_content_and_actions() -> void:
 	if delete_button != null:
 		delete_button.emit_signal("pressed")
 	await get_tree().process_frame
+	var delete_confirmation := workspace.get_node_or_null("DeleteConfirmation") as ConfirmationDialog
+	_expect(delete_button != null and delete_confirmation != null and delete_confirmation.visible and state.buildings.has(smelter.id), "single-building inspector delete waits for explicit UI confirmation")
+	if delete_confirmation != null:
+		delete_confirmation.confirmed.emit()
+	await get_tree().process_frame
 	_expect(delete_button != null and not state.buildings.has(smelter.id) and inspector_title.text == "工厂概览", "inspector delete action removes the selected building and returns to overview")
 
 	_expect(recipe_list.get_child_count() > 0, "deleted selection leaves handcraft controls instead of stale machine recipes")

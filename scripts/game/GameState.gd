@@ -80,6 +80,11 @@ const BELT_STACK_SIZES := [1, 2, 4]
 const BELT_PRIORITIES := [0, 1, 2]
 const BELT_ROUTE_MODES := ["bezier", "auto", "upper", "lower", "manual"]
 const BELT_MAX_INVENTORY := 99.0
+const BELT_LEGACY_INVENTORY_DEFAULTS := {
+    "conveyor_belt_mk1": 1.0,
+    "conveyor_belt_mk2": 0.0,
+    "conveyor_belt_mk3": 0.0,
+}
 
 # 分拣器速度配置
 var sorter_speed_config: Dictionary = {
@@ -228,7 +233,7 @@ func remove_connection(connection_id: String):
         if _is_belt_connection(connection):
             var tier := _belt_tier(connection)
             var installed := _belt_parallel_count(connection)
-            construction_inventory[tier] = float(construction_inventory.get(tier, 0.0)) + float(installed)
+            construction_inventory[tier] = _construction_inventory_count(construction_inventory, tier) + float(installed)
         connections.erase(connection_id)
         EventBus.connection_removed.emit(connection_id)
 
@@ -310,7 +315,7 @@ func try_remove_entities(entity_ids: Array) -> Dictionary:
             var tier := _belt_tier(connection)
             construction_refund[tier] = float(construction_refund.get(tier, 0.0)) + float(_belt_parallel_count(connection))
     for item_id in construction_refund:
-        if float(construction_inventory.get(item_id, 0.0)) + float(construction_refund[item_id]) > BELT_MAX_INVENTORY:
+        if _construction_inventory_count(construction_inventory, String(item_id)) + float(construction_refund[item_id]) > BELT_MAX_INVENTORY:
             return _batch_failure("施工库存容量不足", "construction_inventory_full")
     var inventory := InventorySystem.new(self)
     if not material_refund.is_empty() and not inventory.can_add_batch(material_refund):
@@ -321,7 +326,7 @@ func try_remove_entities(entity_ids: Array) -> Dictionary:
         if not inventory_result.get("ok", false):
             return _batch_failure(String(inventory_result.get("message", "返还缓存失败")), "commit_failed")
     for item_id in construction_refund:
-        construction_inventory[item_id] = float(construction_inventory.get(item_id, 0.0)) + float(construction_refund[item_id])
+        construction_inventory[item_id] = _construction_inventory_count(construction_inventory, String(item_id)) + float(construction_refund[item_id])
     var removed_connection_ids: Array = connection_ids.keys()
     removed_connection_ids.sort()
     for connection_id in removed_connection_ids:
@@ -602,10 +607,10 @@ func try_configure_belt(belt_id: String, requested: Dictionary) -> Dictionary:
     var target_count := int(target.parallel_count)
     var next_inventory := construction_inventory.duplicate(true)
     if current_tier != target_tier or current_count != target_count:
-        next_inventory[current_tier] = float(next_inventory.get(current_tier, 0.0)) + float(current_count)
-        if float(next_inventory.get(target_tier, 0.0)) < float(target_count):
+        next_inventory[current_tier] = _construction_inventory_count(next_inventory, current_tier) + float(current_count)
+        if _construction_inventory_count(next_inventory, target_tier) < float(target_count):
             return {"ok": false, "message": "线路施工件不足", "reason": "insufficient_construction_inventory"}
-        next_inventory[target_tier] = float(next_inventory.get(target_tier, 0.0)) - float(target_count)
+        next_inventory[target_tier] = _construction_inventory_count(next_inventory, target_tier) - float(target_count)
         if float(next_inventory[current_tier]) > BELT_MAX_INVENTORY:
             return {"ok": false, "message": "线路施工库存容量不足", "reason": "construction_inventory_full"}
     var connection: Dictionary = connections[belt_id]
@@ -707,12 +712,15 @@ func _belt_route_mode(connection: Dictionary) -> String:
     return String(value) if value is String and String(value) in BELT_ROUTE_MODES else "auto"
 
 func _has_belt_pieces(tier: String, amount: int) -> bool:
-    var available := float(construction_inventory.get(tier, 1.0 if tier == "conveyor_belt_mk1" else 0.0))
+    var available := _construction_inventory_count(construction_inventory, tier)
     return available >= float(amount)
 
 func _consume_belt_pieces(tier: String, amount: int) -> void:
-    var available := float(construction_inventory.get(tier, 1.0 if tier == "conveyor_belt_mk1" else 0.0))
+    var available := _construction_inventory_count(construction_inventory, tier)
     construction_inventory[tier] = available - float(amount)
+
+func _construction_inventory_count(inventory: Dictionary, item_id: String) -> float:
+    return float(inventory.get(item_id, BELT_LEGACY_INVENTORY_DEFAULTS.get(item_id, 0.0)))
 
 func _collect_building_material_refund(building: Dictionary, refund: Dictionary) -> void:
     for buffer_name in ["input_buffer", "output_buffer"]:

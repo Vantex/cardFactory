@@ -15,6 +15,7 @@ func _ready() -> void:
 	_test_atomic_batch_delete_rollback()
 	await _test_confirmed_atomic_batch_delete()
 	_test_belt_configuration_and_throughput()
+	_test_belt_priority_controls_contention()
 	_test_legacy_v2_defaults_and_persistence()
 	_test_connected_network_results_preserve_runtime_state()
 	await _test_advanced_inspector_and_renderer_contract()
@@ -214,11 +215,30 @@ func _test_belt_configuration_and_throughput() -> void:
 	BeltSystem.new(state).update(0.5)
 	_expect(is_equal_approx(state.buildings[source_id].output_buffer.iron_ore, 120.0) and is_equal_approx(state.buildings[target_id].input_buffer.iron_ore, 80.0), "BeltSystem transports cargo at the configured effective throughput")
 
+func _test_belt_priority_controls_contention() -> void:
+	var state := GameState.new()
+	var source_id := _add_building(state, "priority_source", "miner", Vector2.ZERO)
+	var low_target_id := _add_building(state, "priority_low", "smelter", Vector2(400, -100))
+	var high_target_id := _add_building(state, "priority_high", "smelter", Vector2(400, 100))
+	state.buildings[source_id]["output_buffer"] = {"iron_ore": 5.0}
+	state.buildings[low_target_id]["input_buffer_capacity"] = 10.0
+	state.buildings[high_target_id]["input_buffer_capacity"] = 10.0
+	var low_id := state.add_connection({"source_id": source_id, "target_id": low_target_id, "type": "conveyor_belt_mk1", "item_id": "iron_ore", "priority": 0})
+	var high_id := state.add_connection({"source_id": source_id, "target_id": high_target_id, "type": "conveyor_belt_mk1", "item_id": "iron_ore", "priority": 2})
+	BeltSystem.new(state).update(1.0)
+	_expect(state.buildings[high_target_id].input_buffer.get("iron_ore", 0.0) == 5.0 and state.buildings[low_target_id].input_buffer.get("iron_ore", 0.0) == 0.0, "higher numeric belt priority wins limited source inventory contention")
+	state.buildings[source_id]["output_buffer"] = {"iron_ore": 5.0}
+	state.buildings[low_target_id]["input_buffer"] = {}
+	state.buildings[high_target_id]["input_buffer"] = {}
+	state.try_configure_belt(low_id, {"priority": 1})
+	state.try_configure_belt(high_id, {"priority": 1})
+	BeltSystem.new(state).update(1.0)
+	_expect(state.buildings[low_target_id].input_buffer.get("iron_ore", 0.0) == 5.0 and state.buildings[high_target_id].input_buffer.get("iron_ore", 0.0) == 0.0, "equal-priority belt contention uses stable connection ID order")
+
 func _test_legacy_v2_defaults_and_persistence() -> void:
 	var state := GameState.new()
 	var source_id := _add_building(state, "source", "miner", Vector2.ZERO)
 	var target_id := _add_building(state, "target", "smelter", Vector2(400, 0))
-	var extra_target_id := _add_building(state, "extra_target", "smelter", Vector2(800, 0))
 	state.buildings[source_id]["output_item"] = "iron_ore"
 	var belt_id := state.add_connection({"source_id": source_id, "target_id": target_id, "type": "conveyor_belt_mk1", "item_id": "iron_ore"})
 	_expect(state.has_method("get_belt_configuration"), "legacy line defaults are exposed through the authoritative state")
@@ -233,15 +253,20 @@ func _test_legacy_v2_defaults_and_persistence() -> void:
 	var restored := GameStateCodec.from_persistent_dict(payload)
 	var restored_config: Dictionary = restored.call("get_belt_configuration", belt_id) if restored != null else {}
 	_expect(restored != null and restored.get_state_version() == 2 and restored_config.get("tier") == "conveyor_belt_mk2" and restored_config.get("parallel_count") == 2 and restored_config.get("stack_size") == 2 and restored_config.get("route_mode") == "manual" and restored_config.get("enabled") == false, "new line fields round-trip without changing schema version")
+	var legacy_state := GameState.new()
+	var legacy_source_id := _add_building(legacy_state, "legacy_source", "miner", Vector2.ZERO)
+	var legacy_target_id := _add_building(legacy_state, "legacy_target", "smelter", Vector2(400, 0))
+	var legacy_belt_id := legacy_state.add_connection({"source_id": legacy_source_id, "target_id": legacy_target_id, "type": "conveyor_belt_mk1", "item_id": "iron_ore"})
+	var legacy_payload := GameStateCodec.to_persistent_dict(legacy_state)
 	for tier in ["conveyor_belt_mk1", "conveyor_belt_mk2", "conveyor_belt_mk3"]:
-		payload.construction_inventory.erase(tier)
-	var legacy_without_belt_inventory := GameStateCodec.from_persistent_dict(payload)
-	var inventory_before := legacy_without_belt_inventory.construction_inventory.duplicate(true) if legacy_without_belt_inventory != null else {}
-	var connections_before := legacy_without_belt_inventory.connections.size() if legacy_without_belt_inventory != null else -1
-	var missing_piece_result: Dictionary = legacy_without_belt_inventory.try_add_connection(source_id, extra_target_id) if legacy_without_belt_inventory != null else {}
-	var effective_mk1_before := float(inventory_before.get("conveyor_belt_mk1", 1.0))
-	var effective_mk1_after := float(legacy_without_belt_inventory.construction_inventory.get("conveyor_belt_mk1", 1.0)) if legacy_without_belt_inventory != null else -1.0
-	_expect(legacy_without_belt_inventory != null and missing_piece_result.get("ok", false) and legacy_without_belt_inventory.connections.size() == connections_before + 1 and effective_mk1_before == effective_mk1_after + 1.0, "an old v2 save without new belt inventory keys loads with a deterministic conserved Mk.I compatibility piece")
+		legacy_payload.construction_inventory.erase(tier)
+	var legacy_without_belt_inventory := GameStateCodec.from_persistent_dict(legacy_payload)
+	var parallel_result: Dictionary = legacy_without_belt_inventory.try_configure_belt(legacy_belt_id, {"parallel_count": 2}) if legacy_without_belt_inventory != null else {}
+	var parallel_config: Dictionary = legacy_without_belt_inventory.get_belt_configuration(legacy_belt_id) if legacy_without_belt_inventory != null else {}
+	_expect(legacy_without_belt_inventory != null and parallel_result.get("ok", false) and parallel_config.get("parallel_count") == 2 and legacy_without_belt_inventory.construction_inventory.get("conveyor_belt_mk1", -1.0) == 0.0, "an old v2 missing-key Mk.I line consumes the same deterministic compatibility inventory when adding a parallel")
+	if legacy_without_belt_inventory != null:
+		legacy_without_belt_inventory.remove_connection(legacy_belt_id)
+	_expect(legacy_without_belt_inventory != null and not legacy_without_belt_inventory.connections.has(legacy_belt_id) and legacy_without_belt_inventory.construction_inventory.get("conveyor_belt_mk1", -1.0) == 2.0, "removing the upgraded old v2 line refunds both installed pieces without losing the compatibility baseline")
 
 func _test_connected_network_results_preserve_runtime_state() -> void:
 	var state := GameState.new()
@@ -301,6 +326,29 @@ func _test_advanced_inspector_and_renderer_contract() -> void:
 		enabled_button.pressed.emit()
 	_expect(belt_controls != null and belt_controls.visible and belt_controls.get_child_count() == 9 and enabled_button != null and state.connections[belt_id].enabled, "single-line inspector routes its nine editing commands through authoritative belt state")
 	_expect(connection_renderer.has_method("is_connection_selected") and connection_renderer.call("is_connection_selected", belt_id), "connection renderer consumes the same selection collection")
+	if input_handler.has_method("set_selected_entities"):
+		input_handler.call("set_selected_entities", [source_id])
+	workspace.refresh_now()
+	_expect(details != null and "可移动" in details.text, "single-building inspector displays its current interaction lock state")
+	if input_handler.has_method("set_selected_entities"):
+		input_handler.call("set_selected_entities", [source_id, target_id])
+	workspace.refresh_now()
+	var multi_controls := workspace.get_node_or_null("InspectorPanel/RecipeList") as GridContainer
+	var lock_button: Button
+	var unlock_button: Button
+	if multi_controls != null:
+		for child in multi_controls.get_children():
+			if child is Button and child.text == "锁定":
+				lock_button = child
+			elif child is Button and child.text == "解锁":
+				unlock_button = child
+	_expect(multi_controls != null and multi_controls.visible and lock_button != null and unlock_button != null, "all-building multi-selection exposes shared lock and unlock commands")
+	if lock_button != null:
+		lock_button.pressed.emit()
+	_expect(state.is_entity_interaction_locked(source_id) and state.is_entity_interaction_locked(target_id) and "锁定 2" in details.text, "multi-selection lock command updates every selected building through GameState")
+	if unlock_button != null:
+		unlock_button.pressed.emit()
+	_expect(not state.is_entity_interaction_locked(source_id) and not state.is_entity_interaction_locked(target_id), "multi-selection unlock command updates every selected building through GameState")
 	if input_handler.has_method("set_selected_entities"):
 		input_handler.call("set_selected_entities", [source_id, target_id, belt_id])
 	workspace.refresh_now()

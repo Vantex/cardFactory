@@ -251,10 +251,6 @@ func _on_start_connection_pressed() -> void:
 		EventBus.start_connection_requested.emit(_selected_building_id)
 
 func _on_delete_pressed() -> void:
-	var input_handler := _get_input_handler()
-	if input_handler != null and input_handler.has_method("get_selected_entity_ids") and input_handler.call("get_selected_entity_ids").is_empty() and not _selected_building_id.is_empty():
-		EventBus.delete_building_requested.emit(_selected_building_id)
-		return
 	var selected_ids := _current_selected_entity_ids()
 	var building_ids := _current_selected_building_ids()
 	if building_ids.size() != selected_ids.size():
@@ -285,6 +281,16 @@ func _on_delete_confirmed() -> void:
 		var input_handler := _get_input_handler()
 		if input_handler != null and input_handler.has_method("set_selected_entities"):
 			input_handler.call("set_selected_entities", [])
+	refresh_now()
+
+func _on_batch_lock_pressed(locked: bool) -> void:
+	var selected_ids := _current_selected_entity_ids()
+	var building_ids := _current_selected_building_ids()
+	if building_ids.is_empty() or building_ids.size() != selected_ids.size():
+		show_notice("当前选择没有共同的锁定命令", "warning")
+		return
+	var changed := _get_game_state().set_entities_interaction_locked(building_ids, locked)
+	show_notice("已%s %d 个建筑" % ["锁定" if locked else "解锁", changed], "success")
 	refresh_now()
 
 func _on_state_changed(_arg_1 = null, _arg_2 = null, _arg_3 = null) -> void:
@@ -561,8 +567,9 @@ func _refresh_inspector(state: GameState) -> void:
 	var progress_percent := int(round(float(building.get("progress", 0.0)) * 100.0))
 	var demand := float(definition.get("power_demand", 0.0))
 	var generation := float(definition.get("power_generation", 0.0))
+	var interaction_state := "已锁定" if state.is_entity_interaction_locked(_selected_building_id) else "可移动"
 	_inspector_title.text = state.get_building_display_name(_selected_building_id)
-	_inspector_details.text = "类型 %s\n状态 %s  进度 %d%%\n电力 消耗 %.0f / 产出 %.0f" % [_selected_building_type, building.get("status", "idle"), progress_percent, demand, generation]
+	_inspector_details.text = "类型 %s\n状态 %s  进度 %d%%\n电力 消耗 %.0f / 产出 %.0f\n交互 %s" % [_selected_building_type, building.get("status", "idle"), progress_percent, demand, generation, interaction_state]
 	_input_buffers.text = "输入  %s" % _format_buffer(building.get("input_buffer", {}))
 	_output_buffers.text = "输出  %s" % _format_buffer(building.get("output_buffer", {}))
 	_start_connection_button.disabled = false
@@ -625,7 +632,7 @@ func _refresh_multi_inspector(state: GameState, selected_ids: Array[String]) -> 
 	var all_buildings := building_count == selected_ids.size()
 	var common_commands := "无共同批量命令"
 	if all_buildings:
-		common_commands = "移动 / 锁定 / 确认删除" if movable_count == building_count else "确认删除"
+		common_commands = "移动 / 锁定 / 解锁 / 确认删除" if movable_count == building_count else "锁定 / 解锁 / 确认删除"
 	_inspector_title.text = "已选择 %d 项" % selected_ids.size()
 	_inspector_details.text = "建筑 %d  线路 %d\n可移动 %d  锁定 %d\n交集命令：%s" % [building_count, belt_count, movable_count, building_count - movable_count, common_commands]
 	_input_buffers.text = "交集命令  %s" % common_commands
@@ -635,7 +642,27 @@ func _refresh_multi_inspector(state: GameState, selected_ids: Array[String]) -> 
 	_delete_button.text = "确认删除 (%d)" % building_count if all_buildings else "无共同删除"
 	_recipe_heading.text = "批量命令"
 	_handcraft_quantity.hide()
-	_recipe_list.hide()
+	if all_buildings:
+		_refresh_multi_building_controls(selected_ids)
+	else:
+		_recipe_list.hide()
+
+func _refresh_multi_building_controls(selected_ids: Array[String]) -> void:
+	_recipe_list.show()
+	_recipe_list.columns = 2
+	var signature := "multi-buildings|%s" % ",".join(selected_ids)
+	if signature == _recipe_signature:
+		return
+	_recipe_signature = signature
+	for child in _recipe_list.get_children():
+		_recipe_list.remove_child(child)
+		child.queue_free()
+	for action in [[true, "锁定"], [false, "解锁"]]:
+		var button := Button.new()
+		button.text = action[1]
+		button.custom_minimum_size = Vector2(120, 34)
+		button.pressed.connect(_on_batch_lock_pressed.bind(action[0]))
+		_recipe_list.add_child(button)
 
 func _refresh_recipe_controls(_state: GameState, building: Dictionary) -> void:
 	_recipe_list.show()

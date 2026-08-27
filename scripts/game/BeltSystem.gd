@@ -18,10 +18,21 @@ func clear_flow_state() -> void:
 func update(delta: float):
 	clear_flow_state()
 	var connection_ids: Array = game_state.connections.keys()
-	connection_ids.sort()
+	connection_ids.sort_custom(_connection_precedes)
 	for conn_id in connection_ids:
 		var connection = game_state.connections[conn_id]
 		_update_connection(connection, delta)
+
+func _connection_precedes(left_id: Variant, right_id: Variant) -> bool:
+	var left_key := String(left_id)
+	var right_key := String(right_id)
+	var left_config := game_state.get_belt_configuration(left_key)
+	var right_config := game_state.get_belt_configuration(right_key)
+	var left_priority := int(left_config.get("priority", 0))
+	var right_priority := int(right_config.get("priority", 0))
+	if left_priority != right_priority:
+		return left_priority > right_priority
+	return left_key < right_key
 
 func _update_connection(connection: Dictionary, delta: float):
 	if not connection.get("enabled", true) or delta <= 0.0:
