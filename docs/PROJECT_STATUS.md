@@ -24,7 +24,7 @@ project.godot
                + InputHandler + FactoryWorkspaceUI
 ```
 
-主场景先显示离线开始菜单和 10 个本地槽位；会话启动后才启用工厂输入与模拟。`AppShell` 只发送新游戏、继续、删除和返回意图，`GameManager` 统一协调保存、状态替换、自动保存和退出握手。`FactoryWorkspaceUI` 发出建造、手工制造、连接、删除、暂停和速度意图；`InputHandler` 仲裁画布操作；两个 renderer 只读 `GameState`。`InventorySystem`、`ConstructionSystem` 和 `HandcraftSystem` 维护资源所有权与原子命令，`SimulationEngine` 以 60 Hz 固定 tick 更新权威状态。
+主场景先显示离线开始菜单和 10 个本地槽位；会话启动后才启用工厂输入与模拟。`AppShell` 只发送新游戏、继续、删除和返回意图，`GameManager` 统一协调保存、状态替换、自动保存和退出握手。`FactoryWorkspaceUI` 发出建造、手工制造、连接、批量编辑、删除、暂停和速度意图；`InputHandler` 仲裁画布操作并持有会话选择集合；两个 renderer 只读 `GameState`。`InventorySystem`、`ConstructionSystem` 和 `HandcraftSystem` 维护资源所有权与原子命令，`SimulationEngine` 以 60 Hz 固定 tick 更新权威状态。
 
 ## 已验证能力
 
@@ -34,7 +34,7 @@ project.godot
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1
 ```
 
-它先自动执行一次无窗口编辑器导入，再顺序运行 `TestBaseline`、`TestFactoryWorkspace`、`TestStatePersistence`、`TestSimulationCore` 与 `TestInventoryConstruction`，要求各自唯一的成功标记。门禁会在 Godot 非零退出、`SCRIPT ERROR`、`Parse Error`、失败标记、成功标记缺失/重复、ObjectDB 泄漏或资源仍被占用时失败。全新检出不再需要人工预热全局脚本类缓存。
+它先自动执行一次无窗口编辑器导入，再顺序运行 `TestBaseline`、`TestFactoryWorkspace`、`TestStatePersistence`、`TestSimulationCore`、`TestInventoryConstruction` 与 `TestAdvancedCanvas`，要求各自唯一的成功标记。门禁会在 Godot 非零退出、`SCRIPT ERROR`、`Parse Error`、失败标记、成功标记缺失/重复、ObjectDB 泄漏或资源仍被占用时失败。全新检出不再需要人工预热全局脚本类缓存。
 
 工作区测试覆盖：
 
@@ -48,6 +48,9 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1
 - 连接手势在非单位 Viewport、CanvasLayer 和世界 CanvasItem 变换下分别换算 UI 与世界坐标；在 Inspector 内松开会取消，不会误命中其下方建筑并报告“连接已存在”。
 - 画布支持 Q/W/E/R/T 放置、同次按压的左键选择/拖动、输出端口按下后在输入端口释放完成连接、右键/中键平移、滚轮缩放、`Escape` 取消、`Delete` 删除、`Space` 暂停与 `1` / `2` / `3` 速度切换。
 - 连接以 `enabled` 保存持久运输许可，以 `active` 表示当前帧实际物流；禁用连接不运输，启用但无货物的连接保持非活动。
+- 画布选择属于会话状态，支持 Ctrl 增减和从空白开始的正向/反向框选；建筑批量移动和确认删除会完整预检并原子提交，任一锁定、重叠或退款容量失败均不产生部分结果。
+- 线路支持 Mk.I/II/III、1～4 并联、1/2/4 堆叠、优先级、路线/手动偏移、监控和启停；模拟吞吐使用“等级额定值 × 并联 × 堆叠”，竞争线路按优先级及稳定 ID 顺序处理。
+- 单选检查器显示完整建筑或线路配置；纯建筑和纯线路多选只提供共同命令。整网同步/升级要求显式选择模板线路，按真实连通端点报告成功、跳过和失败原因，并保留当前流量、累计统计与在途货物。
 - 矿机可在检查器切换铁矿、铜矿、煤和石料采集目标；权威模拟会运行铁/铜原矿、三类冶炼、两类组装和矩阵编码的完整连接图，最终产出基础研究矩阵。
 - 当前目录包含 39 个物品、30 个建筑、22 个配方和 3 项科技。采集、燃料、设备缓存、速度、多输入、多输出及副产物由 JSON 驱动；每项副产物都会进入生产完成事件。完整映射见[内容清单](current/CONTENT_CATALOG.md)。
 - `DataManager` 拒绝重复 ID、缺失引用、非法数量/时间/容量、科技循环及无法制造的强制进程物品；`GameStateValidator` 另外拒绝建筑配方错配和采集器选择目录外资源。
@@ -68,7 +71,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1
 
 ## 已知缺口与延期范围
 
-- 多选/框选、蓝图、建筑缩略图和高级检查器面板延期。
+- 蓝图、建筑缩略图、小地图、区域和书签仍未交付。
 - 移动端布局、云存档、正式目标/胜负系统和 minimap 未进入活跃主场景；资源栏中的新手目标只是上下文操作引导。
 - 本地存档已经交付，但当前没有单独的“立即保存”按钮；保存以新建、120 秒自动保存、返回菜单和退出握手触发。
 - 云同步、云备份、云恢复、存档压缩、解压和迁移均为延期能力，当前统一返回 `ERR_UNAVAILABLE`，不会伪装成功；`PerformanceSystem` 也明确报告未启用 Worker 支持。
@@ -78,7 +81,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1
 
 ## 下一阶段建议
 
-用户已批准继续对齐 DSPONLINE 的完整单机玩法，并明确排除账号、云存档、排行榜、在线社交和服务器运维。版本化状态、可靠本地存档、固定步长、真实电力、守恒施工库存和第一条科学链已经完成；下一项按[单机实施路线图](current/SINGLE_PLAYER_ROADMAP.md)开展任务 7，补齐多选、批量命令和线路配置，再依次推进科技、多行星物流、戴森终局及产品化。
+用户已批准继续对齐 DSPONLINE 的完整单机玩法，并明确排除账号、云存档、排行榜、在线社交和服务器运维。版本化状态、可靠本地存档、固定步长、真实电力、守恒施工库存、第一条科学链、多选批量编辑和线路配置已经完成；下一项按[单机实施路线图](current/SINGLE_PLAYER_ROADMAP.md)开展任务 8，补齐蓝图、小地图、区域与书签，再依次推进科技、多行星物流、戴森终局及产品化。
 
 `DSPONLINE` 只在其非商业许可范围内作为行为和架构参考；不复制其源码或素材，也不把账号、云档、多核 Worker、排行榜等高级能力作为 CardFactory 当前开发的前置条件。
 

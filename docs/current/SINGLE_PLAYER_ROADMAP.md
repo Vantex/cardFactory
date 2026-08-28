@@ -347,32 +347,34 @@ git commit -m "feat: expand data driven production catalog"
 - 修改：`scenes/ui/FactoryWorkspaceUI.gd`
 - 修改：`tools/run_tests.ps1`
 
-- [ ] **步骤 1：写选择集合失败测试**
+- [x] **步骤 1：写选择集合失败测试**
 
 覆盖 Ctrl 增减选择、空白反向框选、批量移动失败回滚、批量删除确认和锁定建筑不可移动。
 
-- [ ] **步骤 2：把选择状态从单 ID 升级为集合**
+- [x] **步骤 2：把选择状态从单 ID 升级为集合**
 
 选择属于工作区会话状态，不进入存档；renderer、检查器和删除操作都消费同一集合。
 
-- [ ] **步骤 3：实现传送带等级和配置**
+- [x] **步骤 3：实现传送带等级和配置**
 
 增加 Mk.I/II/III 吞吐、并联数、货物堆叠、优先级、路线模式、监控和启停；所有调整进行施工件守恒校验。
 
-- [ ] **步骤 4：实现整网同步和升级**
+- [x] **步骤 4：实现整网同步和升级**
 
 模板线路必须由玩家明确选择；批量结果报告成功、跳过和失败原因，不修改在途货物与累计统计。
 
-- [ ] **步骤 5：接入高级检查器**
+- [x] **步骤 5：接入高级检查器**
 
 单选展示完整线路或建筑配置；多选只展示交集命令和汇总预览。
 
-- [ ] **步骤 6：提交**
+- [x] **步骤 6：提交**
 
 ```powershell
 git add scripts/input/InputHandler.gd scripts/rendering/CardRenderer.gd scripts/rendering/ConnectionRenderer.gd scripts/game/GameState.gd scripts/game/BeltSystem.gd scenes/ui/FactoryWorkspaceUI.gd scripts/test/TestAdvancedCanvas.gd scenes/test/TestAdvancedCanvas.tscn tools/run_tests.ps1
 git commit -m "feat: add advanced canvas and belt editing"
 ```
+
+**完成记录（2026-08-28）：** 画布选择已升级为不进入存档的会话集合，支持 Ctrl 增减、空白反向框选、锁定建筑保护及预检后原子批量移动/确认删除。线路支持 Mk.I/II/III、并联、堆叠、优先级、路线、手动偏移、监控和启停；等级/并联及拆除统一校验施工件守恒，旧 schema v2 线路使用确定性默认。整网命令按真实连通端点执行并返回成功/跳过/失败原因，不修改运行时流量、累计统计或在途货物。单选检查器显示完整建筑/线路配置，多选只展示建筑或线路的交集命令；`TestAdvancedCanvas` 已加入统一门禁，六个权威场景全部通过。
 
 ### 任务 8：蓝图、小地图、区域与书签
 
