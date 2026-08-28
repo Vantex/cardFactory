@@ -105,10 +105,7 @@ func set_selected_entities(entity_ids: Array) -> void:
 	refresh_now()
 
 func _on_shared_selection_changed(entity_ids: Array) -> void:
-	if not entity_ids.is_empty():
-		set_selected_entities(entity_ids)
-	else:
-		refresh_now()
+	set_selected_entities(entity_ids)
 
 func get_selected_building_type() -> String:
 	return _selected_building_type
@@ -291,6 +288,39 @@ func _on_batch_lock_pressed(locked: bool) -> void:
 		return
 	var changed := _get_game_state().set_entities_interaction_locked(building_ids, locked)
 	show_notice("已%s %d 个建筑" % ["锁定" if locked else "解锁", changed], "success")
+	refresh_now()
+
+func _on_batch_belt_config_pressed(action: String) -> void:
+	var state := _get_game_state()
+	var selected_ids := _current_selected_entity_ids()
+	if selected_ids.size() < 2:
+		show_notice("至少选择两条线路", "warning")
+		return
+	for belt_id in selected_ids:
+		if state.get_belt_configuration(belt_id).is_empty():
+			show_notice("当前选择没有共同的线路命令", "warning")
+			return
+	var config := state.get_belt_configuration(selected_ids[0])
+	var requested: Dictionary = {}
+	match action:
+		"stack":
+			var stack_values: Array[int] = [1, 2, 4]
+			requested["stack_size"] = stack_values[(stack_values.find(int(config.stack_size)) + 1) % stack_values.size()]
+		"priority":
+			requested["priority"] = (int(config.priority) + 1) % 3
+		"route":
+			var route_values: Array[String] = ["auto", "upper", "lower", "manual", "bezier"]
+			requested["route_mode"] = route_values[(route_values.find(String(config.route_mode)) + 1) % route_values.size()]
+		"monitor":
+			requested["monitor_enabled"] = not bool(config.monitor_enabled)
+		"enabled":
+			requested["enabled"] = not bool(config.enabled)
+		_:
+			show_notice("未知批量线路命令", "error")
+			return
+	var result := state.try_configure_belts(selected_ids, requested)
+	show_notice(String(result.get("message", "批量线路配置失败")), "success" if result.get("ok", false) else "error")
+	_recipe_signature = ""
 	refresh_now()
 
 func _on_state_changed(_arg_1 = null, _arg_2 = null, _arg_3 = null) -> void:
@@ -580,8 +610,11 @@ func _refresh_belt_inspector(state: GameState, belt_id: String) -> void:
 	var connection: Dictionary = state.connections[belt_id]
 	var config := state.get_belt_configuration(belt_id)
 	var tier_label := _belt_tier_label(String(config.get("tier", "conveyor_belt_mk1")))
+	var route_summary := "路由 %s" % config.get("route_mode", "auto")
+	if config.get("route_mode", "auto") == "manual":
+		route_summary += "  偏移 %.0f" % float(config.get("route_offset_y", 0.0))
 	_inspector_title.text = "线路 %s" % belt_id
-	_inspector_details.text = "%s 额定 %.0f/s  有效 %.0f/s\n并联 %d  堆叠 %d  优先级 %d\n路由 %s  监控 %s  %s" % [tier_label, config.get("rated_throughput", 10.0), config.get("effective_throughput", 10.0), config.get("parallel_count", 1), config.get("stack_size", 1), config.get("priority", 0), config.get("route_mode", "auto"), "开" if config.get("monitor_enabled", false) else "关", "启用" if config.get("enabled", true) else "禁用"]
+	_inspector_details.text = "%s 额定 %.0f/s  有效 %.0f/s\n并联 %d  堆叠 %d  优先级 %d\n%s  监控 %s  %s" % [tier_label, config.get("rated_throughput", 10.0), config.get("effective_throughput", 10.0), config.get("parallel_count", 1), config.get("stack_size", 1), config.get("priority", 0), route_summary, "开" if config.get("monitor_enabled", false) else "关", "启用" if config.get("enabled", true) else "禁用"]
 	_input_buffers.text = "源  %s" % connection.get("source_id", "")
 	_output_buffers.text = "目标  %s  |  物品 %s" % [connection.get("target_id", ""), connection.get("item_id", "")]
 	_start_connection_button.disabled = true
@@ -630,13 +663,16 @@ func _refresh_multi_inspector(state: GameState, selected_ids: Array[String]) -> 
 		elif state.connections.has(entity_id):
 			belt_count += 1
 	var all_buildings := building_count == selected_ids.size()
+	var all_belts := belt_count == selected_ids.size()
 	var common_commands := "无共同批量命令"
 	if all_buildings:
 		common_commands = "移动 / 锁定 / 解锁 / 确认删除" if movable_count == building_count else "锁定 / 解锁 / 确认删除"
+	elif all_belts:
+		common_commands = "堆叠 / 优先级 / 路由 / 监控 / 启停"
 	_inspector_title.text = "已选择 %d 项" % selected_ids.size()
 	_inspector_details.text = "建筑 %d  线路 %d\n可移动 %d  锁定 %d\n交集命令：%s" % [building_count, belt_count, movable_count, building_count - movable_count, common_commands]
 	_input_buffers.text = "交集命令  %s" % common_commands
-	_output_buffers.text = "线路配置仅在单选线路时显示"
+	_output_buffers.text = "整网同步与升级仅在单选模板线路时显示" if all_belts else "线路配置仅在单选线路时显示"
 	_start_connection_button.disabled = true
 	_delete_button.disabled = not all_buildings
 	_delete_button.text = "确认删除 (%d)" % building_count if all_buildings else "无共同删除"
@@ -644,6 +680,8 @@ func _refresh_multi_inspector(state: GameState, selected_ids: Array[String]) -> 
 	_handcraft_quantity.hide()
 	if all_buildings:
 		_refresh_multi_building_controls(selected_ids)
+	elif all_belts:
+		_refresh_multi_belt_controls(state, selected_ids)
 	else:
 		_recipe_list.hide()
 
@@ -662,6 +700,26 @@ func _refresh_multi_building_controls(selected_ids: Array[String]) -> void:
 		button.text = action[1]
 		button.custom_minimum_size = Vector2(120, 34)
 		button.pressed.connect(_on_batch_lock_pressed.bind(action[0]))
+		_recipe_list.add_child(button)
+
+func _refresh_multi_belt_controls(state: GameState, selected_ids: Array[String]) -> void:
+	_recipe_list.show()
+	_recipe_list.columns = 3
+	var configurations: Array[Dictionary] = []
+	for belt_id in selected_ids:
+		configurations.append(state.get_belt_configuration(belt_id))
+	var signature := "multi-belts|%s|%s" % [",".join(selected_ids), JSON.stringify(configurations)]
+	if signature == _recipe_signature:
+		return
+	_recipe_signature = signature
+	for child in _recipe_list.get_children():
+		_recipe_list.remove_child(child)
+		child.queue_free()
+	for action in [["stack", "堆叠切换"], ["priority", "优先级"], ["route", "路由切换"], ["monitor", "监控开关"], ["enabled", "启停"]]:
+		var button := Button.new()
+		button.text = action[1]
+		button.custom_minimum_size = Vector2(78, 34)
+		button.pressed.connect(_on_batch_belt_config_pressed.bind(action[0]))
 		_recipe_list.add_child(button)
 
 func _refresh_recipe_controls(_state: GameState, building: Dictionary) -> void:
@@ -862,11 +920,10 @@ func _current_selected_entity_ids() -> Array[String]:
 	var input_handler := _get_input_handler()
 	if input_handler != null and input_handler.has_method("get_selected_entity_ids"):
 		var shared: Array = input_handler.call("get_selected_entity_ids")
-		if not shared.is_empty():
-			var normalized: Array[String] = []
-			for id_value in shared:
-				normalized.append(String(id_value))
-			return normalized
+		var normalized: Array[String] = []
+		for id_value in shared:
+			normalized.append(String(id_value))
+		return normalized
 	if not _selected_entity_ids.is_empty():
 		var local_selection: Array[String] = []
 		local_selection.assign(_selected_entity_ids)

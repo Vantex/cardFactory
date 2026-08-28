@@ -14,6 +14,7 @@ func _ready() -> void:
 	_test_atomic_batch_move()
 	_test_atomic_batch_delete_rollback()
 	await _test_confirmed_atomic_batch_delete()
+	_test_connection_removal_transactions()
 	_test_belt_configuration_and_throughput()
 	_test_belt_priority_controls_contention()
 	_test_legacy_v2_defaults_and_persistence()
@@ -151,6 +152,7 @@ func _test_confirmed_atomic_batch_delete() -> void:
 	workspace.name = "FactoryWorkspaceUI"
 	host.add_child(workspace)
 	await get_tree().process_frame
+
 	_expect(input_handler.has_method("set_selected_entities") and workspace.has_method("set_selected_entities"), "workspace and input can share a multi-selection")
 	if input_handler.has_method("set_selected_entities"):
 		input_handler.call("set_selected_entities", [first_id, second_id])
@@ -169,6 +171,29 @@ func _test_confirmed_atomic_batch_delete() -> void:
 	host.queue_free()
 	await get_tree().process_frame
 
+func _test_connection_removal_transactions() -> void:
+	var state := GameState.new()
+	state.construction_inventory = {"miner": 0.0, "smelter": 0.0, "conveyor_belt_mk1": 1.0}
+	var source_id := _add_building(state, "economic_source", "miner", Vector2.ZERO)
+	var target_id := _add_building(state, "economic_target", "smelter", Vector2(400, 0))
+	state.buildings[source_id]["output_item"] = "iron_ore"
+	var add_result := state.try_add_connection(source_id, target_id)
+	var belt_id := String(add_result.get("id", ""))
+	state.construction_inventory["conveyor_belt_mk1"] = 99.0
+	var has_transaction := state.has_method("try_remove_connection")
+	var remove_result: Dictionary = state.call("try_remove_connection", belt_id) if has_transaction else {}
+	_expect(has_transaction and not remove_result.get("ok", true) and remove_result.get("reason", "") == "construction_inventory_full" and state.connections.has(belt_id) and state.construction_inventory.conveyor_belt_mk1 == 99.0, "economic line removal preflights a full construction inventory without mutation")
+	var building_result := state.remove_building(source_id)
+	_expect(not building_result.get("ok", true) and state.buildings.has(source_id) and state.connections.has(belt_id) and state.construction_inventory.conveyor_belt_mk1 == 99.0, "single-building removal includes connected line refunds in one atomic preflight")
+
+	var raw_state := GameState.new()
+	raw_state.construction_inventory = {"conveyor_belt_mk1": 0.0}
+	var raw_source_id := _add_building(raw_state, "raw_source", "miner", Vector2.ZERO)
+	var raw_target_id := _add_building(raw_state, "raw_target", "smelter", Vector2(400, 0))
+	var raw_belt_id := raw_state.add_connection({"source_id": raw_source_id, "target_id": raw_target_id, "type": "conveyor_belt_mk1", "item_id": "iron_ore"})
+	raw_state.remove_connection(raw_belt_id)
+	_expect(not raw_state.connections.has(raw_belt_id) and raw_state.construction_inventory.conveyor_belt_mk1 == 0.0, "raw fixture connection removal cannot mint an unconsumed construction piece")
+
 func _test_belt_configuration_and_throughput() -> void:
 	var state := GameState.new()
 	state.construction_inventory = {
@@ -178,9 +203,14 @@ func _test_belt_configuration_and_throughput() -> void:
 	}
 	var source_id := _add_building(state, "source", "miner", Vector2.ZERO)
 	var target_id := _add_building(state, "target", "smelter", Vector2(400, 0))
+	state.buildings[source_id]["output_item"] = "iron_ore"
 	state.buildings[source_id]["output_buffer"] = {"iron_ore": 200.0}
 	state.buildings[target_id]["input_buffer_capacity"] = 200.0
-	var belt_id := state.add_connection({"source_id": source_id, "target_id": target_id, "type": "conveyor_belt_mk1", "item_id": "iron_ore", "active": true, "current_flow": 7.0, "total_transferred": 33.0})
+	var add_result := state.try_add_connection(source_id, target_id)
+	var belt_id := String(add_result.get("id", ""))
+	state.connections[belt_id]["active"] = true
+	state.connections[belt_id]["current_flow"] = 7.0
+	state.connections[belt_id]["total_transferred"] = 33.0
 	_expect(state.has_method("try_configure_belt") and state.has_method("get_belt_configuration"), "GameState exposes validated belt configuration commands")
 	if not state.has_method("try_configure_belt") or not state.has_method("get_belt_configuration"):
 		return
@@ -193,6 +223,7 @@ func _test_belt_configuration_and_throughput() -> void:
 		[{"stack_size": 3}, "invalid_stack_size"],
 		[{"priority": 3}, "invalid_priority"],
 		[{"route_mode": "random"}, "invalid_route_mode"],
+		[{"route_offset_y": INF}, "invalid_route_offset_y"],
 		[{"monitor_enabled": "true"}, "invalid_toggle"],
 		[{"enabled": 1}, "invalid_toggle"],
 	]
@@ -205,7 +236,7 @@ func _test_belt_configuration_and_throughput() -> void:
 	var configured: Dictionary = state.call("try_configure_belt", belt_id, {"tier": "conveyor_belt_mk2", "parallel_count": 2, "stack_size": 4, "priority": 2, "route_mode": "upper", "monitor_enabled": true, "enabled": true})
 	var config: Dictionary = state.call("get_belt_configuration", belt_id)
 	_expect(configured.get("ok", false) and config.get("rated_throughput") == 20.0 and config.get("effective_throughput") == 160.0, "Mk.II throughput is 20 items/s times two parallels times stack four")
-	_expect(state.construction_inventory.get("conveyor_belt_mk1") == 4.0 and state.construction_inventory.get("conveyor_belt_mk2") == 2.0, "tier and parallel adjustment refunds old pieces and consumes installed pieces")
+	_expect(state.construction_inventory.get("conveyor_belt_mk1") == 3.0 and state.construction_inventory.get("conveyor_belt_mk2") == 2.0, "tier and parallel adjustment refunds old pieces and consumes installed pieces")
 	_expect(inventory_before_total == float(state.construction_inventory.conveyor_belt_mk1) + float(state.construction_inventory.conveyor_belt_mk2) + 2.0, "construction inventory plus installed belt pieces remains conserved")
 	_expect(state.connections[belt_id].get("active") == true and state.connections[belt_id].get("current_flow") == 7.0 and state.connections[belt_id].get("total_transferred") == 33.0, "belt configuration leaves runtime flow and cumulative statistics untouched")
 	var inventory_before_pure := state.construction_inventory.duplicate(true)
@@ -245,19 +276,20 @@ func _test_legacy_v2_defaults_and_persistence() -> void:
 	if not state.has_method("get_belt_configuration"):
 		return
 	var defaults: Dictionary = state.call("get_belt_configuration", belt_id)
-	_expect(defaults.get("parallel_count") == 1 and defaults.get("stack_size") == 1 and defaults.get("priority") == 0 and defaults.get("route_mode") == "auto" and not defaults.get("monitor_enabled", true) and defaults.get("enabled", false), "old schema-v2 lines receive deterministic compatible defaults")
+	_expect(defaults.get("parallel_count") == 1 and defaults.get("stack_size") == 1 and defaults.get("priority") == 0 and defaults.get("route_mode") == "auto" and defaults.get("route_offset_y") == 0.0 and not defaults.get("monitor_enabled", true) and defaults.get("enabled", false), "old schema-v2 lines receive deterministic compatible defaults")
 	state.construction_inventory["conveyor_belt_mk2"] = 2.0
-	state.call("try_configure_belt", belt_id, {"tier": "conveyor_belt_mk2", "parallel_count": 2, "stack_size": 2, "priority": 1, "route_mode": "manual", "monitor_enabled": true, "enabled": false})
+	state.call("try_configure_belt", belt_id, {"tier": "conveyor_belt_mk2", "parallel_count": 2, "stack_size": 2, "priority": 1, "route_mode": "manual", "route_offset_y": 24.0, "monitor_enabled": true, "enabled": false})
 	var payload := GameStateCodec.to_persistent_dict(state)
 	_expect(not payload.has("selected_entity_ids"), "workspace selection remains absent from schema-v2 persistence")
 	var restored := GameStateCodec.from_persistent_dict(payload)
 	var restored_config: Dictionary = restored.call("get_belt_configuration", belt_id) if restored != null else {}
-	_expect(restored != null and restored.get_state_version() == 2 and restored_config.get("tier") == "conveyor_belt_mk2" and restored_config.get("parallel_count") == 2 and restored_config.get("stack_size") == 2 and restored_config.get("route_mode") == "manual" and restored_config.get("enabled") == false, "new line fields round-trip without changing schema version")
+	_expect(restored != null and restored.get_state_version() == 2 and restored_config.get("tier") == "conveyor_belt_mk2" and restored_config.get("parallel_count") == 2 and restored_config.get("stack_size") == 2 and restored_config.get("route_mode") == "manual" and restored_config.get("route_offset_y") == 24.0 and restored_config.get("enabled") == false, "new line fields round-trip without changing schema version")
 	var legacy_state := GameState.new()
 	var legacy_source_id := _add_building(legacy_state, "legacy_source", "miner", Vector2.ZERO)
 	var legacy_target_id := _add_building(legacy_state, "legacy_target", "smelter", Vector2(400, 0))
 	var legacy_belt_id := legacy_state.add_connection({"source_id": legacy_source_id, "target_id": legacy_target_id, "type": "conveyor_belt_mk1", "item_id": "iron_ore"})
 	var legacy_payload := GameStateCodec.to_persistent_dict(legacy_state)
+	legacy_payload.connections[legacy_belt_id].erase("construction_accounted")
 	for tier in ["conveyor_belt_mk1", "conveyor_belt_mk2", "conveyor_belt_mk3"]:
 		legacy_payload.construction_inventory.erase(tier)
 	var legacy_without_belt_inventory := GameStateCodec.from_persistent_dict(legacy_payload)
@@ -273,8 +305,8 @@ func _test_connected_network_results_preserve_runtime_state() -> void:
 	state.construction_inventory = {"conveyor_belt_mk1": 8.0, "conveyor_belt_mk2": 8.0, "conveyor_belt_mk3": 8.0}
 	for spec in [["a", Vector2(0, 0)], ["b", Vector2(300, 0)], ["c", Vector2(600, 0)], ["x", Vector2(0, 300)], ["y", Vector2(300, 300)]]:
 		_add_building(state, spec[0], "miner" if spec[0] in ["a", "x"] else "smelter", spec[1])
-	var template_id := state.add_connection({"source_id": "a", "target_id": "b", "type": "conveyor_belt_mk2", "item_id": "iron_ore", "parallel_count": 2, "stack_size": 2, "priority": 2, "route_mode": "upper", "monitor_enabled": true, "enabled": false, "active": true, "current_flow": 5.0, "total_transferred": 40.0, "in_transit": [{"amount": 3.0}]})
-	var chained_id := state.add_connection({"source_id": "b", "target_id": "c", "type": "conveyor_belt_mk1", "item_id": "iron_ore", "active": true, "current_flow": 6.0, "total_transferred": 21.0, "in_transit": [{"amount": 2.0}]})
+	var template_id := state.add_connection({"source_id": "a", "target_id": "b", "type": "conveyor_belt_mk2", "item_id": "iron_ore", "parallel_count": 2, "stack_size": 2, "priority": 2, "route_mode": "manual", "route_offset_y": 64.0, "monitor_enabled": true, "enabled": false, "active": true, "current_flow": 5.0, "total_transferred": 40.0, "in_transit": [{"amount": 3.0}]})
+	var chained_id := state.add_connection({"source_id": "b", "target_id": "c", "type": "conveyor_belt_mk1", "item_id": "iron_ore", "route_mode": "manual", "route_offset_y": -32.0, "active": true, "current_flow": 6.0, "total_transferred": 21.0, "in_transit": [{"amount": 2.0}]})
 	var isolated_id := state.add_connection({"source_id": "x", "target_id": "y", "type": "conveyor_belt_mk1", "item_id": "iron_ore"})
 	_expect(state.has_method("apply_belt_configuration_to_network"), "GameState exposes structured connected-network synchronization")
 	if not state.has_method("apply_belt_configuration_to_network"):
@@ -283,7 +315,7 @@ func _test_connected_network_results_preserve_runtime_state() -> void:
 	var result: Dictionary = result_value if result_value is Dictionary else {}
 	var chained_config: Dictionary = state.call("get_belt_configuration", chained_id)
 	_expect(result.get("ok", false) and result.get("results", []).size() == 2 and result.get("success", 0) == 1 and result.get("skipped", 0) == 1 and result.get("failed", 0) == 0, "network synchronization returns one structured result per connected line")
-	_expect(chained_config.get("tier") == "conveyor_belt_mk2" and chained_config.get("parallel_count") == 2 and chained_config.get("stack_size") == 2 and chained_config.get("route_mode") == "upper", "network synchronization follows actual shared endpoints across different sources")
+	_expect(chained_config.get("tier") == "conveyor_belt_mk2" and chained_config.get("parallel_count") == 2 and chained_config.get("stack_size") == 2 and chained_config.get("route_mode") == "manual" and chained_config.get("route_offset_y") == 64.0, "network synchronization copies a manual template offset across actual shared endpoints")
 	_expect(state.connections[isolated_id].get("type") == "conveyor_belt_mk1", "network synchronization does not touch a disconnected line")
 	_expect(state.connections[chained_id].get("active") == true and state.connections[chained_id].get("current_flow") == 6.0 and state.connections[chained_id].get("total_transferred") == 21.0 and state.connections[chained_id].get("in_transit") == [{"amount": 2.0}], "network synchronization preserves flow, cumulative statistics, and in-transit cargo")
 	var missing_template: Dictionary = state.call("apply_belt_configuration_to_network", "")
@@ -294,7 +326,7 @@ func _test_advanced_inspector_and_renderer_contract() -> void:
 	state.construction_inventory = {"conveyor_belt_mk1": 4.0}
 	var source_id := _add_building(state, "source", "miner", Vector2(100, 100))
 	var target_id := _add_building(state, "target", "smelter", Vector2(500, 100))
-	var belt_id := state.add_connection({"source_id": source_id, "target_id": target_id, "type": "conveyor_belt_mk1", "item_id": "iron_ore", "parallel_count": 2, "stack_size": 4, "priority": 2, "route_mode": "manual", "monitor_enabled": true, "enabled": false})
+	var belt_id := state.add_connection({"source_id": source_id, "target_id": target_id, "type": "conveyor_belt_mk1", "item_id": "iron_ore", "parallel_count": 2, "stack_size": 4, "priority": 2, "route_mode": "manual", "route_offset_y": 42.0, "monitor_enabled": true, "enabled": false})
 	GameManager.replace_game_state(state)
 	var host := Node2D.new()
 	add_child(host)
@@ -314,7 +346,7 @@ func _test_advanced_inspector_and_renderer_contract() -> void:
 	workspace.refresh_now()
 	var title := workspace.get_node_or_null("InspectorPanel/Title") as Label
 	var details := workspace.get_node_or_null("InspectorPanel/Details") as Label
-	_expect(title != null and details != null and "线路" in title.text and "Mk.I" in details.text and "10" in details.text and "并联 2" in details.text and "堆叠 4" in details.text and "禁用" in details.text, "single-line inspector displays its complete effective configuration")
+	_expect(title != null and details != null and "线路" in title.text and "Mk.I" in details.text and "10" in details.text and "并联 2" in details.text and "堆叠 4" in details.text and "偏移 42" in details.text and "禁用" in details.text, "manual single-line inspector displays its complete effective configuration including route offset")
 	var belt_controls := workspace.get_node_or_null("InspectorPanel/RecipeList") as GridContainer
 	var enabled_button: Button
 	if belt_controls != null:
@@ -326,6 +358,10 @@ func _test_advanced_inspector_and_renderer_contract() -> void:
 		enabled_button.pressed.emit()
 	_expect(belt_controls != null and belt_controls.visible and belt_controls.get_child_count() == 9 and enabled_button != null and state.connections[belt_id].enabled, "single-line inspector routes its nine editing commands through authoritative belt state")
 	_expect(connection_renderer.has_method("is_connection_selected") and connection_renderer.call("is_connection_selected", belt_id), "connection renderer consumes the same selection collection")
+	if input_handler.has_method("set_selected_entities"):
+		input_handler.call("set_selected_entities", [])
+	await get_tree().process_frame
+	_expect(title != null and title.text == "工厂概览" and workspace.call("get_selected_building_type") == "", "clearing the shared selection clears the workspace mirror and inspector")
 	if input_handler.has_method("set_selected_entities"):
 		input_handler.call("set_selected_entities", [source_id])
 	workspace.refresh_now()
@@ -349,6 +385,21 @@ func _test_advanced_inspector_and_renderer_contract() -> void:
 	if unlock_button != null:
 		unlock_button.pressed.emit()
 	_expect(not state.is_entity_interaction_locked(source_id) and not state.is_entity_interaction_locked(target_id), "multi-selection unlock command updates every selected building through GameState")
+	var second_target_id := _add_building(state, "second_target", "smelter", Vector2(500, 300))
+	var second_belt_id := state.add_connection({"source_id": source_id, "target_id": second_target_id, "type": "conveyor_belt_mk1", "item_id": "iron_ore", "priority": 0, "route_mode": "auto", "monitor_enabled": false, "enabled": true})
+	if input_handler.has_method("set_selected_entities"):
+		input_handler.call("set_selected_entities", [belt_id, second_belt_id])
+	workspace.refresh_now()
+	var belt_batch_buttons: Dictionary = {}
+	if multi_controls != null:
+		for child in multi_controls.get_children():
+			if child is Button:
+				belt_batch_buttons[child.text] = child
+	_expect(multi_controls != null and multi_controls.visible and belt_batch_buttons.has("优先级") and belt_batch_buttons.has("路由切换") and belt_batch_buttons.has("监控开关") and belt_batch_buttons.has("启停"), "all-belt multi-selection exposes the shared configuration command intersection")
+	var batch_enabled_button := belt_batch_buttons.get("启停") as Button
+	if batch_enabled_button != null:
+		batch_enabled_button.pressed.emit()
+	_expect(not state.connections[belt_id].enabled and not state.connections[second_belt_id].enabled, "multi-line enable command atomically configures every selected belt through GameState")
 	if input_handler.has_method("set_selected_entities"):
 		input_handler.call("set_selected_entities", [source_id, target_id, belt_id])
 	workspace.refresh_now()
@@ -360,7 +411,7 @@ func _test_advanced_inspector_and_renderer_contract() -> void:
 	_expect(delete_button != null and delete_button.disabled and "无共同批量命令" in details.text, "mixed building and line selection exposes no partial-set batch commands")
 	input_handler.call("_delete_selected")
 	var confirmation := workspace.get_node_or_null("DeleteConfirmation") as ConfirmationDialog
-	_expect(confirmation != null and not confirmation.visible and state.buildings.size() == 2, "Delete never silently consumes only the building subset of a mixed selection")
+	_expect(confirmation != null and not confirmation.visible and state.buildings.size() == 3, "Delete never silently consumes only the building subset of a mixed selection")
 	_expect(panel != null and delete_button != null and Rect2(Vector2.ZERO, panel.size).encloses(delete_button.get_rect()), "advanced inspector controls remain inside the existing panel")
 	host.queue_free()
 	await get_tree().process_frame

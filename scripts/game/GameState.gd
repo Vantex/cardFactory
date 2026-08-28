@@ -111,9 +111,11 @@ func try_place_building(building_type: String, position: Vector2) -> Dictionary:
 func remove_building(building_id: String) -> Dictionary:
     return ConstructionSystem.new(self).try_remove_building(building_id)
 
+# Low-level fixture/import record insertion with no inventory settlement. Gameplay must use try_add_connection.
 func add_connection(connection_data: Dictionary) -> String:
     var id = generate_id("conn")
     connection_data["id"] = id
+    connection_data["construction_accounted"] = bool(connection_data.get("construction_accounted", false))
     connection_data["enabled"] = bool(connection_data.get("enabled", true))
     connection_data["active"] = bool(connection_data.get("active", false))
     connection_data["current_flow"] = float(connection_data.get("current_flow", 0.0))
@@ -170,6 +172,7 @@ func try_add_connection(source_id: String, target_id: String, requested_output_i
         "target_id": target_id,
         "type": "conveyor_belt_mk1",
         "item_id": output_item,
+        "construction_accounted": true,
     })
     return {"ok": true, "message": "连接已创建", "id": connection_id}
 
@@ -227,15 +230,25 @@ func get_building_display_name(building_id: String) -> String:
     var building_type: String = building.get("type", "")
     return DataManager.get_building(building_type).get("name", building_type)
 
-func remove_connection(connection_id: String):
-    if connections.has(connection_id):
-        var connection: Dictionary = connections[connection_id]
-        if _is_belt_connection(connection):
-            var tier := _belt_tier(connection)
-            var installed := _belt_parallel_count(connection)
-            construction_inventory[tier] = _construction_inventory_count(construction_inventory, tier) + float(installed)
-        connections.erase(connection_id)
-        EventBus.connection_removed.emit(connection_id)
+func try_remove_connection(connection_id: String) -> Dictionary:
+    if not connections.has(connection_id):
+        return {"ok": false, "message": "线路不存在", "reason": "connection_not_found"}
+    var connection: Dictionary = connections[connection_id]
+    var tier := ""
+    var installed := 0
+    if _is_belt_connection(connection) and _connection_construction_is_accounted(connection):
+        tier = _belt_tier(connection)
+        installed = _belt_parallel_count(connection)
+        if _construction_inventory_count(construction_inventory, tier) + float(installed) > BELT_MAX_INVENTORY:
+            return {"ok": false, "message": "线路施工库存容量不足", "reason": "construction_inventory_full"}
+    if not tier.is_empty():
+        construction_inventory[tier] = _construction_inventory_count(construction_inventory, tier) + float(installed)
+    connections.erase(connection_id)
+    EventBus.connection_removed.emit(connection_id)
+    return {"ok": true, "message": "线路已拆除", "reason": ""}
+
+func remove_connection(connection_id: String) -> bool:
+    return try_remove_connection(connection_id).get("ok", false)
 
 func get_building(building_id: String) -> Dictionary:
     return buildings.get(building_id, {})
@@ -311,7 +324,7 @@ func try_remove_entities(entity_ids: Array) -> Dictionary:
                 connection_ids[connection_id] = true
     for connection_id in connection_ids:
         var connection: Dictionary = connections[connection_id]
-        if _is_belt_connection(connection):
+        if _is_belt_connection(connection) and _connection_construction_is_accounted(connection):
             var tier := _belt_tier(connection)
             construction_refund[tier] = float(construction_refund.get(tier, 0.0)) + float(_belt_parallel_count(connection))
     for item_id in construction_refund:
@@ -515,13 +528,7 @@ func set_belt_route_mode(belt_id: String, route_mode: String) -> bool:
 
 # 功能19: 设置传送带路由偏移Y
 func set_belt_route_offset_y(belt_id: String, offset_y: float) -> bool:
-    if not connections.has(belt_id):
-        print("ERROR: Belt not found: ", belt_id)
-        return false
-    
-    connections[belt_id]["route_offset_y"] = offset_y
-    print("Set belt ", belt_id, " route offset Y to ", offset_y)
-    return true
+    return try_configure_belt(belt_id, {"route_offset_y": offset_y}).get("ok", false)
 
 # 功能20: 设置传送带网络路由模式
 func set_belt_network_route_mode(template_belt_id: String, route_mode: String) -> Dictionary:
@@ -577,6 +584,7 @@ func get_belt_configuration(belt_id: String) -> Dictionary:
         "effective_throughput": rated_throughput * float(parallel_count) * float(stack_size),
         "priority": _belt_priority(connection),
         "route_mode": _belt_route_mode(connection),
+        "route_offset_y": _belt_route_offset_y(connection),
         "monitor_enabled": bool(connection.get("monitor_enabled", false)),
         "enabled": bool(connection.get("enabled", true)),
     }
@@ -586,7 +594,7 @@ func try_configure_belt(belt_id: String, requested: Dictionary) -> Dictionary:
     if current.is_empty():
         return {"ok": false, "message": "线路不存在", "reason": "belt_not_found"}
     var target := current.duplicate(true)
-    for key in ["tier", "parallel_count", "stack_size", "priority", "route_mode", "monitor_enabled", "enabled"]:
+    for key in ["tier", "parallel_count", "stack_size", "priority", "route_mode", "route_offset_y", "monitor_enabled", "enabled"]:
         if requested.has(key):
             target[key] = requested[key]
     if not target.tier is String or not BELT_RATED_THROUGHPUT.has(String(target.tier)):
@@ -599,6 +607,8 @@ func try_configure_belt(belt_id: String, requested: Dictionary) -> Dictionary:
         return {"ok": false, "message": "优先级无效", "reason": "invalid_priority"}
     if not target.route_mode is String or String(target.route_mode) not in BELT_ROUTE_MODES:
         return {"ok": false, "message": "线路路由模式无效", "reason": "invalid_route_mode"}
+    if not _is_finite_number(target.route_offset_y):
+        return {"ok": false, "message": "线路路由偏移无效", "reason": "invalid_route_offset_y"}
     if not target.monitor_enabled is bool or not target.enabled is bool:
         return {"ok": false, "message": "线路开关值无效", "reason": "invalid_toggle"}
     var current_tier := String(current.tier)
@@ -606,7 +616,7 @@ func try_configure_belt(belt_id: String, requested: Dictionary) -> Dictionary:
     var current_count := int(current.parallel_count)
     var target_count := int(target.parallel_count)
     var next_inventory := construction_inventory.duplicate(true)
-    if current_tier != target_tier or current_count != target_count:
+    if _connection_construction_is_accounted(connections[belt_id]) and (current_tier != target_tier or current_count != target_count):
         next_inventory[current_tier] = _construction_inventory_count(next_inventory, current_tier) + float(current_count)
         if _construction_inventory_count(next_inventory, target_tier) < float(target_count):
             return {"ok": false, "message": "线路施工件不足", "reason": "insufficient_construction_inventory"}
@@ -621,10 +631,39 @@ func try_configure_belt(belt_id: String, requested: Dictionary) -> Dictionary:
     connection["stack_size"] = int(target.stack_size)
     connection["priority"] = int(target.priority)
     connection["route_mode"] = String(target.route_mode)
+    connection["route_offset_y"] = float(target.route_offset_y)
     connection["monitor_enabled"] = bool(target.monitor_enabled)
     connection["enabled"] = bool(target.enabled)
     connection["speed_multiplier"] = belt_speed_config.get(target_tier, 1.0)
     return {"ok": true, "message": "线路配置已更新", "reason": "", "configuration": get_belt_configuration(belt_id)}
+
+func try_configure_belts(belt_ids: Array, requested: Dictionary) -> Dictionary:
+    var normalized: Array[String] = []
+    var seen: Dictionary = {}
+    for id_value in belt_ids:
+        var belt_id := String(id_value)
+        if belt_id.is_empty() or seen.has(belt_id) or get_belt_configuration(belt_id).is_empty():
+            return _batch_failure("批量线路选择无效", "invalid_belt")
+        seen[belt_id] = true
+        normalized.append(belt_id)
+    if normalized.is_empty():
+        return _batch_failure("没有选择线路", "empty_selection")
+    var probe := copy_state()
+    for belt_id in normalized:
+        var probe_result := probe.try_configure_belt(belt_id, requested)
+        if not probe_result.get("ok", false):
+            return _batch_failure(String(probe_result.get("message", "批量线路配置失败")), String(probe_result.get("reason", "configuration_failed")))
+    var connections_before := connections.duplicate(true)
+    var inventory_before := construction_inventory.duplicate(true)
+    var results: Array[Dictionary] = []
+    for belt_id in normalized:
+        var result := try_configure_belt(belt_id, requested)
+        if not result.get("ok", false):
+            connections = connections_before
+            construction_inventory = inventory_before
+            return _batch_failure(String(result.get("message", "批量线路配置失败")), "commit_failed")
+        results.append({"id": belt_id, "status": "success", "reason": ""})
+    return {"ok": true, "message": "已配置 %d 条线路" % normalized.size(), "success": normalized.size(), "skipped": 0, "failed": 0, "results": results}
 
 func _persistent_belt_settings(configuration: Dictionary) -> Dictionary:
     return {
@@ -633,6 +672,7 @@ func _persistent_belt_settings(configuration: Dictionary) -> Dictionary:
         "stack_size": configuration.get("stack_size", 1),
         "priority": configuration.get("priority", 0),
         "route_mode": configuration.get("route_mode", "auto"),
+        "route_offset_y": configuration.get("route_offset_y", 0.0),
         "monitor_enabled": configuration.get("monitor_enabled", false),
         "enabled": configuration.get("enabled", true),
     }
@@ -688,6 +728,7 @@ func _normalize_belt_connection(connection: Dictionary) -> void:
     connection["stack_size"] = _belt_stack_size(connection)
     connection["priority"] = _belt_priority(connection)
     connection["route_mode"] = _belt_route_mode(connection)
+    connection["route_offset_y"] = _belt_route_offset_y(connection)
     connection["monitor_enabled"] = bool(connection.get("monitor_enabled", false))
     connection["enabled"] = bool(connection.get("enabled", true))
 
@@ -710,6 +751,13 @@ func _belt_priority(connection: Dictionary) -> int:
 func _belt_route_mode(connection: Dictionary) -> String:
     var value: Variant = connection.get("route_mode", "auto")
     return String(value) if value is String and String(value) in BELT_ROUTE_MODES else "auto"
+
+func _belt_route_offset_y(connection: Dictionary) -> float:
+    var value: Variant = connection.get("route_offset_y", 0.0)
+    return float(value) if _is_finite_number(value) else 0.0
+
+func _connection_construction_is_accounted(connection: Dictionary) -> bool:
+    return bool(connection.get("construction_accounted", true))
 
 func _has_belt_pieces(tier: String, amount: int) -> bool:
     var available := _construction_inventory_count(construction_inventory, tier)
@@ -744,6 +792,9 @@ func _batch_failure(message: String, reason: String) -> Dictionary:
 
 func _is_integral_value(value: Variant) -> bool:
     return (typeof(value) == TYPE_INT or typeof(value) == TYPE_FLOAT) and float(value) == floorf(float(value))
+
+func _is_finite_number(value: Variant) -> bool:
+    return (typeof(value) == TYPE_INT or typeof(value) == TYPE_FLOAT) and not is_nan(float(value)) and not is_inf(float(value))
 
 # 功能23: 设置分拣器方向
 func set_sorter_direction(sorter_id: String, direction: String) -> bool:

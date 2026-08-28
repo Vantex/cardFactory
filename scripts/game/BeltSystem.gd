@@ -84,14 +84,5 @@ func _effective_throughput(connection: Dictionary) -> float:
 	return maxf(float(configuration.get("effective_throughput", 10.0)), 0.0)
 
 func create_belt(source_id: String, target_id: String, item_id: String, flow_rate: float = 10.0) -> String:
-	var connection_data = {
-		"source_id": source_id,
-		"target_id": target_id,
-		"item_id": item_id,
-		"flow_rate": flow_rate,
-		"type": "conveyor_belt_mk1",
-		"current_flow": 0.0,
-		"enabled": true,
-		"active": false
-	}
-	return game_state.add_connection(connection_data)
+	var result := game_state.try_add_connection(source_id, target_id, item_id)
+	return String(result.get("id", "")) if result.get("ok", false) else ""

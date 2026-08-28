@@ -15,6 +15,7 @@ const BUILDING_RUNTIME_FIELDS := {
 const CONNECTION_RUNTIME_FIELDS := {
 	"active": true,
 	"current_flow": true,
+	"construction_accounted": true,
 }
 
 static func to_persistent_dict(state: GameState) -> Dictionary:
@@ -116,5 +117,8 @@ static func _decode_connections(encoded_connections: Dictionary) -> Dictionary:
 		var connection: Dictionary = encoded_connections[connection_id].duplicate(true)
 		connection["active"] = false
 		connection["current_flow"] = 0.0
+		var connection_type := String(connection.get("type", "conveyor_belt_mk1"))
+		if connection_type == "belt" or connection_type.begins_with("conveyor_belt"):
+			connection["construction_accounted"] = true
 		connections[String(connection_id)] = connection
 	return connections

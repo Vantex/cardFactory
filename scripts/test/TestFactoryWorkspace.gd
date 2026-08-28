@@ -190,7 +190,7 @@ func _test_workspace_live_content_and_actions() -> void:
 	_expect("GEN 0" in metrics.text and "BAL -60" in metrics.text, "top bar reports actual fueled generation instead of static generator capacity")
 	state.remove_building(empty_generator_id)
 
-	workspace.set_selected_building(smelter.id)
+	input_handler.call("set_selected_entities", [smelter.id])
 	await get_tree().process_frame
 	var inspector_title := workspace.get_node("InspectorPanel/Title") as Label
 	var details := workspace.get_node_or_null("InspectorPanel/Details") as Label
@@ -206,10 +206,10 @@ func _test_workspace_live_content_and_actions() -> void:
 		_expect(recipe_list.get_child_count() > 0 and recipe_list.get_child(0) == first_recipe_control, "unchanged refresh does not rebuild recipe controls")
 	else:
 		_expect(false, "unchanged refresh does not rebuild recipe controls")
-	workspace.set_selected_building("")
+	input_handler.call("set_selected_entities", [])
 	await get_tree().process_frame
 	_expect(recipe_list.get_child_count() > 0, "clearing a building selection replaces machine recipes with handcraft controls")
-	workspace.set_selected_building(smelter.id)
+	input_handler.call("set_selected_entities", [smelter.id])
 	await get_tree().process_frame
 
 	var toast := workspace.get_node("Toast") as Control
@@ -226,6 +226,8 @@ func _test_workspace_live_content_and_actions() -> void:
 	input_handler.call("start_connection", smelter.id)
 	_expect(not input_handler.call("complete_connection", miner.id) and toast_message.text == "目标建筑无法接收源建筑输出", "incompatible connection failure reason is visible in Chinese")
 
+	input_handler.call("set_selected_entities", [smelter.id])
+	await get_tree().process_frame
 	var start_button := workspace.get_node_or_null("InspectorPanel/StartConnectionButton") as Button
 	if start_button != null:
 		start_button.emit_signal("pressed")
@@ -316,8 +318,7 @@ func _test_main_scene_integration_contract() -> void:
 		EventBus.card_selected.emit(placed_id)
 		_expect(input_handler.get("selected_building_id") == placed_id and workspace.call("get_selected_building_type") == "miner", "card selection synchronizes input and workspace inspector")
 
-		input_handler.set("selected_building_id", "")
-		workspace.call("set_selected_building", "")
+		input_handler.call("set_selected_entities", [])
 		var canvas_transform := test_viewport.get_canvas_transform()
 		var card_screen_position: Vector2 = canvas_transform * (placed_card_world_position + Vector2(20, 20))
 		var blank_screen_position := Vector2(700, 300)
