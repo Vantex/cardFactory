@@ -28,6 +28,9 @@ static func migrate_to_current(payload: Variant) -> Dictionary:
 			2:
 				migrated = _migrate_v2_to_v3(migrated)
 				version = 3
+			3:
+				migrated = _migrate_v3_to_v4(migrated)
+				version = 4
 			_:
 				return _failure("missing_migration", "缺少从版本 %d 开始的迁移" % version)
 
@@ -99,6 +102,18 @@ static func _migrate_v2_to_v3(legacy: Dictionary) -> Dictionary:
 	for field in ["completed_objective_ids", "claimed_progression_reward_ids", "completed_achievement_ids", "unlocked_progression_ids"]:
 		if not migrated.has(field):
 			migrated[field] = []
+	return migrated
+
+static func _migrate_v3_to_v4(legacy: Dictionary) -> Dictionary:
+	var migrated: Dictionary = legacy.duplicate(true)
+	migrated["schema_version"] = 4
+	for field in ["research_queue", "research_progress", "research_invested_costs"]:
+		if not migrated.has(field):
+			migrated[field] = [] if field == "research_queue" else {}
+	if not migrated.has("research_current_id"):
+		migrated["research_current_id"] = ""
+	if not migrated.has("research_paused"):
+		migrated["research_paused"] = false
 	return migrated
 
 static func _failure(code: String, message: String) -> Dictionary:

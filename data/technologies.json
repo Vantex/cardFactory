@@ -1,0 +1,36 @@
+{
+  "line_id": "technology_catalog",
+  "name": "数据驱动科技目录",
+  "technologies": {
+    "factory_foundations": {
+      "id": "factory_foundations", "name": "工厂基础理论", "description": "提升全厂生产节拍并解锁分流器。", "tier": "planetary",
+      "cost": {"matrix_science_1": 5}, "duration": 10.0, "prerequisites": [],
+      "unlocks": [{"kind": "building", "id": "splitter"}], "effects": {"production_speed": 1.1}
+    },
+    "fluid_handling": {
+      "id": "fluid_handling", "name": "流体处理", "description": "解锁原油采集和精炼。", "tier": "planetary",
+      "cost": {"matrix_science_1": 10}, "duration": 20.0, "prerequisites": ["factory_foundations"],
+      "unlocks": [{"kind": "building", "id": "oil_extractor"}, {"kind": "building", "id": "oil_refinery"}], "effects": {"production_speed": 1.05}
+    },
+    "advanced_materials": {
+      "id": "advanced_materials", "name": "进阶材料学", "description": "解锁石墨烯配方。", "tier": "planetary",
+      "cost": {"matrix_science_1": 20}, "duration": 30.0, "prerequisites": ["fluid_handling"],
+      "unlocks": [{"kind": "recipe", "id": "graphene_recipe"}], "effects": {"production_speed": 1.05}
+    },
+    "interstellar_logistics": {
+      "id": "interstellar_logistics", "name": "星际物流", "description": "解锁星际物流站。", "tier": "interstellar",
+      "cost": {"matrix_science_1": 30}, "duration": 40.0, "prerequisites": ["advanced_materials"],
+      "unlocks": [{"kind": "building", "id": "interstellar_logistics_station"}], "effects": {"production_speed": 1.03}
+    },
+    "dyson_engineering": {
+      "id": "dyson_engineering", "name": "戴森工程", "description": "解锁戴森球发射器。", "tier": "dyson",
+      "cost": {"matrix_science_1": 40}, "duration": 50.0, "prerequisites": ["interstellar_logistics"],
+      "unlocks": [{"kind": "building", "id": "dyson_sphere_launcher"}], "effects": {"production_speed": 1.03}
+    },
+    "infinite_optimization": {
+      "id": "infinite_optimization", "name": "无限优化", "description": "可重复的工厂节拍优化。", "tier": "infinite", "repeatable": true,
+      "cost": {"matrix_science_1": 50}, "duration": 60.0, "prerequisites": ["dyson_engineering"],
+      "unlocks": [], "effects": {"production_speed": 1.02}
+    }
+  }
+}

@@ -27,6 +27,11 @@ signal progression_updated(result: Dictionary)
 signal technology_research_started(tech_id: String)
 signal technology_research_completed(tech_id: String)
 signal technology_unlocked(tech_id: String)
+signal technology_research_paused(tech_id: String)
+signal technology_research_resumed(tech_id: String)
+signal technology_research_cancelled(tech_id: String)
+signal technology_research_progressed(tech_id: String, progress: float, duration: float)
+signal technology_research_queue_changed(queue: Array)
 
 # 模拟相关信号
 signal simulation_updated()

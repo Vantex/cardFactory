@@ -13,6 +13,7 @@ func _ready() -> void:
 	_test_catalog_driven_production_rules()
 	_test_first_science_chain_from_raw_ore()
 	_test_phase_order_and_tick_boundaries()
+	_test_research_requires_powered_matrix_lab()
 
 	if _failures > 0:
 		printerr("SIMULATION CORE TESTS FAILED")
@@ -187,6 +188,22 @@ func _test_phase_order_and_tick_boundaries() -> void:
 	_expect(state.buildings["smelter"].get("progress", 0.0) == 0.0, "material delivered by belts is not consumed earlier in the same tick")
 	engine.update(FIXED_DELTA)
 	_expect(is_equal_approx(state.buildings["smelter"].get("progress", 0.0), FIXED_DELTA), "the next tick consumes the prior tick's delivered input exactly once")
+
+func _test_research_requires_powered_matrix_lab() -> void:
+	var state := GameState.new()
+	state.planet_inventory["matrix_science_1"] = 5.0
+	var research := TechnologySystem.new(state)
+	_expect(research.start_research("factory_foundations"), "simulation research fixture pays an actual matrix catalog cost")
+	var engine := SimulationEngine.new(state)
+	_run_seconds(engine, 1.0)
+	_expect(is_equal_approx(state.get_technology_progress("factory_foundations"), 0.0), "research does not advance without a legal matrix research device")
+	_add_building(state, "lab", "matrix_lab")
+	_run_seconds(engine, 1.0)
+	_expect(is_equal_approx(state.get_technology_progress("factory_foundations"), 0.0), "an unpowered research device cannot advance paid matrix research")
+	_add_building(state, "solar_a", "solar_panel")
+	_add_building(state, "solar_b", "solar_panel")
+	_run_seconds(engine, 1.0)
+	_expect(state.get_technology_progress("factory_foundations") > 0.0, "a powered legal matrix lab advances research during the dedicated fixed-tick phase")
 
 func _make_powered_smelter_state() -> GameState:
 	var state := GameState.new()

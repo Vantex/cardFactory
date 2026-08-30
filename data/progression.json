@@ -31,41 +31,6 @@
       "duration": 4.0
     }
   },
-  "technologies": {
-    "factory_foundations": {
-      "id": "factory_foundations",
-      "name": "工厂基础理论",
-      "description": "建立稳定生产与分流的基础模型",
-      "cost": {"matrix_science_1": 5},
-      "duration": 10.0,
-      "prerequisites": [],
-      "unlocks": [{"kind": "building", "id": "splitter"}],
-      "effects": {"recipe_speed": 1.05}
-    },
-    "fluid_handling": {
-      "id": "fluid_handling",
-      "name": "流体处理",
-      "description": "解锁原油采集与精炼设备",
-      "cost": {"matrix_science_1": 10},
-      "duration": 20.0,
-      "prerequisites": ["factory_foundations"],
-      "unlocks": [
-        {"kind": "building", "id": "oil_extractor"},
-        {"kind": "building", "id": "oil_refinery"}
-      ],
-      "effects": {"fluid_speed": 1.05}
-    },
-    "advanced_materials": {
-      "id": "advanced_materials",
-      "name": "进阶材料学",
-      "description": "解锁碳基复合材料生产",
-      "cost": {"matrix_science_1": 20},
-      "duration": 30.0,
-      "prerequisites": ["fluid_handling"],
-      "unlocks": [{"kind": "recipe", "id": "graphene_recipe"}],
-      "effects": {"material_speed": 1.05}
-    }
-  },
   "chapters": [
     {"id": "power", "title": "第一章：点亮工厂", "objective_ids": ["first_power", "first_miner", "first_smelter", "first_link", "first_matrix"]},
     {"id": "storage", "title": "支线：稳定库存", "objective_ids": ["first_storage"]},

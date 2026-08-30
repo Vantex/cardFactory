@@ -19,8 +19,8 @@ static func validate_persistent_dict(payload: Variant) -> Array:
 	if not _is_number(elapsed_time) or float(elapsed_time) < 0.0:
 		_add_error(errors, "invalid_elapsed_time", "state", "", "累计时间必须是非负数")
 
-	if not data.get("completed_technologies") is Array:
-		_add_error(errors, "invalid_completed_technologies", "state", "", "已完成科技必须是数组")
+	_validate_stable_id_array(errors, "completed_technologies", data.get("completed_technologies"))
+	_validate_research_state(errors, data)
 	for progression_field in ["completed_objective_ids", "claimed_progression_reward_ids", "completed_achievement_ids", "unlocked_progression_ids"]:
 		_validate_stable_id_array(errors, progression_field, data.get(progression_field))
 	_validate_root_inventory(errors, "planet_inventory", data.get("planet_inventory"), InventorySystem.MAX_PLANET_STACK)
@@ -104,6 +104,30 @@ static func _validate_stable_id_array(errors: Array, field_name: String, value: 
 			_add_error(errors, "invalid_%s" % field_name, "state", String(id_value), "%s 必须包含非空且不重复的 ID" % field_name)
 			continue
 		seen[String(id_value)] = true
+
+static func _validate_research_state(errors: Array, data: Dictionary) -> void:
+	var current_id: Variant = data.get("research_current_id")
+	if typeof(current_id) != TYPE_STRING and typeof(current_id) != TYPE_STRING_NAME:
+		_add_error(errors, "invalid_research_current_id", "state", "", "当前研究必须是字符串")
+	_validate_stable_id_array(errors, "research_queue", data.get("research_queue"))
+	if typeof(data.get("research_paused")) != TYPE_BOOL:
+		_add_error(errors, "invalid_research_paused", "state", "", "研究暂停状态必须是布尔值")
+	for field_name in ["research_progress", "research_invested_costs"]:
+		var field_value: Variant = data.get(field_name)
+		if not field_value is Dictionary:
+			_add_error(errors, "invalid_%s" % field_name, "state", "", "%s 必须是字典" % field_name)
+			continue
+		for tech_id_value in field_value:
+			var tech_id := String(tech_id_value)
+			if tech_id.is_empty():
+				_add_error(errors, "invalid_%s" % field_name, "state", tech_id, "研究科技 ID 不能为空")
+				continue
+			if field_name == "research_progress":
+				var progress: Variant = field_value[tech_id_value]
+				if not _is_number(progress) or is_nan(float(progress)) or is_inf(float(progress)) or float(progress) < 0.0:
+					_add_error(errors, "invalid_research_progress", "state", tech_id, "研究进度必须是有限非负数字")
+			elif not field_value[tech_id_value] is Dictionary:
+				_add_error(errors, "invalid_research_invested_costs", "state", tech_id, "研究投入必须是字典")
 
 static func _validate_catalog_configuration(errors: Array, building_id: String, building: Dictionary) -> void:
 	var building_type := String(building.get("type", ""))

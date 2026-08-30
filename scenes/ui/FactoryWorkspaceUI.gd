@@ -1,6 +1,8 @@
 class_name FactoryWorkspaceUI
 extends CanvasLayer
 
+const TECHNOLOGY_PANEL_SCRIPT = preload("res://scenes/ui/TechnologyPanel.gd")
+
 const TOP_BAR_HEIGHT := 52.0
 const RESOURCE_RAIL_WIDTH := 216.0
 const INSPECTOR_WIDTH := 286.0
@@ -56,6 +58,13 @@ var _recipe_signature := ""
 
 func _ready() -> void:
 	_create_workspace()
+	var technology_panel := TECHNOLOGY_PANEL_SCRIPT.new()
+	technology_panel.name = "TechnologyPanel"
+	technology_panel.position = Vector2(226, TOP_BAR_HEIGHT + 8.0)
+	# The workspace starts compact; its panel is a real Control but does not
+	# cover the factory canvas until the future shell toggle opens it.
+	technology_panel.hide()
+	add_child(technology_panel)
 	var input_handler := _get_input_handler()
 	if input_handler != null and input_handler.has_signal("selection_changed"):
 		input_handler.selection_changed.connect(_on_shared_selection_changed)
@@ -136,7 +145,7 @@ func show_notice(message: String, tone: String = "info") -> void:
 		_toast_timer.start()
 
 func is_pointer_over_ui(viewport_position: Vector2) -> bool:
-	for node_name in ["TopBar", "ResourceRail", "InspectorPanel", "ConstructionDock", "BlueprintWorkspace", "CampaignWorkspace", "MiniMap"]:
+	for node_name in ["TopBar", "ResourceRail", "InspectorPanel", "ConstructionDock", "BlueprintWorkspace", "CampaignWorkspace", "MiniMap", "TechnologyPanel"]:
 		var region := get_node_or_null(node_name) as Control
 		if region != null and region.visible and Rect2(Vector2.ZERO, region.size).has_point(region.get_global_transform_with_canvas().affine_inverse() * viewport_position):
 			return true
@@ -326,6 +335,11 @@ func _on_batch_belt_config_pressed(action: String) -> void:
 func _on_state_changed(_arg_1 = null, _arg_2 = null, _arg_3 = null) -> void:
 	refresh_now()
 
+func _toggle_technology_workspace() -> void:
+	var technology_panel := get_node_or_null("TechnologyPanel") as Control
+	if technology_panel != null:
+		technology_panel.visible = not technology_panel.visible
+
 func _on_notice_timeout() -> void:
 	get_node("Toast").hide()
 
@@ -371,8 +385,15 @@ func _create_top_bar() -> void:
 		speed_controls.add_child(speed_button)
 		_speed_buttons.append(speed_button)
 	_top_status = _create_label("Status", "", 12, ACCENT_GREEN)
-	_top_status.position = Vector2(344, 16)
-	_top_status.size = Vector2(794, 24)
+	var technology_button := Button.new()
+	technology_button.name = "TechnologyButton"
+	technology_button.text = "科技"
+	technology_button.position = Vector2(344, 9)
+	technology_button.size = Vector2(58, 34)
+	technology_button.pressed.connect(_toggle_technology_workspace)
+	top_bar.add_child(technology_button)
+	_top_status.position = Vector2(410, 16)
+	_top_status.size = Vector2(728, 24)
 	_top_status.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	top_bar.add_child(_top_status)
 

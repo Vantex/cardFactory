@@ -474,32 +474,34 @@ git commit -m "feat: add persistent single player progression"
 - 修改：`scripts/game/GameState.gd`
 - 修改：`scripts/test/TestProgression.gd`
 
-- [ ] **步骤 1：写研究队列失败测试**
+- [x] **步骤 1：写研究队列失败测试**
 
 覆盖前置、成本、排队、暂停、恢复、取消后保留投入、完成、下一项启动、效果应用和保存加载。
 
-- [ ] **步骤 2：把科技定义迁到 JSON**
+- [x] **步骤 2：把科技定义迁到 JSON**
 
 科技包含稳定 ID、前置、成本、解锁、效果和可重复规则；DataManager 检查循环和无效引用。
 
-- [ ] **步骤 3：接入 SimulationEngine**
+- [x] **步骤 3：接入 SimulationEngine**
 
 研究只在有合法科研设备、矩阵和电力时推进；完成边界与生产 tick 确定一致。
 
-- [ ] **步骤 4：实现正式科技工作区**
+- [x] **步骤 4：实现正式科技工作区**
 
 支持搜索、筛选、队列、前置可视化、进度和解锁说明；关闭再打开保持筛选和滚动。
 
-- [ ] **步骤 5：分阶段扩充科技目录**
+- [x] **步骤 5：分阶段扩充科技目录**
 
 先覆盖基础行星工业，再扩展星际、戴森和无限科技。每批科技必须有至少一个效果行为测试。
 
-- [ ] **步骤 6：提交**
+- [x] **步骤 6：提交**
 
 ```powershell
 git add scripts/game/TechnologySystem.gd scenes/ui/TechnologyPanel.gd data/technologies.json scripts/game/SimulationEngine.gd scripts/game/GameState.gd scripts/test/TestProgression.gd
 git commit -m "feat: add data driven technology progression"
 ```
+
+**完成记录（2026-08-30）：** `technologies.json` 将基础行星、星际、戴森和无限目录置于稳定 ID、前置、成本、解锁、效果与可重复规则下；DataManager 继续校验引用与循环并额外校验稳定 ID。schema v4 把当前研究、FIFO 队列、进度、已投入成本和暂停状态迁入 `GameState`，v3 存档补齐默认值。研究命令在开始时原子扣除矩阵，暂停/取消保留投入和进度，完成后按稳定顺序启动下一项；模拟阶段只在有供电的 `matrix_lab` 时推进。生产速度效果直接影响真实生产/采集。正式科技工作区支持搜索、前置、队列、进度、解锁说明与关闭重开后的搜索/滚动状态保留；`TestProgression`、`TestSimulationCore` 和持久化门覆盖完整闭环。
 
 ### 任务 11：统计、诊断与生产资料库
 

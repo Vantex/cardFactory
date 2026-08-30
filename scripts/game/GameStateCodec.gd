@@ -29,6 +29,9 @@ static func to_persistent_dict(state: GameState) -> Dictionary:
 	completed_achievement_ids.sort()
 	var unlocked_progression_ids: Array = state.unlocked_progression_ids.duplicate(true)
 	unlocked_progression_ids.sort()
+	var research_queue: Array = state.research_queue.duplicate(true)
+	var research_progress := state.research_progress.duplicate(true)
+	var research_invested_costs := state.research_invested_costs.duplicate(true)
 	var payload := {
 		"schema_version": GameState.SCHEMA_VERSION,
 		"next_id": state._next_id,
@@ -38,6 +41,11 @@ static func to_persistent_dict(state: GameState) -> Dictionary:
 		"cursor_payload": state.cursor_payload,
 		"handcraft_queue": state.handcraft_queue,
 		"completed_technologies": completed_technologies,
+		"research_current_id": state.research_current_id,
+		"research_queue": research_queue,
+		"research_progress": research_progress,
+		"research_invested_costs": research_invested_costs,
+		"research_paused": state.research_paused,
 		"completed_objective_ids": completed_objective_ids,
 		"claimed_progression_reward_ids": claimed_reward_ids,
 		"completed_achievement_ids": completed_achievement_ids,
@@ -60,6 +68,11 @@ static func from_persistent_dict(payload: Variant) -> GameState:
 	state.cursor_payload = data["cursor_payload"].duplicate(true)
 	state.handcraft_queue = data["handcraft_queue"].duplicate(true)
 	state.completed_technologies = data["completed_technologies"].duplicate(true)
+	state.research_current_id = String(data["research_current_id"])
+	state.research_queue = data["research_queue"].duplicate(true)
+	state.research_progress = data["research_progress"].duplicate(true)
+	state.research_invested_costs = data["research_invested_costs"].duplicate(true)
+	state.research_paused = bool(data["research_paused"])
 	state.completed_objective_ids = data["completed_objective_ids"].duplicate(true)
 	state.claimed_progression_reward_ids = data["claimed_progression_reward_ids"].duplicate(true)
 	state.completed_achievement_ids = data["completed_achievement_ids"].duplicate(true)

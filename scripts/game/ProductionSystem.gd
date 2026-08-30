@@ -46,7 +46,7 @@ func _update_building(building: Dictionary, delta: float) -> void:
 		return
 
 	var progress := float(building.get("progress", 0.0))
-	progress += delta * maxf(float(building.get("speed", 1.0)), 0.0) * power_efficiency
+	progress += delta * maxf(float(building.get("speed", 1.0)), 0.0) * power_efficiency * game_state.get_technology_effect_multiplier("production_speed")
 	var duration := maxf(float(recipe.get("duration", 0.0)), PROGRESS_EPSILON)
 	building["status"] = "running"
 	while progress + PROGRESS_EPSILON >= duration:
@@ -74,7 +74,7 @@ func _update_extractor(building: Dictionary, building_definition: Dictionary, de
 	var output_buffer: Dictionary = building.get("output_buffer", {})
 	var current_amount := float(output_buffer.get(output_item, 0.0))
 	var capacity := _get_buffer_capacity(building, building_definition, "output")
-	output_buffer[output_item] = minf(current_amount + output_rate * delta * speed * power_efficiency, capacity)
+	output_buffer[output_item] = minf(current_amount + output_rate * delta * speed * power_efficiency * game_state.get_technology_effect_multiplier("production_speed"), capacity)
 	building["output_buffer"] = output_buffer
 	building["status"] = "blocked" if current_amount >= capacity else "running"
 

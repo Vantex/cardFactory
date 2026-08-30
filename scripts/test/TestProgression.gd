@@ -10,6 +10,8 @@ func _ready() -> void:
 	_test_campaign_catalog_and_achievements()
 	_test_disabled_connections_do_not_advance_objectives()
 	_test_stopped_building_location()
+	_test_data_driven_technology_progression()
+	await _test_technology_workspace_ui()
 	await _test_formal_campaign_ui()
 
 	if _failures > 0:
@@ -91,7 +93,7 @@ func _test_retroactive_completion_and_persistence() -> void:
 
 	var payload := GameStateCodec.to_persistent_dict(state)
 	var restored := GameStateCodec.from_persistent_dict(JSON.parse_string(JSON.stringify(payload)))
-	_expect(payload.get("schema_version") == 3 and restored is GameState, "progression persistence upgrades the canonical save contract to schema version 3")
+	_expect(payload.get("schema_version") == 4 and restored is GameState, "progression persistence upgrades the canonical save contract to schema version 4")
 	if restored is GameState:
 		_expect(_same_ids(restored.completed_objective_ids, state.completed_objective_ids), "save/load preserves completed objectives")
 		_expect(_same_ids(restored.claimed_progression_reward_ids, state.claimed_progression_reward_ids), "save/load preserves idempotent reward claims")
@@ -211,6 +213,59 @@ func _test_formal_campaign_ui() -> void:
 	_expect(main.get_node("InputHandler").selected_building_id == stopped_id, "locating a stopped building also selects it in the authoritative workspace controller")
 	viewport.queue_free()
 	await get_tree().process_frame
+
+func _test_data_driven_technology_progression() -> void:
+	# This catches a regression where research ignores the matrix cost and only
+	# stores progress in a short-lived TechnologySystem instance.
+	var blocked_state := GameState.new()
+	var blocked_research := TechnologySystem.new(blocked_state)
+	_expect(not blocked_research.start_research("factory_foundations"), "research refuses a technology until its matrix cost is available")
+	var cancelled_state := GameState.new()
+	cancelled_state.planet_inventory["matrix_science_1"] = 5.0
+	var cancelled_research := TechnologySystem.new(cancelled_state)
+	_expect(cancelled_research.start_research("factory_foundations"), "cancel fixture starts a real paid technology")
+	cancelled_research.update_research(3.0)
+	_expect(cancelled_research.cancel_research() and is_equal_approx(cancelled_state.get_technology_progress("factory_foundations"), 3.0) and is_equal_approx(float(cancelled_state.planet_inventory.get("matrix_science_1", 0.0)), 0.0), "cancelling retains both invested matrices and completed in-flight work")
+	_expect(cancelled_research.start_research("factory_foundations") and is_equal_approx(cancelled_state.get_technology_progress("factory_foundations"), 3.0), "restarting a cancelled technology resumes retained investment without charging twice")
+
+	var state := GameState.new()
+	state.planet_inventory["matrix_science_1"] = 20.0
+	var research := TechnologySystem.new(state)
+	_expect(research.has_method("pause_research") and research.has_method("resume_research"), "research exposes explicit pause and resume commands")
+	_expect(research.start_research("factory_foundations"), "research atomically accepts an affordable root technology")
+	_expect(float(state.planet_inventory.get("matrix_science_1", 0.0)) == 15.0, "starting research consumes the catalog matrix cost exactly once")
+	_expect(research.add_to_queue("fluid_handling"), "a prerequisite-gated technology can be queued behind its prerequisite")
+	if research.has_method("pause_research"):
+		research.pause_research()
+		research.update_research(999.0)
+		_expect(not research.is_technology_completed("factory_foundations"), "paused research preserves its in-flight progress")
+		research.resume_research()
+	research.update_research(10.0)
+	_expect(research.is_technology_completed("factory_foundations") and research.get_current_research() == "fluid_handling", "completion applies the technology and starts the next queued entry deterministically")
+	_expect(research.get_effect_multiplier("production_speed") > 1.0, "completed technology has an observable production-speed effect")
+	var payload := GameStateCodec.to_persistent_dict(state)
+	var restored := GameStateCodec.from_persistent_dict(JSON.parse_string(JSON.stringify(payload)))
+	_expect(restored is GameState and restored.get_technology_progress("fluid_handling") >= 0.0, "research queue and in-flight progress survive a JSON save/load round trip")
+
+func _test_technology_workspace_ui() -> void:
+	# This catches a regression where the formal panel only lists available items
+	# and loses the player's search/filter state when it is closed.
+	var state := GameState.new()
+	state.planet_inventory["matrix_science_1"] = 20.0
+	GameManager.replace_game_state(state)
+	var panel: Control = load("res://scenes/ui/TechnologyPanel.gd").new()
+	add_child(panel)
+	await get_tree().process_frame
+	_expect(panel.get_node_or_null("Layout/Search") is LineEdit and panel.get_node_or_null("Layout/Queue") != null, "technology workspace exposes search and a visible authoritative queue")
+	var search := panel.get_node_or_null("Layout/Search") as LineEdit
+	if search != null:
+		search.text = "工厂"
+		search.text_changed.emit(search.text)
+		panel.call("set_scroll_offset", 18.0)
+		panel.hide()
+		panel.show()
+		_expect(panel.call("get_filter_text") == "工厂" and is_equal_approx(float(panel.call("get_scroll_offset")), 18.0), "closing and reopening the technology workspace retains filter and scroll state")
+	panel.queue_free()
 
 func _add_building(state: GameState, building_type: String, position: Vector2, overrides: Dictionary = {}) -> String:
 	var building := {

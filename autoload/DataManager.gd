@@ -187,6 +187,10 @@ func validate_catalog(catalog: Dictionary) -> Array:
         var technology_id := String(technology_key)
         var technology: Dictionary = technologies[technology_key]
         var source := String(_technology_sources.get(technology_id, "catalog"))
+        if String(technology.get("id", "")) != technology_id:
+            errors.append(_make_error("technology_id_mismatch", source, technology_id, "Technology key and stable id must match"))
+        if technology.has("repeatable") and typeof(technology.get("repeatable")) != TYPE_BOOL:
+            errors.append(_make_error("invalid_repeatable_rule", source, technology_id, "Technology repeatable must be a boolean"))
         _validate_positive_number(errors, technology.get("duration", 0.0), "invalid_duration", source, technology_id, "Technology duration must be positive")
         for cost_key in technology.get("cost", {}):
             var item_id := String(cost_key)

@@ -31,11 +31,12 @@ func _ready() -> void:
 		"res://data/chemicals.json",
 		"res://data/electronics.json",
 		"res://data/progression.json",
+		"res://data/technologies.json",
 	]
 	var loaded_data_files = DataManager.get_loaded_data_files()
 	_expect(loaded_data_files is Array, "DataManager loaded data files are an Array")
 	if loaded_data_files is Array:
-		_expect(loaded_data_files.size() == expected_loaded_data_files.size(), "DataManager loaded exactly five data files")
+		_expect(loaded_data_files.size() == expected_loaded_data_files.size(), "DataManager loaded exactly six data files")
 		for expected_path in expected_loaded_data_files:
 			_expect(loaded_data_files.has(expected_path), "DataManager loaded %s" % expected_path)
 		loaded_data_files.clear()
@@ -96,7 +97,7 @@ func _test_catalog_validation_contract() -> void:
 			},
 		},
 		"technologies": {
-			"cycle_a": {"id": "cycle_a", "cost": {"ore": 1.0}, "duration": 1.0, "prerequisites": ["cycle_b"], "unlocks": []},
+			"cycle_a": {"id": "cycle_a_wrong", "cost": {"ore": 1.0}, "duration": 1.0, "prerequisites": ["cycle_b"], "unlocks": []},
 			"cycle_b": {"id": "cycle_b", "cost": {"ore": 1.0}, "duration": 1.0, "prerequisites": ["cycle_a"], "unlocks": []},
 		},
 		"mandatory_items": ["ore"],
@@ -105,7 +106,7 @@ func _test_catalog_validation_contract() -> void:
 	var codes: Array[String] = []
 	for error_value in errors:
 		codes.append(String(error_value.get("code", "")))
-	for expected_code in ["missing_building_reference", "missing_item_reference", "invalid_amount", "invalid_duration", "technology_cycle", "uncraftable_mandatory_item"]:
+	for expected_code in ["missing_building_reference", "missing_item_reference", "invalid_amount", "invalid_duration", "technology_cycle", "technology_id_mismatch", "uncraftable_mandatory_item"]:
 		_expect(codes.has(expected_code), "catalog validation rejects %s" % expected_code)
 
 func _expect(condition: bool, description: String) -> void:

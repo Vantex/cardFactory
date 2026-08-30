@@ -12,6 +12,7 @@ var belt_system: BeltSystem
 var power_system: PowerSystem
 var statistics_system: StatisticsSystem
 var handcraft_system: HandcraftSystem
+var technology_system: TechnologySystem
 
 var _accumulator := 0.0
 var _last_step_count := 0
@@ -23,6 +24,7 @@ func _init(state: GameState) -> void:
 	power_system = PowerSystem.new(state)
 	statistics_system = StatisticsSystem.new(state)
 	handcraft_system = HandcraftSystem.new(state)
+	technology_system = TechnologySystem.new(state)
 
 func update(delta: float) -> void:
 	_last_step_count = 0
@@ -49,9 +51,17 @@ func _run_fixed_tick() -> void:
 	_update_research(FIXED_DELTA)
 	statistics_system.update(FIXED_DELTA)
 
-func _update_research(_delta: float) -> void:
-	# Authoritative research state is introduced by the dedicated research task.
-	pass
+func _update_research(delta: float) -> void:
+	technology_system.update_research(delta, _has_powered_research_lab())
+
+func _has_powered_research_lab() -> bool:
+	var building_ids := game_state.buildings.keys()
+	building_ids.sort()
+	for building_id_value in building_ids:
+		var building: Dictionary = game_state.buildings[building_id_value]
+		if String(building.get("type", "")) == "matrix_lab" and float(building.get("power_efficiency", 0.0)) > 0.0:
+			return true
+	return false
 
 func get_pending_simulation_time() -> float:
 	return _accumulator
