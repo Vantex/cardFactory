@@ -97,7 +97,7 @@ func _test_catalog_validation_contract() -> void:
 			},
 		},
 		"technologies": {
-			"cycle_a": {"id": "cycle_a_wrong", "cost": {"ore": 1.0}, "duration": 1.0, "prerequisites": ["cycle_b"], "unlocks": []},
+			"cycle_a": {"id": "cycle_a_wrong", "cost": {"ore": 1.0}, "duration": 1.0, "prerequisites": ["cycle_b"], "unlocks": [], "repeatable": true},
 			"cycle_b": {"id": "cycle_b", "cost": {"ore": 1.0}, "duration": 1.0, "prerequisites": ["cycle_a"], "unlocks": []},
 		},
 		"mandatory_items": ["ore"],
@@ -106,7 +106,7 @@ func _test_catalog_validation_contract() -> void:
 	var codes: Array[String] = []
 	for error_value in errors:
 		codes.append(String(error_value.get("code", "")))
-	for expected_code in ["missing_building_reference", "missing_item_reference", "invalid_amount", "invalid_duration", "technology_cycle", "technology_id_mismatch", "uncraftable_mandatory_item"]:
+	for expected_code in ["missing_building_reference", "missing_item_reference", "invalid_amount", "invalid_duration", "technology_cycle", "technology_id_mismatch", "invalid_repeatable_rule", "uncraftable_mandatory_item"]:
 		_expect(codes.has(expected_code), "catalog validation rejects %s" % expected_code)
 
 func _expect(condition: bool, description: String) -> void:

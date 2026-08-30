@@ -12,6 +12,7 @@ func _ready() -> void:
 	_test_stopped_building_location()
 	_test_data_driven_technology_progression()
 	await _test_technology_workspace_ui()
+	await _test_technology_main_intents_and_queue_regressions()
 	await _test_formal_campaign_ui()
 
 	if _failures > 0:
@@ -93,7 +94,7 @@ func _test_retroactive_completion_and_persistence() -> void:
 
 	var payload := GameStateCodec.to_persistent_dict(state)
 	var restored := GameStateCodec.from_persistent_dict(JSON.parse_string(JSON.stringify(payload)))
-	_expect(payload.get("schema_version") == 4 and restored is GameState, "progression persistence upgrades the canonical save contract to schema version 4")
+	_expect(payload.get("schema_version") == 5 and restored is GameState, "progression persistence upgrades the canonical save contract to schema version 5")
 	if restored is GameState:
 		_expect(_same_ids(restored.completed_objective_ids, state.completed_objective_ids), "save/load preserves completed objectives")
 		_expect(_same_ids(restored.claimed_progression_reward_ids, state.claimed_progression_reward_ids), "save/load preserves idempotent reward claims")
@@ -266,6 +267,52 @@ func _test_technology_workspace_ui() -> void:
 		panel.show()
 		_expect(panel.call("get_filter_text") == "工厂" and is_equal_approx(float(panel.call("get_scroll_offset")), 18.0), "closing and reopening the technology workspace retains filter and scroll state")
 	panel.queue_free()
+
+func _test_technology_main_intents_and_queue_regressions() -> void:
+	var state := GameState.new()
+	state.planet_inventory["matrix_science_1"] = 5.0
+	GameManager.replace_game_state(state)
+	var main: Node = load("res://scenes/main/Main.tscn").instantiate()
+	add_child(main)
+	await get_tree().process_frame
+	_expect(EventBus.has_signal("technology_start_requested"), "technology workspace sends start intent to the formal Main coordinator")
+	if EventBus.has_signal("technology_start_requested"):
+		EventBus.emit_signal("technology_start_requested", "factory_foundations")
+		await get_tree().process_frame
+		_expect(state.research_current_id == "factory_foundations", "real Main routes the technology start intent through its owned domain service")
+	main.queue_free()
+
+	var insufficient := GameState.new()
+	insufficient.planet_inventory["matrix_science_1"] = 5.0
+	var insufficient_service := TechnologySystem.new(insufficient)
+	insufficient_service.start_research("factory_foundations")
+	insufficient_service.add_to_queue("fluid_handling")
+	insufficient_service.update_research(10.0)
+	_expect(insufficient.research_queue == ["fluid_handling"], "a queued item remains at the head when completion leaves insufficient matrices for its cost")
+	var wait_reason: Variant = insufficient.get("research_queue_wait_reason")
+	_expect(wait_reason is String and not String(wait_reason).is_empty(), "a blocked queue head exposes an observable waiting reason")
+
+	var cancelled := GameState.new()
+	cancelled.planet_inventory["matrix_science_1"] = 15.0
+	var cancelled_service := TechnologySystem.new(cancelled)
+	cancelled_service.start_research("factory_foundations")
+	cancelled_service.add_to_queue("fluid_handling")
+	cancelled_service.cancel_research()
+	_expect(cancelled.research_queue == ["fluid_handling"], "cancelling a prerequisite retains a newly-invalid dependent queue head")
+
+	var repeatable := GameState.new()
+	repeatable.completed_technologies = ["factory_foundations", "fluid_handling", "advanced_materials", "interstellar_logistics", "dyson_engineering"]
+	repeatable.planet_inventory["matrix_science_1"] = 100.0
+	var repeatable_service := TechnologySystem.new(repeatable)
+	_expect(repeatable.has_method("get_technology_level"), "GameState exposes persistent levels for repeatable technology")
+	if repeatable.has_method("get_technology_level"):
+		_expect(repeatable_service.start_research("infinite_optimization"), "an eligible infinite technology can start at level one")
+		repeatable_service.update_research(60.0)
+		_expect(repeatable_service.start_research("infinite_optimization"), "a completed infinite technology remains eligible for its second level")
+		repeatable_service.update_research(60.0)
+		_expect(repeatable.get_technology_level("infinite_optimization") == 2, "repeatable completion increments its authoritative persistent level")
+		var restored := GameStateCodec.from_persistent_dict(JSON.parse_string(JSON.stringify(GameStateCodec.to_persistent_dict(repeatable))))
+		_expect(restored is GameState and restored.get_technology_level("infinite_optimization") == 2, "repeatable technology levels survive JSON save/load")
 
 func _add_building(state: GameState, building_type: String, position: Vector2, overrides: Dictionary = {}) -> String:
 	var building := {

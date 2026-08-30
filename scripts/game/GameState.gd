@@ -2,7 +2,7 @@
 class_name GameState
 extends RefCounted
 
-const SCHEMA_VERSION: int = 4
+const SCHEMA_VERSION: int = 5
 
 # 游戏状态
 var paused: bool = false
@@ -42,6 +42,8 @@ var research_queue: Array = []
 var research_progress: Dictionary = {}
 var research_invested_costs: Dictionary = {}
 var research_paused := false
+var research_queue_wait_reason := ""
+var technology_levels: Dictionary = {}
 
 # 本地单人进度；事实本身仍由建筑、库存和科技等权威状态提供。
 var completed_objective_ids: Array = []
@@ -905,8 +907,13 @@ func get_technology_effect_multiplier(effect_key: String) -> float:
         var effects: Dictionary = DataManager.get_technology(String(technology_id_value)).get("effects", {})
         var value: Variant = effects.get(effect_key)
         if typeof(value) == TYPE_INT or typeof(value) == TYPE_FLOAT:
-            multiplier *= float(value)
+            var layers := maxi(get_technology_level(String(technology_id_value)), 1)
+            for _layer in range(layers):
+                multiplier *= float(value)
     return multiplier
+
+func get_technology_level(tech_id: String) -> int:
+    return int(technology_levels.get(tech_id, 0))
 
 # === 游戏核心系统补完功能 ===
 

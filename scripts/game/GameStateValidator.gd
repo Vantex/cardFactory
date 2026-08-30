@@ -112,6 +112,8 @@ static func _validate_research_state(errors: Array, data: Dictionary) -> void:
 	_validate_stable_id_array(errors, "research_queue", data.get("research_queue"))
 	if typeof(data.get("research_paused")) != TYPE_BOOL:
 		_add_error(errors, "invalid_research_paused", "state", "", "研究暂停状态必须是布尔值")
+	if (typeof(data.get("research_queue_wait_reason")) != TYPE_STRING and typeof(data.get("research_queue_wait_reason")) != TYPE_STRING_NAME) or not data.get("technology_levels") is Dictionary:
+		_add_error(errors, "invalid_research_metadata", "state", "", "研究队列状态和科技层数无效")
 	for field_name in ["research_progress", "research_invested_costs"]:
 		var field_value: Variant = data.get(field_name)
 		if not field_value is Dictionary:

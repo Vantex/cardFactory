@@ -17,7 +17,8 @@ func is_technology_completed(tech_id: String) -> bool:
 	return game_state.completed_technologies.has(tech_id)
 
 func can_research_technology(tech_id: String) -> bool:
-	if is_technology_completed(tech_id) or get_technology(tech_id).is_empty():
+	var technology := get_technology(tech_id)
+	if technology.is_empty() or (is_technology_completed(tech_id) and not technology.has("repeatable")):
 		return false
 	for prerequisite_value in get_technology_prerequisites(tech_id):
 		if not is_technology_completed(String(prerequisite_value)):
@@ -32,6 +33,7 @@ func start_research(tech_id: String) -> bool:
 	if not _has_paid_cost(tech_id):
 		_consume_cost(tech_id)
 	game_state.research_current_id = tech_id
+	game_state.research_queue_wait_reason = ""
 	game_state.research_paused = false
 	EventBus.technology_research_started.emit(tech_id)
 	return true
@@ -89,11 +91,14 @@ func update_research(delta: float, can_progress: bool = true) -> void:
 		_complete_research(tech_id)
 
 func _complete_research(tech_id: String) -> void:
+	var technology := get_technology(tech_id)
 	if not game_state.completed_technologies.has(tech_id):
 		game_state.completed_technologies.append(tech_id)
 		game_state.completed_technologies.sort()
 	game_state.research_progress.erase(tech_id)
 	game_state.research_invested_costs.erase(tech_id)
+	if technology.has("repeatable"):
+		game_state.technology_levels[tech_id] = game_state.get_technology_level(tech_id) + 1
 	game_state.research_current_id = ""
 	game_state.research_paused = false
 	EventBus.technology_research_completed.emit(tech_id)
@@ -103,11 +108,13 @@ func _complete_research(tech_id: String) -> void:
 	_start_next_queued_research()
 
 func _start_next_queued_research() -> void:
-	while not game_state.research_queue.is_empty():
-		var next_id := String(game_state.research_queue.pop_front())
+	if not game_state.research_queue.is_empty():
+		var next_id := String(game_state.research_queue[0])
 		if start_research(next_id):
+			game_state.research_queue.pop_front()
 			EventBus.technology_research_queue_changed.emit(game_state.research_queue.duplicate())
 			return
+		game_state.research_queue_wait_reason = "等待前置或矩阵成本：%s" % next_id
 	EventBus.technology_research_queue_changed.emit(game_state.research_queue.duplicate())
 
 func _queue_prerequisites_are_scheduled(tech_id: String) -> bool:

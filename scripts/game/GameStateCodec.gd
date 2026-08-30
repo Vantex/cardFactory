@@ -46,6 +46,8 @@ static func to_persistent_dict(state: GameState) -> Dictionary:
 		"research_progress": research_progress,
 		"research_invested_costs": research_invested_costs,
 		"research_paused": state.research_paused,
+		"research_queue_wait_reason": state.research_queue_wait_reason,
+		"technology_levels": state.technology_levels,
 		"completed_objective_ids": completed_objective_ids,
 		"claimed_progression_reward_ids": claimed_reward_ids,
 		"completed_achievement_ids": completed_achievement_ids,
@@ -73,6 +75,8 @@ static func from_persistent_dict(payload: Variant) -> GameState:
 	state.research_progress = data["research_progress"].duplicate(true)
 	state.research_invested_costs = data["research_invested_costs"].duplicate(true)
 	state.research_paused = bool(data["research_paused"])
+	state.research_queue_wait_reason = String(data["research_queue_wait_reason"])
+	state.technology_levels = data["technology_levels"].duplicate(true)
 	state.completed_objective_ids = data["completed_objective_ids"].duplicate(true)
 	state.claimed_progression_reward_ids = data["claimed_progression_reward_ids"].duplicate(true)
 	state.completed_achievement_ids = data["completed_achievement_ids"].duplicate(true)

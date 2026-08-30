@@ -32,6 +32,12 @@ signal technology_research_resumed(tech_id: String)
 signal technology_research_cancelled(tech_id: String)
 signal technology_research_progressed(tech_id: String, progress: float, duration: float)
 signal technology_research_queue_changed(queue: Array)
+signal technology_start_requested(tech_id: String)
+signal technology_queue_requested(tech_id: String)
+signal technology_pause_requested()
+signal technology_resume_requested()
+signal technology_cancel_requested()
+signal technology_remove_queue_requested(tech_id: String)
 
 # 模拟相关信号
 signal simulation_updated()

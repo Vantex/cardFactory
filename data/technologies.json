@@ -28,7 +28,7 @@
       "unlocks": [{"kind": "building", "id": "dyson_sphere_launcher"}], "effects": {"production_speed": 1.03}
     },
     "infinite_optimization": {
-      "id": "infinite_optimization", "name": "无限优化", "description": "可重复的工厂节拍优化。", "tier": "infinite", "repeatable": true,
+      "id": "infinite_optimization", "name": "无限优化", "description": "可重复的工厂节拍优化。", "tier": "infinite", "repeatable": {"cost_rule": "fixed"},
       "cost": {"matrix_science_1": 50}, "duration": 60.0, "prerequisites": ["dyson_engineering"],
       "unlocks": [], "effects": {"production_speed": 1.02}
     }

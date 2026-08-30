@@ -27,9 +27,9 @@ func _test_canonical_snapshot_and_round_trip() -> void:
 	state.buildings["building_10"]["power_output"] = 500.0
 	var payload := GameStateCodec.to_persistent_dict(state)
 
-	_expect(state.get_state_version() == 4, "GameState exposes the current integer schema version")
+	_expect(state.get_state_version() == 5, "GameState exposes the current integer schema version")
 	_expect(payload.keys() == ["buildings", "claimed_progression_reward_ids", "completed_achievement_ids", "completed_objective_ids", "completed_technologies", "connections", "construction_inventory", "cursor_payload", "elapsed_time", "handcraft_queue", "next_id", "planet_inventory", "research_current_id", "research_invested_costs", "research_paused", "research_progress", "research_queue", "schema_version", "unlocked_progression_ids"], "persistent root keys use canonical order")
-	_expect(payload.get("schema_version") == 4, "persistent payload contains schema version 4")
+	_expect(payload.get("schema_version") == 5, "persistent payload contains schema version 5")
 	_expect(payload.get("next_id") == 11, "persistent payload preserves the next stable ID")
 	_expect(payload.get("planet_inventory") == {"gear": 2.0, "iron_ingot": 7.0}, "persistent payload preserves the planet tray")
 	_expect(payload.get("construction_inventory").get("miner") == 2.0, "persistent payload preserves construction items")
@@ -134,7 +134,7 @@ func _test_migrations_and_version_boundaries() -> void:
 	}
 	var migration_result := SaveMigrationRegistry.migrate_to_current(legacy_payload)
 	_expect(migration_result.get("ok") == true, "migration registry upgrades a known version-zero payload")
-	_expect(migration_result.get("data", {}).get("schema_version") == 4, "version-zero migration advances through every registered step to schema version 4")
+	_expect(migration_result.get("data", {}).get("schema_version") == 5, "version-zero migration advances through every registered step to schema version 5")
 	_expect(migration_result.get("data", {}).get("construction_inventory", {}).get("legacy_credit") == 9.0, "legacy construction points become migration-only credit")
 	_expect(GameStateCodec.from_persistent_dict(legacy_payload) is GameState, "codec accepts a valid migrated legacy payload")
 

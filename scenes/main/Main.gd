@@ -13,6 +13,7 @@ var _synced_selected_building_id := ""
 var _progression_system: ProgressionSystem
 var _last_blocked_reward_signature := ""
 var _progression_evaluation_queued := false
+var _technology_system: TechnologySystem
 
 func _ready() -> void:
 	GameManager.game_state_replaced.connect(_on_game_state_replaced)
@@ -30,6 +31,7 @@ func _ready() -> void:
 	mini_map.set_camera($WorldCamera)
 	campaign_workspace.locate_requested.connect(_on_locate_requested)
 	_progression_system = ProgressionSystem.new(game_state)
+	_technology_system = TechnologySystem.new(game_state)
 
 	EventBus.card_placed.connect(_on_card_placed)
 	EventBus.card_selected.connect(_on_card_selected)
@@ -46,10 +48,17 @@ func _ready() -> void:
 	EventBus.connection_configuration_changed.connect(_on_progression_fact_changed)
 	EventBus.production_completed.connect(_on_progression_item_produced)
 	EventBus.technology_research_completed.connect(_on_progression_fact_changed)
+	EventBus.technology_start_requested.connect(_on_technology_start_requested)
+	EventBus.technology_queue_requested.connect(_on_technology_queue_requested)
+	EventBus.technology_pause_requested.connect(_on_technology_pause_requested)
+	EventBus.technology_resume_requested.connect(_on_technology_resume_requested)
+	EventBus.technology_cancel_requested.connect(_on_technology_cancel_requested)
+	EventBus.technology_remove_queue_requested.connect(_on_technology_remove_queue_requested)
 	factory_workspace_ui.refresh_now()
 	_evaluate_progression(true)
 
 func _on_game_state_replaced(new_state: GameState) -> void:
+	_technology_system = TechnologySystem.new(new_state)
 	card_renderer.set_game_state(new_state)
 	connection_renderer.set_game_state(new_state)
 	input_handler.cancel_operation()
@@ -121,6 +130,24 @@ func _on_pause_toggled_requested() -> void:
 func _on_speed_requested(speed: float) -> void:
 	GameManager.get_game_state().speed = speed
 	EventBus.simulation_updated.emit()
+
+func _on_technology_start_requested(tech_id: String) -> void:
+	_technology_system.start_research(tech_id)
+
+func _on_technology_queue_requested(tech_id: String) -> void:
+	_technology_system.add_to_queue(tech_id)
+
+func _on_technology_pause_requested() -> void:
+	_technology_system.pause_research()
+
+func _on_technology_resume_requested() -> void:
+	_technology_system.resume_research()
+
+func _on_technology_cancel_requested() -> void:
+	_technology_system.cancel_research()
+
+func _on_technology_remove_queue_requested(tech_id: String) -> void:
+	_technology_system.remove_from_queue(tech_id)
 
 func _on_blueprint_capture_intent(entity_ids: Array) -> void:
 	blueprint_workspace.accept_capture_result(GameManager.get_game_state().capture_blueprint(entity_ids))
