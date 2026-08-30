@@ -47,6 +47,13 @@ $testCases = @(
         ResourcePath = "res://scenes/test/TestAdvancedCanvas.tscn"
         SuccessMarker = "ADVANCED CANVAS TESTS PASSED"
         FailureMarker = "ADVANCED CANVAS TESTS FAILED"
+    },
+    @{
+        Name = "Blueprints"
+        ScenePath = Join-Path $repoRoot "scenes\test\TestBlueprints.tscn"
+        ResourcePath = "res://scenes/test/TestBlueprints.tscn"
+        SuccessMarker = "BLUEPRINT TESTS PASSED"
+        FailureMarker = "BLUEPRINT TESTS FAILED"
     }
 )
 

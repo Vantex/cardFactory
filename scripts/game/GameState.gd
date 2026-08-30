@@ -30,6 +30,7 @@ var handcraft_queue: Array = []
 
 # 所有建筑（卡牌）
 var buildings: Dictionary = {}
+var _spatial_index := SpatialIndex.new()
 
 # 所有连接
 var connections: Dictionary = {}
@@ -107,6 +108,12 @@ func add_building(building_data: Dictionary) -> String:
 
 func try_place_building(building_type: String, position: Vector2) -> Dictionary:
     return ConstructionSystem.new(self).try_place_building(building_type, position)
+
+func capture_blueprint(selected_entity_ids: Array) -> Dictionary:
+    return BlueprintSystem.new(self).capture_selection(selected_entity_ids)
+
+func try_deploy_blueprint(blueprint: Dictionary, position: Vector2, rotation_quarters: int = 0, mirrored: bool = false) -> Dictionary:
+    return BlueprintSystem.new(self).deploy(blueprint, position, rotation_quarters, mirrored)
 
 func remove_building(building_id: String) -> Dictionary:
     return ConstructionSystem.new(self).try_remove_building(building_id)
@@ -252,6 +259,12 @@ func remove_connection(connection_id: String) -> bool:
 
 func get_building(building_id: String) -> Dictionary:
     return buildings.get(building_id, {})
+
+func get_spatial_index() -> SpatialIndex:
+    _spatial_index.clear()
+    for building_id in buildings:
+        _spatial_index.add_entity(String(building_id), buildings[building_id].get("position", Vector2.ZERO))
+    return _spatial_index
 
 func get_connections_for_building(building_id: String) -> Array:
     var result = []

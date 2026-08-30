@@ -1,63 +1,128 @@
-# scenes/ui/MiniMap.gd
+class_name MiniMap
 extends Control
 
-const MINIMAP_SIZE = Vector2(200, 150)
-const WORLD_SIZE = Vector2(2000, 1500)
+const MINIMAP_SIZE := Vector2(200, 150)
 
 var camera: Camera2D
+var _spatial_index: SpatialIndex
+var _uses_external_spatial_index := false
+var _world_rect := Rect2(Vector2.ZERO, Vector2(2000, 1500))
+var _regions: Dictionary = {}
+var _bookmarks: Dictionary = {}
+var _dragging := false
 
-func _ready():
-    # 设置小地图位置和大小
-    position = Vector2(get_viewport().get_visible_rect().size.x - MINIMAP_SIZE.x - 10, 10)
-    size = MINIMAP_SIZE
-    
-    # 延迟获取相机引用
-    call_deferred("_find_camera")
+func _ready() -> void:
+	custom_minimum_size = MINIMAP_SIZE
+	mouse_filter = Control.MOUSE_FILTER_STOP
+	if size == Vector2.ZERO:
+		size = MINIMAP_SIZE
+	call_deferred("_find_live_camera")
 
-func _find_camera():
-    # 在场景树中查找相机
-    var cameras = get_tree().get_nodes_in_group("camera")
-    if cameras.size() > 0:
-        camera = cameras[0]
-    else:
-        # 如果没有找到，创建一个相机
-        camera = Camera2D.new()
-        camera.name = "Camera2D"
-        camera.add_to_group("camera")
-        get_parent().add_child(camera)
+func set_camera(value: Camera2D) -> void:
+	camera = value
+	queue_redraw()
 
-func _draw():
-    # 绘制背景
-    draw_rect(Rect2(Vector2.ZERO, MINIMAP_SIZE), Color(0.1, 0.1, 0.1, 0.8))
-    
-    # 绘制建筑
-    var game_state = GameManager.get_game_state()
-    for building_id in game_state.buildings:
-        var building = game_state.buildings[building_id]
-        var world_pos = building.get("position", Vector2.ZERO)
-        var minimap_pos = world_pos / WORLD_SIZE * MINIMAP_SIZE
-        
-        var color = Color.GRAY
-        if building.get("status") == "running":
-            color = Color.GREEN
-        
-        draw_rect(Rect2(minimap_pos, Vector2(4, 4)), color)
-    
-    # 绘制相机视野
-    if camera:
-        var camera_pos = camera.global_position
-        var viewport_size = get_viewport().get_visible_rect().size
-        var camera_minimap_pos = camera_pos / WORLD_SIZE * MINIMAP_SIZE
-        var camera_size = viewport_size / WORLD_SIZE * MINIMAP_SIZE
-        
-        draw_rect(Rect2(camera_minimap_pos - camera_size / 2, camera_size), Color.WHITE, false, 1.0)
+func set_spatial_index(value: SpatialIndex) -> void:
+	_spatial_index = value
+	_uses_external_spatial_index = value != null
+	queue_redraw()
 
-func _input(event):
-    if event is InputEventMouseButton and event.pressed:
-        if Rect2(Vector2.ZERO, MINIMAP_SIZE).has_point(event.position):
-            var world_pos = event.position / MINIMAP_SIZE * WORLD_SIZE
-            if camera:
-                camera.global_position = world_pos
+func set_world_rect(value: Rect2) -> void:
+	if value.size.x > 0.0 and value.size.y > 0.0:
+		_world_rect = value.abs()
+	queue_redraw()
 
-func _process(_delta):
-    queue_redraw()
+func add_region(region_name: String, world_bounds: Rect2, color: Color = Color(0.38, 0.71, 0.68, 0.25)) -> void:
+	if not region_name.is_empty() and world_bounds.size.x > 0.0 and world_bounds.size.y > 0.0:
+		_regions[region_name] = {"rect": world_bounds.abs(), "color": color}
+	queue_redraw()
+
+func remove_region(region_name: String) -> void:
+	_regions.erase(region_name)
+	queue_redraw()
+
+func add_bookmark(bookmark_name: String, world_position: Vector2) -> void:
+	if not bookmark_name.is_empty():
+		_bookmarks[bookmark_name] = world_position
+	queue_redraw()
+
+func remove_bookmark(bookmark_name: String) -> void:
+	_bookmarks.erase(bookmark_name)
+	queue_redraw()
+
+func navigate_to_bookmark(bookmark_name: String) -> bool:
+	if camera == null or not _bookmarks.has(bookmark_name):
+		return false
+	camera.global_position = Vector2(_bookmarks[bookmark_name])
+	camera.force_update_scroll()
+	queue_redraw()
+	return true
+
+func get_visible_entity_ids() -> Array[String]:
+	var result: Array[String] = []
+	if not _uses_external_spatial_index:
+		var state := GameManager.get_game_state()
+		if state != null and state.has_method("get_spatial_index"):
+			_spatial_index = state.get_spatial_index()
+	if _spatial_index == null:
+		return result
+	for id_value in _spatial_index.get_entities_in_rect(_world_rect):
+		var entity_id := String(id_value)
+		if not result.has(entity_id):
+			result.append(entity_id)
+	result.sort()
+	return result
+
+func _find_live_camera() -> void:
+	if camera == null:
+		camera = get_viewport().get_camera_2d()
+	queue_redraw()
+
+func _process(_delta: float) -> void:
+	if camera == null:
+		camera = get_viewport().get_camera_2d()
+	queue_redraw()
+
+func _draw() -> void:
+	draw_rect(Rect2(Vector2.ZERO, size), Color(0.06, 0.08, 0.1, 0.9))
+	for region_value in _regions.values():
+		var region: Dictionary = region_value
+		var rect: Rect2 = region.rect
+		var mini_rect := Rect2(_world_to_local(rect.position), rect.size / _world_rect.size * size)
+		draw_rect(mini_rect, region.color, true)
+		draw_rect(mini_rect, Color(region.color).lightened(0.25), false, 1.0)
+	var state := GameManager.get_game_state()
+	for entity_id in get_visible_entity_ids():
+		if not state.buildings.has(entity_id):
+			continue
+		var building: Dictionary = state.buildings[entity_id]
+		var color := Color.GREEN if building.get("status", "") == "running" else Color(0.65, 0.7, 0.75)
+		draw_rect(Rect2(_world_to_local(building.get("position", Vector2.ZERO)) - Vector2(2, 2), Vector2(4, 4)), color)
+	for bookmark_position in _bookmarks.values():
+		draw_circle(_world_to_local(Vector2(bookmark_position)), 3.0, Color(1.0, 0.8, 0.25))
+	if camera != null:
+		var viewport_size := get_viewport_rect().size / camera.zoom
+		var camera_rect := Rect2(camera.global_position - viewport_size * 0.5, viewport_size)
+		var mini_camera_rect := Rect2(_world_to_local(camera_rect.position), camera_rect.size / _world_rect.size * size)
+		draw_rect(mini_camera_rect, Color.WHITE, false, 1.0)
+
+func _gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		_dragging = event.pressed
+		if event.pressed:
+			_move_camera_to_local(event.position)
+		accept_event()
+	elif event is InputEventMouseMotion and _dragging and event.button_mask & MOUSE_BUTTON_MASK_LEFT != 0:
+		_move_camera_to_local(event.position)
+		accept_event()
+
+func _move_camera_to_local(local_position: Vector2) -> void:
+	if camera == null:
+		return
+	var normalized := Vector2(clampf(local_position.x / maxf(size.x, 1.0), 0.0, 1.0), clampf(local_position.y / maxf(size.y, 1.0), 0.0, 1.0))
+	camera.global_position = _world_rect.position + normalized * _world_rect.size
+	camera.force_update_scroll()
+	queue_redraw()
+
+func _world_to_local(world_position: Vector2) -> Vector2:
+	return (world_position - _world_rect.position) / _world_rect.size * size

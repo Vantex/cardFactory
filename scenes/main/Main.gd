@@ -5,6 +5,8 @@ extends Node2D
 @onready var connection_renderer: Node2D = $ConnectionRenderer
 @onready var input_handler: Node2D = $InputHandler
 @onready var factory_workspace_ui: CanvasLayer = $FactoryWorkspaceUI
+@onready var blueprint_workspace: Control = $FactoryWorkspaceUI/BlueprintWorkspace
+@onready var mini_map: Control = $FactoryWorkspaceUI/MiniMap
 
 var _synced_selected_building_id := ""
 
@@ -15,6 +17,13 @@ func _ready() -> void:
 	card_renderer.set_input_handler(input_handler)
 	connection_renderer.set_game_state(game_state)
 	input_handler.set_ui_hit_test(factory_workspace_ui.is_pointer_over_ui)
+	input_handler.set_blueprint_workspace(blueprint_workspace)
+	blueprint_workspace.set_input_handler(input_handler)
+	input_handler.blueprint_capture_requested.connect(blueprint_workspace.request_capture)
+	input_handler.blueprint_deployment_requested.connect(blueprint_workspace.request_deployment)
+	blueprint_workspace.capture_intent.connect(_on_blueprint_capture_intent)
+	blueprint_workspace.deployment_intent.connect(_on_blueprint_deployment_intent)
+	mini_map.set_camera($WorldCamera)
 
 	EventBus.card_placed.connect(_on_card_placed)
 	EventBus.card_selected.connect(_on_card_selected)
@@ -96,3 +105,10 @@ func _on_pause_toggled_requested() -> void:
 func _on_speed_requested(speed: float) -> void:
 	GameManager.get_game_state().speed = speed
 	EventBus.simulation_updated.emit()
+
+func _on_blueprint_capture_intent(entity_ids: Array) -> void:
+	blueprint_workspace.accept_capture_result(GameManager.get_game_state().capture_blueprint(entity_ids))
+
+func _on_blueprint_deployment_intent(position: Vector2, rotation_quarters: int, mirrored: bool) -> void:
+	var result := GameManager.get_game_state().try_deploy_blueprint(blueprint_workspace.get_draft(), position, rotation_quarters, mirrored)
+	blueprint_workspace.accept_deployment_result(result)

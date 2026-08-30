@@ -13,6 +13,8 @@ enum Mode {
 
 signal selection_changed(entity_ids: Array)
 signal delete_confirmation_requested(entity_ids: Array)
+signal blueprint_capture_requested(entity_ids: Array)
+signal blueprint_deployment_requested(position: Vector2)
 
 const CARD_SIZE := CardRenderer.CARD_SIZE
 const PORT_SIZE := CardRenderer.PORT_SIZE
@@ -52,9 +54,16 @@ var selection_box_additive := false
 var pan_last_screen_position := Vector2.ZERO
 var _ui_hit_test := Callable()
 var _syncing_selection := false
+var _blueprint_workspace: Control
 
 func set_ui_hit_test(hit_test: Callable) -> void:
 	_ui_hit_test = hit_test
+
+func set_blueprint_workspace(workspace: Control) -> void:
+	_blueprint_workspace = workspace
+
+func get_blueprint_workspace() -> Control:
+	return _blueprint_workspace
 
 func get_mode_name() -> String:
 	match current_mode:
@@ -197,6 +206,12 @@ func _has_pending_pointer_release(button_index: MouseButton) -> bool:
 	return false
 
 func _handle_key_press(event: InputEventKey) -> void:
+	if event.ctrl_pressed and event.keycode == KEY_C:
+		request_blueprint_capture()
+		return
+	if event.ctrl_pressed and event.keycode == KEY_V:
+		request_blueprint_deployment_at_camera()
+		return
 	match event.keycode:
 		KEY_ESCAPE:
 			cancel_operation()
@@ -224,6 +239,17 @@ func _handle_key_press(event: InputEventKey) -> void:
 			start_placing_card("power_generator")
 		KEY_T:
 			start_placing_card("matrix_lab")
+
+func request_blueprint_capture() -> void:
+	blueprint_capture_requested.emit(get_selected_entity_ids())
+
+func request_blueprint_deployment_at_camera() -> void:
+	var camera := _get_camera()
+	if camera != null:
+		request_blueprint_deployment(camera.global_position)
+
+func request_blueprint_deployment(position: Vector2) -> void:
+	blueprint_deployment_requested.emit(position)
 
 func _handle_mouse_button(event: InputEventMouseButton, screen_position: Vector2) -> void:
 	if event.button_index == MOUSE_BUTTON_WHEEL_UP or event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
