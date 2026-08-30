@@ -14,6 +14,7 @@ func _ready() -> void:
 	_test_first_science_chain_from_raw_ore()
 	_test_phase_order_and_tick_boundaries()
 	_test_research_requires_powered_matrix_lab()
+	_test_tier_technology_effects_change_real_production()
 
 	if _failures > 0:
 		printerr("SIMULATION CORE TESTS FAILED")
@@ -204,6 +205,31 @@ func _test_research_requires_powered_matrix_lab() -> void:
 	_add_building(state, "solar_b", "solar_panel")
 	_run_seconds(engine, 1.0)
 	_expect(state.get_technology_progress("factory_foundations") > 0.0, "a powered legal matrix lab advances research during the dedicated fixed-tick phase")
+
+func _test_tier_technology_effects_change_real_production() -> void:
+	# Each assertion catches one catalog tier being omitted from the real
+	# ProductionSystem multiplier, rather than only checking an effect getter.
+	_expect(_iron_output_after_seconds(["factory_foundations"], {}, 0.49) == 1.0, "planetary technology increases real smelter output before the base second cycle")
+	_expect(_iron_output_after_seconds(["interstellar_logistics"], {}, 0.49) == 1.0, "interstellar technology increases real smelter output before the base second cycle")
+	_expect(_iron_output_after_seconds(["dyson_engineering"], {}, 0.49) == 1.0, "dyson technology increases real smelter output before the base second cycle")
+	_expect(_iron_output_after_seconds(["infinite_optimization"], {"infinite_optimization": 2}, 0.49) == 1.0, "second infinite level cumulatively increases real smelter output")
+	var persisted := GameState.new()
+	persisted.completed_technologies = ["infinite_optimization"]
+	persisted.technology_levels = {"infinite_optimization": 2}
+	var restored := GameStateCodec.from_persistent_dict(JSON.parse_string(JSON.stringify(GameStateCodec.to_persistent_dict(persisted))))
+	_expect(restored is GameState and _iron_output_from_state(restored, 0.49) == 1.0, "loaded infinite technology levels continue to affect real production")
+
+func _iron_output_after_seconds(completed: Array, levels: Dictionary, seconds: float) -> float:
+	var state := GameState.new()
+	state.completed_technologies = completed.duplicate()
+	state.technology_levels = levels.duplicate(true)
+	return _iron_output_from_state(state, seconds)
+
+func _iron_output_from_state(state: GameState, seconds: float) -> float:
+	_add_building(state, "solar", "solar_panel")
+	_add_building(state, "smelter", "smelter", {"recipe_id": "iron_ingot_recipe", "speed": 2.0, "input_buffer": {"iron_ore": 10.0}})
+	_run_seconds(SimulationEngine.new(state), seconds)
+	return float(state.buildings["smelter"].get("output_buffer", {}).get("iron_ingot", 0.0))
 
 func _make_powered_smelter_state() -> GameState:
 	var state := GameState.new()

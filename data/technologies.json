@@ -20,12 +20,12 @@
     "interstellar_logistics": {
       "id": "interstellar_logistics", "name": "星际物流", "description": "解锁星际物流站。", "tier": "interstellar",
       "cost": {"matrix_science_1": 30}, "duration": 40.0, "prerequisites": ["advanced_materials"],
-      "unlocks": [{"kind": "building", "id": "interstellar_logistics_station"}], "effects": {"production_speed": 1.03}
+      "unlocks": [{"kind": "building", "id": "interstellar_logistics_station"}], "effects": {"production_speed": 1.05}
     },
     "dyson_engineering": {
       "id": "dyson_engineering", "name": "戴森工程", "description": "解锁戴森球发射器。", "tier": "dyson",
       "cost": {"matrix_science_1": 40}, "duration": 50.0, "prerequisites": ["interstellar_logistics"],
-      "unlocks": [{"kind": "building", "id": "dyson_sphere_launcher"}], "effects": {"production_speed": 1.03}
+      "unlocks": [{"kind": "building", "id": "dyson_sphere_launcher"}], "effects": {"production_speed": 1.05}
     },
     "infinite_optimization": {
       "id": "infinite_optimization", "name": "无限优化", "description": "可重复的工厂节拍优化。", "tier": "infinite", "repeatable": {"cost_rule": "fixed"},
