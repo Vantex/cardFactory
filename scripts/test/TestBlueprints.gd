@@ -324,6 +324,24 @@ func _test_workspace_intents_and_import(codec_script: Script) -> void:
 	main.get_node("WorldCamera").global_position = Vector2(1000, 500)
 	deploy_button.pressed.emit()
 	_expect(main_input.get_blueprint_workspace() != null and main.get_node_or_null("FactoryWorkspaceUI/MiniMap") != null and state.buildings.size() == 4, "formal deploy-at-camera control routes through Main into authoritative GameState")
+	var workspace_ui := main.get_node("FactoryWorkspaceUI")
+	var panel_point := capture_button.get_global_rect().get_center()
+	var minimap := main.get_node("FactoryWorkspaceUI/MiniMap") as Control
+	_expect(workspace_ui.is_pointer_over_ui(panel_point) and workspace_ui.is_pointer_over_ui(minimap.get_global_rect().get_center()), "workspace hit testing recognizes the visible blueprint panel and mini-map")
+	state.buildings[selected_id]["output_item"] = "iron_ore"
+	state.construction_inventory["conveyor_belt_mk1"] = 1.0
+	var covered_world_point: Vector2 = main_input.call("_screen_to_world", panel_point)
+	_add_building(state, "smelter", covered_world_point - Vector2(9, 72))
+	var connections_before_release := state.connections.size()
+	main_input.start_connection(selected_id)
+	var covered_release := InputEventMouseButton.new()
+	covered_release.button_index = MOUSE_BUTTON_LEFT
+	covered_release.pressed = false
+	covered_release.position = panel_point
+	covered_release.global_position = panel_point
+	viewport.push_input(covered_release)
+	await get_tree().process_frame
+	_expect(main_input.get_mode_name() == "idle" and state.connections.size() == connections_before_release, "release over the open blueprint workspace cancels without targeting the covered world input port")
 	viewport.queue_free()
 	workspace.queue_free()
 	input_handler.queue_free()
