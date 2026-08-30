@@ -390,32 +390,34 @@ git commit -m "feat: add advanced canvas and belt editing"
 - 修改：`scripts/game/GameState.gd`
 - 修改：`tools/run_tests.ps1`
 
-- [ ] **步骤 1：写蓝图原子性失败测试**
+- [x] **步骤 1：写蓝图原子性失败测试**
 
 覆盖选择捕获、内部连接、旋转、镜像、位置偏移、重叠、缺料、非法引用、重复粘贴和完整回滚。
 
-- [ ] **步骤 2：定义蓝图 v1 格式**
+- [x] **步骤 2：定义蓝图 v1 格式**
 
 格式包含版本、相对位置、建筑类型/配置和内部线路，不包含运行中库存、进度、ID、选中态或节点引用。
 
-- [ ] **步骤 3：实现预览与原子部署**
+- [x] **步骤 3：实现预览与原子部署**
 
 先生成全部目标实体和总成本，再统一验证空间、解锁和施工库存；任何失败不创建实体、不扣物资。
 
-- [ ] **步骤 4：实现导入导出**
+- [x] **步骤 4：实现导入导出**
 
 只接受受限 JSON；限制数量、坐标和文本长度；导入不自动执行部署。
 
-- [ ] **步骤 5：重写小地图并加入区域/书签**
+- [x] **步骤 5：重写小地图并加入区域/书签**
 
 小地图读取实时相机和空间索引；点击/拖动移动相机。区域与书签只影响展示和导航，不进入生产规则。
 
-- [ ] **步骤 6：提交**
+- [x] **步骤 6：提交**
 
 ```powershell
 git add scripts/game/BlueprintSystem.gd scripts/game/BlueprintCodec.gd scenes/ui/BlueprintWorkspace.gd scenes/ui/MiniMap.gd scripts/input/InputHandler.gd scripts/game/GameState.gd scripts/test/TestBlueprints.gd scenes/test/TestBlueprints.tscn tools/run_tests.ps1
 git commit -m "feat: add atomic factory blueprints"
 ```
+
+**完成记录（2026-08-30）：** 已交付受限蓝图 v1、选择捕获、内部线路与完整持久配置、顺逆时针/镜像预览、剪贴板导入导出和预检后原子部署。空间、科技解锁、建筑/线路兼容性及施工库存会在任何状态写入前统一验证；提交阶段故障会恢复建筑、线路、库存与下一个稳定 ID，失败不发出半完成事件。正式 Main 通过 Inspector 入口打开默认收起的蓝图工作台，普通画布不会被常驻浮层遮挡；工作台与小地图进入统一 UI 命中边界，连接/框选释放不会穿透。小地图使用实时相机与派生空间索引，动态覆盖远端/负坐标建筑，并提供只影响展示和导航的区域与书签。`TestBlueprints` 以 52 项行为断言加入统一门禁，七个权威场景全部通过。交付提交为 `dc518a6`、`52d2dec`、`0226572` 与 `e5fb7d7`。
 
 ---
 

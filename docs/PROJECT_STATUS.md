@@ -4,7 +4,7 @@
 
 ## Phase 2：已完成
 
-Phase 2 的工厂工作区已接入主场景，并由正式测试门和无窗口主场景启动验证覆盖。Stage 0 的可信门禁、版本化权威状态和可靠本地存档入口已经完成；Stage 1 已交付固定步长、真实电力、守恒库存、基础手工制造和从原矿到基础研究矩阵的完整科学链。目标、minimap 和高级系统仍未交付。
+Phase 2 的工厂工作区已接入主场景，并由正式测试门和无窗口主场景启动验证覆盖。Stage 0 的可信门禁、版本化权威状态和可靠本地存档入口已经完成；Stage 1 已交付固定步长、真实电力、守恒库存、基础手工制造和从原矿到基础研究矩阵的完整科学链；Stage 2 已交付高级画布/线路编辑、蓝图与实时小地图。正式教程、战役、科技推进和后续宏观系统仍未交付。
 
 ## 活跃运行树与数据流
 
@@ -17,11 +17,14 @@ project.godot
 │                              ├─ PowerSystem
 │                              ├─ ProductionSystem
 │                              ├─ HandcraftSystem
+│                              ├─ BlueprintSystem + BlueprintCodec
 │                              ├─ BeltSystem
 │                              └─ StatisticsSystem
 └─ Main.tscn → AppShell → StartMenu + SaveSlotsPanel
                + WorldCamera + CardRenderer + ConnectionRenderer
                + InputHandler + FactoryWorkspaceUI
+                              ├─ BlueprintWorkspace
+                              └─ MiniMap
 ```
 
 主场景先显示离线开始菜单和 10 个本地槽位；会话启动后才启用工厂输入与模拟。`AppShell` 只发送新游戏、继续、删除和返回意图，`GameManager` 统一协调保存、状态替换、自动保存和退出握手。`FactoryWorkspaceUI` 发出建造、手工制造、连接、批量编辑、删除、暂停和速度意图；`InputHandler` 仲裁画布操作并持有会话选择集合；两个 renderer 只读 `GameState`。`InventorySystem`、`ConstructionSystem` 和 `HandcraftSystem` 维护资源所有权与原子命令，`SimulationEngine` 以 60 Hz 固定 tick 更新权威状态。
@@ -34,7 +37,7 @@ project.godot
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1
 ```
 
-它先自动执行一次无窗口编辑器导入，再顺序运行 `TestBaseline`、`TestFactoryWorkspace`、`TestStatePersistence`、`TestSimulationCore`、`TestInventoryConstruction` 与 `TestAdvancedCanvas`，要求各自唯一的成功标记。门禁会在 Godot 非零退出、`SCRIPT ERROR`、`Parse Error`、失败标记、成功标记缺失/重复、ObjectDB 泄漏或资源仍被占用时失败。全新检出不再需要人工预热全局脚本类缓存。
+它先自动执行一次无窗口编辑器导入，再顺序运行 `TestBaseline`、`TestFactoryWorkspace`、`TestStatePersistence`、`TestSimulationCore`、`TestInventoryConstruction`、`TestAdvancedCanvas` 与 `TestBlueprints`，要求各自唯一的成功标记。门禁会在 Godot 非零退出、`SCRIPT ERROR`、`Parse Error`、失败标记、成功标记缺失/重复、ObjectDB 泄漏或资源仍被占用时失败。全新检出不再需要人工预热全局脚本类缓存。
 
 工作区测试覆盖：
 
@@ -51,6 +54,10 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1
 - 画布选择属于会话状态，支持 Ctrl 增减和从空白开始的正向/反向框选；建筑批量移动和确认删除会完整预检并原子提交，任一锁定、重叠或退款容量失败均不产生部分结果。
 - 线路支持 Mk.I/II/III、1～4 并联、1/2/4 堆叠、优先级、路线/手动偏移、监控和启停；模拟吞吐使用“等级额定值 × 并联 × 堆叠”，竞争线路按优先级及稳定 ID 顺序处理。
 - 单选检查器显示完整建筑或线路配置；纯建筑和纯线路多选只提供共同命令。整网同步/升级要求显式选择模板线路，按真实连通端点报告成功、跳过和失败原因，并保留当前流量、累计统计与在途货物。
+- 蓝图 v1 只保存版本、相对位置、建筑类型/生产配置和内部线路的持久配置，不保存运行中库存、进度、稳定 ID、选中态、节点引用、在途货物或累计统计；受限 JSON 导入校验字段类型、数量、坐标、文本长度与引用，导入本身不会部署。
+- 蓝图部署会先构造完整目标图与总成本，再统一验证空间、科技解锁、采集/配方输出、线路端点兼容性、重复边和施工库存；任一失败不创建实体、不扣物资、不消耗稳定 ID。提交阶段故障会完整恢复建筑、线路、库存和下一个 ID。
+- 正式 Main 的 Inspector 提供默认收起的蓝图入口；工作台支持捕获、顺逆时针旋转、镜像、变换后 footprint 预览、剪贴板导入导出和部署到相机。工作台与小地图纳入统一 UI 命中测试，连接或框选释放不会穿透到其后的世界对象。
+- 小地图读取实时相机和由当前 `GameState` 派生的空间索引，动态覆盖远端及负坐标建筑，点击/拖动可移动相机；区域和书签只改变绘制与导航，不进入生产、库存或存档规则。
 - 矿机可在检查器切换铁矿、铜矿、煤和石料采集目标；权威模拟会运行铁/铜原矿、三类冶炼、两类组装和矩阵编码的完整连接图，最终产出基础研究矩阵。
 - 当前目录包含 39 个物品、30 个建筑、22 个配方和 3 项科技。采集、燃料、设备缓存、速度、多输入、多输出及副产物由 JSON 驱动；每项副产物都会进入生产完成事件。完整映射见[内容清单](current/CONTENT_CATALOG.md)。
 - `DataManager` 拒绝重复 ID、缺失引用、非法数量/时间/容量、科技循环及无法制造的强制进程物品；`GameStateValidator` 另外拒绝建筑配方错配和采集器选择目录外资源。
@@ -71,8 +78,8 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1
 
 ## 已知缺口与延期范围
 
-- 蓝图、建筑缩略图、小地图、区域和书签仍未交付。
-- 移动端布局、云存档、正式目标/胜负系统和 minimap 未进入活跃主场景；资源栏中的新手目标只是上下文操作引导。
+- 建筑缩略图仍未交付。
+- 移动端布局、云存档和正式目标/胜负系统未进入活跃主场景；资源栏中的新手目标只是上下文操作引导。
 - 本地存档已经交付，但当前没有单独的“立即保存”按钮；保存以新建、120 秒自动保存、返回菜单和退出握手触发。
 - 云同步、云备份、云恢复、存档压缩、解压和迁移均为延期能力，当前统一返回 `ERR_UNAVAILABLE`，不会伪装成功；`PerformanceSystem` 也明确报告未启用 Worker 支持。
 - 当前电力仍是单一全局电网；尚未实现电网分区、储能、发电优先级、正式燃料补给 UI 和昼夜/天气驱动的可再生波动。
@@ -81,7 +88,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1
 
 ## 下一阶段建议
 
-用户已批准继续对齐 DSPONLINE 的完整单机玩法，并明确排除账号、云存档、排行榜、在线社交和服务器运维。版本化状态、可靠本地存档、固定步长、真实电力、守恒施工库存、第一条科学链、多选批量编辑和线路配置已经完成；下一项按[单机实施路线图](current/SINGLE_PLAYER_ROADMAP.md)开展任务 8，补齐蓝图、小地图、区域与书签，再依次推进科技、多行星物流、戴森终局及产品化。
+用户已批准继续对齐 DSPONLINE 的完整单机玩法，并明确排除账号、云存档、排行榜、在线社交和服务器运维。版本化状态、可靠本地存档、固定步长、真实电力、守恒施工库存、第一条科学链、多选批量编辑、线路配置、蓝图和实时小地图已经完成；下一项按[单机实施路线图](current/SINGLE_PLAYER_ROADMAP.md)开展任务 9，交付正式教程、战役与成就，再依次推进科技、多行星物流、戴森终局及产品化。
 
 `DSPONLINE` 只在其非商业许可范围内作为行为和架构参考；不复制其源码或素材，也不把账号、云档、多核 Worker、排行榜等高级能力作为 CardFactory 当前开发的前置条件。
 
