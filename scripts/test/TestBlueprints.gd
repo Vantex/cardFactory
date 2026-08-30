@@ -12,6 +12,8 @@ func _ready() -> void:
 		_test_capture_and_schema(blueprint_script)
 		_test_transform_and_offset(blueprint_script)
 		_test_atomic_deployment_failures(blueprint_script)
+		_test_semantic_deployment_validation(blueprint_script)
+		_test_line_configuration_round_trip(blueprint_script, codec_script)
 		_test_repeated_paste(blueprint_script)
 		_test_restricted_codec(codec_script)
 		await _test_workspace_intents_and_import(codec_script)
@@ -140,6 +142,43 @@ func _test_repeated_paste(blueprint_script: Script) -> void:
 	var second: Dictionary = system.deploy(blueprint, Vector2(400, 0))
 	_expect(first.get("ok", false) and second.get("ok", false) and first.entity_ids[0] != second.entity_ids[0] and state.buildings.size() == 2 and state.construction_inventory.miner == 0.0, "repeated paste creates fresh IDs and charges each deployment")
 
+func _test_semantic_deployment_validation(blueprint_script: Script) -> void:
+	var invalid_output_state := GameState.new()
+	invalid_output_state.construction_inventory = {"miner": 1.0}
+	var invalid_output := {"version": 1, "entities": [{"ref": "entity_0", "type": "miner", "position": Vector2.ZERO, "configuration": {"output_item": "graphene"}}], "connections": []}
+	var output_before := invalid_output_state.copy_state()
+	var output_result: Dictionary = blueprint_script.new(invalid_output_state).deploy(invalid_output, Vector2.ZERO)
+	_expect(not output_result.get("ok", true) and output_result.get("reason", "") == "invalid_reference" and _same_authoritative_state(invalid_output_state, output_before), "imported extractor output must belong to its building definition")
+
+	var graph_state := GameState.new()
+	graph_state.construction_inventory = {"miner": 1.0, "smelter": 1.0, "conveyor_belt_mk1": 2.0}
+	var incompatible := {"version": 1, "entities": [{"ref": "source", "type": "miner", "position": Vector2.ZERO, "configuration": {"output_item": "iron_ore"}}, {"ref": "target", "type": "smelter", "position": Vector2(400, 0), "configuration": {"recipe_id": "copper_ingot_recipe"}}], "connections": [{"source": "source", "target": "target", "type": "conveyor_belt_mk1", "configuration": {"item_id": "iron_ore"}}]}
+	var incompatible_before := graph_state.copy_state()
+	var incompatible_result: Dictionary = blueprint_script.new(graph_state).deploy(incompatible, Vector2.ZERO)
+	_expect(not incompatible_result.get("ok", true) and incompatible_result.get("reason", "") == "incompatible_connection" and _same_authoritative_state(graph_state, incompatible_before), "planned connections reject source/item/target recipe incompatibility atomically")
+	var duplicate := incompatible.duplicate(true)
+	duplicate.entities[1].configuration.recipe_id = "iron_ingot_recipe"
+	duplicate.connections.append(duplicate.connections[0].duplicate(true))
+	var duplicate_result: Dictionary = blueprint_script.new(graph_state).deploy(duplicate, Vector2.ZERO)
+	_expect(not duplicate_result.get("ok", true) and duplicate_result.get("reason", "") == "duplicate_connection" and _same_authoritative_state(graph_state, incompatible_before), "planned graph rejects duplicate source-target edges without partial mutation")
+
+func _test_line_configuration_round_trip(blueprint_script: Script, codec_script: Script) -> void:
+	var source_state := GameState.new()
+	var source_id := _add_building(source_state, "miner", Vector2.ZERO, {"output_item": "iron_ore"})
+	var target_id := _add_building(source_state, "smelter", Vector2(400, 0), {"recipe_id": "iron_ingot_recipe"})
+	source_state.add_connection({"source_id": source_id, "target_id": target_id, "type": "conveyor_belt_mk2", "item_id": "iron_ore", "parallel_count": 2, "stack_size": 4, "priority": 2, "route_mode": "manual", "route_offset_y": 33.0, "monitor_enabled": true, "enabled": false, "current_flow": 19.0, "active": true, "in_transit": [{"amount": 1.0}], "total_transferred": 900.0})
+	var capture: Dictionary = blueprint_script.new(source_state).capture_selection([source_id, target_id])
+	var configuration: Dictionary = capture.blueprint.connections[0].configuration
+	_expect(configuration == {"item_id": "iron_ore", "parallel_count": 2, "stack_size": 4, "priority": 2, "route_mode": "manual", "route_offset_y": 33.0, "monitor_enabled": true, "enabled": false}, "capture preserves every persistent Task 7 belt field and excludes runtime fields")
+	var encoded: Dictionary = codec_script.new().encode(capture.blueprint)
+	var decoded: Dictionary = codec_script.new().decode(encoded.get("text", ""))
+	_expect(decoded.get("ok", false) and decoded.blueprint.connections[0].configuration == configuration, "restricted JSON round-trips the complete persistent line configuration")
+	var target_state := GameState.new()
+	target_state.construction_inventory = {"miner": 1.0, "smelter": 1.0, "conveyor_belt_mk2": 2.0}
+	var deployed: Dictionary = blueprint_script.new(target_state).deploy(decoded.blueprint, Vector2.ZERO)
+	var deployed_line: Dictionary = target_state.connections[deployed.connection_ids[0]] if deployed.get("ok", false) else {}
+	_expect(deployed.get("ok", false) and deployed_line.route_offset_y == 33.0 and deployed_line.monitor_enabled and not deployed_line.enabled and deployed_line.current_flow == 0.0 and not deployed_line.active and deployed_line.get("in_transit", []).is_empty(), "deployment restores persistent line configuration with fresh runtime state")
+
 func _test_restricted_codec(codec_script: Script) -> void:
 	var codec = codec_script.new()
 	var blueprint := {
@@ -151,6 +190,7 @@ func _test_restricted_codec(codec_script: Script) -> void:
 	var decoded: Dictionary = codec.decode(encoded.get("text", ""))
 	_expect(encoded.get("ok", false) and decoded.get("ok", false) and decoded.blueprint == blueprint, "restricted JSON round-trips blueprint v1 without runtime values")
 	var unknown_key: Dictionary = codec.decode('{"version":1,"entities":[],"connections":[],"runtime_inventory":{}}')
+	var non_string_identifier: Dictionary = codec.decode('{"version":1,"entities":[{"ref":true,"type":7,"position":[0,0],"configuration":{}}],"connections":[]}')
 	var fractional_version: Dictionary = codec.decode('{"version":1.9,"entities":[],"connections":[]}')
 	var fractional_count: Dictionary = codec.decode('{"version":1,"entities":[{"ref":"entity_0","type":"miner","position":[0,0],"configuration":{}},{"ref":"entity_1","type":"smelter","position":[400,0],"configuration":{}}],"connections":[{"source":"entity_0","target":"entity_1","type":"conveyor_belt_mk1","configuration":{"parallel_count":1.9}}]}')
 	var huge_coordinate: Dictionary = codec.decode('{"version":1,"entities":[{"ref":"entity_0","type":"miner","position":[1000001,0],"configuration":{}}],"connections":[]}')
@@ -159,7 +199,7 @@ func _test_restricted_codec(codec_script: Script) -> void:
 		too_many_entities.append({"ref": "entity_%d" % index, "type": "miner", "position": [index * 300, 0], "configuration": {}})
 	var too_many: Dictionary = codec.decode(JSON.stringify({"version": 1, "entities": too_many_entities, "connections": []}))
 	var long_text: Dictionary = codec.decode(" " .repeat(codec.MAX_TEXT_LENGTH + 1))
-	_expect(not unknown_key.get("ok", true) and not fractional_version.get("ok", true) and not fractional_count.get("ok", true) and not huge_coordinate.get("ok", true) and not too_many.get("ok", true) and not long_text.get("ok", true), "codec rejects unknown/fractional fields and enforces coordinate, entity-count, and text limits")
+	_expect(not unknown_key.get("ok", true) and not non_string_identifier.get("ok", true) and not fractional_version.get("ok", true) and not fractional_count.get("ok", true) and not huge_coordinate.get("ok", true) and not too_many.get("ok", true) and not long_text.get("ok", true), "codec rejects non-string identifiers, unknown/fractional fields, and all configured limits")
 
 func _test_workspace_intents_and_import(codec_script: Script) -> void:
 	var workspace_script := load("res://scenes/ui/BlueprintWorkspace.gd")
@@ -167,12 +207,13 @@ func _test_workspace_intents_and_import(codec_script: Script) -> void:
 	if workspace_script == null:
 		return
 	var state := GameState.new()
-	state.construction_inventory = {"miner": 1.0}
+	state.construction_inventory = {"miner": 1.0, "smelter": 1.0}
 	var selected_id := _add_building(state, "miner", Vector2(100, 100))
+	var selected_second_id := _add_building(state, "smelter", Vector2(500, 100))
 	GameManager.replace_game_state(state)
 	var input_handler: Node = load("res://scripts/input/InputHandler.gd").new()
 	add_child(input_handler)
-	input_handler.set_selected_entities([selected_id])
+	input_handler.set_selected_entities([selected_id, selected_second_id])
 	var workspace: Control = workspace_script.new()
 	workspace.set_input_handler(input_handler)
 	add_child(workspace)
@@ -186,7 +227,7 @@ func _test_workspace_intents_and_import(codec_script: Script) -> void:
 	var captured: Dictionary = workspace.capture_selection()
 	var exported: Dictionary = workspace.export_text()
 	var buildings_before := state.buildings.duplicate(true)
-	_expect(captured.get("ok", false) and capture_intents == [[selected_id]] and exported.get("ok", false) and imported.get("ok", false) and state.buildings == buildings_before, "workspace emits capture intent from the shared selection and import never auto-deploys")
+	_expect(captured.get("ok", false) and capture_intents == [[selected_id, selected_second_id]] and exported.get("ok", false) and imported.get("ok", false) and state.buildings == buildings_before, "workspace emits capture intent from the shared selection and import never auto-deploys")
 	var deployment_intents: Array = []
 	workspace.deployment_intent.connect(func(position: Vector2, _rotation: int, _mirrored: bool) -> void: deployment_intents.append(position))
 	var deployment: Dictionary = workspace.request_deployment(Vector2(600, 100))
@@ -198,10 +239,32 @@ func _test_workspace_intents_and_import(codec_script: Script) -> void:
 	viewport.add_child(main)
 	await get_tree().process_frame
 	var main_input: Node = main.get_node("InputHandler")
-	main_input.set_selected_entities([selected_id])
-	main_input.request_blueprint_capture()
-	main_input.request_blueprint_deployment(Vector2(600, 100))
-	_expect(main_input.get_blueprint_workspace() != null and main.get_node_or_null("FactoryWorkspaceUI/MiniMap") != null and state.buildings.size() == 2, "formal Main mounts blueprint/minimap UI and controller applies intents through GameState")
+	var formal_workspace: Control = main.get_node("FactoryWorkspaceUI/BlueprintWorkspace")
+	main_input.set_selected_entities([selected_id, selected_second_id])
+	var capture_button := formal_workspace.get_node_or_null("Panel/Controls/Capture") as Button
+	var rotate_cw_button := formal_workspace.get_node_or_null("Panel/Controls/RotateCW") as Button
+	var rotate_ccw_button := formal_workspace.get_node_or_null("Panel/Controls/RotateCCW") as Button
+	var mirror_button := formal_workspace.get_node_or_null("Panel/Controls/Mirror") as Button
+	var export_button := formal_workspace.get_node_or_null("Panel/Controls/Export") as Button
+	var import_button := formal_workspace.get_node_or_null("Panel/Controls/Import") as Button
+	var deploy_button := formal_workspace.get_node_or_null("Panel/Controls/Deploy") as Button
+	_expect(formal_workspace.size.x > 0.0 and formal_workspace.size.y > 0.0 and capture_button != null and rotate_cw_button != null and rotate_ccw_button != null and mirror_button != null and export_button != null and import_button != null and deploy_button != null, "formal Main exposes a visible player-operable blueprint workspace")
+	capture_button.pressed.emit()
+	var original_preview: Array = formal_workspace.get_preview_positions()
+	rotate_cw_button.pressed.emit()
+	var clockwise_preview: Array = formal_workspace.get_preview_positions()
+	rotate_ccw_button.pressed.emit()
+	mirror_button.pressed.emit()
+	var mirrored_preview: Array = formal_workspace.get_preview_positions()
+	_expect(not original_preview.is_empty() and clockwise_preview != original_preview and mirrored_preview != original_preview and formal_workspace.get_preview_footprints().size() == 2, "formal controls change an actual transformed footprint preview")
+	export_button.pressed.emit()
+	var exported_clipboard: String = formal_workspace.get_last_export_text()
+	formal_workspace.clear_draft()
+	import_button.pressed.emit()
+	_expect(not exported_clipboard.is_empty() and not formal_workspace.get_draft().is_empty(), "formal export/import controls round-trip the clipboard without deployment")
+	main.get_node("WorldCamera").global_position = Vector2(1000, 500)
+	deploy_button.pressed.emit()
+	_expect(main_input.get_blueprint_workspace() != null and main.get_node_or_null("FactoryWorkspaceUI/MiniMap") != null and state.buildings.size() == 4, "formal deploy-at-camera control routes through Main into authoritative GameState")
 	viewport.queue_free()
 	workspace.queue_free()
 	input_handler.queue_free()
@@ -256,6 +319,20 @@ func _test_minimap_navigation_is_presentational() -> void:
 	_expect(camera.global_position == Vector2(800, 600) and navigated, "mini-map click/drag and bookmarks navigate the live camera")
 	_expect(minimap.get_visible_entity_ids().has(building_id), "mini-map queries the supplied live spatial index")
 	_expect(_same_authoritative_state(state, before), "regions and bookmarks do not change production or authoritative simulation state")
+	var dynamic_map: Control = minimap_script.new()
+	dynamic_map.size = Vector2(200, 150)
+	dynamic_map.set_camera(camera)
+	world.add_child(dynamic_map)
+	var negative_id := _add_building(state, "miner", Vector2(-5000, -4000))
+	var far_id := _add_building(state, "smelter", Vector2(9000, 7000))
+	var dynamic_bounds: Rect2 = dynamic_map.get_effective_world_rect()
+	_expect(dynamic_bounds.has_point(state.buildings[negative_id].position) and dynamic_bounds.has_point(state.buildings[far_id].position), "mini-map expands live bounds for negative and far entities")
+	var center_click := InputEventMouseButton.new()
+	center_click.button_index = MOUSE_BUTTON_LEFT
+	center_click.pressed = true
+	center_click.position = Vector2(100, 75)
+	dynamic_map._gui_input(center_click)
+	_expect(camera.global_position.is_equal_approx(dynamic_bounds.get_center()), "mini-map navigation mapping uses the current derived bounds")
 	viewport.queue_free()
 	await get_tree().process_frame
 

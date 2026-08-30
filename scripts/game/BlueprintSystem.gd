@@ -98,6 +98,7 @@ func deploy(blueprint: Dictionary, offset: Vector2, rotation_quarters: int = 0, 
 
 	var connection_plans: Array = []
 	var connection_items: Array[String] = []
+	var planned_edges: Dictionary = {}
 	for connection in normalized.connections:
 		if not local_refs.has(connection.source) or not local_refs.has(connection.target):
 			return _failure("invalid_reference", "蓝图连接引用不存在")
@@ -107,6 +108,13 @@ func deploy(blueprint: Dictionary, offset: Vector2, rotation_quarters: int = 0, 
 		var item_id := String(connection.configuration.get("item_id", ""))
 		if not item_id.is_empty() and DataManager.get_item(item_id).is_empty():
 			return _failure("invalid_reference", "蓝图线路物品引用不存在")
+		var edge_key := "%s>%s" % [connection.source, connection.target]
+		if planned_edges.has(edge_key):
+			return _failure("duplicate_connection", "蓝图包含重复连接")
+		planned_edges[edge_key] = true
+		var semantic_result := _validate_planned_connection(local_refs[connection.source], local_refs[connection.target], item_id)
+		if not semantic_result.get("ok", false):
+			return semantic_result
 		var parallel_count := int(connection.configuration.get("parallel_count", 1))
 		cost[connection_type] = float(cost.get(connection_type, 0.0)) + parallel_count
 		for _index in range(parallel_count):
@@ -176,6 +184,11 @@ func _capture_connection_configuration(connection: Dictionary) -> Dictionary:
 			configuration[key] = int(connection[key])
 	if connection.has("route_mode"):
 		configuration["route_mode"] = String(connection.route_mode)
+	if connection.has("route_offset_y"):
+		configuration["route_offset_y"] = float(connection.route_offset_y)
+	for key in ["monitor_enabled", "enabled"]:
+		if connection.has(key):
+			configuration[key] = bool(connection[key])
 	return configuration
 
 func _transform_position(position: Vector2, rotation_quarters: int, mirrored: bool) -> Vector2:
@@ -187,6 +200,7 @@ func _transform_position(position: Vector2, rotation_quarters: int, mirrored: bo
 	return result
 
 func _validate_entity_configuration(building_type: String, configuration: Dictionary) -> Dictionary:
+	var definition := DataManager.get_building(building_type)
 	var recipe_id := String(configuration.get("recipe_id", ""))
 	if not recipe_id.is_empty():
 		var recipe := DataManager.get_recipe(recipe_id)
@@ -197,7 +211,53 @@ func _validate_entity_configuration(building_type: String, configuration: Dictio
 	var output_item := String(configuration.get("output_item", ""))
 	if not output_item.is_empty() and DataManager.get_item(output_item).is_empty():
 		return _failure("invalid_reference", "蓝图输出物品引用不存在")
+	if not output_item.is_empty() and definition.get("kind", "") == "extractor":
+		var extraction: Dictionary = definition.get("extraction", {})
+		var allowed: Array = extraction.get("items", [extraction.get("item_id", "")])
+		if not allowed.has(output_item):
+			return _failure("invalid_reference", "蓝图采集物品不属于该建筑")
+	if not output_item.is_empty() and not recipe_id.is_empty():
+		var recipe_outputs: Array = DataManager.get_recipe(recipe_id).get("outputs", [])
+		var output_allowed := false
+		for output in recipe_outputs:
+			if String(output.get("item_id", "")) == output_item:
+				output_allowed = true
+		if not output_allowed:
+			return _failure("invalid_reference", "蓝图输出物品不属于所选配方")
 	return {"ok": true}
+
+func _validate_planned_connection(source_plan: Dictionary, target_plan: Dictionary, item_id: String) -> Dictionary:
+	var source_outputs: Array[String] = []
+	var source_configuration: Dictionary = source_plan.configuration
+	var explicit_output := String(source_configuration.get("output_item", ""))
+	if not explicit_output.is_empty():
+		source_outputs.append(explicit_output)
+	else:
+		var source_recipe := DataManager.get_recipe(String(source_configuration.get("recipe_id", "")))
+		for output in source_recipe.get("outputs", []):
+			source_outputs.append(String(output.get("item_id", "")))
+		if source_outputs.is_empty():
+			var source_definition := DataManager.get_building(String(source_plan.type))
+			var extraction: Dictionary = source_definition.get("extraction", {})
+			for output_value in extraction.get("items", [extraction.get("item_id", "")]):
+				if not String(output_value).is_empty():
+					source_outputs.append(String(output_value))
+	if item_id.is_empty() or not source_outputs.has(item_id):
+		return _failure("incompatible_connection", "蓝图源建筑不提供线路物品")
+	var target_configuration: Dictionary = target_plan.configuration
+	var target_recipe_id := String(target_configuration.get("recipe_id", ""))
+	var candidate_recipes: Array = []
+	if target_recipe_id.is_empty():
+		candidate_recipes = DataManager.get_recipes_for_building(String(target_plan.type))
+	else:
+		candidate_recipes = [DataManager.get_recipe(target_recipe_id)]
+	for recipe in candidate_recipes:
+		for input in recipe.get("inputs", []):
+			if String(input.get("item_id", "")) == item_id:
+				if target_recipe_id.is_empty():
+					target_configuration["recipe_id"] = String(recipe.get("id", ""))
+				return {"ok": true}
+	return _failure("incompatible_connection", "蓝图目标配方无法接收线路物品")
 
 func _is_catalog_entry_unlocked(kind: String, entry_id: String) -> bool:
 	var owners: Array[String] = []
@@ -265,7 +325,7 @@ func _make_building_data(building_type: String, position: Vector2, configuration
 func _make_connection_data(connection: Dictionary, ref_to_id: Dictionary) -> Dictionary:
 	var configuration: Dictionary = connection.configuration
 	var data := {"source_id": ref_to_id[connection.source], "target_id": ref_to_id[connection.target], "type": String(connection.type), "item_id": String(configuration.get("item_id", "")), "construction_accounted": true, "enabled": true, "active": false, "current_flow": 0.0}
-	for key in ["parallel_count", "stack_size", "priority", "route_mode"]:
+	for key in ["parallel_count", "stack_size", "priority", "route_mode", "route_offset_y", "monitor_enabled", "enabled"]:
 		if configuration.has(key):
 			data[key] = configuration[key]
 	return data

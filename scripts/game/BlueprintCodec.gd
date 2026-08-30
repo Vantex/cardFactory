@@ -12,7 +12,7 @@ const ROOT_KEYS := ["version", "entities", "connections"]
 const ENTITY_KEYS := ["ref", "type", "position", "configuration"]
 const CONNECTION_KEYS := ["source", "target", "type", "configuration"]
 const ENTITY_CONFIGURATION_KEYS := ["recipe_id", "output_item"]
-const CONNECTION_CONFIGURATION_KEYS := ["item_id", "parallel_count", "stack_size", "priority", "route_mode"]
+const CONNECTION_CONFIGURATION_KEYS := ["item_id", "parallel_count", "stack_size", "priority", "route_mode", "route_offset_y", "monitor_enabled", "enabled"]
 
 func encode(blueprint: Dictionary) -> Dictionary:
 	var normalized := validate_and_normalize(blueprint)
@@ -59,6 +59,8 @@ func validate_and_normalize(value: Dictionary) -> Dictionary:
 		var entity: Dictionary = entity_value
 		if not _has_exact_keys(entity, ENTITY_KEYS):
 			return _failure("invalid_entity_fields", "蓝图实体字段无效")
+		if not entity.get("ref") is String or not entity.get("type") is String:
+			return _failure("invalid_reference", "蓝图实体引用和类型必须是字符串")
 		var local_ref := String(entity.get("ref", ""))
 		var building_type := String(entity.get("type", ""))
 		if not _valid_identifier(local_ref) or not _valid_identifier(building_type) or references.has(local_ref):
@@ -79,6 +81,8 @@ func validate_and_normalize(value: Dictionary) -> Dictionary:
 		var connection: Dictionary = connection_value
 		if not _has_exact_keys(connection, CONNECTION_KEYS):
 			return _failure("invalid_connection_fields", "蓝图连接字段无效")
+		if not connection.get("source") is String or not connection.get("target") is String or not connection.get("type") is String:
+			return _failure("invalid_reference", "蓝图连接引用和类型必须是字符串")
 		var source := String(connection.get("source", ""))
 		var target := String(connection.get("target", ""))
 		var connection_type := String(connection.get("type", ""))
@@ -90,6 +94,11 @@ func validate_and_normalize(value: Dictionary) -> Dictionary:
 		if not configuration_result.get("ok", false):
 			return configuration_result
 		var configuration: Dictionary = configuration_result.configuration
+		for integer_key in ["parallel_count", "stack_size", "priority"]:
+			if configuration.has(integer_key):
+				configuration[integer_key] = int(configuration[integer_key])
+		if configuration.has("route_offset_y"):
+			configuration["route_offset_y"] = float(configuration.route_offset_y)
 		if configuration.has("parallel_count") and (not _is_integer_number(configuration.parallel_count) or int(configuration.parallel_count) < 1 or int(configuration.parallel_count) > 4):
 			return _failure("invalid_configuration", "蓝图并行线路数量无效")
 		if configuration.has("stack_size") and (not _is_integer_number(configuration.stack_size) or not [1, 2, 4].has(int(configuration.stack_size))):
@@ -98,6 +107,11 @@ func validate_and_normalize(value: Dictionary) -> Dictionary:
 			return _failure("invalid_configuration", "蓝图线路优先级无效")
 		if configuration.has("route_mode") and not ["bezier", "auto", "upper", "lower", "manual"].has(String(configuration.route_mode)):
 			return _failure("invalid_configuration", "蓝图线路路径模式无效")
+		if configuration.has("route_offset_y") and not _is_finite_number(configuration.route_offset_y):
+			return _failure("invalid_configuration", "蓝图线路路径偏移无效")
+		for toggle_key in ["monitor_enabled", "enabled"]:
+			if configuration.has(toggle_key) and not configuration[toggle_key] is bool:
+				return _failure("invalid_configuration", "蓝图线路开关字段无效")
 		normalized_connections.append({"source": source, "target": target, "type": connection_type, "configuration": configuration})
 	return {"ok": true, "blueprint": {"version": VERSION, "entities": normalized_entities, "connections": normalized_connections}}
 
@@ -126,7 +140,11 @@ func _normalize_configuration(value: Variant, allowed_keys: Array) -> Dictionary
 			return _failure("invalid_configuration_value", "蓝图配置文本字段类型无效")
 		if ["parallel_count", "stack_size", "priority"].has(key) and not _is_integer_number(field_value):
 			return _failure("invalid_configuration_value", "蓝图配置整数字段类型无效")
-		if not (field_value is String or field_value is int or field_value is float):
+		if key == "route_offset_y" and not _is_finite_number(field_value):
+			return _failure("invalid_configuration_value", "蓝图配置数值字段类型无效")
+		if ["monitor_enabled", "enabled"].has(key) and not field_value is bool:
+			return _failure("invalid_configuration_value", "蓝图配置开关字段类型无效")
+		if not (field_value is String or field_value is int or field_value is float or field_value is bool):
 			return _failure("invalid_configuration_value", "蓝图配置值类型不受支持")
 		if field_value is String and (String(field_value).length() > MAX_STRING_LENGTH or not _is_safe_text(String(field_value))):
 			return _failure("invalid_text", "蓝图配置文本无效")
