@@ -11,13 +11,19 @@ var _draft: Dictionary = {}
 var _rotation_quarters := 0
 var _mirrored := false
 var _clipboard_fallback := ""
+var _toggle_button: Button
 
 func _ready() -> void:
-	set_offsets_preset(Control.PRESET_TOP_LEFT)
-	position = Vector2(880, 246)
-	size = Vector2(264, 300)
+	set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	offset_left = -560.0
+	offset_right = -296.0
+	offset_top = 246.0
+	offset_bottom = 546.0
+	z_index = 2
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	_build_controls()
+	hide()
+	call_deferred("_install_toggle")
 	queue_redraw()
 
 func set_input_handler(input_handler: Node) -> void:
@@ -132,6 +138,31 @@ func _build_controls() -> void:
 	_add_button(controls, "Import", "导入剪贴板", import_from_clipboard)
 	_add_button(controls, "Export", "导出剪贴板", export_to_clipboard)
 	_add_button(controls, "Deploy", "部署到相机", _deploy_at_camera)
+	_add_button(controls, "Close", "收起", _hide_workspace)
+
+func _install_toggle() -> void:
+	if _toggle_button != null:
+		return
+	var inspector := get_parent().get_node_or_null("InspectorPanel") as Control
+	if inspector == null:
+		return
+	var title := inspector.get_node_or_null("Title") as Control
+	if title != null:
+		title.size.x = 180.0
+	_toggle_button = Button.new()
+	_toggle_button.name = "BlueprintToggle"
+	_toggle_button.text = "蓝图"
+	_toggle_button.position = Vector2(204, 9)
+	_toggle_button.size = Vector2(64, 32)
+	_toggle_button.pressed.connect(_show_workspace)
+	inspector.add_child(_toggle_button)
+
+func _show_workspace() -> void:
+	show()
+	queue_redraw()
+
+func _hide_workspace() -> void:
+	hide()
 
 func _add_button(parent: GridContainer, node_name: String, label: String, callback: Callable) -> void:
 	var button := Button.new()

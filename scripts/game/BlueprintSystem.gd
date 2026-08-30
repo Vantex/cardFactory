@@ -230,14 +230,14 @@ func _validate_planned_connection(source_plan: Dictionary, target_plan: Dictiona
 	var source_outputs: Array[String] = []
 	var source_configuration: Dictionary = source_plan.configuration
 	var explicit_output := String(source_configuration.get("output_item", ""))
-	if not explicit_output.is_empty():
+	var source_definition := DataManager.get_building(String(source_plan.type))
+	if source_definition.get("kind", "") == "extractor" and not explicit_output.is_empty():
 		source_outputs.append(explicit_output)
 	else:
 		var source_recipe := DataManager.get_recipe(String(source_configuration.get("recipe_id", "")))
 		for output in source_recipe.get("outputs", []):
 			source_outputs.append(String(output.get("item_id", "")))
 		if source_outputs.is_empty():
-			var source_definition := DataManager.get_building(String(source_plan.type))
 			var extraction: Dictionary = source_definition.get("extraction", {})
 			for output_value in extraction.get("items", [extraction.get("item_id", "")]):
 				if not String(output_value).is_empty():
@@ -251,12 +251,19 @@ func _validate_planned_connection(source_plan: Dictionary, target_plan: Dictiona
 		candidate_recipes = DataManager.get_recipes_for_building(String(target_plan.type))
 	else:
 		candidate_recipes = [DataManager.get_recipe(target_recipe_id)]
+	var compatible_but_locked := false
 	for recipe in candidate_recipes:
 		for input in recipe.get("inputs", []):
 			if String(input.get("item_id", "")) == item_id:
+				var candidate_recipe_id := String(recipe.get("id", ""))
+				if not _is_catalog_entry_unlocked("recipe", candidate_recipe_id):
+					compatible_but_locked = true
+					continue
 				if target_recipe_id.is_empty():
-					target_configuration["recipe_id"] = String(recipe.get("id", ""))
+					target_configuration["recipe_id"] = candidate_recipe_id
 				return {"ok": true}
+	if compatible_but_locked:
+		return _failure("locked", "蓝图目标配方尚未解锁")
 	return _failure("incompatible_connection", "蓝图目标配方无法接收线路物品")
 
 func _is_catalog_entry_unlocked(kind: String, entry_id: String) -> bool:

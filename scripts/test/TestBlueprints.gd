@@ -162,6 +162,20 @@ func _test_semantic_deployment_validation(blueprint_script: Script) -> void:
 	var duplicate_result: Dictionary = blueprint_script.new(graph_state).deploy(duplicate, Vector2.ZERO)
 	_expect(not duplicate_result.get("ok", true) and duplicate_result.get("reason", "") == "duplicate_connection" and _same_authoritative_state(graph_state, incompatible_before), "planned graph rejects duplicate source-target edges without partial mutation")
 
+	var byproduct_state := GameState.new()
+	byproduct_state.completed_technologies = ["fluid_handling"]
+	byproduct_state.construction_inventory = {"oil_refinery": 1.0, "fractionator": 1.0, "conveyor_belt_mk1": 1.0}
+	var byproduct_blueprint := {"version": 1, "entities": [{"ref": "refinery", "type": "oil_refinery", "position": Vector2.ZERO, "configuration": {"recipe_id": "refined_oil_recipe", "output_item": "refined_oil"}}, {"ref": "fractionator", "type": "fractionator", "position": Vector2(400, 0), "configuration": {"recipe_id": "deuterium_recipe"}}], "connections": [{"source": "refinery", "target": "fractionator", "type": "conveyor_belt_mk1", "configuration": {"item_id": "hydrogen"}}]}
+	var byproduct_result: Dictionary = blueprint_script.new(byproduct_state).deploy(byproduct_blueprint, Vector2.ZERO)
+	_expect(byproduct_result.get("ok", false) and byproduct_state.connections.values()[0].item_id == "hydrogen", "processor connection preflight accepts any selected recipe byproduct")
+
+	var locked_recipe_state := GameState.new()
+	locked_recipe_state.construction_inventory = {"miner": 1.0, "graphene_facility": 1.0, "conveyor_belt_mk1": 1.0}
+	var locked_recipe_blueprint := {"version": 1, "entities": [{"ref": "coal", "type": "miner", "position": Vector2.ZERO, "configuration": {"output_item": "coal"}}, {"ref": "graphene", "type": "graphene_facility", "position": Vector2(400, 0), "configuration": {}}], "connections": [{"source": "coal", "target": "graphene", "type": "conveyor_belt_mk1", "configuration": {"item_id": "coal"}}]}
+	var locked_recipe_before := locked_recipe_state.copy_state()
+	var locked_recipe_result: Dictionary = blueprint_script.new(locked_recipe_state).deploy(locked_recipe_blueprint, Vector2.ZERO)
+	_expect(not locked_recipe_result.get("ok", true) and locked_recipe_result.get("reason", "") == "locked" and _same_authoritative_state(locked_recipe_state, locked_recipe_before), "auto-selected target recipes obey current technology unlocks atomically")
+
 func _test_line_configuration_round_trip(blueprint_script: Script, codec_script: Script) -> void:
 	var source_state := GameState.new()
 	var source_id := _add_building(source_state, "miner", Vector2.ZERO, {"output_item": "iron_ore"})
@@ -238,6 +252,8 @@ func _test_workspace_intents_and_import(codec_script: Script) -> void:
 	var main: Node = load("res://scenes/main/Main.tscn").instantiate()
 	viewport.add_child(main)
 	await get_tree().process_frame
+	main.get_node("AppShell").call("_on_session_started", 0, true)
+	await get_tree().process_frame
 	var main_input: Node = main.get_node("InputHandler")
 	var formal_workspace: Control = main.get_node("FactoryWorkspaceUI/BlueprintWorkspace")
 	main_input.set_selected_entities([selected_id, selected_second_id])
@@ -248,8 +264,51 @@ func _test_workspace_intents_and_import(codec_script: Script) -> void:
 	var export_button := formal_workspace.get_node_or_null("Panel/Controls/Export") as Button
 	var import_button := formal_workspace.get_node_or_null("Panel/Controls/Import") as Button
 	var deploy_button := formal_workspace.get_node_or_null("Panel/Controls/Deploy") as Button
-	_expect(formal_workspace.size.x > 0.0 and formal_workspace.size.y > 0.0 and capture_button != null and rotate_cw_button != null and rotate_ccw_button != null and mirror_button != null and export_button != null and import_button != null and deploy_button != null, "formal Main exposes a visible player-operable blueprint workspace")
-	capture_button.pressed.emit()
+	var toggle_button := main.get_node_or_null("FactoryWorkspaceUI/InspectorPanel/BlueprintToggle") as Button
+	_expect(formal_workspace.size.x > 0.0 and formal_workspace.size.y > 0.0 and capture_button != null and rotate_cw_button != null and rotate_ccw_button != null and mirror_button != null and export_button != null and import_button != null and deploy_button != null and toggle_button != null and not formal_workspace.visible, "formal Main exposes a collapsed player-operable blueprint workspace and visible entry point")
+	if toggle_button != null:
+		var toggle_position := toggle_button.get_global_rect().get_center()
+		var toggle_press := InputEventMouseButton.new()
+		toggle_press.button_index = MOUSE_BUTTON_LEFT
+		toggle_press.pressed = true
+		toggle_press.position = toggle_position
+		toggle_press.global_position = toggle_position
+		viewport.push_input(toggle_press)
+		var toggle_release := InputEventMouseButton.new()
+		toggle_release.button_index = MOUSE_BUTTON_LEFT
+		toggle_release.pressed = false
+		toggle_release.position = toggle_position
+		toggle_release.global_position = toggle_position
+		viewport.push_input(toggle_release)
+		await get_tree().process_frame
+	_expect(formal_workspace.visible, "real viewport GUI dispatch opens the collapsed blueprint workspace")
+	var workspace_rect := formal_workspace.get_global_rect()
+	var protected_controls: Array[Control] = [main.get_node("FactoryWorkspaceUI/TopBar"), main.get_node("FactoryWorkspaceUI/ResourceRail"), main.get_node("FactoryWorkspaceUI/InspectorPanel"), main.get_node("FactoryWorkspaceUI/ConstructionDock"), main.get_node("FactoryWorkspaceUI/MiniMap")]
+	var geometry_clear := true
+	for protected in protected_controls:
+		geometry_clear = geometry_clear and (not protected.visible or not workspace_rect.intersects(protected.get_global_rect(), false))
+	_expect(geometry_clear, "formal blueprint workspace does not overlap existing workspace regions or MiniMap")
+	var capture_press := InputEventMouseButton.new()
+	capture_press.button_index = MOUSE_BUTTON_LEFT
+	capture_press.pressed = true
+	capture_press.position = capture_button.get_global_rect().get_center()
+	capture_press.global_position = capture_press.position
+	var pointer_motion := InputEventMouseMotion.new()
+	pointer_motion.position = capture_press.position
+	pointer_motion.global_position = capture_press.position
+	viewport.push_input(pointer_motion)
+	await get_tree().process_frame
+	var hovered_control := viewport.gui_get_hovered_control()
+	_expect(hovered_control == capture_button or capture_button.is_ancestor_of(hovered_control), "real gameplay GUI hover resolves to the unobstructed blueprint capture control")
+	viewport.push_input(capture_press)
+	var capture_release := InputEventMouseButton.new()
+	capture_release.button_index = MOUSE_BUTTON_LEFT
+	capture_release.pressed = false
+	capture_release.position = capture_press.position
+	capture_release.global_position = capture_release.position
+	viewport.push_input(capture_release)
+	await get_tree().process_frame
+	_expect(not formal_workspace.get_draft().is_empty(), "real viewport GUI dispatch reaches the visible capture control")
 	var original_preview: Array = formal_workspace.get_preview_positions()
 	rotate_cw_button.pressed.emit()
 	var clockwise_preview: Array = formal_workspace.get_preview_positions()
