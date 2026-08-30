@@ -21,6 +21,8 @@ static func validate_persistent_dict(payload: Variant) -> Array:
 
 	if not data.get("completed_technologies") is Array:
 		_add_error(errors, "invalid_completed_technologies", "state", "", "已完成科技必须是数组")
+	for progression_field in ["completed_objective_ids", "claimed_progression_reward_ids", "completed_achievement_ids", "unlocked_progression_ids"]:
+		_validate_stable_id_array(errors, progression_field, data.get(progression_field))
 	_validate_root_inventory(errors, "planet_inventory", data.get("planet_inventory"), InventorySystem.MAX_PLANET_STACK)
 	_validate_root_inventory(errors, "construction_inventory", data.get("construction_inventory"), 99.0, true)
 	_validate_cursor_payload(errors, data.get("cursor_payload"))
@@ -91,6 +93,17 @@ static func validate_persistent_dict(payload: Variant) -> Array:
 		_add_error(errors, "next_id_not_ahead", "state", "", "下一实体 ID 必须大于所有已保存 ID")
 
 	return errors
+
+static func _validate_stable_id_array(errors: Array, field_name: String, value: Variant) -> void:
+	if not value is Array:
+		_add_error(errors, "invalid_%s" % field_name, "state", "", "%s 必须是数组" % field_name)
+		return
+	var seen: Dictionary = {}
+	for id_value in value:
+		if (typeof(id_value) != TYPE_STRING and typeof(id_value) != TYPE_STRING_NAME) or String(id_value).is_empty() or seen.has(String(id_value)):
+			_add_error(errors, "invalid_%s" % field_name, "state", String(id_value), "%s 必须包含非空且不重复的 ID" % field_name)
+			continue
+		seen[String(id_value)] = true
 
 static func _validate_catalog_configuration(errors: Array, building_id: String, building: Dictionary) -> void:
 	var building_type := String(building.get("type", ""))

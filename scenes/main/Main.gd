@@ -7,8 +7,12 @@ extends Node2D
 @onready var factory_workspace_ui: CanvasLayer = $FactoryWorkspaceUI
 @onready var blueprint_workspace: Control = $FactoryWorkspaceUI/BlueprintWorkspace
 @onready var mini_map: Control = $FactoryWorkspaceUI/MiniMap
+@onready var campaign_workspace: Control = $FactoryWorkspaceUI/CampaignWorkspace
 
 var _synced_selected_building_id := ""
+var _progression_system: ProgressionSystem
+var _last_blocked_reward_signature := ""
+var _progression_evaluation_queued := false
 
 func _ready() -> void:
 	GameManager.game_state_replaced.connect(_on_game_state_replaced)
@@ -24,6 +28,8 @@ func _ready() -> void:
 	blueprint_workspace.capture_intent.connect(_on_blueprint_capture_intent)
 	blueprint_workspace.deployment_intent.connect(_on_blueprint_deployment_intent)
 	mini_map.set_camera($WorldCamera)
+	campaign_workspace.locate_requested.connect(_on_locate_requested)
+	_progression_system = ProgressionSystem.new(game_state)
 
 	EventBus.card_placed.connect(_on_card_placed)
 	EventBus.card_selected.connect(_on_card_selected)
@@ -33,7 +39,15 @@ func _ready() -> void:
 	EventBus.delete_building_requested.connect(_on_delete_building_requested)
 	EventBus.pause_toggled_requested.connect(_on_pause_toggled_requested)
 	EventBus.speed_requested.connect(_on_speed_requested)
+	EventBus.card_placed.connect(_on_progression_fact_changed)
+	EventBus.card_removed.connect(_on_progression_fact_changed)
+	EventBus.connection_created.connect(_on_progression_fact_changed)
+	EventBus.connection_removed.connect(_on_progression_fact_changed)
+	EventBus.connection_configuration_changed.connect(_on_progression_fact_changed)
+	EventBus.production_completed.connect(_on_progression_item_produced)
+	EventBus.technology_research_completed.connect(_on_progression_fact_changed)
 	factory_workspace_ui.refresh_now()
+	_evaluate_progression(true)
 
 func _on_game_state_replaced(new_state: GameState) -> void:
 	card_renderer.set_game_state(new_state)
@@ -44,8 +58,10 @@ func _on_game_state_replaced(new_state: GameState) -> void:
 	else:
 		input_handler.selected_building_id = ""
 	_synced_selected_building_id = ""
+	_progression_system = ProgressionSystem.new(new_state)
 	factory_workspace_ui.set_selected_building("")
 	EventBus.simulation_updated.emit()
+	_evaluate_progression(true)
 
 func _process(_delta: float) -> void:
 	var placement_building_type: String = input_handler.placing_building_type if input_handler.get_mode_name() == "placing" else ""
@@ -112,3 +128,49 @@ func _on_blueprint_capture_intent(entity_ids: Array) -> void:
 func _on_blueprint_deployment_intent(position: Vector2, rotation_quarters: int, mirrored: bool) -> void:
 	var result := GameManager.get_game_state().try_deploy_blueprint(blueprint_workspace.get_draft(), position, rotation_quarters, mirrored)
 	blueprint_workspace.accept_deployment_result(result)
+
+func _evaluate_progression(publish_snapshot: bool = false) -> void:
+	if _progression_system == null or _progression_system.game_state != GameManager.get_game_state():
+		_progression_system = ProgressionSystem.new(GameManager.get_game_state())
+	var result := _progression_system.evaluate()
+	var blocked_reward_ids: Array = result.get("blocked_reward_ids", [])
+	var blocked_signature := JSON.stringify(blocked_reward_ids)
+	if not blocked_reward_ids.is_empty() and blocked_signature != _last_blocked_reward_signature:
+		EventBus.notice_requested.emit("进度奖励暂无法领取，请先腾出库存空间", "warning")
+	_last_blocked_reward_signature = blocked_signature if not blocked_reward_ids.is_empty() else ""
+	if publish_snapshot or not result.get("completed_objectives", []).is_empty() or not result.get("completed_achievements", []).is_empty() or not blocked_reward_ids.is_empty():
+		result["snapshot"] = _progression_system.get_campaign_snapshot()
+		EventBus.progression_updated.emit(result)
+		factory_workspace_ui.refresh_now()
+
+func _on_progression_fact_changed(_arg_1 = null, _arg_2 = null, _arg_3 = null) -> void:
+	_queue_progression_evaluation()
+
+func _on_progression_item_produced(_building_id: String, item_id: String, _amount: int) -> void:
+	if _progression_system == null or _progression_system.game_state != GameManager.get_game_state():
+		_progression_system = ProgressionSystem.new(GameManager.get_game_state())
+	if _progression_system.has_pending_item_fact(item_id):
+		_queue_progression_evaluation()
+
+func _queue_progression_evaluation() -> void:
+	if _progression_evaluation_queued:
+		return
+	_progression_evaluation_queued = true
+	call_deferred("_flush_progression_evaluation")
+
+func _flush_progression_evaluation() -> void:
+	_progression_evaluation_queued = false
+	_evaluate_progression(true)
+
+func _on_locate_requested(building_id: String, world_position: Vector2) -> void:
+	if not GameManager.get_game_state().buildings.has(building_id):
+		return
+	$WorldCamera.global_position = world_position
+	$WorldCamera.force_update_scroll()
+	if input_handler.has_method("set_selected_entities"):
+		input_handler.set_selected_entities([building_id])
+	else:
+		input_handler.selected_building_id = building_id
+	_synced_selected_building_id = building_id
+	factory_workspace_ui.set_selected_building(building_id)
+	EventBus.card_selected.emit(building_id)

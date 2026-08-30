@@ -171,7 +171,7 @@ func _test_workspace_live_content_and_actions() -> void:
 	var stock := workspace.get_node_or_null("ResourceRail/Stock") as Label
 	var production := workspace.get_node_or_null("ResourceRail/Production") as Label
 	var tips := workspace.get_node_or_null("ResourceRail/Tips") as Label
-	_expect(objective != null and "连接" in objective.text, "resource rail displays the current beginner objective")
+	_expect(objective != null and "电站" in objective.text, "resource rail displays the first unmet persistent campaign objective")
 	_expect(stock != null and "行星托盘" in stock.text and "iron_ore" in stock.text and "6" in stock.text, "resource rail displays authoritative planet inventory")
 	_expect(production != null and "运行 0" in production.text and "停电 1" in production.text, "resource rail distinguishes unpowered production from running buildings")
 	_expect(tips != null and "操作提示" in tips.text and "Q/W/E/R/T" in tips.text, "resource rail displays concise controls")

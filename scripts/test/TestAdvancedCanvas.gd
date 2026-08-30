@@ -283,7 +283,7 @@ func _test_legacy_v2_defaults_and_persistence() -> void:
 	_expect(not payload.has("selected_entity_ids"), "workspace selection remains absent from schema-v2 persistence")
 	var restored := GameStateCodec.from_persistent_dict(payload)
 	var restored_config: Dictionary = restored.call("get_belt_configuration", belt_id) if restored != null else {}
-	_expect(restored != null and restored.get_state_version() == 2 and restored_config.get("tier") == "conveyor_belt_mk2" and restored_config.get("parallel_count") == 2 and restored_config.get("stack_size") == 2 and restored_config.get("route_mode") == "manual" and restored_config.get("route_offset_y") == 24.0 and restored_config.get("enabled") == false, "new line fields round-trip without changing schema version")
+	_expect(restored != null and restored.get_state_version() == 3 and restored_config.get("tier") == "conveyor_belt_mk2" and restored_config.get("parallel_count") == 2 and restored_config.get("stack_size") == 2 and restored_config.get("route_mode") == "manual" and restored_config.get("route_offset_y") == 24.0 and restored_config.get("enabled") == false, "new line fields round-trip through the current schema version")
 	var legacy_state := GameState.new()
 	var legacy_source_id := _add_building(legacy_state, "legacy_source", "miner", Vector2.ZERO)
 	var legacy_target_id := _add_building(legacy_state, "legacy_target", "smelter", Vector2(400, 0))

@@ -9,6 +9,7 @@ signal card_selected(card_id: String)
 # 连接相关信号
 signal connection_created(connection_id: String, source_id: String, target_id: String)
 signal connection_removed(connection_id: String)
+signal connection_configuration_changed(connection_id: String, configuration: Dictionary)
 
 # 实体移动信号
 signal entity_moved(entity_id: String, new_position: Vector2)
@@ -20,6 +21,7 @@ signal delete_building_requested(building_id: String)
 signal pause_toggled_requested()
 signal speed_requested(speed: float)
 signal notice_requested(message: String, tone: String)
+signal progression_updated(result: Dictionary)
 
 # 科技相关信号
 signal technology_research_started(tech_id: String)

@@ -136,7 +136,7 @@ func show_notice(message: String, tone: String = "info") -> void:
 		_toast_timer.start()
 
 func is_pointer_over_ui(viewport_position: Vector2) -> bool:
-	for node_name in ["TopBar", "ResourceRail", "InspectorPanel", "ConstructionDock", "BlueprintWorkspace", "MiniMap"]:
+	for node_name in ["TopBar", "ResourceRail", "InspectorPanel", "ConstructionDock", "BlueprintWorkspace", "CampaignWorkspace", "MiniMap"]:
 		var region := get_node_or_null(node_name) as Control
 		if region != null and region.visible and Rect2(Vector2.ZERO, region.size).has_point(region.get_global_transform_with_canvas().affine_inverse() * viewport_position):
 			return true
@@ -813,21 +813,12 @@ func _refresh_handcraft_controls(state: GameState) -> void:
 		_recipe_list.add_child(button)
 
 func _beginner_objective(state: GameState) -> String:
-	if state.buildings.is_empty() or state.get_buildings_by_type("miner").is_empty():
-		return "新手目标\n放置矿机（Q）"
-	if state.get_buildings_by_type("smelter").is_empty():
-		return "新手目标\n放置熔炉（W）"
-	if state.connections.is_empty():
-		return "新手目标\n连接矿机与熔炉"
-	if state.get_buildings_by_type("assembling_machine_mk1").is_empty():
-		return "新手目标\n放置制造台（E）"
-	if state.get_buildings_by_type("matrix_lab").is_empty():
-		return "新手目标\n放置矩阵研究站（T）"
-	for building_value in state.buildings.values():
-		var building: Dictionary = building_value
-		if float(building.get("output_buffer", {}).get("matrix_science_1", 0.0)) > 0.0:
-			return "新手目标\n基础科学链已完成"
-	return "新手目标\n生产基础研究矩阵"
+	var progression := ProgressionSystem.new(state)
+	var objective := progression.get_current_objective()
+	if objective.is_empty():
+		return "单人战役\n当前目标已完成"
+	var progress := progression.get_objective_progress(String(objective.get("id", "")))
+	return "当前目标\n%s  %.0f/%.0f" % [String(objective.get("title", "")), float(progress.get("current", 0.0)), float(progress.get("required", 1.0))]
 
 func _format_buffer(buffer: Dictionary) -> String:
 	var item_ids := buffer.keys()

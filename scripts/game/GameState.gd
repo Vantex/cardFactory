@@ -2,7 +2,7 @@
 class_name GameState
 extends RefCounted
 
-const SCHEMA_VERSION: int = 2
+const SCHEMA_VERSION: int = 3
 
 # 游戏状态
 var paused: bool = false
@@ -37,6 +37,12 @@ var connections: Dictionary = {}
 
 # 科技系统
 var completed_technologies: Array = []
+
+# 本地单人进度；事实本身仍由建筑、库存和科技等权威状态提供。
+var completed_objective_ids: Array = []
+var claimed_progression_reward_ids: Array = []
+var completed_achievement_ids: Array = []
+var unlocked_progression_ids: Array = []
 
 # ID计数器
 var _next_id: int = 1
@@ -602,7 +608,7 @@ func get_belt_configuration(belt_id: String) -> Dictionary:
         "enabled": bool(connection.get("enabled", true)),
     }
 
-func try_configure_belt(belt_id: String, requested: Dictionary) -> Dictionary:
+func try_configure_belt(belt_id: String, requested: Dictionary, emit_change: bool = true) -> Dictionary:
     var current := get_belt_configuration(belt_id)
     if current.is_empty():
         return {"ok": false, "message": "线路不存在", "reason": "belt_not_found"}
@@ -648,7 +654,10 @@ func try_configure_belt(belt_id: String, requested: Dictionary) -> Dictionary:
     connection["monitor_enabled"] = bool(target.monitor_enabled)
     connection["enabled"] = bool(target.enabled)
     connection["speed_multiplier"] = belt_speed_config.get(target_tier, 1.0)
-    return {"ok": true, "message": "线路配置已更新", "reason": "", "configuration": get_belt_configuration(belt_id)}
+    var configuration := get_belt_configuration(belt_id)
+    if emit_change:
+        EventBus.connection_configuration_changed.emit(belt_id, configuration.duplicate(true))
+    return {"ok": true, "message": "线路配置已更新", "reason": "", "configuration": configuration}
 
 func try_configure_belts(belt_ids: Array, requested: Dictionary) -> Dictionary:
     var normalized: Array[String] = []
@@ -663,19 +672,21 @@ func try_configure_belts(belt_ids: Array, requested: Dictionary) -> Dictionary:
         return _batch_failure("没有选择线路", "empty_selection")
     var probe := copy_state()
     for belt_id in normalized:
-        var probe_result := probe.try_configure_belt(belt_id, requested)
+        var probe_result := probe.try_configure_belt(belt_id, requested, false)
         if not probe_result.get("ok", false):
             return _batch_failure(String(probe_result.get("message", "批量线路配置失败")), String(probe_result.get("reason", "configuration_failed")))
     var connections_before := connections.duplicate(true)
     var inventory_before := construction_inventory.duplicate(true)
     var results: Array[Dictionary] = []
     for belt_id in normalized:
-        var result := try_configure_belt(belt_id, requested)
+        var result := try_configure_belt(belt_id, requested, false)
         if not result.get("ok", false):
             connections = connections_before
             construction_inventory = inventory_before
             return _batch_failure(String(result.get("message", "批量线路配置失败")), "commit_failed")
         results.append({"id": belt_id, "status": "success", "reason": ""})
+    for belt_id in normalized:
+        EventBus.connection_configuration_changed.emit(belt_id, get_belt_configuration(belt_id).duplicate(true))
     return {"ok": true, "message": "已配置 %d 条线路" % normalized.size(), "success": normalized.size(), "skipped": 0, "failed": 0, "results": results}
 
 func _persistent_belt_settings(configuration: Dictionary) -> Dictionary:
@@ -925,6 +936,10 @@ func copy_state() -> GameState:
     new_state.cursor_payload = cursor_payload.duplicate(true)
     new_state.handcraft_queue = handcraft_queue.duplicate(true)
     new_state.completed_technologies = completed_technologies.duplicate(true)
+    new_state.completed_objective_ids = completed_objective_ids.duplicate(true)
+    new_state.claimed_progression_reward_ids = claimed_progression_reward_ids.duplicate(true)
+    new_state.completed_achievement_ids = completed_achievement_ids.duplicate(true)
+    new_state.unlocked_progression_ids = unlocked_progression_ids.duplicate(true)
     new_state._next_id = _next_id
     return new_state
 

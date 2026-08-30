@@ -148,7 +148,7 @@ func _install_toggle() -> void:
 		return
 	var title := inspector.get_node_or_null("Title") as Control
 	if title != null:
-		title.size.x = 180.0
+		title.size.x = minf(title.size.x, 112.0)
 	_toggle_button = Button.new()
 	_toggle_button.name = "BlueprintToggle"
 	_toggle_button.text = "蓝图"

@@ -438,28 +438,30 @@ git commit -m "feat: add atomic factory blueprints"
 - 修改：`scenes/ui/FactoryWorkspaceUI.gd`
 - 修改：`tools/run_tests.ps1`
 
-- [ ] **步骤 1：写任务状态机失败测试**
+- [x] **步骤 1：写任务状态机失败测试**
 
 覆盖开始、进度、完成、奖励一次性发放、保存加载、已有状态回溯完成和直接定位停机建筑。
 
-- [ ] **步骤 2：把新手提示升级为持久目标**
+- [x] **步骤 2：把新手提示升级为持久目标**
 
 第一章从建造电力、采矿、熔炼到第一份研究矩阵；每一步由领域事实判断，不由 UI 点击次数判断。
 
-- [ ] **步骤 3：建立章节和支线**
+- [x] **步骤 3：建立章节和支线**
 
 覆盖电力、存储、线路升级、化工、物流、稀有资源、蓝图、星际和戴森。奖励通过统一原子命令进入库存或解锁表。
 
-- [ ] **步骤 4：加入本地成就**
+- [x] **步骤 4：加入本地成就**
 
 成就只依赖当前存档事实，不联网；加载旧档时可补发符合条件的成就，但奖励必须幂等。
 
-- [ ] **步骤 5：提交**
+- [x] **步骤 5：提交**
 
 ```powershell
 git add scripts/game/ProgressionSystem.gd scripts/game/ObjectiveSystem.gd data/progression.json scenes/ui/CampaignWorkspace.gd scenes/ui/TutorialOverlay.gd scripts/game/GameState.gd scenes/ui/FactoryWorkspaceUI.gd scripts/test/TestProgression.gd scenes/test/TestProgression.tscn tools/run_tests.ps1
 git commit -m "feat: add persistent single player progression"
 ```
+
+**完成记录（2026-08-30）：** 已交付基于领域事实的持久目标状态机、9 个章节/支线、13 项阶段目标和 3 项本地成就。第一章按供电、采矿、熔炼、连接和首份基础研究矩阵推进；旧 schema v2 存档迁移到 v3 后会根据当前建筑、连接、库存和缓冲区追溯完成，不依赖 UI 点击。目标与成就奖励先统一预检库存及解锁表，再原子提交稳定领取 ID，容量不足不产生半完成或重复发放。正式 Main 新增默认收起的战役工作台和不拦截画布的目标提示，支持定位并选中停工建筑，面板与现有顶栏、资源栏、检查器、建造坞、蓝图及小地图保持独立区域。`TestProgression` 已加入统一门禁，八个权威场景全部通过。
 
 ### 任务 10：重建数据驱动科技系统
 

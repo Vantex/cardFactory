@@ -66,5 +66,149 @@
       "effects": {"material_speed": 1.05}
     }
   },
+  "chapters": [
+    {"id": "power", "title": "第一章：点亮工厂", "objective_ids": ["first_power", "first_miner", "first_smelter", "first_link", "first_matrix"]},
+    {"id": "storage", "title": "支线：稳定库存", "objective_ids": ["first_storage"]},
+    {"id": "belt_upgrade", "title": "支线：线路升级", "objective_ids": ["belt_network"]},
+    {"id": "chemicals", "title": "第二章：化工链", "objective_ids": ["first_chemical"]},
+    {"id": "logistics", "title": "第三章：行星物流", "objective_ids": ["first_logistics"]},
+    {"id": "rare_resources", "title": "第四章：稀有资源", "objective_ids": ["rare_material"]},
+    {"id": "blueprints", "title": "支线：蓝图生产", "objective_ids": ["blueprint_factory"]},
+    {"id": "interstellar", "title": "第五章：星际运输", "objective_ids": ["first_interstellar"]},
+    {"id": "dyson", "title": "终章：戴森工程", "objective_ids": ["first_dyson"]}
+  ],
+  "objectives": [
+    {
+      "id": "first_power",
+      "chapter_id": "power",
+      "title": "建立第一座电站",
+      "description": "放置一座火力、风力或太阳能发电设施。",
+      "condition": {"fact": "building_count", "building_types": ["power_generator", "solar_panel", "wind_turbine"], "at_least": 1},
+      "reward": {"unlocks": ["tutorial:mining"]}
+    },
+    {
+      "id": "first_miner",
+      "chapter_id": "power",
+      "title": "开始自动采矿",
+      "description": "放置一座矿机。",
+      "prerequisites": ["first_power"],
+      "condition": {"fact": "building_count", "building_type": "miner", "at_least": 1},
+      "reward": {"unlocks": ["tutorial:smelting"]}
+    },
+    {
+      "id": "first_smelter",
+      "chapter_id": "power",
+      "title": "准备冶炼",
+      "description": "放置一座熔炉。",
+      "prerequisites": ["first_miner"],
+      "condition": {"fact": "building_count", "building_type": "smelter", "at_least": 1},
+      "reward": {"construction_inventory": {"conveyor_belt_mk1": 2.0}}
+    },
+    {
+      "id": "first_link",
+      "chapter_id": "power",
+      "title": "连接生产线",
+      "description": "建立至少一条有效的建筑连接。",
+      "prerequisites": ["first_smelter"],
+      "condition": {"fact": "connection_count", "at_least": 1},
+      "reward": {"unlocks": ["tutorial:matrix"]}
+    },
+    {
+      "id": "first_matrix",
+      "chapter_id": "power",
+      "title": "产出基础研究矩阵",
+      "description": "让工厂库存或建筑缓冲区中出现基础研究矩阵。",
+      "prerequisites": ["first_link"],
+      "condition": {"fact": "item_amount", "item_id": "matrix_science_1", "at_least": 1},
+      "reward": {"unlocks": ["chapter:storage", "chapter:belt_upgrade", "chapter:chemicals"]}
+    },
+    {
+      "id": "first_storage",
+      "chapter_id": "storage",
+      "title": "建立缓冲仓库",
+      "prerequisites": ["first_matrix"],
+      "condition": {"fact": "building_count", "building_type": "storage_mk1", "at_least": 1},
+      "reward": {"unlocks": ["branch:storage_complete"]}
+    },
+    {
+      "id": "belt_network",
+      "chapter_id": "belt_upgrade",
+      "title": "扩展物流线路",
+      "prerequisites": ["first_matrix"],
+      "condition": {"fact": "connection_count", "at_least": 4},
+      "reward": {"unlocks": ["branch:belt_upgrade_complete"]}
+    },
+    {
+      "id": "first_chemical",
+      "chapter_id": "chemicals",
+      "title": "启动化工生产",
+      "prerequisites": ["first_matrix"],
+      "condition": {"fact": "building_count", "building_type": "chemical_plant", "at_least": 1},
+      "reward": {"unlocks": ["chapter:logistics"]}
+    },
+    {
+      "id": "first_logistics",
+      "chapter_id": "logistics",
+      "title": "建立行星物流站",
+      "prerequisites": ["first_chemical"],
+      "condition": {"fact": "building_count", "building_type": "planetary_logistics_station", "at_least": 1},
+      "reward": {"unlocks": ["chapter:rare_resources"]}
+    },
+    {
+      "id": "rare_material",
+      "chapter_id": "rare_resources",
+      "title": "获得稀有材料",
+      "prerequisites": ["first_logistics"],
+      "condition": {"fact": "item_amount", "item_id": "graphene", "at_least": 1},
+      "reward": {"unlocks": ["chapter:blueprints"]}
+    },
+    {
+      "id": "blueprint_factory",
+      "chapter_id": "blueprints",
+      "title": "形成可复用产线",
+      "prerequisites": ["rare_material"],
+      "condition": {"fact": "building_count", "building_type": "assembling_machine_mk1", "at_least": 3},
+      "reward": {"unlocks": ["chapter:interstellar"]}
+    },
+    {
+      "id": "first_interstellar",
+      "chapter_id": "interstellar",
+      "title": "建立星际物流站",
+      "prerequisites": ["blueprint_factory"],
+      "condition": {"fact": "building_count", "building_type": "interstellar_logistics_station", "at_least": 1},
+      "reward": {"unlocks": ["chapter:dyson"]}
+    },
+    {
+      "id": "first_dyson",
+      "chapter_id": "dyson",
+      "title": "启动戴森工程",
+      "prerequisites": ["first_interstellar"],
+      "condition": {"fact": "building_count", "building_type": "dyson_sphere_launcher", "at_least": 1},
+      "reward": {"unlocks": ["campaign:complete"]}
+    }
+  ],
+  "achievements": [
+    {
+      "id": "first_building",
+      "title": "第一块基石",
+      "description": "在当前存档中拥有至少一座建筑。",
+      "condition": {"fact": "building_status_count", "statuses": ["idle", "running", "blocked", "no_power", "no_fuel", "error"], "at_least": 1},
+      "reward": {"unlocks": ["achievement:first_building"]}
+    },
+    {
+      "id": "factory_ten",
+      "title": "初具规模",
+      "description": "在当前存档中拥有至少十座建筑。",
+      "condition": {"fact": "building_status_count", "statuses": ["idle", "running", "blocked", "no_power", "no_fuel", "error"], "at_least": 10},
+      "reward": {"unlocks": ["achievement:factory_ten"]}
+    },
+    {
+      "id": "science_online",
+      "title": "科学上线",
+      "description": "产出第一份基础研究矩阵。",
+      "condition": {"fact": "item_amount", "item_id": "matrix_science_1", "at_least": 1},
+      "reward": {"unlocks": ["achievement:science_online"]}
+    }
+  ],
   "mandatory_items": ["matrix_science_1"]
 }

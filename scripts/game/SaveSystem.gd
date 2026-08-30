@@ -165,6 +165,10 @@ func load_game(slot: int, game_state: GameState) -> bool:
 	game_state.cursor_payload = loaded_state.cursor_payload.duplicate(true)
 	game_state.handcraft_queue = loaded_state.handcraft_queue.duplicate(true)
 	game_state.completed_technologies = loaded_state.completed_technologies.duplicate(true)
+	game_state.completed_objective_ids = loaded_state.completed_objective_ids.duplicate(true)
+	game_state.claimed_progression_reward_ids = loaded_state.claimed_progression_reward_ids.duplicate(true)
+	game_state.completed_achievement_ids = loaded_state.completed_achievement_ids.duplicate(true)
+	game_state.unlocked_progression_ids = loaded_state.unlocked_progression_ids.duplicate(true)
 	game_state._next_id = loaded_state._next_id
 	return true
 

@@ -21,6 +21,14 @@ const CONNECTION_RUNTIME_FIELDS := {
 static func to_persistent_dict(state: GameState) -> Dictionary:
 	var completed_technologies: Array = state.completed_technologies.duplicate(true)
 	completed_technologies.sort()
+	var completed_objective_ids: Array = state.completed_objective_ids.duplicate(true)
+	completed_objective_ids.sort()
+	var claimed_reward_ids: Array = state.claimed_progression_reward_ids.duplicate(true)
+	claimed_reward_ids.sort()
+	var completed_achievement_ids: Array = state.completed_achievement_ids.duplicate(true)
+	completed_achievement_ids.sort()
+	var unlocked_progression_ids: Array = state.unlocked_progression_ids.duplicate(true)
+	unlocked_progression_ids.sort()
 	var payload := {
 		"schema_version": GameState.SCHEMA_VERSION,
 		"next_id": state._next_id,
@@ -30,6 +38,10 @@ static func to_persistent_dict(state: GameState) -> Dictionary:
 		"cursor_payload": state.cursor_payload,
 		"handcraft_queue": state.handcraft_queue,
 		"completed_technologies": completed_technologies,
+		"completed_objective_ids": completed_objective_ids,
+		"claimed_progression_reward_ids": claimed_reward_ids,
+		"completed_achievement_ids": completed_achievement_ids,
+		"unlocked_progression_ids": unlocked_progression_ids,
 		"buildings": _encode_entity_collection(state.buildings, BUILDING_RUNTIME_FIELDS),
 		"connections": _encode_entity_collection(state.connections, CONNECTION_RUNTIME_FIELDS),
 	}
@@ -48,6 +60,10 @@ static func from_persistent_dict(payload: Variant) -> GameState:
 	state.cursor_payload = data["cursor_payload"].duplicate(true)
 	state.handcraft_queue = data["handcraft_queue"].duplicate(true)
 	state.completed_technologies = data["completed_technologies"].duplicate(true)
+	state.completed_objective_ids = data["completed_objective_ids"].duplicate(true)
+	state.claimed_progression_reward_ids = data["claimed_progression_reward_ids"].duplicate(true)
+	state.completed_achievement_ids = data["completed_achievement_ids"].duplicate(true)
+	state.unlocked_progression_ids = data["unlocked_progression_ids"].duplicate(true)
 	state._next_id = int(data["next_id"])
 	state.buildings = _decode_buildings(data["buildings"])
 	state.connections = _decode_connections(data["connections"])

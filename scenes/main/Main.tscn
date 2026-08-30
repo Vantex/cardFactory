@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://main004"]
+[gd_scene load_steps=11 format=3 uid="uid://main004"]
 
 [ext_resource type="Script" path="res://scenes/main/Main.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/rendering/CardRenderer.gd" id="2_card"]
@@ -8,6 +8,8 @@
 [ext_resource type="Script" path="res://scenes/ui/AppShell.gd" id="6_shell"]
 [ext_resource type="Script" path="res://scenes/ui/BlueprintWorkspace.gd" id="7_blueprint"]
 [ext_resource type="Script" path="res://scenes/ui/MiniMap.gd" id="8_minimap"]
+[ext_resource type="Script" path="res://scenes/ui/CampaignWorkspace.gd" id="9_campaign"]
+[ext_resource type="Script" path="res://scenes/ui/TutorialOverlay.gd" id="10_tutorial"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_main")
@@ -39,6 +41,12 @@ offset_top = 62.0
 offset_right = 850.0
 offset_bottom = 212.0
 script = ExtResource("8_minimap")
+
+[node name="CampaignWorkspace" type="Control" parent="FactoryWorkspaceUI"]
+script = ExtResource("9_campaign")
+
+[node name="TutorialOverlay" type="Control" parent="FactoryWorkspaceUI"]
+script = ExtResource("10_tutorial")
 
 [node name="AppShell" type="CanvasLayer" parent="."]
 layer = 30
