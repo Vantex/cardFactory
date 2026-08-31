@@ -501,7 +501,7 @@ git add scripts/game/TechnologySystem.gd scenes/ui/TechnologyPanel.gd data/techn
 git commit -m "feat: add data driven technology progression"
 ```
 
-**完成记录（2026-08-30）：** `technologies.json` 将基础行星、星际、戴森和无限目录置于稳定 ID、前置、成本、解锁、效果与可重复规则下；DataManager 继续校验引用与循环并额外校验稳定 ID。schema v4 把当前研究、FIFO 队列、进度、已投入成本和暂停状态迁入 `GameState`，v3 存档补齐默认值。研究命令在开始时原子扣除矩阵，暂停/取消保留投入和进度，完成后按稳定顺序启动下一项；模拟阶段只在有供电的 `matrix_lab` 时推进。生产速度效果直接影响真实生产/采集。正式科技工作区支持搜索、前置、队列、进度、解锁说明与关闭重开后的搜索/滚动状态保留；`TestProgression`、`TestSimulationCore` 和持久化门覆盖完整闭环。
+**完成记录（2026-08-31）：** `technologies.json` 提供 6 项基础行星、星际、戴森和无限科技，均有稳定 ID、名称、描述、层级、前置、非零矩阵成本、解锁、效果与可重复规则。`DataManager` 拒绝缺失必填字段、非法层级、空/未知/非有限/非正成本、未知/非有限/非正效果及不合法前置/解锁形状。schema v4 将当前研究、FIFO 队列、进度、已投入成本和暂停状态迁入 `GameState`；schema v5 再持久化队列等待原因和可重复层数，迁移链为 v3→v4→v5，v4 的已完成可重复科技初始化为第 1 层。研究命令在开始时原子扣除矩阵；空闲研究阶段会重试 FIFO 队首，先完成扣费、出队和当前项赋值再发布开始事件，直接开始不能绕过队列。暂停/取消保留投入和进度，生产速度效果直接影响真实生产/采集。正式科技工作区通过 Main 路由意图，支持搜索、独立层级/状态筛选、目录详情、等待原因、暂停/恢复/取消/移出队列、真实滚动保持，并与战役/蓝图工作区互斥；`TestBaseline`、`TestProgression`、`TestSimulationCore` 和持久化门覆盖完整闭环。
 
 ### 任务 11：统计、诊断与生产资料库
 

@@ -249,23 +249,56 @@ func _test_data_driven_technology_progression() -> void:
 	_expect(restored is GameState and restored.get_technology_progress("fluid_handling") >= 0.0, "research queue and in-flight progress survive a JSON save/load round trip")
 
 func _test_technology_workspace_ui() -> void:
-	# This catches a regression where the formal panel only lists available items
-	# and loses the player's search/filter state when it is closed.
+	# These assertions operate the real filter and ScrollContainer controls.
 	var state := GameState.new()
-	state.planet_inventory["matrix_science_1"] = 20.0
+	state.completed_technologies = ["factory_foundations"]
+	state.research_queue = ["fluid_handling"]
+	state.research_queue_wait_reason = "等待矩阵成本：fluid_handling"
 	GameManager.replace_game_state(state)
 	var panel: Control = load("res://scenes/ui/TechnologyPanel.gd").new()
 	add_child(panel)
 	await get_tree().process_frame
-	_expect(panel.get_node_or_null("Layout/Search") is LineEdit and panel.get_node_or_null("Layout/Queue") != null, "technology workspace exposes search and a visible authoritative queue")
+	await get_tree().process_frame
+	var tier_filter := panel.get_node_or_null("Layout/Filters/TierFilter") as OptionButton
+	var status_filter := panel.get_node_or_null("Layout/Filters/StatusFilter") as OptionButton
+	var wait_reason := panel.get_node_or_null("Layout/WaitReason") as Label
+	_expect(panel.get_node_or_null("Layout/Search") is LineEdit and tier_filter != null and status_filter != null, "technology workspace exposes independent search, tier, and status controls")
+	_expect(wait_reason != null and wait_reason.visible and wait_reason.text.contains("等待矩阵成本"), "technology workspace renders the authoritative queue wait reason")
+	var factory_detail := _find_technology_detail(panel, "工厂基础理论")
+	_expect(factory_detail != null and factory_detail.text.contains("成本：基础研究矩阵 ×5") and factory_detail.text.contains("解锁：建筑：分流器") and factory_detail.text.contains("效果：生产速度 ×1.10"), "technology rows render catalog-driven cost, unlock, and effect descriptions")
+
+	if tier_filter != null and status_filter != null:
+		_select_option_value(tier_filter, "planetary")
+		_select_option_value(status_filter, "queued")
+		await get_tree().process_frame
+		_expect(_technology_catalog_markers(panel) == ["流体处理"], "tier and status filters combine independently on the real catalog")
+		_select_option_value(tier_filter, "all")
+		await get_tree().process_frame
+		_expect(_technology_catalog_markers(panel) == ["流体处理"], "changing tier leaves the selected queued-status filter intact")
+		_select_option_value(status_filter, "all")
+		await get_tree().process_frame
+
 	var search := panel.get_node_or_null("Layout/Search") as LineEdit
 	if search != null:
-		search.text = "工厂"
+		search.text = "基础理论"
 		search.text_changed.emit(search.text)
-		panel.call("set_scroll_offset", 18.0)
+		await get_tree().process_frame
+		var search_markers := _technology_catalog_markers(panel)
+		if search_markers != ["工厂基础理论"]:
+			printerr("TECH SEARCH MARKERS: %s" % [search_markers])
+		_expect(search_markers == ["工厂基础理论"], "search filters the real catalog rows")
+		search.text = ""
+		search.text_changed.emit(search.text)
+	var scroll := panel.get_node_or_null("Layout/CatalogScroll") as ScrollContainer
+	await get_tree().process_frame
+	if scroll != null:
+		scroll.scroll_vertical = int(scroll.get_v_scroll_bar().max_value)
+		await get_tree().process_frame
+		var actual_scroll := scroll.scroll_vertical
 		panel.hide()
 		panel.show()
-		_expect(panel.call("get_filter_text") == "工厂" and is_equal_approx(float(panel.call("get_scroll_offset")), 18.0), "closing and reopening the technology workspace retains filter and scroll state")
+		await get_tree().process_frame
+		_expect(actual_scroll > 0 and scroll.scroll_vertical == actual_scroll, "closing and reopening retains an actual changed ScrollContainer value")
 	panel.queue_free()
 
 func _test_technology_main_intents_and_queue_regressions() -> void:
@@ -298,17 +331,85 @@ func _test_technology_main_intents_and_queue_regressions() -> void:
 	_expect(queue_service.add_to_queue("infinite_optimization"), "a completed repeatable technology can be queued while another technology is researching")
 
 	var state := GameState.new()
-	state.planet_inventory["matrix_science_1"] = 5.0
+	state.planet_inventory["matrix_science_1"] = 15.0
 	GameManager.replace_game_state(state)
 	var main: Node = load("res://scenes/main/Main.tscn").instantiate()
 	add_child(main)
 	await get_tree().process_frame
-	_expect(EventBus.has_signal("technology_start_requested"), "technology workspace sends start intent to the formal Main coordinator")
-	if EventBus.has_signal("technology_start_requested"):
-		EventBus.emit_signal("technology_start_requested", "factory_foundations")
+	await get_tree().process_frame
+	var formal_panel := main.get_node_or_null("FactoryWorkspaceUI/TechnologyPanel") as Control
+	var formal_toggle := main.get_node_or_null("FactoryWorkspaceUI/TopBar/TechnologyButton") as Button
+	if formal_toggle != null:
+		formal_toggle.pressed.emit()
 		await get_tree().process_frame
-		_expect(state.research_current_id == "factory_foundations", "real Main routes the technology start intent through its owned domain service")
+	var start_action := _find_technology_action(formal_panel, "工厂基础理论") if formal_panel != null else null
+	var start_control_exists := start_action != null
+	if start_action != null:
+		start_action.pressed.emit()
+		await get_tree().process_frame
+	_expect(start_control_exists, "formal Technology exposes a real root research row button")
+	_expect(state.research_current_id == "factory_foundations", "a real technology row sends start intent through Main into authoritative state")
+	var pause_button := formal_panel.get_node_or_null("Layout/CurrentActions/Pause") as Button if formal_panel != null else null
+	var resume_button := formal_panel.get_node_or_null("Layout/CurrentActions/Resume") as Button if formal_panel != null else null
+	var cancel_button := formal_panel.get_node_or_null("Layout/CurrentActions/Cancel") as Button if formal_panel != null else null
+	if pause_button != null:
+		pause_button.pressed.emit()
+		await get_tree().process_frame
+	_expect(pause_button != null and state.research_paused, "the real pause control routes intent through Main")
+	if resume_button != null:
+		resume_button.pressed.emit()
+		await get_tree().process_frame
+	_expect(resume_button != null and not state.research_paused, "the real resume control routes intent through Main")
+	var queue_action := _find_technology_action(formal_panel, "流体处理") if formal_panel != null else null
+	var queue_control_exists := queue_action != null
+	var queue_intents: Array = []
+	var queue_observer := func(technology_id: String) -> void: queue_intents.append(technology_id)
+	EventBus.technology_queue_requested.connect(queue_observer)
+	if queue_action != null:
+		queue_action.pressed.emit()
+		await get_tree().process_frame
+	EventBus.technology_queue_requested.disconnect(queue_observer)
+	_expect(queue_control_exists, "formal Technology exposes a real dependent queue row button")
+	_expect(queue_intents == ["fluid_handling"], "the dependent row emits the expected queue intent")
+	_expect(state.research_queue == ["fluid_handling"], "a real technology row sends queue intent through Main")
+	var remove_queue := _find_queue_remove_button(formal_panel, "fluid_handling") if formal_panel != null else null
+	var remove_control_exists := remove_queue != null
+	if remove_queue != null:
+		remove_queue.pressed.emit()
+		await get_tree().process_frame
+	_expect(remove_control_exists, "formal Technology exposes a real queue removal button")
+	_expect(state.research_queue.is_empty(), "the real queue removal control routes intent through Main")
+	queue_action = _find_technology_action(formal_panel, "流体处理") if formal_panel != null else null
+	if queue_action != null:
+		queue_action.pressed.emit()
+		await get_tree().process_frame
+	if cancel_button != null:
+		cancel_button.pressed.emit()
+		await get_tree().process_frame
+	var formal_wait_reason := formal_panel.get_node_or_null("Layout/WaitReason") as Label if formal_panel != null else null
+	_expect(cancel_button != null and state.research_current_id.is_empty() and state.research_queue == ["fluid_handling"], "the real cancel control routes intent through Main and retains the FIFO head")
+	_expect(formal_wait_reason != null and formal_wait_reason.visible and not formal_wait_reason.text.is_empty(), "formal controls expose the queue waiting reason after cancellation")
+
+	var campaign_toggle := main.get_node_or_null("FactoryWorkspaceUI/InspectorPanel/CampaignToggle") as Button
+	var blueprint_toggle := main.get_node_or_null("FactoryWorkspaceUI/InspectorPanel/BlueprintToggle") as Button
+	var campaign := main.get_node_or_null("FactoryWorkspaceUI/CampaignWorkspace") as Control
+	var blueprint := main.get_node_or_null("FactoryWorkspaceUI/BlueprintWorkspace") as Control
+	var inspector := main.get_node_or_null("FactoryWorkspaceUI/InspectorPanel") as Control
+	if campaign_toggle != null:
+		campaign_toggle.pressed.emit()
+		await get_tree().process_frame
+	_expect(campaign != null and campaign.visible and formal_panel != null and not formal_panel.visible and blueprint != null and not blueprint.visible, "opening Campaign makes formal workspaces mutually exclusive")
+	if formal_toggle != null:
+		formal_toggle.pressed.emit()
+		await get_tree().process_frame
+	_expect(formal_panel != null and formal_panel.visible and campaign != null and not campaign.visible and blueprint != null and not blueprint.visible, "opening Technology hides Campaign and Blueprint")
+	_expect(formal_panel != null and inspector != null and not formal_panel.get_global_rect().intersects(inspector.get_global_rect()), "formal Technology layout does not overlap the Inspector")
+	if blueprint_toggle != null:
+		blueprint_toggle.pressed.emit()
+		await get_tree().process_frame
+	_expect(blueprint != null and blueprint.visible and formal_panel != null and not formal_panel.visible and campaign != null and not campaign.visible, "opening Blueprint hides Technology and Campaign")
 	main.queue_free()
+	await get_tree().process_frame
 
 	var insufficient := GameState.new()
 	insufficient.planet_inventory["matrix_science_1"] = 5.0
@@ -319,6 +420,27 @@ func _test_technology_main_intents_and_queue_regressions() -> void:
 	_expect(insufficient.research_queue == ["fluid_handling"], "a queued item remains at the head when completion leaves insufficient matrices for its cost")
 	var wait_reason: Variant = insufficient.get("research_queue_wait_reason")
 	_expect(wait_reason is String and not String(wait_reason).is_empty(), "a blocked queue head exposes an observable waiting reason")
+	_expect(not insufficient_service.start_research("fluid_handling"), "a waiting queue head cannot start before its catalog matrices arrive")
+	var started_observations: Array = []
+	var started_observer := func(tech_id: String) -> void:
+		if tech_id == "fluid_handling":
+			started_observations.append({
+				"current": insufficient.research_current_id,
+				"queue": insufficient.research_queue.duplicate(true),
+				"matrices": float(insufficient.planet_inventory.get("matrix_science_1", 0.0)),
+			})
+	EventBus.technology_research_started.connect(started_observer)
+	insufficient.planet_inventory["matrix_science_1"] = 10.0
+	_expect(not insufficient_service.start_research("fluid_handling") and insufficient.research_current_id.is_empty() and insufficient.research_queue == ["fluid_handling"], "a direct start cannot bypass a funded non-empty FIFO queue or duplicate its head as current")
+	insufficient_service.update_research(0.0, false)
+	insufficient_service.update_research(0.0, false)
+	EventBus.technology_research_started.disconnect(started_observer)
+	_expect(insufficient.research_current_id == "fluid_handling" and insufficient.research_queue.is_empty(), "a waiting FIFO head retries on the next research phase when its matrices arrive")
+	_expect(started_observations.size() == 1, "a retried queue head starts exactly once across later research phases")
+	if started_observations.size() == 1:
+		var observed: Dictionary = started_observations[0]
+		_expect(observed.get("current") == "fluid_handling" and observed.get("queue", []) == [] and observed.get("matrices") == 0.0, "started-event observers see cost consumption, queue removal, and current assignment as one final atomic state")
+	_expect(not insufficient_service.start_research("fluid_handling"), "starting the already-current technology is rejected without a duplicate started event")
 
 	var cancelled := GameState.new()
 	cancelled.planet_inventory["matrix_science_1"] = 15.0
@@ -352,9 +474,55 @@ func _find_technology_action(panel: Control, marker: String) -> Button:
 			continue
 		var detail := row.get_child(0) as Label
 		var action := row.get_child(1) as Button
-		if detail != null and action != null and detail.text.contains(marker):
+		if detail != null and action != null and detail.text.get_slice("\n", 0).contains(marker):
 			return action
 	return null
+
+func _find_technology_detail(panel: Control, marker: String) -> Label:
+	var catalog := panel.get_node_or_null("Layout/CatalogScroll/Catalog") as VBoxContainer
+	if catalog == null:
+		return null
+	for row_value in catalog.get_children():
+		var row := row_value as HBoxContainer
+		if row != null and row.get_child_count() >= 1:
+			var detail := row.get_child(0) as Label
+			if detail != null and detail.text.get_slice("\n", 0).contains(marker):
+				return detail
+	return null
+
+func _find_queue_remove_button(panel: Control, technology_id: String) -> Button:
+	var queue_list := panel.get_node_or_null("Layout/QueueList") as VBoxContainer
+	if queue_list == null:
+		return null
+	for row_value in queue_list.get_children():
+		var row := row_value as HBoxContainer
+		if row == null:
+			continue
+		for child_value in row.get_children():
+			var button := child_value as Button
+			if button != null and String(button.get_meta("technology_id", "")) == technology_id:
+				return button
+	return null
+
+func _technology_catalog_markers(panel: Control) -> Array:
+	var result: Array = []
+	var catalog := panel.get_node_or_null("Layout/CatalogScroll/Catalog") as VBoxContainer
+	if catalog == null:
+		return result
+	for row_value in catalog.get_children():
+		var row := row_value as HBoxContainer
+		if row != null and row.get_child_count() >= 1:
+			var detail := row.get_child(0) as Label
+			if detail != null:
+				result.append(detail.text.get_slice(" [", 0).trim_prefix("✓ "))
+	return result
+
+func _select_option_value(option: OptionButton, value: String) -> void:
+	for index in range(option.item_count):
+		if String(option.get_item_metadata(index)) == value:
+			option.select(index)
+			option.item_selected.emit(index)
+			return
 
 func _add_building(state: GameState, building_type: String, position: Vector2, overrides: Dictionary = {}) -> String:
 	var building := {

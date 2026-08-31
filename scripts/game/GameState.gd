@@ -944,23 +944,36 @@ func get_simulation_budget() -> Dictionary:
 
 # 4. 游戏状态复制
 func copy_state() -> GameState:
-    var new_state = GameState.new()
-    new_state.buildings = buildings.duplicate(true)
-    new_state.connections = connections.duplicate(true)
-    new_state.elapsed_time = elapsed_time
-    new_state.paused = paused
-    new_state.speed = speed
-    new_state.planet_inventory = planet_inventory.duplicate(true)
-    new_state.construction_inventory = construction_inventory.duplicate(true)
-    new_state.cursor_payload = cursor_payload.duplicate(true)
-    new_state.handcraft_queue = handcraft_queue.duplicate(true)
-    new_state.completed_technologies = completed_technologies.duplicate(true)
-    new_state.completed_objective_ids = completed_objective_ids.duplicate(true)
-    new_state.claimed_progression_reward_ids = claimed_progression_reward_ids.duplicate(true)
-    new_state.completed_achievement_ids = completed_achievement_ids.duplicate(true)
-    new_state.unlocked_progression_ids = unlocked_progression_ids.duplicate(true)
-    new_state._next_id = _next_id
+    var new_state := GameState.new()
+    new_state.install_state(self)
     return new_state
+
+func install_state(source: GameState) -> void:
+    if source == null:
+        return
+    buildings = source.buildings.duplicate(true)
+    connections = source.connections.duplicate(true)
+    elapsed_time = source.elapsed_time
+    paused = source.paused
+    speed = source.speed
+    planet_inventory = source.planet_inventory.duplicate(true)
+    construction_inventory = source.construction_inventory.duplicate(true)
+    cursor_payload = source.cursor_payload.duplicate(true)
+    handcraft_queue = source.handcraft_queue.duplicate(true)
+    completed_technologies = source.completed_technologies.duplicate(true)
+    research_current_id = source.research_current_id
+    research_queue = source.research_queue.duplicate(true)
+    research_progress = source.research_progress.duplicate(true)
+    research_invested_costs = source.research_invested_costs.duplicate(true)
+    research_paused = source.research_paused
+    research_queue_wait_reason = source.research_queue_wait_reason
+    technology_levels = source.technology_levels.duplicate(true)
+    completed_objective_ids = source.completed_objective_ids.duplicate(true)
+    claimed_progression_reward_ids = source.claimed_progression_reward_ids.duplicate(true)
+    completed_achievement_ids = source.completed_achievement_ids.duplicate(true)
+    unlocked_progression_ids = source.unlocked_progression_ids.duplicate(true)
+    simulation_budget = source.simulation_budget.duplicate(true)
+    _next_id = source._next_id
 
 # 5. 实体锁定检查
 func is_entity_interaction_locked(entity_id: String) -> bool:

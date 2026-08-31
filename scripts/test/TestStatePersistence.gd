@@ -6,7 +6,9 @@ func _ready() -> void:
 	print("STATE PERSISTENCE TESTS STARTED")
 	_test_canonical_snapshot_and_round_trip()
 	_test_validation_rejects_corrupt_state()
+	_test_research_validation_invariants()
 	_test_migrations_and_version_boundaries()
+	_test_research_state_copy_and_compatibility_load()
 	_test_digest_is_stable_and_ignores_runtime_state()
 	_test_durable_save_slots()
 	_test_game_manager_replaces_authoritative_state()
@@ -35,7 +37,7 @@ func _test_canonical_snapshot_and_round_trip() -> void:
 	_expect(payload.get("construction_inventory").get("miner") == 2.0, "persistent payload preserves construction items")
 	_expect(payload.get("cursor_payload") == {"amount": 3.0, "item_id": "coal"}, "persistent payload preserves cursor ownership")
 	_expect(payload.get("handcraft_queue")[0].get("progress") == 0.25, "persistent payload preserves handcraft progress")
-	_expect(payload.get("completed_technologies") == ["automation", "smelting"], "set-like technology IDs use stable order")
+	_expect(payload.get("completed_technologies") == ["factory_foundations", "fluid_handling"], "set-like technology IDs use stable order")
 	_expect(payload.get("buildings", {}).keys() == ["building_10", "building_2"], "building dictionary keys use stable order")
 	_expect(payload.get("connections", {}).keys() == ["conn_9"], "connection dictionary keys use stable order")
 
@@ -158,6 +160,86 @@ func _test_validation_rejects_corrupt_state() -> void:
 			for key in ["code", "source", "id", "message"]:
 				_expect(validation_error.has(key), "validation errors contain %s" % key)
 
+func _test_research_validation_invariants() -> void:
+	var valid_in_flight := GameState.new()
+	valid_in_flight.research_current_id = "factory_foundations"
+	valid_in_flight.research_progress = {"factory_foundations": 4.0}
+	valid_in_flight.research_invested_costs = {"factory_foundations": {"matrix_science_1": 5.0}}
+	var payload := GameStateCodec.to_persistent_dict(valid_in_flight)
+	_expect(GameStateValidator.validate_persistent_dict(payload).is_empty(), "validator accepts a fully paid catalog-backed in-flight research state")
+
+	var unknown_completed := payload.duplicate(true)
+	unknown_completed["completed_technologies"] = ["unknown_technology"]
+	_expect(_error_codes(GameStateValidator.validate_persistent_dict(unknown_completed)).has("unknown_completed_technology"), "validator rejects unknown completed technology IDs")
+
+	var unknown_current := payload.duplicate(true)
+	unknown_current["research_current_id"] = "unknown_technology"
+	unknown_current["research_progress"] = {"unknown_technology": 1.0}
+	unknown_current["research_invested_costs"] = {"unknown_technology": {"matrix_science_1": 1.0}}
+	_expect(_error_codes(GameStateValidator.validate_persistent_dict(unknown_current)).has("unknown_research_current"), "validator rejects an unknown current research ID")
+
+	var unknown_queue := payload.duplicate(true)
+	unknown_queue["research_queue"] = ["unknown_technology"]
+	_expect(_error_codes(GameStateValidator.validate_persistent_dict(unknown_queue)).has("unknown_research_queue"), "validator rejects unknown queued research IDs")
+
+	var unknown_progress := payload.duplicate(true)
+	unknown_progress["research_progress"] = {"unknown_technology": 1.0}
+	_expect(_error_codes(GameStateValidator.validate_persistent_dict(unknown_progress)).has("unknown_research_progress"), "validator rejects unknown research progress IDs")
+
+	var unknown_invested := payload.duplicate(true)
+	unknown_invested["research_invested_costs"] = {"unknown_technology": {"matrix_science_1": 1.0}}
+	_expect(_error_codes(GameStateValidator.validate_persistent_dict(unknown_invested)).has("unknown_research_investment"), "validator rejects unknown invested-cost IDs")
+
+	var duplicated_current := payload.duplicate(true)
+	duplicated_current["research_queue"] = ["factory_foundations"]
+	_expect(_error_codes(GameStateValidator.validate_persistent_dict(duplicated_current)).has("research_current_queued"), "validator rejects the current research duplicated inside the FIFO queue")
+
+	var paused_without_current := payload.duplicate(true)
+	paused_without_current["research_current_id"] = ""
+	paused_without_current["research_paused"] = true
+	_expect(_error_codes(GameStateValidator.validate_persistent_dict(paused_without_current)).has("research_pause_without_current"), "validator rejects a paused flag without current research")
+
+	var excessive_progress := payload.duplicate(true)
+	excessive_progress["research_progress"]["factory_foundations"] = 10.5
+	_expect(_error_codes(GameStateValidator.validate_persistent_dict(excessive_progress)).has("invalid_research_progress"), "validator rejects research progress beyond the catalog duration")
+
+	var missing_payment := payload.duplicate(true)
+	missing_payment["research_invested_costs"] = {}
+	_expect(_error_codes(GameStateValidator.validate_persistent_dict(missing_payment)).has("research_cost_not_paid"), "validator rejects a save that bypasses the current research matrix cost")
+
+	var wrong_payment_amount := payload.duplicate(true)
+	wrong_payment_amount["research_invested_costs"]["factory_foundations"]["matrix_science_1"] = 1.0
+	_expect(_error_codes(GameStateValidator.validate_persistent_dict(wrong_payment_amount)).has("invalid_research_invested_cost"), "validator rejects an invested matrix amount below the exact catalog cost")
+
+	var wrong_payment_keys := payload.duplicate(true)
+	wrong_payment_keys["research_invested_costs"]["factory_foundations"]["iron_ore"] = 5.0
+	_expect(_error_codes(GameStateValidator.validate_persistent_dict(wrong_payment_keys)).has("invalid_research_invested_cost"), "validator rejects invested cost keys beyond the exact catalog cost")
+
+	var progress_without_payment := payload.duplicate(true)
+	progress_without_payment["research_current_id"] = ""
+	progress_without_payment["research_invested_costs"] = {}
+	_expect(_error_codes(GameStateValidator.validate_persistent_dict(progress_without_payment)).has("research_progress_without_investment"), "validator rejects cancelled progress without retained payment")
+
+	var reversed_queue := GameStateCodec.to_persistent_dict(GameState.new())
+	reversed_queue["research_queue"] = ["fluid_handling", "factory_foundations"]
+	_expect(_error_codes(GameStateValidator.validate_persistent_dict(reversed_queue)).has("invalid_research_queue_prerequisite"), "validator rejects a queue whose prerequisite appears after its dependent")
+
+	var completed_non_repeatable := GameStateCodec.to_persistent_dict(GameState.new())
+	completed_non_repeatable["completed_technologies"] = ["factory_foundations"]
+	completed_non_repeatable["research_queue"] = ["factory_foundations"]
+	_expect(_error_codes(GameStateValidator.validate_persistent_dict(completed_non_repeatable)).has("ineligible_research_queue"), "validator rejects completed non-repeatable technology in the queue")
+
+	var completed_repeatable := GameStateCodec.to_persistent_dict(GameState.new())
+	completed_repeatable["completed_technologies"] = ["factory_foundations", "fluid_handling", "advanced_materials", "interstellar_logistics", "dyson_engineering", "infinite_optimization"]
+	completed_repeatable["technology_levels"] = {"infinite_optimization": 1}
+	completed_repeatable["research_queue"] = ["infinite_optimization"]
+	_expect(GameStateValidator.validate_persistent_dict(completed_repeatable).is_empty(), "validator accepts an eligible completed repeatable technology in the queue")
+
+	var missing_repeatable_level := completed_repeatable.duplicate(true)
+	missing_repeatable_level["research_queue"] = []
+	missing_repeatable_level["technology_levels"] = {}
+	_expect(_error_codes(GameStateValidator.validate_persistent_dict(missing_repeatable_level)).has("missing_repeatable_technology_level"), "validator requires a persistent level for every completed repeatable technology")
+
 func _test_migrations_and_version_boundaries() -> void:
 	var legacy_payload := {
 		"next_id": 1,
@@ -206,6 +288,64 @@ func _test_migrations_and_version_boundaries() -> void:
 	var malformed_scalar_migration := SaveMigrationRegistry.migrate_to_current(malformed_scalar)
 	_expect(malformed_scalar_migration.get("ok") == false, "migration registry safely rejects malformed scalar fields")
 	_expect(_error_codes(malformed_scalar_migration.get("errors", [])).has("invalid_next_id"), "malformed scalar fields return a structured validation error")
+
+	var version_four_repeatable := GameStateCodec.to_persistent_dict(GameState.new())
+	version_four_repeatable["schema_version"] = 4
+	version_four_repeatable.erase("research_queue_wait_reason")
+	version_four_repeatable.erase("technology_levels")
+	version_four_repeatable["completed_technologies"] = ["factory_foundations", "fluid_handling", "advanced_materials", "interstellar_logistics", "dyson_engineering", "infinite_optimization"]
+	var repeatable_migration := SaveMigrationRegistry.migrate_to_current(version_four_repeatable)
+	_expect(repeatable_migration.get("ok") == true and repeatable_migration.get("data", {}).get("technology_levels", {}).get("infinite_optimization") == 1, "v4 to v5 migration initializes every completed repeatable technology at level one")
+	var migrated_repeatable := GameStateCodec.from_persistent_dict(version_four_repeatable)
+	if migrated_repeatable is GameState:
+		migrated_repeatable.planet_inventory["matrix_science_1"] = 50.0
+		var migrated_research := TechnologySystem.new(migrated_repeatable)
+		var started_again := migrated_research.start_research("infinite_optimization")
+		migrated_research.update_research(60.0)
+		_expect(started_again and migrated_repeatable.get_technology_level("infinite_optimization") == 2, "a migrated level-one repeatable technology completes again as level two")
+		_expect(is_equal_approx(migrated_repeatable.get_technology_effect_multiplier("production_speed"), 1.39107397275), "the migrated repeatable technology keeps its cumulative level-two production effect")
+	else:
+		_expect(false, "a valid v4 repeatable save decodes after the continuous v3 to v4 to v5 migration chain")
+
+func _test_research_state_copy_and_compatibility_load() -> void:
+	var source := GameState.new()
+	source.completed_technologies = ["infinite_optimization"]
+	source.research_current_id = "factory_foundations"
+	source.research_queue = ["fluid_handling"]
+	source.research_progress = {"factory_foundations": 3.5}
+	source.research_invested_costs = {"factory_foundations": {"matrix_science_1": 5.0}}
+	source.research_paused = true
+	source.research_queue_wait_reason = "等待资源后重试"
+	source.technology_levels = {"infinite_optimization": 2}
+
+	var copied := source.copy_state()
+	_expect(copied.research_current_id == source.research_current_id and copied.research_queue == source.research_queue and copied.research_progress == source.research_progress and copied.research_invested_costs == source.research_invested_costs, "GameState copy preserves current, queue, progress, and invested research costs")
+	_expect(copied.research_paused == source.research_paused and copied.research_queue_wait_reason == source.research_queue_wait_reason and copied.technology_levels == source.technology_levels and copied.completed_technologies == source.completed_technologies, "GameState copy preserves pause, wait reason, levels, and completed technology IDs")
+	var copied_has_research := copied.research_progress.has("factory_foundations") and copied.research_invested_costs.has("factory_foundations") and copied.technology_levels.has("infinite_optimization")
+	if copied_has_research:
+		copied.research_queue.append("advanced_materials")
+		copied.research_progress["factory_foundations"] = 9.0
+		copied.research_invested_costs["factory_foundations"]["matrix_science_1"] = 1.0
+		copied.technology_levels["infinite_optimization"] = 99
+		copied.completed_technologies.append("factory_foundations")
+		_expect(source.research_queue == ["fluid_handling"] and source.research_progress["factory_foundations"] == 3.5 and source.research_invested_costs["factory_foundations"]["matrix_science_1"] == 5.0, "GameState research collections are deep-copied without nested aliases")
+		_expect(source.technology_levels["infinite_optimization"] == 2 and source.completed_technologies == ["infinite_optimization"], "GameState level and completion collections do not alias their copy")
+	else:
+		_expect(false, "GameState research collections are deep-copied without nested aliases")
+		_expect(false, "GameState level and completion collections do not alias their copy")
+
+	var test_path := "res://.godot/test_saves/research_compat_%d_%d/" % [OS.get_process_id(), Time.get_ticks_usec()]
+	var save_system := SaveSystem.new(test_path)
+	var target := GameState.new()
+	var compatibility_save := save_system.save_slot(0, source)
+	if not compatibility_save.get("ok", false):
+		printerr("COMPATIBILITY SAVE ERROR: %s" % compatibility_save.get("error", {}))
+	_expect(compatibility_save.get("ok", false), "compatibility load fixture writes a valid non-empty research save")
+	_expect(save_system.load_game(0, target), "compatibility load installs a persisted research state")
+	_expect(target.research_current_id == source.research_current_id and target.research_queue == source.research_queue and target.research_progress == source.research_progress and target.research_invested_costs == source.research_invested_costs, "compatibility load preserves all active and retained research facts")
+	_expect(target.research_paused == source.research_paused and target.research_queue_wait_reason == source.research_queue_wait_reason, "compatibility load preserves pause and queue wait reason")
+	_expect(target.technology_levels == source.technology_levels and target.completed_technologies == source.completed_technologies, "compatibility load preserves technology levels and completion facts")
+	_remove_test_save_directory(test_path)
 
 func _test_digest_is_stable_and_ignores_runtime_state() -> void:
 	var first := _make_fixture_state()
@@ -261,7 +401,7 @@ func _test_durable_save_slots() -> void:
 		_expect(GameStateCodec.state_digest_payload(loaded_state) == GameStateCodec.state_digest_payload(source), "slot round trip preserves the authoritative digest")
 		_expect(loaded_state.buildings.get("building_10", {}).get("position") == Vector2(10.5, -3.25), "slot round trip restores building positions")
 		_expect(loaded_state.buildings.get("building_10", {}).get("input_buffer", {}).get("iron_ore") == 4.5, "slot round trip restores inventory")
-		_expect(loaded_state.completed_technologies == ["automation", "smelting"], "slot round trip restores research progress")
+		_expect(loaded_state.completed_technologies == ["factory_foundations", "fluid_handling"], "slot round trip restores research progress")
 	_expect(save_system.get_slot_info(0).get("digest") == source_digest, "slot listing reads validated metadata")
 
 	var invalid_save: Dictionary = save_system.save_slot(-1, source)
@@ -458,7 +598,7 @@ func _make_fixture_state(reverse_insertion_order: bool = false) -> GameState:
 		"quantity_remaining": 1,
 		"progress": 0.25,
 	}]
-	state.completed_technologies = ["smelting", "automation"]
+	state.completed_technologies = ["fluid_handling", "factory_foundations"]
 	state._next_id = 11
 	state.paused = true
 	state.speed = 3.0

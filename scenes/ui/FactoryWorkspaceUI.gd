@@ -60,9 +60,13 @@ func _ready() -> void:
 	_create_workspace()
 	var technology_panel := TECHNOLOGY_PANEL_SCRIPT.new()
 	technology_panel.name = "TechnologyPanel"
-	technology_panel.position = Vector2(226, TOP_BAR_HEIGHT + 8.0)
-	# The workspace starts compact; its panel is a real Control but does not
-	# cover the factory canvas until the future shell toggle opens it.
+	technology_panel.anchor_right = 1.0
+	technology_panel.anchor_bottom = 1.0
+	technology_panel.offset_left = RESOURCE_RAIL_WIDTH + 10.0
+	technology_panel.offset_top = TOP_BAR_HEIGHT + 8.0
+	technology_panel.offset_right = -INSPECTOR_WIDTH - 10.0
+	technology_panel.offset_bottom = -CONSTRUCTION_DOCK_HEIGHT - 8.0
+	technology_panel.z_index = 4
 	technology_panel.hide()
 	add_child(technology_panel)
 	var input_handler := _get_input_handler()
@@ -338,7 +342,16 @@ func _on_state_changed(_arg_1 = null, _arg_2 = null, _arg_3 = null) -> void:
 func _toggle_technology_workspace() -> void:
 	var technology_panel := get_node_or_null("TechnologyPanel") as Control
 	if technology_panel != null:
-		technology_panel.visible = not technology_panel.visible
+		if technology_panel.visible:
+			technology_panel.hide()
+		else:
+			show_exclusive_workspace("TechnologyPanel")
+
+func show_exclusive_workspace(workspace_name: String) -> void:
+	for candidate_name in ["TechnologyPanel", "CampaignWorkspace", "BlueprintWorkspace"]:
+		var workspace := get_node_or_null(candidate_name) as Control
+		if workspace != null:
+			workspace.visible = candidate_name == workspace_name
 
 func _on_notice_timeout() -> void:
 	get_node("Toast").hide()

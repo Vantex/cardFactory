@@ -50,6 +50,12 @@ static func migrate_to_current(payload: Variant) -> Dictionary:
 				var quantity_value: Variant = job_value.get(quantity_field)
 				if _is_integral_number(quantity_value):
 					job_value[quantity_field] = int(quantity_value)
+	var technology_levels_value: Variant = migrated.get("technology_levels")
+	if technology_levels_value is Dictionary:
+		for technology_id_value in technology_levels_value:
+			var level_value: Variant = technology_levels_value[technology_id_value]
+			if _is_integral_number(level_value):
+				technology_levels_value[technology_id_value] = int(level_value)
 
 	var validation_errors := GameStateValidator.validate_persistent_dict(migrated)
 	if not validation_errors.is_empty():
@@ -123,7 +129,16 @@ static func _migrate_v4_to_v5(legacy: Dictionary) -> Dictionary:
 	var migrated := legacy.duplicate(true)
 	migrated["schema_version"] = 5
 	migrated["research_queue_wait_reason"] = String(migrated.get("research_queue_wait_reason", ""))
-	migrated["technology_levels"] = migrated.get("technology_levels", {})
+	var levels_value: Variant = migrated.get("technology_levels", {})
+	var levels: Dictionary = levels_value.duplicate(true) if levels_value is Dictionary else {}
+	var completed_value: Variant = migrated.get("completed_technologies", [])
+	if completed_value is Array:
+		for technology_id_value in completed_value:
+			var technology_id := String(technology_id_value)
+			var technology := DataManager.get_technology(technology_id)
+			if not technology.is_empty() and technology.has("repeatable") and not levels.has(technology_id):
+				levels[technology_id] = 1
+	migrated["technology_levels"] = levels
 	return migrated
 
 static func _failure(code: String, message: String) -> Dictionary:

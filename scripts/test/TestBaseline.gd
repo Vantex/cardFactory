@@ -43,6 +43,7 @@ func _ready() -> void:
 		_expect(DataManager.get_loaded_data_files() == expected_loaded_data_files, "DataManager loaded data files API returns a shallow copy")
 
 	_test_catalog_validation_contract()
+	_test_technology_schema_validation()
 
 	var unavailable_save_system := SaveSystem.new("invalid://baseline/")
 	_expect(not unavailable_save_system.is_storage_available(), "SaveSystem reports invalid storage as unavailable")
@@ -108,6 +109,81 @@ func _test_catalog_validation_contract() -> void:
 		codes.append(String(error_value.get("code", "")))
 	for expected_code in ["missing_building_reference", "missing_item_reference", "invalid_amount", "invalid_duration", "technology_cycle", "technology_id_mismatch", "invalid_repeatable_rule", "uncraftable_mandatory_item"]:
 		_expect(codes.has(expected_code), "catalog validation rejects %s" % expected_code)
+
+func _test_technology_schema_validation() -> void:
+	var valid_technology := {
+		"id": "valid",
+		"name": "Valid technology",
+		"description": "A complete technology definition.",
+		"tier": "planetary",
+		"cost": {"matrix_science_1": 1.0},
+		"duration": 1.0,
+		"prerequisites": [],
+		"unlocks": [],
+		"effects": {"production_speed": 1.01},
+	}
+	var technologies := {"valid": valid_technology}
+	var bad_definitions := {
+		"missing_name": {"name": ""},
+		"missing_description": {"description": ""},
+		"missing_tier": {"tier": ""},
+		"bad_tier": {"tier": "galactic"},
+		"free_research": {"cost": {}},
+		"bad_cost_shape": {"cost": []},
+		"bad_cost_amount": {"cost": {"matrix_science_1": 0.0}},
+		"unknown_cost_item": {"cost": {"missing_matrix": 1.0}},
+		"missing_effects": {"effects": {}},
+		"bad_effects_shape": {"effects": []},
+		"unknown_effect": {"effects": {"free_everything": 1.0}},
+		"bad_effect_value": {"effects": {"production_speed": 0.0}},
+		"bad_duration": {"duration": 0.0},
+		"bad_prerequisites_shape": {"prerequisites": {"valid": true}},
+		"bad_prerequisite_entry": {"prerequisites": [42]},
+		"bad_unlocks_shape": {"unlocks": {"kind": "building", "id": "missing"}},
+		"bad_unlock_entry": {"unlocks": [{"kind": "", "id": ""}]},
+	}
+	for technology_id in bad_definitions:
+		var definition: Dictionary = valid_technology.duplicate(true)
+		definition["id"] = technology_id
+		for field in bad_definitions[technology_id]:
+			definition[field] = bad_definitions[technology_id][field]
+		technologies[technology_id] = definition
+
+	var errors := DataManager.validate_catalog({
+		"items": {"matrix_science_1": {"id": "matrix_science_1"}},
+		"buildings": {},
+		"recipes": {},
+		"technologies": technologies,
+		"mandatory_items": [],
+	})
+	var expected_errors := {
+		"missing_name": "missing_technology_name",
+		"missing_description": "missing_technology_description",
+		"missing_tier": "invalid_technology_tier",
+		"bad_tier": "invalid_technology_tier",
+		"free_research": "invalid_technology_cost",
+		"bad_cost_shape": "invalid_technology_cost",
+		"bad_cost_amount": "invalid_technology_cost_amount",
+		"unknown_cost_item": "missing_item_reference",
+		"missing_effects": "invalid_technology_effects",
+		"bad_effects_shape": "invalid_technology_effects",
+		"unknown_effect": "unknown_technology_effect",
+		"bad_effect_value": "invalid_technology_effect_value",
+		"bad_duration": "invalid_duration",
+		"bad_prerequisites_shape": "invalid_technology_prerequisites",
+		"bad_prerequisite_entry": "invalid_technology_prerequisite",
+		"bad_unlocks_shape": "invalid_technology_unlocks",
+		"bad_unlock_entry": "invalid_unlock",
+	}
+	for technology_id in expected_errors:
+		_expect(_has_validation_error(errors, expected_errors[technology_id], technology_id), "technology schema rejects %s with %s" % [technology_id, expected_errors[technology_id]])
+	_expect(_has_validation_error(errors, "invalid_technology_cost", "free_research"), "technology validation rejects a zero-cost save-bypass definition at the catalog boundary")
+
+func _has_validation_error(errors: Array, code: String, entry_id: String) -> bool:
+	for error_value in errors:
+		if String(error_value.get("code", "")) == code and String(error_value.get("id", "")).begins_with(entry_id):
+			return true
+	return false
 
 func _expect(condition: bool, description: String) -> void:
 	if condition:

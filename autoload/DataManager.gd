@@ -13,6 +13,9 @@ var _technology_sources: Dictionary = {}
 var _validation_errors: Array = []
 var _loaded_data_files: Array[String] = []
 
+const TECHNOLOGY_TIERS := ["planetary", "interstellar", "dyson", "infinite"]
+const TECHNOLOGY_EFFECT_KEYS := ["production_speed"]
+
 func _ready():
     _load_all_data()
     print("DataManager loaded: ", all_items.size(), " items, ", all_buildings.size(), " buildings, ", all_recipes.size(), " recipes")
@@ -185,24 +188,60 @@ func validate_catalog(catalog: Dictionary) -> Array:
 
     for technology_key in technologies:
         var technology_id := String(technology_key)
-        var technology: Dictionary = technologies[technology_key]
         var source := String(_technology_sources.get(technology_id, "catalog"))
+        var technology_value: Variant = technologies[technology_key]
+        if not technology_value is Dictionary:
+            errors.append(_make_error("invalid_technology", source, technology_id, "Technology definition must be a Dictionary"))
+            continue
+        var technology: Dictionary = technology_value
         if String(technology.get("id", "")) != technology_id:
             errors.append(_make_error("technology_id_mismatch", source, technology_id, "Technology key and stable id must match"))
+        if not technology.get("name", "") is String or String(technology.get("name", "")).strip_edges().is_empty():
+            errors.append(_make_error("missing_technology_name", source, technology_id, "Technology name must be a non-empty String"))
+        if not technology.get("description", "") is String or String(technology.get("description", "")).strip_edges().is_empty():
+            errors.append(_make_error("missing_technology_description", source, technology_id, "Technology description must be a non-empty String"))
+        if not technology.get("tier", "") is String or not TECHNOLOGY_TIERS.has(String(technology.get("tier", ""))):
+            errors.append(_make_error("invalid_technology_tier", source, technology_id, "Technology tier must be one of %s" % ", ".join(TECHNOLOGY_TIERS)))
         if technology.has("repeatable") and (not technology.get("repeatable") is Dictionary or String(technology.get("repeatable", {}).get("cost_rule", "")) != "fixed"):
             errors.append(_make_error("invalid_repeatable_rule", source, technology_id, "Technology repeatable must declare a fixed cost rule"))
         _validate_positive_number(errors, technology.get("duration", 0.0), "invalid_duration", source, technology_id, "Technology duration must be positive")
-        for cost_key in technology.get("cost", {}):
-            var item_id := String(cost_key)
-            if not items.has(item_id):
-                errors.append(_make_error("missing_item_reference", source, item_id, "Technology '%s' references undefined cost item '%s'" % [technology_id, item_id]))
-            _validate_positive_number(errors, technology.get("cost", {})[cost_key], "invalid_amount", source, "%s/%s" % [technology_id, item_id], "Technology cost must be positive")
-        for prerequisite_value in technology.get("prerequisites", []):
-            var prerequisite_id := String(prerequisite_value)
-            if not technologies.has(prerequisite_id):
-                errors.append(_make_error("missing_technology_reference", source, prerequisite_id, "Technology '%s' references undefined prerequisite '%s'" % [technology_id, prerequisite_id]))
-        for unlock_value in technology.get("unlocks", []):
-            _validate_unlock(errors, technology_id, unlock_value, source, items, buildings, recipes, technologies)
+        var cost_value: Variant = technology.get("cost")
+        if not cost_value is Dictionary or cost_value.is_empty():
+            errors.append(_make_error("invalid_technology_cost", source, technology_id, "Technology cost must be a non-empty Dictionary"))
+        else:
+            var cost: Dictionary = cost_value
+            for cost_key in cost:
+                var item_id := String(cost_key)
+                if not items.has(item_id):
+                    errors.append(_make_error("missing_item_reference", source, "%s/%s" % [technology_id, item_id], "Technology '%s' references undefined cost item '%s'" % [technology_id, item_id]))
+                _validate_positive_number(errors, cost[cost_key], "invalid_technology_cost_amount", source, "%s/%s" % [technology_id, item_id], "Technology cost must be finite and positive")
+        var effects_value: Variant = technology.get("effects")
+        if not effects_value is Dictionary or effects_value.is_empty():
+            errors.append(_make_error("invalid_technology_effects", source, technology_id, "Technology effects must be a non-empty Dictionary"))
+        else:
+            var effects: Dictionary = effects_value
+            for effect_key_value in effects:
+                var effect_key := String(effect_key_value)
+                if not TECHNOLOGY_EFFECT_KEYS.has(effect_key):
+                    errors.append(_make_error("unknown_technology_effect", source, "%s/%s" % [technology_id, effect_key], "Technology '%s' declares unknown effect '%s'" % [technology_id, effect_key]))
+                _validate_positive_number(errors, effects[effect_key_value], "invalid_technology_effect_value", source, "%s/%s" % [technology_id, effect_key], "Technology effect value must be finite and positive")
+        var prerequisites_value: Variant = technology.get("prerequisites")
+        if not prerequisites_value is Array:
+            errors.append(_make_error("invalid_technology_prerequisites", source, technology_id, "Technology prerequisites must be an Array"))
+        else:
+            for prerequisite_value in prerequisites_value:
+                if not prerequisite_value is String or String(prerequisite_value).is_empty():
+                    errors.append(_make_error("invalid_technology_prerequisite", source, technology_id, "Technology prerequisite IDs must be non-empty Strings"))
+                    continue
+                var prerequisite_id: String = prerequisite_value
+                if not technologies.has(prerequisite_id):
+                    errors.append(_make_error("missing_technology_reference", source, prerequisite_id, "Technology '%s' references undefined prerequisite '%s'" % [technology_id, prerequisite_id]))
+        var unlocks_value: Variant = technology.get("unlocks")
+        if not unlocks_value is Array:
+            errors.append(_make_error("invalid_technology_unlocks", source, technology_id, "Technology unlocks must be an Array"))
+        else:
+            for unlock_value in unlocks_value:
+                _validate_unlock(errors, technology_id, unlock_value, source, items, buildings, recipes, technologies)
 
     var visit_state: Dictionary = {}
     var technology_ids := technologies.keys()
@@ -225,7 +264,9 @@ func _validate_unlock(errors: Array, technology_id: String, unlock_value: Varian
     var unlock_kind := String(unlock.get("kind", ""))
     var unlock_id := String(unlock.get("id", ""))
     var collections := {"item": items, "building": buildings, "recipe": recipes, "technology": technologies}
-    if not collections.has(unlock_kind) or not collections[unlock_kind].has(unlock_id):
+    if unlock_kind.is_empty() or unlock_id.is_empty() or not collections.has(unlock_kind):
+        errors.append(_make_error("invalid_unlock", source, technology_id, "Technology unlocks must declare a supported kind and non-empty id"))
+    elif not collections[unlock_kind].has(unlock_id):
         errors.append(_make_error("missing_unlock_reference", source, unlock_id, "Technology '%s' has invalid %s unlock '%s'" % [technology_id, unlock_kind, unlock_id]))
 
 func _detect_technology_cycle(technology_id: String, technologies: Dictionary, visit_state: Dictionary, path: Array, errors: Array) -> void:
@@ -237,8 +278,18 @@ func _detect_technology_cycle(technology_id: String, technologies: Dictionary, v
         return
     visit_state[technology_id] = 1
     path.append(technology_id)
-    var technology: Dictionary = technologies.get(technology_id, {})
-    for prerequisite_value in technology.get("prerequisites", []):
+    var technology_value: Variant = technologies.get(technology_id, {})
+    if not technology_value is Dictionary:
+        visit_state[technology_id] = 2
+        return
+    var technology: Dictionary = technology_value
+    var prerequisites_value: Variant = technology.get("prerequisites", [])
+    if not prerequisites_value is Array:
+        visit_state[technology_id] = 2
+        return
+    for prerequisite_value in prerequisites_value:
+        if not prerequisite_value is String:
+            continue
         var prerequisite_id := String(prerequisite_value)
         if technologies.has(prerequisite_id):
             _detect_technology_cycle(prerequisite_id, technologies, visit_state, path, errors)

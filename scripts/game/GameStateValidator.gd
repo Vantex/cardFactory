@@ -106,31 +106,94 @@ static func _validate_stable_id_array(errors: Array, field_name: String, value: 
 		seen[String(id_value)] = true
 
 static func _validate_research_state(errors: Array, data: Dictionary) -> void:
+	var completed_value: Variant = data.get("completed_technologies")
+	var completed: Array = completed_value if completed_value is Array else []
+	for completed_id_value in completed:
+		var completed_id := String(completed_id_value)
+		if not completed_id.is_empty() and DataManager.get_technology(completed_id).is_empty():
+			_add_error(errors, "unknown_completed_technology", "technology", completed_id, "已完成科技引用未知目录 ID")
+
 	var current_id: Variant = data.get("research_current_id")
 	if typeof(current_id) != TYPE_STRING and typeof(current_id) != TYPE_STRING_NAME:
 		_add_error(errors, "invalid_research_current_id", "state", "", "当前研究必须是字符串")
+	var current := String(current_id) if typeof(current_id) == TYPE_STRING or typeof(current_id) == TYPE_STRING_NAME else ""
+	var current_technology := DataManager.get_technology(current)
+	if not current.is_empty() and current_technology.is_empty():
+		_add_error(errors, "unknown_research_current", "technology", current, "当前研究引用未知目录 ID")
+	elif not current.is_empty():
+		if completed.has(current) and not current_technology.has("repeatable"):
+			_add_error(errors, "ineligible_research_current", "technology", current, "已完成的非重复科技不能再次研究")
+		for prerequisite_value in current_technology.get("prerequisites", []):
+			var prerequisite_id := String(prerequisite_value)
+			if not completed.has(prerequisite_id):
+				_add_error(errors, "invalid_research_current_prerequisite", "technology", current, "当前研究缺少已完成前置科技 '%s'" % prerequisite_id)
+
 	_validate_stable_id_array(errors, "research_queue", data.get("research_queue"))
+	var queue_value: Variant = data.get("research_queue")
+	var queue: Array = queue_value if queue_value is Array else []
+	if not current.is_empty() and queue.has(current):
+		_add_error(errors, "research_current_queued", "technology", current, "当前研究不能同时存在于队列")
 	if typeof(data.get("research_paused")) != TYPE_BOOL:
 		_add_error(errors, "invalid_research_paused", "state", "", "研究暂停状态必须是布尔值")
+	elif bool(data.get("research_paused")) and current.is_empty():
+		_add_error(errors, "research_pause_without_current", "state", "", "没有当前研究时不能保存暂停状态")
 	if (typeof(data.get("research_queue_wait_reason")) != TYPE_STRING and typeof(data.get("research_queue_wait_reason")) != TYPE_STRING_NAME) or not data.get("technology_levels") is Dictionary:
 		_add_error(errors, "invalid_research_metadata", "state", "", "研究队列状态和科技层数无效")
-	_validate_technology_levels(errors, data.get("technology_levels"), data.get("completed_technologies"))
-	for field_name in ["research_progress", "research_invested_costs"]:
-		var field_value: Variant = data.get(field_name)
-		if not field_value is Dictionary:
-			_add_error(errors, "invalid_%s" % field_name, "state", "", "%s 必须是字典" % field_name)
+	_validate_technology_levels(errors, data.get("technology_levels"), completed_value)
+
+	var progress_value: Variant = data.get("research_progress")
+	var progress_by_id: Dictionary = progress_value if progress_value is Dictionary else {}
+	if not progress_value is Dictionary:
+		_add_error(errors, "invalid_research_progress", "state", "", "research_progress 必须是字典")
+	var invested_value: Variant = data.get("research_invested_costs")
+	var invested_by_id: Dictionary = invested_value if invested_value is Dictionary else {}
+	if not invested_value is Dictionary:
+		_add_error(errors, "invalid_research_invested_costs", "state", "", "research_invested_costs 必须是字典")
+
+	for tech_id_value in progress_by_id:
+		var tech_id := String(tech_id_value)
+		var technology := DataManager.get_technology(tech_id)
+		if tech_id.is_empty():
+			_add_error(errors, "invalid_research_progress", "state", tech_id, "研究科技 ID 不能为空")
+		elif technology.is_empty():
+			_add_error(errors, "unknown_research_progress", "technology", tech_id, "研究进度引用未知目录 ID")
+		var progress: Variant = progress_by_id[tech_id_value]
+		var duration := float(technology.get("duration", 0.0))
+		if not _is_finite_number(progress) or float(progress) < 0.0 or (not technology.is_empty() and float(progress) > duration + 0.0000001):
+			_add_error(errors, "invalid_research_progress", "technology", tech_id, "研究进度必须在目录时长范围内")
+		if not invested_by_id.has(tech_id):
+			_add_error(errors, "research_progress_without_investment", "technology", tech_id, "研究进度必须保留完整投入成本")
+
+	for tech_id_value in invested_by_id:
+		var tech_id := String(tech_id_value)
+		var technology := DataManager.get_technology(tech_id)
+		if tech_id.is_empty():
+			_add_error(errors, "invalid_research_invested_costs", "state", tech_id, "研究科技 ID 不能为空")
+		elif technology.is_empty():
+			_add_error(errors, "unknown_research_investment", "technology", tech_id, "研究投入引用未知目录 ID")
 			continue
-		for tech_id_value in field_value:
-			var tech_id := String(tech_id_value)
-			if tech_id.is_empty():
-				_add_error(errors, "invalid_%s" % field_name, "state", tech_id, "研究科技 ID 不能为空")
-				continue
-			if field_name == "research_progress":
-				var progress: Variant = field_value[tech_id_value]
-				if not _is_number(progress) or is_nan(float(progress)) or is_inf(float(progress)) or float(progress) < 0.0:
-					_add_error(errors, "invalid_research_progress", "state", tech_id, "研究进度必须是有限非负数字")
-			elif not field_value[tech_id_value] is Dictionary:
-				_add_error(errors, "invalid_research_invested_costs", "state", tech_id, "研究投入必须是字典")
+		_validate_exact_research_cost(errors, tech_id, technology.get("cost", {}), invested_by_id[tech_id_value])
+	if not current.is_empty() and not invested_by_id.has(current):
+		_add_error(errors, "research_cost_not_paid", "technology", current, "当前研究必须已经支付完整目录成本")
+
+	var scheduled: Dictionary = {}
+	for completed_id_value in completed:
+		scheduled[String(completed_id_value)] = true
+	if not current.is_empty():
+		scheduled[current] = true
+	for queued_id_value in queue:
+		var queued_id := String(queued_id_value)
+		var technology := DataManager.get_technology(queued_id)
+		if technology.is_empty():
+			_add_error(errors, "unknown_research_queue", "technology", queued_id, "研究队列引用未知目录 ID")
+			continue
+		if completed.has(queued_id) and not technology.has("repeatable"):
+			_add_error(errors, "ineligible_research_queue", "technology", queued_id, "已完成的非重复科技不能进入队列")
+		for prerequisite_value in technology.get("prerequisites", []):
+			var prerequisite_id := String(prerequisite_value)
+			if not scheduled.has(prerequisite_id):
+				_add_error(errors, "invalid_research_queue_prerequisite", "technology", queued_id, "队列前置科技 '%s' 必须已完成或排在其前面" % prerequisite_id)
+		scheduled[queued_id] = true
 
 static func _validate_technology_levels(errors: Array, levels_value: Variant, completed_value: Variant) -> void:
 	if not levels_value is Dictionary:
@@ -149,6 +212,28 @@ static func _validate_technology_levels(errors: Array, levels_value: Variant, co
 			_add_error(errors, "non_repeatable_technology_level", "technology", technology_id, "非重复科技不能保存层数")
 		if not completed.has(technology_id):
 			_add_error(errors, "technology_level_not_completed", "technology", technology_id, "科技层数必须对应已完成科技")
+	for completed_id_value in completed:
+		var completed_id := String(completed_id_value)
+		var completed_technology := DataManager.get_technology(completed_id)
+		if not completed_technology.is_empty() and completed_technology.has("repeatable") and not levels_value.has(completed_id):
+			_add_error(errors, "missing_repeatable_technology_level", "technology", completed_id, "已完成的重复科技必须保存至少一级")
+
+static func _validate_exact_research_cost(errors: Array, technology_id: String, expected_value: Variant, invested_value: Variant) -> void:
+	if not expected_value is Dictionary or not invested_value is Dictionary:
+		_add_error(errors, "invalid_research_invested_cost", "technology", technology_id, "研究投入必须精确匹配目录成本")
+		return
+	var expected: Dictionary = expected_value
+	var invested: Dictionary = invested_value
+	if invested.size() != expected.size():
+		_add_error(errors, "invalid_research_invested_cost", "technology", technology_id, "研究投入物品必须精确匹配目录成本")
+		return
+	for item_id_value in expected:
+		var item_id := String(item_id_value)
+		var expected_amount: Variant = expected[item_id_value]
+		var invested_amount: Variant = invested.get(item_id)
+		if not invested.has(item_id) or not _is_finite_number(invested_amount) or not is_equal_approx(float(invested_amount), float(expected_amount)):
+			_add_error(errors, "invalid_research_invested_cost", "technology", technology_id, "研究投入 '%s' 必须精确等于目录成本" % item_id)
+			return
 
 static func _validate_catalog_configuration(errors: Array, building_id: String, building: Dictionary) -> void:
 	var building_type := String(building.get("type", ""))
@@ -270,6 +355,9 @@ static func _numeric_id_suffix(stable_id: String) -> int:
 
 static func _is_number(value: Variant) -> bool:
 	return typeof(value) == TYPE_INT or typeof(value) == TYPE_FLOAT
+
+static func _is_finite_number(value: Variant) -> bool:
+	return _is_number(value) and not is_nan(float(value)) and not is_inf(float(value))
 
 static func _is_integral_number(value: Variant) -> bool:
 	return _is_number(value) and float(value) == floor(float(value))

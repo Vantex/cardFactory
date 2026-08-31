@@ -26,17 +26,7 @@ func can_research_technology(tech_id: String) -> bool:
 	return _has_paid_cost(tech_id) or _has_cost_in_inventory(tech_id)
 
 func start_research(tech_id: String) -> bool:
-	if tech_id != game_state.research_current_id and not game_state.research_current_id.is_empty():
-		return false
-	if not can_research_technology(tech_id):
-		return false
-	if not _has_paid_cost(tech_id):
-		_consume_cost(tech_id)
-	game_state.research_current_id = tech_id
-	game_state.research_queue_wait_reason = ""
-	game_state.research_paused = false
-	EventBus.technology_research_started.emit(tech_id)
-	return true
+	return _start_research_transaction(tech_id, false)
 
 func add_to_queue(tech_id: String) -> bool:
 	var technology := get_technology(tech_id)
@@ -80,6 +70,8 @@ func cancel_research() -> bool:
 	return true
 
 func update_research(delta: float, can_progress: bool = true) -> void:
+	if game_state.research_current_id.is_empty():
+		_start_next_queued_research()
 	if game_state.research_current_id.is_empty() or game_state.research_paused or not can_progress:
 		return
 	var tech_id := game_state.research_current_id
@@ -109,14 +101,35 @@ func _complete_research(tech_id: String) -> void:
 	_start_next_queued_research()
 
 func _start_next_queued_research() -> void:
-	if not game_state.research_queue.is_empty():
-		var next_id := String(game_state.research_queue[0])
-		if start_research(next_id):
-			game_state.research_queue.pop_front()
-			EventBus.technology_research_queue_changed.emit(game_state.research_queue.duplicate())
-			return
-		game_state.research_queue_wait_reason = "等待前置或矩阵成本：%s" % next_id
-	EventBus.technology_research_queue_changed.emit(game_state.research_queue.duplicate())
+	if not game_state.research_current_id.is_empty() or game_state.research_queue.is_empty():
+		return
+	var next_id := String(game_state.research_queue[0])
+	if _start_research_transaction(next_id, true):
+		return
+	game_state.research_queue_wait_reason = "等待前置或矩阵成本：%s" % next_id
+	EventBus.technology_research_queue_changed.emit(game_state.research_queue.duplicate(true))
+
+func _start_research_transaction(tech_id: String, from_queue: bool) -> bool:
+	if not game_state.research_current_id.is_empty():
+		return false
+	if from_queue:
+		if game_state.research_queue.is_empty() or String(game_state.research_queue[0]) != tech_id:
+			return false
+	elif not game_state.research_queue.is_empty():
+		return false
+	if not can_research_technology(tech_id):
+		return false
+	if not _has_paid_cost(tech_id):
+		_consume_cost(tech_id)
+	if from_queue:
+		game_state.research_queue.pop_front()
+	game_state.research_current_id = tech_id
+	game_state.research_queue_wait_reason = ""
+	game_state.research_paused = false
+	if from_queue:
+		EventBus.technology_research_queue_changed.emit(game_state.research_queue.duplicate(true))
+	EventBus.technology_research_started.emit(tech_id)
+	return true
 
 func _queue_prerequisites_are_scheduled(tech_id: String) -> bool:
 	var scheduled: Dictionary = {}

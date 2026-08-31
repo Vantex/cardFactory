@@ -98,7 +98,11 @@ func _install_toggle() -> void:
 
 func _show_workspace() -> void:
 	refresh_now()
-	show()
+	var workspace_shell := get_parent()
+	if workspace_shell != null and workspace_shell.has_method("show_exclusive_workspace"):
+		workspace_shell.call("show_exclusive_workspace", name)
+	else:
+		show()
 
 func _on_progression_updated(result: Dictionary) -> void:
 	_blocked_reward_ids = result.get("blocked_reward_ids", []).duplicate()

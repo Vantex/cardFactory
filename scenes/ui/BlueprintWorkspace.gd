@@ -158,7 +158,11 @@ func _install_toggle() -> void:
 	inspector.add_child(_toggle_button)
 
 func _show_workspace() -> void:
-	show()
+	var workspace_shell := get_parent()
+	if workspace_shell != null and workspace_shell.has_method("show_exclusive_workspace"):
+		workspace_shell.call("show_exclusive_workspace", name)
+	else:
+		show()
 	queue_redraw()
 
 func _hide_workspace() -> void:

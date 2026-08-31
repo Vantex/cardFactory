@@ -157,19 +157,7 @@ func load_game(slot: int, game_state: GameState) -> bool:
 	if not result.get("ok", false):
 		return false
 	var loaded_state: GameState = result["state"]
-	game_state.buildings = loaded_state.buildings.duplicate(true)
-	game_state.connections = loaded_state.connections.duplicate(true)
-	game_state.elapsed_time = loaded_state.elapsed_time
-	game_state.planet_inventory = loaded_state.planet_inventory.duplicate(true)
-	game_state.construction_inventory = loaded_state.construction_inventory.duplicate(true)
-	game_state.cursor_payload = loaded_state.cursor_payload.duplicate(true)
-	game_state.handcraft_queue = loaded_state.handcraft_queue.duplicate(true)
-	game_state.completed_technologies = loaded_state.completed_technologies.duplicate(true)
-	game_state.completed_objective_ids = loaded_state.completed_objective_ids.duplicate(true)
-	game_state.claimed_progression_reward_ids = loaded_state.claimed_progression_reward_ids.duplicate(true)
-	game_state.completed_achievement_ids = loaded_state.completed_achievement_ids.duplicate(true)
-	game_state.unlocked_progression_ids = loaded_state.unlocked_progression_ids.duplicate(true)
-	game_state._next_id = loaded_state._next_id
+	game_state.install_state(loaded_state)
 	return true
 
 func delete_save(slot: int) -> bool:
@@ -374,6 +362,12 @@ func _normalize_stored_digest_types(payload: Dictionary) -> Dictionary:
 				var quantity_value: Variant = job_value.get(quantity_field)
 				if _is_integral_number(quantity_value):
 					job_value[quantity_field] = int(quantity_value)
+	var technology_levels_value: Variant = normalized.get("technology_levels")
+	if technology_levels_value is Dictionary:
+		for technology_id_value in technology_levels_value:
+			var level_value: Variant = technology_levels_value[technology_id_value]
+			if _is_integral_number(level_value):
+				technology_levels_value[technology_id_value] = int(level_value)
 	return normalized
 
 func _is_number(value: Variant) -> bool:
