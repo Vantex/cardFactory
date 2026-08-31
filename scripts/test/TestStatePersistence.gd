@@ -7,6 +7,7 @@ func _ready() -> void:
 	_test_canonical_snapshot_and_round_trip()
 	_test_validation_rejects_corrupt_state()
 	_test_research_validation_invariants()
+	_test_research_queue_command_closure()
 	_test_migrations_and_version_boundaries()
 	_test_research_state_copy_and_compatibility_load()
 	_test_digest_is_stable_and_ignores_runtime_state()
@@ -239,6 +240,35 @@ func _test_research_validation_invariants() -> void:
 	missing_repeatable_level["research_queue"] = []
 	missing_repeatable_level["technology_levels"] = {}
 	_expect(_error_codes(GameStateValidator.validate_persistent_dict(missing_repeatable_level)).has("missing_repeatable_technology_level"), "validator requires a persistent level for every completed repeatable technology")
+
+func _test_research_queue_command_closure() -> void:
+	var cancel_state := GameState.new()
+	cancel_state.planet_inventory["matrix_science_1"] = 5.0
+	var cancel_service := TechnologySystem.new(cancel_state)
+	cancel_service.start_research("factory_foundations")
+	cancel_service.update_research(2.0)
+	_expect(cancel_service.cancel_research(), "a legal cancel command succeeds without dependent queued work")
+	_expect(GameStateValidator.validate_persistent_dict(GameStateCodec.to_persistent_dict(cancel_state)).is_empty(), "a successful cancel persists a validator-valid state")
+
+	var remove_state := GameState.new()
+	var remove_service := TechnologySystem.new(remove_state)
+	remove_service.add_to_queue("factory_foundations")
+	remove_state.research_queue_wait_reason = "等待矩阵成本：factory_foundations"
+	_expect(remove_service.remove_from_queue("factory_foundations") and remove_state.research_queue_wait_reason.is_empty(), "a legal queue removal clears the stale wait reason")
+	_expect(GameStateValidator.validate_persistent_dict(GameStateCodec.to_persistent_dict(remove_state)).is_empty(), "a successful queue removal persists a validator-valid state")
+
+	var rejected_state := GameState.new()
+	var rejected_service := TechnologySystem.new(rejected_state)
+	rejected_service.add_to_queue("factory_foundations")
+	rejected_service.add_to_queue("fluid_handling")
+	var before := GameStateCodec.state_digest_payload(rejected_state)
+	var events: Array = []
+	var observer := func(_queue: Array) -> void: events.append("queue_changed")
+	EventBus.technology_research_queue_changed.connect(observer)
+	var removed := rejected_service.remove_from_queue("factory_foundations")
+	EventBus.technology_research_queue_changed.disconnect(observer)
+	_expect(not removed and GameStateCodec.state_digest_payload(rejected_state) == before and events.is_empty(), "an invalidating queue removal is rejected without state or events")
+	_expect(GameStateValidator.validate_persistent_dict(GameStateCodec.to_persistent_dict(rejected_state)).is_empty(), "a rejected queue removal retains a validator-valid state")
 
 func _test_migrations_and_version_boundaries() -> void:
 	var legacy_payload := {

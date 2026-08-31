@@ -226,7 +226,9 @@ func _test_data_driven_technology_progression() -> void:
 	var cancelled_research := TechnologySystem.new(cancelled_state)
 	_expect(cancelled_research.start_research("factory_foundations"), "cancel fixture starts a real paid technology")
 	cancelled_research.update_research(3.0)
-	_expect(cancelled_research.cancel_research() and is_equal_approx(cancelled_state.get_technology_progress("factory_foundations"), 3.0) and is_equal_approx(float(cancelled_state.planet_inventory.get("matrix_science_1", 0.0)), 0.0), "cancelling retains both invested matrices and completed in-flight work")
+	var cancelled_result := cancelled_research.cancel_research()
+	var cancelled_payload := GameStateCodec.to_persistent_dict(cancelled_state)
+	_expect(cancelled_result and is_equal_approx(cancelled_state.get_technology_progress("factory_foundations"), 3.0) and is_equal_approx(float(cancelled_state.planet_inventory.get("matrix_science_1", 0.0)), 0.0) and GameStateValidator.validate_persistent_dict(cancelled_payload).is_empty(), "a legal cancel retains invested work and leaves a validator-valid state")
 	_expect(cancelled_research.start_research("factory_foundations") and is_equal_approx(cancelled_state.get_technology_progress("factory_foundations"), 3.0), "restarting a cancelled technology resumes retained investment without charging twice")
 
 	var state := GameState.new()
@@ -387,8 +389,8 @@ func _test_technology_main_intents_and_queue_regressions() -> void:
 		cancel_button.pressed.emit()
 		await get_tree().process_frame
 	var formal_wait_reason := formal_panel.get_node_or_null("Layout/WaitReason") as Label if formal_panel != null else null
-	_expect(cancel_button != null and state.research_current_id.is_empty() and state.research_queue == ["fluid_handling"], "the real cancel control routes intent through Main and retains the FIFO head")
-	_expect(formal_wait_reason != null and formal_wait_reason.visible and not formal_wait_reason.text.is_empty(), "formal controls expose the queue waiting reason after cancellation")
+	_expect(cancel_button != null and state.research_current_id == "factory_foundations" and state.research_queue == ["fluid_handling"], "the real cancel control routes intent through Main and rejects an invalidating cancel atomically")
+	_expect(formal_wait_reason != null and not formal_wait_reason.visible, "formal controls do not publish a wait reason when cancellation is rejected")
 
 	var campaign_toggle := main.get_node_or_null("FactoryWorkspaceUI/InspectorPanel/CampaignToggle") as Button
 	var blueprint_toggle := main.get_node_or_null("FactoryWorkspaceUI/InspectorPanel/BlueprintToggle") as Button
@@ -447,8 +449,35 @@ func _test_technology_main_intents_and_queue_regressions() -> void:
 	var cancelled_service := TechnologySystem.new(cancelled)
 	cancelled_service.start_research("factory_foundations")
 	cancelled_service.add_to_queue("fluid_handling")
-	cancelled_service.cancel_research()
-	_expect(cancelled.research_queue == ["fluid_handling"], "cancelling a prerequisite retains a newly-invalid dependent queue head")
+	var cancelled_before := GameStateCodec.state_digest_payload(cancelled)
+	var cancelled_events: Array = []
+	var cancelled_observer := func(_tech_id: String) -> void: cancelled_events.append("cancelled")
+	var cancelled_queue_observer := func(_queue: Array) -> void: cancelled_events.append("queue_changed")
+	EventBus.technology_research_cancelled.connect(cancelled_observer)
+	EventBus.technology_research_queue_changed.connect(cancelled_queue_observer)
+	var rejected_cancel := cancelled_service.cancel_research()
+	EventBus.technology_research_cancelled.disconnect(cancelled_observer)
+	EventBus.technology_research_queue_changed.disconnect(cancelled_queue_observer)
+	_expect(not rejected_cancel and GameStateCodec.state_digest_payload(cancelled) == cancelled_before and cancelled_events.is_empty(), "cancelling a prerequisite rejects atomically when it would invalidate a dependent queue")
+	_expect(GameStateValidator.validate_persistent_dict(GameStateCodec.to_persistent_dict(cancelled)).is_empty(), "a rejected cancel preserves a validator-valid state")
+
+	var remove_state := GameState.new()
+	var remove_service := TechnologySystem.new(remove_state)
+	_expect(remove_service.add_to_queue("factory_foundations") and remove_service.add_to_queue("fluid_handling"), "a real queue fixture schedules a prerequisite before its dependent")
+	var remove_before := GameStateCodec.state_digest_payload(remove_state)
+	var remove_events: Array = []
+	var remove_queue_observer := func(_queue: Array) -> void: remove_events.append("queue_changed")
+	EventBus.technology_research_queue_changed.connect(remove_queue_observer)
+	var rejected_remove := remove_service.remove_from_queue("factory_foundations")
+	EventBus.technology_research_queue_changed.disconnect(remove_queue_observer)
+	_expect(not rejected_remove and GameStateCodec.state_digest_payload(remove_state) == remove_before and remove_events.is_empty(), "removing a prerequisite rejects atomically when it would invalidate a later queued dependent")
+	_expect(GameStateValidator.validate_persistent_dict(GameStateCodec.to_persistent_dict(remove_state)).is_empty(), "a rejected queue removal preserves a validator-valid state")
+
+	var legal_remove_state := GameState.new()
+	var legal_remove_service := TechnologySystem.new(legal_remove_state)
+	legal_remove_service.add_to_queue("factory_foundations")
+	legal_remove_state.research_queue_wait_reason = "等待矩阵成本：factory_foundations"
+	_expect(legal_remove_service.remove_from_queue("factory_foundations") and legal_remove_state.research_queue.is_empty() and legal_remove_state.research_queue_wait_reason.is_empty() and GameStateValidator.validate_persistent_dict(GameStateCodec.to_persistent_dict(legal_remove_state)).is_empty(), "a legal queue removal clears its wait reason and leaves a validator-valid state")
 
 	var repeatable := GameState.new()
 	repeatable.completed_technologies = ["factory_foundations", "fluid_handling", "advanced_materials", "interstellar_logistics", "dyson_engineering"]

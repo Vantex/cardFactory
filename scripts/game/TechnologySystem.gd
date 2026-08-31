@@ -41,7 +41,12 @@ func add_to_queue(tech_id: String) -> bool:
 func remove_from_queue(tech_id: String) -> bool:
 	if not game_state.research_queue.has(tech_id):
 		return false
-	game_state.research_queue.erase(tech_id)
+	var remaining_queue := game_state.research_queue.duplicate(true)
+	remaining_queue.erase(tech_id)
+	if not _research_queue_closure_is_valid(remaining_queue, game_state.research_current_id):
+		return false
+	game_state.research_queue = remaining_queue
+	game_state.research_queue_wait_reason = ""
 	EventBus.technology_research_queue_changed.emit(game_state.research_queue.duplicate())
 	return true
 
@@ -61,6 +66,8 @@ func resume_research() -> bool:
 
 func cancel_research() -> bool:
 	if game_state.research_current_id.is_empty():
+		return false
+	if not _research_queue_closure_is_valid(game_state.research_queue):
 		return false
 	var cancelled := game_state.research_current_id
 	game_state.research_current_id = ""
@@ -141,6 +148,23 @@ func _queue_prerequisites_are_scheduled(tech_id: String) -> bool:
 		var prerequisite_id := String(prerequisite_value)
 		if not is_technology_completed(prerequisite_id) and not scheduled.has(prerequisite_id):
 			return false
+	return true
+
+func _research_queue_closure_is_valid(queue: Array, current_id: String = "") -> bool:
+	var scheduled: Dictionary = {}
+	for completed_id_value in game_state.completed_technologies:
+		scheduled[String(completed_id_value)] = true
+	if not current_id.is_empty():
+		scheduled[current_id] = true
+	for queued_id_value in queue:
+		var queued_id := String(queued_id_value)
+		var technology := get_technology(queued_id)
+		if technology.is_empty():
+			return false
+		for prerequisite_value in technology.get("prerequisites", []):
+			if not scheduled.has(String(prerequisite_value)):
+				return false
+		scheduled[queued_id] = true
 	return true
 
 func _has_cost_in_inventory(tech_id: String) -> bool:
