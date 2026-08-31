@@ -5,9 +5,11 @@ const PROGRESS_EPSILON := 0.0000001
 const DEFAULT_BUFFER_CAPACITY := 60.0
 
 var game_state: GameState
+var statistics_system: StatisticsSystem
 
-func _init(state: GameState) -> void:
+func _init(state: GameState, statistics: StatisticsSystem = null) -> void:
 	game_state = state
+	statistics_system = statistics
 
 func update(delta: float) -> void:
 	var building_ids: Array = game_state.buildings.keys()
@@ -74,8 +76,11 @@ func _update_extractor(building: Dictionary, building_definition: Dictionary, de
 	var output_buffer: Dictionary = building.get("output_buffer", {})
 	var current_amount := float(output_buffer.get(output_item, 0.0))
 	var capacity := _get_buffer_capacity(building, building_definition, "output")
-	output_buffer[output_item] = minf(current_amount + output_rate * delta * speed * power_efficiency * game_state.get_technology_effect_multiplier("production_speed"), capacity)
+	var next_amount := minf(current_amount + output_rate * delta * speed * power_efficiency * game_state.get_technology_effect_multiplier("production_speed"), capacity)
+	output_buffer[output_item] = next_amount
 	building["output_buffer"] = output_buffer
+	if statistics_system != null:
+		statistics_system.record_produced(output_item, next_amount - current_amount, String(building.get("id", "")))
 	building["status"] = "blocked" if current_amount >= capacity else "running"
 
 func _has_required_inputs(building: Dictionary, recipe: Dictionary) -> bool:
@@ -102,14 +107,20 @@ func _consume_inputs(building: Dictionary, recipe: Dictionary) -> void:
 	var input_buffer: Dictionary = building.get("input_buffer", {})
 	for input_value in recipe.get("inputs", []):
 		var item_id := String(input_value.get("item_id", ""))
-		input_buffer[item_id] = maxf(float(input_buffer.get(item_id, 0.0)) - float(input_value.get("amount", 0.0)), 0.0)
+		var amount := float(input_value.get("amount", 0.0))
+		input_buffer[item_id] = maxf(float(input_buffer.get(item_id, 0.0)) - amount, 0.0)
+		if statistics_system != null:
+			statistics_system.record_consumed(item_id, amount, String(building.get("id", "")))
 	building["input_buffer"] = input_buffer
 
 func _produce_outputs(building: Dictionary, recipe: Dictionary) -> void:
 	var output_buffer: Dictionary = building.get("output_buffer", {})
 	for output_value in recipe.get("outputs", []):
 		var item_id := String(output_value.get("item_id", ""))
-		output_buffer[item_id] = float(output_buffer.get(item_id, 0.0)) + float(output_value.get("amount", 0.0))
+		var amount := float(output_value.get("amount", 0.0))
+		output_buffer[item_id] = float(output_buffer.get(item_id, 0.0)) + amount
+		if statistics_system != null:
+			statistics_system.record_produced(item_id, amount, String(building.get("id", "")))
 	building["output_buffer"] = output_buffer
 
 func _emit_production_completed(building: Dictionary, recipe: Dictionary) -> void:

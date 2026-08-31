@@ -19,10 +19,10 @@ var _last_step_count := 0
 
 func _init(state: GameState) -> void:
 	game_state = state
-	production_system = ProductionSystem.new(state)
-	belt_system = BeltSystem.new(state)
-	power_system = PowerSystem.new(state)
 	statistics_system = StatisticsSystem.new(state)
+	production_system = ProductionSystem.new(state, statistics_system)
+	belt_system = BeltSystem.new(state, statistics_system)
+	power_system = PowerSystem.new(state)
 	handcraft_system = HandcraftSystem.new(state)
 	technology_system = TechnologySystem.new(state)
 

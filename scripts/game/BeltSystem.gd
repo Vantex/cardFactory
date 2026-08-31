@@ -5,9 +5,11 @@ extends RefCounted
 const DEFAULT_BUFFER_CAPACITY := 60.0
 
 var game_state: GameState
+var statistics_system: StatisticsSystem
 
-func _init(state: GameState):
+func _init(state: GameState, statistics: StatisticsSystem = null):
 	game_state = state
+	statistics_system = statistics
 
 func clear_flow_state() -> void:
 	for conn_id in game_state.connections:
@@ -73,6 +75,8 @@ func _update_connection(connection: Dictionary, delta: float):
 		connection["active"] = true
 		if connection.get("monitor_enabled", false):
 			connection["total_transferred"] = float(connection.get("total_transferred", 0.0)) + transfer_amount
+		if statistics_system != null:
+			statistics_system.record_transferred(String(item_id), transfer_amount, String(connection.get("id", "")))
 
 func _effective_throughput(connection: Dictionary) -> float:
 	var connection_type := String(connection.get("type", "belt"))
