@@ -39,9 +39,10 @@ func start_research(tech_id: String) -> bool:
 	return true
 
 func add_to_queue(tech_id: String) -> bool:
-	if tech_id.is_empty() or is_technology_completed(tech_id) or game_state.research_queue.has(tech_id) or tech_id == game_state.research_current_id:
+	var technology := get_technology(tech_id)
+	if tech_id.is_empty() or (is_technology_completed(tech_id) and not technology.has("repeatable")) or game_state.research_queue.has(tech_id) or tech_id == game_state.research_current_id:
 		return false
-	if get_technology(tech_id).is_empty() or not _queue_prerequisites_are_scheduled(tech_id):
+	if technology.is_empty() or not _queue_prerequisites_are_scheduled(tech_id):
 		return false
 	game_state.research_queue.append(tech_id)
 	EventBus.technology_research_queue_changed.emit(game_state.research_queue.duplicate())

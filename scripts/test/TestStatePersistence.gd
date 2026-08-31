@@ -28,7 +28,7 @@ func _test_canonical_snapshot_and_round_trip() -> void:
 	var payload := GameStateCodec.to_persistent_dict(state)
 
 	_expect(state.get_state_version() == 5, "GameState exposes the current integer schema version")
-	_expect(payload.keys() == ["buildings", "claimed_progression_reward_ids", "completed_achievement_ids", "completed_objective_ids", "completed_technologies", "connections", "construction_inventory", "cursor_payload", "elapsed_time", "handcraft_queue", "next_id", "planet_inventory", "research_current_id", "research_invested_costs", "research_paused", "research_progress", "research_queue", "schema_version", "unlocked_progression_ids"], "persistent root keys use canonical order")
+	_expect(payload.keys() == ["buildings", "claimed_progression_reward_ids", "completed_achievement_ids", "completed_objective_ids", "completed_technologies", "connections", "construction_inventory", "cursor_payload", "elapsed_time", "handcraft_queue", "next_id", "planet_inventory", "research_current_id", "research_invested_costs", "research_paused", "research_progress", "research_queue", "research_queue_wait_reason", "schema_version", "technology_levels", "unlocked_progression_ids"], "persistent root keys use canonical order")
 	_expect(payload.get("schema_version") == 5, "persistent payload contains schema version 5")
 	_expect(payload.get("next_id") == 11, "persistent payload preserves the next stable ID")
 	_expect(payload.get("planet_inventory") == {"gear": 2.0, "iron_ingot": 7.0}, "persistent payload preserves the planet tray")
@@ -70,6 +70,15 @@ func _test_canonical_snapshot_and_round_trip() -> void:
 		_expect(state.buildings["building_10"]["input_buffer"]["iron_ore"] == 4.5, "decoded nested state does not alias the source state")
 
 	state.buildings["building_10"]["runtime_node"].free()
+
+	var repeatable_state := GameState.new()
+	repeatable_state.completed_technologies = ["infinite_optimization"]
+	repeatable_state.research_queue_wait_reason = "等待矩阵成本"
+	repeatable_state.technology_levels = {"infinite_optimization": 2}
+	var repeatable_payload := GameStateCodec.to_persistent_dict(repeatable_state)
+	var repeatable_decoded := GameStateCodec.from_persistent_dict(JSON.parse_string(JSON.stringify(repeatable_payload)))
+	_expect(repeatable_decoded is GameState and repeatable_decoded.research_queue_wait_reason == "等待矩阵成本", "research queue wait reason survives JSON save/load")
+	_expect(repeatable_decoded is GameState and repeatable_decoded.get_technology_level("infinite_optimization") == 2, "repeatable technology levels survive JSON save/load")
 
 func _test_validation_rejects_corrupt_state() -> void:
 	var payload := GameStateCodec.to_persistent_dict(_make_fixture_state())
@@ -116,6 +125,32 @@ func _test_validation_rejects_corrupt_state() -> void:
 	invalid_handcraft_progress["handcraft_queue"][0]["progress"] = NAN
 	var handcraft_progress_errors := GameStateValidator.validate_persistent_dict(invalid_handcraft_progress)
 	_expect(_error_codes(handcraft_progress_errors).has("invalid_handcraft_progress"), "validator rejects non-finite handcraft progress")
+
+	var unknown_technology_level := payload.duplicate(true)
+	unknown_technology_level["technology_levels"] = {"unknown_technology": 1}
+	var unknown_level_errors := GameStateValidator.validate_persistent_dict(unknown_technology_level)
+	_expect(_error_codes(unknown_level_errors).has("unknown_technology_level"), "validator rejects levels for unknown technology IDs")
+	for invalid_level in [0, -1, 1.5]:
+		var invalid_technology_level := payload.duplicate(true)
+		invalid_technology_level["technology_levels"] = {"infinite_optimization": invalid_level}
+		var invalid_level_errors := GameStateValidator.validate_persistent_dict(invalid_technology_level)
+		_expect(_error_codes(invalid_level_errors).has("invalid_technology_level"), "validator rejects non-positive or fractional technology level %s" % invalid_level)
+
+	var non_repeatable_level := payload.duplicate(true)
+	non_repeatable_level["technology_levels"] = {"factory_foundations": 1}
+	var non_repeatable_errors := GameStateValidator.validate_persistent_dict(non_repeatable_level)
+	_expect(_error_codes(non_repeatable_errors).has("non_repeatable_technology_level"), "validator rejects levels for non-repeatable technology")
+
+	var uncompleted_repeatable_level := payload.duplicate(true)
+	uncompleted_repeatable_level["technology_levels"] = {"infinite_optimization": 1}
+	var uncompleted_level_errors := GameStateValidator.validate_persistent_dict(uncompleted_repeatable_level)
+	_expect(_error_codes(uncompleted_level_errors).has("technology_level_not_completed"), "validator rejects a repeatable level absent from completed technologies")
+
+	var valid_repeatable_level := payload.duplicate(true)
+	valid_repeatable_level["completed_technologies"].append("infinite_optimization")
+	valid_repeatable_level["technology_levels"] = {"infinite_optimization": 2}
+	var valid_level_errors := GameStateValidator.validate_persistent_dict(valid_repeatable_level)
+	_expect(valid_level_errors.is_empty(), "validator accepts a completed repeatable technology with a positive integer level")
 
 	for validation_error in dangling_errors + inventory_errors + id_errors + next_id_errors + power_state_errors + authoritative_inventory_errors + handcraft_progress_errors:
 		_expect(validation_error is Dictionary, "validation errors use structured dictionaries")

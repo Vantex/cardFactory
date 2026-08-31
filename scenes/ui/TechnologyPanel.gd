@@ -89,7 +89,7 @@ func _refresh(_arg_1 = null, _arg_2 = null, _arg_3 = null) -> void:
 		row.add_child(detail)
 		var action := Button.new()
 		action.text = "研究" if current_id.is_empty() else "排队"
-		action.disabled = game_state.completed_technologies.has(tech_id)
+		action.disabled = game_state.completed_technologies.has(tech_id) and not tech.has("repeatable")
 		action.pressed.connect(_on_technology_intent.bind(tech_id))
 		row.add_child(action)
 		_list.add_child(row)

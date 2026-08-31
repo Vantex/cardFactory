@@ -114,6 +114,7 @@ static func _validate_research_state(errors: Array, data: Dictionary) -> void:
 		_add_error(errors, "invalid_research_paused", "state", "", "研究暂停状态必须是布尔值")
 	if (typeof(data.get("research_queue_wait_reason")) != TYPE_STRING and typeof(data.get("research_queue_wait_reason")) != TYPE_STRING_NAME) or not data.get("technology_levels") is Dictionary:
 		_add_error(errors, "invalid_research_metadata", "state", "", "研究队列状态和科技层数无效")
+	_validate_technology_levels(errors, data.get("technology_levels"), data.get("completed_technologies"))
 	for field_name in ["research_progress", "research_invested_costs"]:
 		var field_value: Variant = data.get(field_name)
 		if not field_value is Dictionary:
@@ -130,6 +131,24 @@ static func _validate_research_state(errors: Array, data: Dictionary) -> void:
 					_add_error(errors, "invalid_research_progress", "state", tech_id, "研究进度必须是有限非负数字")
 			elif not field_value[tech_id_value] is Dictionary:
 				_add_error(errors, "invalid_research_invested_costs", "state", tech_id, "研究投入必须是字典")
+
+static func _validate_technology_levels(errors: Array, levels_value: Variant, completed_value: Variant) -> void:
+	if not levels_value is Dictionary:
+		return
+	var completed: Array = completed_value if completed_value is Array else []
+	for technology_key in levels_value:
+		var technology_id := String(technology_key)
+		var technology := DataManager.get_technology(technology_id)
+		if technology.is_empty():
+			_add_error(errors, "unknown_technology_level", "technology", technology_id, "科技层数引用未知科技")
+			continue
+		var level: Variant = levels_value[technology_key]
+		if not _is_integral_number(level) or int(level) < 1:
+			_add_error(errors, "invalid_technology_level", "technology", technology_id, "科技层数必须是正整数")
+		if not technology.has("repeatable"):
+			_add_error(errors, "non_repeatable_technology_level", "technology", technology_id, "非重复科技不能保存层数")
+		if not completed.has(technology_id):
+			_add_error(errors, "technology_level_not_completed", "technology", technology_id, "科技层数必须对应已完成科技")
 
 static func _validate_catalog_configuration(errors: Array, building_id: String, building: Dictionary) -> void:
 	var building_type := String(building.get("type", ""))

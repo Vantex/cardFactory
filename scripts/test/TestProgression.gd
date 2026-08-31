@@ -269,6 +269,34 @@ func _test_technology_workspace_ui() -> void:
 	panel.queue_free()
 
 func _test_technology_main_intents_and_queue_regressions() -> void:
+	var repeatable_formal_state := GameState.new()
+	repeatable_formal_state.completed_technologies = ["factory_foundations", "fluid_handling", "advanced_materials", "interstellar_logistics", "dyson_engineering", "infinite_optimization"]
+	repeatable_formal_state.planet_inventory["matrix_science_1"] = 100.0
+	GameManager.replace_game_state(repeatable_formal_state)
+	var repeatable_main: Node = load("res://scenes/main/Main.tscn").instantiate()
+	add_child(repeatable_main)
+	await get_tree().process_frame
+	var repeatable_panel := repeatable_main.get_node_or_null("FactoryWorkspaceUI/TechnologyPanel") as Control
+	var technology_button := repeatable_main.get_node_or_null("FactoryWorkspaceUI/TopBar/TechnologyButton") as Button
+	if technology_button != null:
+		technology_button.pressed.emit()
+		await get_tree().process_frame
+	var infinite_action := _find_technology_action(repeatable_panel, "无限优化") if repeatable_panel != null else null
+	_expect(infinite_action != null and not infinite_action.disabled, "formal technology panel enables a completed repeatable technology for its next level")
+	if infinite_action != null:
+		infinite_action.pressed.emit()
+		await get_tree().process_frame
+	_expect(repeatable_formal_state.research_current_id == "infinite_optimization", "formal technology panel starts the second repeatable level through Main")
+	repeatable_main.queue_free()
+	await get_tree().process_frame
+
+	var queue_state := GameState.new()
+	queue_state.completed_technologies = ["factory_foundations", "advanced_materials", "interstellar_logistics", "dyson_engineering", "infinite_optimization"]
+	queue_state.planet_inventory["matrix_science_1"] = 100.0
+	var queue_service := TechnologySystem.new(queue_state)
+	_expect(queue_service.start_research("fluid_handling"), "a non-repeatable technology can be researched before queueing a repeatable one")
+	_expect(queue_service.add_to_queue("infinite_optimization"), "a completed repeatable technology can be queued while another technology is researching")
+
 	var state := GameState.new()
 	state.planet_inventory["matrix_science_1"] = 5.0
 	GameManager.replace_game_state(state)
@@ -313,6 +341,20 @@ func _test_technology_main_intents_and_queue_regressions() -> void:
 		_expect(repeatable.get_technology_level("infinite_optimization") == 2, "repeatable completion increments its authoritative persistent level")
 		var restored := GameStateCodec.from_persistent_dict(JSON.parse_string(JSON.stringify(GameStateCodec.to_persistent_dict(repeatable))))
 		_expect(restored is GameState and restored.get_technology_level("infinite_optimization") == 2, "repeatable technology levels survive JSON save/load")
+
+func _find_technology_action(panel: Control, marker: String) -> Button:
+	var catalog := panel.get_node_or_null("Layout/CatalogScroll/Catalog") as VBoxContainer
+	if catalog == null:
+		return null
+	for row_value in catalog.get_children():
+		var row := row_value as HBoxContainer
+		if row == null or row.get_child_count() < 2:
+			continue
+		var detail := row.get_child(0) as Label
+		var action := row.get_child(1) as Button
+		if detail != null and action != null and detail.text.contains(marker):
+			return action
+	return null
 
 func _add_building(state: GameState, building_type: String, position: Vector2, overrides: Dictionary = {}) -> String:
 	var building := {
