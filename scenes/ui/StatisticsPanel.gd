@@ -6,8 +6,8 @@ var game_state: GameState
 
 func _ready():
     game_state = GameManager.get_game_state()
-    var stats_script = load("res://scripts/game/StatisticsSystem.gd")
-    stats_system = stats_script.new(game_state)
+    var simulation_engine = GameManager.get_simulation_engine()
+    stats_system = simulation_engine.statistics_system if simulation_engine != null else null
     _create_ui()
 
 func _create_ui():
@@ -34,11 +34,10 @@ func _process(_delta):
     _update_stats()
 
 func _update_stats():
-    var stats_label = get_node("StatsLabel")
-    if not stats_label:
+    var stats_label = find_child("StatsLabel", true, false)
+    if not stats_label or stats_system == null:
         return
     
-    stats_system.update(1.0)
     var summary = stats_system.get_statistics_summary()
     
     var text = ""
