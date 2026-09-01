@@ -8,6 +8,7 @@ extends Node2D
 @onready var blueprint_workspace: Control = $FactoryWorkspaceUI/BlueprintWorkspace
 @onready var mini_map: Control = $FactoryWorkspaceUI/MiniMap
 @onready var campaign_workspace: Control = $FactoryWorkspaceUI/CampaignWorkspace
+@onready var codex_workspace: Control = $FactoryWorkspaceUI/CodexWorkspace
 
 var _synced_selected_building_id := ""
 var _progression_system: ProgressionSystem
@@ -30,6 +31,7 @@ func _ready() -> void:
 	blueprint_workspace.deployment_intent.connect(_on_blueprint_deployment_intent)
 	mini_map.set_camera($WorldCamera)
 	campaign_workspace.locate_requested.connect(_on_locate_requested)
+	codex_workspace.locate_requested.connect(_on_locate_requested)
 	_progression_system = ProgressionSystem.new(game_state)
 	_technology_system = TechnologySystem.new(game_state)
 

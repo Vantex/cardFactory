@@ -1,64 +1,153 @@
-# scenes/ui/StatisticsPanel.gd
-extends PanelContainer
+class_name StatisticsPanel
+extends Control
+
+const SUPPORTED_WINDOWS := [60, 300, 600]
 
 var stats_system: StatisticsSystem
 var game_state: GameState
+var _window_seconds := 60
+var _filter_text := ""
+var _scroll_offset := 0.0
+var _results: VBoxContainer
+var _scroll: ScrollContainer
 
-func _ready():
-    game_state = GameManager.get_game_state()
-    var simulation_engine = GameManager.get_simulation_engine()
-    stats_system = simulation_engine.statistics_system if simulation_engine != null else null
-    _create_ui()
+func _ready() -> void:
+	mouse_filter = Control.MOUSE_FILTER_STOP
+	_bind_current_simulation()
+	_build_ui()
+	visibility_changed.connect(_on_visibility_changed)
+	EventBus.simulation_updated.connect(_on_simulation_updated)
+	GameManager.game_state_replaced.connect(_on_game_state_replaced)
+	refresh_now()
 
-func _create_ui():
-    # 创建主容器
-    var vbox = VBoxContainer.new()
-    add_child(vbox)
-    
-    # 标题
-    var title = Label.new()
-    title.text = "生产统计"
-    title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-    vbox.add_child(title)
-    
-    # 统计信息
-    var stats_label = RichTextLabel.new()
-    stats_label.name = "StatsLabel"
-    stats_label.bbcode_enabled = true
-    stats_label.fit_content = true
-    vbox.add_child(stats_label)
-    
-    _update_stats()
+func _build_ui() -> void:
+	var heading := Label.new()
+	heading.name = "Heading"
+	heading.text = "生产统计"
+	heading.position = Vector2(0.0, 8.0)
+	heading.size = Vector2(92.0, 30.0)
+	heading.add_theme_color_override("font_color", Color("#e1b452"))
+	add_child(heading)
 
-func _process(_delta):
-    _update_stats()
+	var search := LineEdit.new()
+	search.name = "Search"
+	search.placeholder_text = "搜索物品"
+	search.position = Vector2(96.0, 2.0)
+	search.size = Vector2(210.0, 36.0)
+	search.text_changed.connect(_on_search_changed)
+	add_child(search)
 
-func _update_stats():
-    var stats_label = find_child("StatsLabel", true, false)
-    if not stats_label or stats_system == null:
-        return
-    
-    var summary = stats_system.get_statistics_summary()
-    
-    var text = ""
-    text += "[b]建筑数量:[/b] %d\n" % summary.get("total_buildings", 0)
-    text += "[b]连接数量:[/b] %d\n" % summary.get("total_connections", 0)
-    text += "[b]游戏时间:[/b] %.1f秒\n\n" % summary.get("elapsed_time", 0.0)
-    
-    # 生产统计
-    var production = summary.get("production", {})
-    if production.size() > 0:
-        text += "[b]生产:[/b]\n"
-        for item_id in production:
-            var amount = production[item_id]
-            text += "  %s: %.1f\n" % [item_id, amount]
-    
-    # 消耗统计
-    var consumption = summary.get("consumption", {})
-    if consumption.size() > 0:
-        text += "\n[b]消耗:[/b]\n"
-        for item_id in consumption:
-            var amount = consumption[item_id]
-            text += "  %s: %.1f\n" % [item_id, amount]
-    
-    stats_label.text = text
+	var window := OptionButton.new()
+	window.name = "Window"
+	window.anchor_left = 1.0
+	window.anchor_right = 1.0
+	window.offset_left = -170.0
+	window.offset_right = 0.0
+	window.offset_top = 2.0
+	window.offset_bottom = 38.0
+	for seconds in SUPPORTED_WINDOWS:
+		window.add_item("最近 %d 秒" % seconds)
+		window.set_item_metadata(window.item_count - 1, seconds)
+	window.item_selected.connect(_on_window_selected)
+	add_child(window)
+
+	_scroll = ScrollContainer.new()
+	_scroll.name = "ResultsScroll"
+	_scroll.anchor_right = 1.0
+	_scroll.anchor_bottom = 1.0
+	_scroll.offset_top = 44.0
+	_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_scroll.get_v_scroll_bar().value_changed.connect(_on_scroll_changed)
+	add_child(_scroll)
+	_results = VBoxContainer.new()
+	_results.name = "Results"
+	_results.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_results.add_theme_constant_override("separation", 6)
+	_scroll.add_child(_results)
+
+func refresh_now(_arg_1 = null, _arg_2 = null, _arg_3 = null) -> void:
+	_bind_current_simulation()
+	if not is_visible_in_tree() or _results == null or stats_system == null:
+		return
+	var desired_scroll := _scroll_offset
+	_clear_results()
+	var summary: Dictionary = stats_system.get_statistics_summary(_window_seconds)
+	var item_rates: Dictionary = summary.get("items", {})
+	var item_ids: Array = item_rates.keys()
+	item_ids.sort_custom(func(left, right): return _item_sort_key(String(left)) < _item_sort_key(String(right)))
+	for item_id_value in item_ids:
+		var item_id := String(item_id_value)
+		var item := DataManager.get_item(item_id)
+		var display_name := String(item.get("name", item_id))
+		if not _matches_filter(item_id, display_name):
+			continue
+		_results.add_child(_create_rate_row(item_id, display_name, item_rates[item_id]))
+	call_deferred("_restore_scroll", desired_scroll)
+
+func _create_rate_row(item_id: String, display_name: String, rates: Dictionary) -> HBoxContainer:
+	var row := HBoxContainer.new()
+	row.set_meta("item_id", item_id)
+	row.custom_minimum_size.y = 48.0
+	var identity := Label.new()
+	identity.name = "Identity"
+	identity.text = "%s\n%s" % [display_name, item_id]
+	identity.custom_minimum_size.x = 150.0
+	identity.add_theme_color_override("font_color", Color("#62b5ae"))
+	row.add_child(identity)
+	var rates_label := Label.new()
+	rates_label.name = "Rates"
+	rates_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	rates_label.text = "生产 %8.2f/min    消耗 %8.2f/min    净值 %+8.2f/min    吞吐 %8.2f/min" % [
+		float(rates.get("produced_per_minute", 0.0)),
+		float(rates.get("consumed_per_minute", 0.0)),
+		float(rates.get("net_per_minute", 0.0)),
+		float(rates.get("transferred_per_minute", 0.0)),
+	]
+	rates_label.add_theme_color_override("font_color", Color("#d7e2de"))
+	row.add_child(rates_label)
+	return row
+
+func _bind_current_simulation() -> void:
+	game_state = GameManager.get_game_state()
+	var simulation_engine := GameManager.get_simulation_engine()
+	stats_system = simulation_engine.statistics_system if simulation_engine != null else null
+
+func _on_game_state_replaced(state: GameState) -> void:
+	game_state = state
+	_bind_current_simulation()
+	refresh_now()
+
+func _on_simulation_updated(_arg_1 = null, _arg_2 = null, _arg_3 = null) -> void:
+	refresh_now()
+
+func _on_visibility_changed() -> void:
+	if is_visible_in_tree():
+		refresh_now()
+
+func _on_search_changed(text: String) -> void:
+	_filter_text = text.strip_edges().to_lower()
+	refresh_now()
+
+func _on_window_selected(index: int) -> void:
+	var window := get_node("Window") as OptionButton
+	_window_seconds = int(window.get_item_metadata(index))
+	refresh_now()
+
+func _on_scroll_changed(value: float) -> void:
+	_scroll_offset = maxf(value, 0.0)
+
+func _restore_scroll(value: float) -> void:
+	if is_instance_valid(_scroll):
+		_scroll.scroll_vertical = int(value)
+
+func _matches_filter(item_id: String, display_name: String) -> bool:
+	return _filter_text.is_empty() or item_id.to_lower().contains(_filter_text) or display_name.to_lower().contains(_filter_text)
+
+func _item_sort_key(item_id: String) -> String:
+	var display_name := String(DataManager.get_item(item_id).get("name", item_id))
+	return "%s|%s" % [display_name.to_lower(), item_id]
+
+func _clear_results() -> void:
+	for child in _results.get_children():
+		_results.remove_child(child)
+		child.queue_free()

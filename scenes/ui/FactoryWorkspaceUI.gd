@@ -2,6 +2,7 @@ class_name FactoryWorkspaceUI
 extends CanvasLayer
 
 const TECHNOLOGY_PANEL_SCRIPT = preload("res://scenes/ui/TechnologyPanel.gd")
+const CODEX_WORKSPACE_SCRIPT = preload("res://scenes/ui/CodexWorkspace.gd")
 
 const TOP_BAR_HEIGHT := 52.0
 const RESOURCE_RAIL_WIDTH := 216.0
@@ -69,6 +70,17 @@ func _ready() -> void:
 	technology_panel.z_index = 4
 	technology_panel.hide()
 	add_child(technology_panel)
+	var codex_workspace := CODEX_WORKSPACE_SCRIPT.new()
+	codex_workspace.name = "CodexWorkspace"
+	codex_workspace.anchor_right = 1.0
+	codex_workspace.anchor_bottom = 1.0
+	codex_workspace.offset_left = RESOURCE_RAIL_WIDTH + 10.0
+	codex_workspace.offset_top = TOP_BAR_HEIGHT + 8.0
+	codex_workspace.offset_right = -INSPECTOR_WIDTH - 10.0
+	codex_workspace.offset_bottom = -CONSTRUCTION_DOCK_HEIGHT - 8.0
+	codex_workspace.z_index = 4
+	codex_workspace.hide()
+	add_child(codex_workspace)
 	var input_handler := _get_input_handler()
 	if input_handler != null and input_handler.has_signal("selection_changed"):
 		input_handler.selection_changed.connect(_on_shared_selection_changed)
@@ -149,7 +161,7 @@ func show_notice(message: String, tone: String = "info") -> void:
 		_toast_timer.start()
 
 func is_pointer_over_ui(viewport_position: Vector2) -> bool:
-	for node_name in ["TopBar", "ResourceRail", "InspectorPanel", "ConstructionDock", "BlueprintWorkspace", "CampaignWorkspace", "MiniMap", "TechnologyPanel"]:
+	for node_name in ["TopBar", "ResourceRail", "InspectorPanel", "ConstructionDock", "BlueprintWorkspace", "CampaignWorkspace", "MiniMap", "TechnologyPanel", "CodexWorkspace"]:
 		var region := get_node_or_null(node_name) as Control
 		if region != null and region.visible and Rect2(Vector2.ZERO, region.size).has_point(region.get_global_transform_with_canvas().affine_inverse() * viewport_position):
 			return true
@@ -347,8 +359,16 @@ func _toggle_technology_workspace() -> void:
 		else:
 			show_exclusive_workspace("TechnologyPanel")
 
+func _toggle_codex_workspace() -> void:
+	var codex_workspace := get_node_or_null("CodexWorkspace") as Control
+	if codex_workspace != null:
+		if codex_workspace.visible:
+			codex_workspace.hide()
+		else:
+			show_exclusive_workspace("CodexWorkspace")
+
 func show_exclusive_workspace(workspace_name: String) -> void:
-	for candidate_name in ["TechnologyPanel", "CampaignWorkspace", "BlueprintWorkspace"]:
+	for candidate_name in ["TechnologyPanel", "CampaignWorkspace", "BlueprintWorkspace", "CodexWorkspace"]:
 		var workspace := get_node_or_null(candidate_name) as Control
 		if workspace != null:
 			workspace.visible = candidate_name == workspace_name
@@ -405,8 +425,15 @@ func _create_top_bar() -> void:
 	technology_button.size = Vector2(58, 34)
 	technology_button.pressed.connect(_toggle_technology_workspace)
 	top_bar.add_child(technology_button)
-	_top_status.position = Vector2(410, 16)
-	_top_status.size = Vector2(728, 24)
+	var analysis_button := Button.new()
+	analysis_button.name = "AnalysisButton"
+	analysis_button.text = "分析"
+	analysis_button.position = Vector2(408, 9)
+	analysis_button.size = Vector2(58, 34)
+	analysis_button.pressed.connect(_toggle_codex_workspace)
+	top_bar.add_child(analysis_button)
+	_top_status.position = Vector2(474, 16)
+	_top_status.size = Vector2(664, 24)
 	_top_status.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	top_bar.add_child(_top_status)
 

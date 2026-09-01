@@ -16,6 +16,8 @@ func _ready() -> void:
 	_test_statistics_panel_uses_the_engine_statistics_service()
 	_test_production_diagnostics_report_stable_reasons_without_mutating_state()
 	_test_recipe_graph_indexes_catalog_and_reports_upstream_risks()
+	await _test_formal_codex_workspace_uses_live_services_and_real_controls()
+	await _test_diagnostic_locate_routes_through_main_without_mutating_factory()
 	if _failures > 0:
 		printerr("STATISTICS CODEX TESTS FAILED")
 		get_tree().quit(1)
@@ -104,8 +106,9 @@ func _test_statistics_panel_uses_the_engine_statistics_service() -> void:
 	add_child(panel)
 	_expect(panel.stats_system == shared_statistics, "statistics panel uses the engine-owned statistics service")
 	var history_size := shared_statistics.get_history_size()
-	panel._process(0.0)
-	_expect(shared_statistics.get_history_size() == history_size, "statistics panel does not advance statistics outside the simulation phase")
+	if panel.has_method("refresh_now"):
+		panel.refresh_now()
+	_expect(shared_statistics.get_history_size() == history_size, "statistics panel refresh does not advance statistics outside the simulation phase")
 	panel.queue_free()
 
 func _test_production_diagnostics_report_stable_reasons_without_mutating_state() -> void:
@@ -167,6 +170,220 @@ func _test_recipe_graph_indexes_catalog_and_reports_upstream_risks() -> void:
 	var gap_graph := RecipeGraph.new({}, {"target_recipe": {"id": "target_recipe", "building_id": "machine", "inputs": [{"item_id": "unmade", "amount": 1}], "outputs": [{"item_id": "target", "amount": 1}], "duration": 1.0}}, {"machine": {"id": "machine"}})
 	_expect(gap_graph.build_upstream_chain("target", -1)["gaps"].has("unmade"), "upstream chains report inputs with no producer")
 	_expect(DataManager.get_all_items() == original_items and DataManager.get_all_recipes()["iron_ingot_recipe"]["duration"] != 999.0 and DataManager.get_all_buildings() == original_buildings, "catalog query results are deep copies")
+
+func _test_formal_codex_workspace_uses_live_services_and_real_controls() -> void:
+	var state := GameState.new()
+	_add_building(state, "missing_input_machine", "smelter", {
+		"position": Vector2(180.0, 220.0),
+		"recipe_id": "iron_ingot_recipe",
+		"power_efficiency": 1.0,
+	})
+	GameManager.replace_game_state(state)
+	var statistics := GameManager.get_simulation_engine().statistics_system
+	statistics.record_produced("iron_ingot", 4.0, "missing_input_machine")
+	statistics.record_consumed("iron_ingot", 1.0, "missing_input_machine")
+	statistics.record_transferred("iron_ingot", 2.0)
+	statistics.update(1.0)
+
+	var viewport := SubViewport.new()
+	viewport.size = Vector2i(1152, 648)
+	add_child(viewport)
+	var main: Node = load("res://scenes/main/Main.tscn").instantiate()
+	viewport.add_child(main)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	main.get_node("AppShell").call("_on_session_started", 0, true)
+	await get_tree().process_frame
+
+	var workspace := main.get_node_or_null("FactoryWorkspaceUI/CodexWorkspace") as Control
+	var analysis_button := main.get_node_or_null("FactoryWorkspaceUI/TopBar/AnalysisButton") as Button
+	_expect(workspace != null and not workspace.visible and analysis_button != null, "formal Main mounts a collapsed codex workspace with an analysis entry")
+	if workspace == null:
+		viewport.queue_free()
+		await get_tree().process_frame
+		return
+
+	var statistics_tab := workspace.get_node_or_null("Layout/Tabs/Statistics") as Button
+	var diagnostics_tab := workspace.get_node_or_null("Layout/Tabs/Diagnostics") as Button
+	var codex_tab := workspace.get_node_or_null("Layout/Tabs/Codex") as Button
+	var statistics_panel := workspace.get_node_or_null("Layout/Content/StatisticsPanel") as Control
+	var diagnostics_panel := workspace.get_node_or_null("Layout/Content/DiagnosticsPanel") as Control
+	var codex_panel := workspace.get_node_or_null("Layout/Content/CodexPanel") as Control
+	var statistics_search := workspace.get_node_or_null("Layout/Content/StatisticsPanel/Search") as LineEdit
+	var statistics_window := workspace.get_node_or_null("Layout/Content/StatisticsPanel/Window") as OptionButton
+	var statistics_scroll := workspace.get_node_or_null("Layout/Content/StatisticsPanel/ResultsScroll") as ScrollContainer
+	var diagnostics_search := workspace.get_node_or_null("Layout/Content/DiagnosticsPanel/Search") as LineEdit
+	var diagnostics_scroll := workspace.get_node_or_null("Layout/Content/DiagnosticsPanel/ResultsScroll") as ScrollContainer
+	var codex_search := workspace.get_node_or_null("Layout/Content/CodexPanel/Search") as LineEdit
+	var chain_depth := workspace.get_node_or_null("Layout/Content/CodexPanel/ChainDepth") as OptionButton
+	var codex_scroll := workspace.get_node_or_null("Layout/Content/CodexPanel/ResultsScroll") as ScrollContainer
+	_expect(statistics_tab != null and diagnostics_tab != null and codex_tab != null, "codex exposes statistics, diagnostics, and recipe codex tabs")
+	_expect(statistics_panel != null and diagnostics_panel != null and codex_panel != null, "codex tabs own three real content views")
+	_expect(statistics_search != null and statistics_window != null and statistics_scroll != null, "statistics exposes real search, fixed windows, and scrolling")
+	_expect(diagnostics_search != null and diagnostics_scroll != null and codex_search != null and chain_depth != null and codex_scroll != null, "diagnostics and recipe codex expose real search, chain depth, and scrolling")
+	if analysis_button == null or statistics_tab == null or diagnostics_tab == null or codex_tab == null:
+		viewport.queue_free()
+		await get_tree().process_frame
+		return
+
+	analysis_button.pressed.emit()
+	await get_tree().process_frame
+	_expect(workspace.visible and statistics_panel.visible and not diagnostics_panel.visible and not codex_panel.visible, "analysis entry opens the statistics view first")
+	var windows: Array = []
+	for index in range(statistics_window.item_count):
+		windows.append(statistics_window.get_item_metadata(index))
+	_expect(windows == [60, 300, 600], "statistics window control exposes 60, 300, and 600 seconds")
+	var statistics_rows := statistics_scroll.get_node_or_null("Results") as VBoxContainer
+	var iron_row := _find_row_by_meta(statistics_rows, "item_id", "iron_ingot")
+	_expect(iron_row != null and String(iron_row.get_node("Rates").text).contains("生产") and String(iron_row.get_node("Rates").text).contains("消耗") and String(iron_row.get_node("Rates").text).contains("净值") and String(iron_row.get_node("Rates").text).contains("吞吐"), "statistics rows render live production, consumption, net, and throughput rates")
+	statistics_search.text = "不存在的物品"
+	statistics_search.text_changed.emit(statistics_search.text)
+	await get_tree().process_frame
+	_expect((statistics_scroll.get_node("Results") as VBoxContainer).get_child_count() == 0, "statistics search filters the live result list")
+	statistics_search.text = ""
+	statistics_search.text_changed.emit(statistics_search.text)
+
+	diagnostics_tab.pressed.emit()
+	await get_tree().process_frame
+	var diagnostic_rows := diagnostics_scroll.get_node_or_null("Results") as VBoxContainer
+	_expect(diagnostics_panel.visible and _find_row_by_meta(diagnostic_rows, "entity_id", "missing_input_machine") != null, "diagnostics tab renders real ProductionDiagnostics entries")
+	diagnostics_search.text = "不存在的诊断"
+	diagnostics_search.text_changed.emit(diagnostics_search.text)
+	await get_tree().process_frame
+	_expect((diagnostics_scroll.get_node("Results") as VBoxContainer).get_child_count() == 0, "diagnostics search removes non-matching real entries")
+	diagnostics_search.text = "missing_input"
+	diagnostics_search.text_changed.emit(diagnostics_search.text)
+	await get_tree().process_frame
+	_expect(_find_row_by_meta(diagnostics_scroll.get_node("Results") as VBoxContainer, "entity_id", "missing_input_machine") != null, "diagnostics search filters stable diagnostic fields")
+
+	codex_tab.pressed.emit()
+	await get_tree().process_frame
+	var depths: Array = []
+	for index in range(chain_depth.item_count):
+		depths.append(chain_depth.get_item_metadata(index))
+	var codex_rows := codex_scroll.get_node_or_null("Results") as VBoxContainer
+	_expect(codex_panel.visible and depths == [2, -1] and _find_row_by_meta(codex_rows, "item_id", "matrix_science_1") != null, "recipe codex renders the real graph with two-layer and full-chain controls")
+	codex_search.text = "不存在的资料"
+	codex_search.text_changed.emit(codex_search.text)
+	await get_tree().process_frame
+	_expect((codex_scroll.get_node("Results") as VBoxContainer).get_child_count() == 0, "recipe codex search removes non-matching real rows")
+	codex_search.text = "matrix_science_1"
+	codex_search.text_changed.emit(codex_search.text)
+	await get_tree().process_frame
+	var filtered_codex_rows := codex_scroll.get_node("Results") as VBoxContainer
+	_expect(filtered_codex_rows.get_child_count() == 1 and _find_row_by_meta(filtered_codex_rows, "item_id", "matrix_science_1") != null, "recipe codex search retains the matching real catalog row")
+	codex_search.text = ""
+	codex_search.text_changed.emit(codex_search.text)
+	await get_tree().process_frame
+	var codex_bar := codex_scroll.get_v_scroll_bar()
+	var desired_scroll := minf(36.0, maxf(codex_bar.max_value - codex_bar.page, 0.0))
+	codex_scroll.scroll_vertical = int(desired_scroll)
+	await get_tree().process_frame
+	var retained_scroll := codex_scroll.scroll_vertical
+	analysis_button.pressed.emit()
+	analysis_button.pressed.emit()
+	await get_tree().process_frame
+	_expect(retained_scroll > 0 and codex_scroll.scroll_vertical == retained_scroll, "closing and reopening preserves an actual recipe codex scroll position")
+
+	var technology_button := main.get_node_or_null("FactoryWorkspaceUI/TopBar/TechnologyButton") as Button
+	var campaign_button := main.get_node_or_null("FactoryWorkspaceUI/InspectorPanel/CampaignToggle") as Button
+	var blueprint_button := main.get_node_or_null("FactoryWorkspaceUI/InspectorPanel/BlueprintToggle") as Button
+	var technology := main.get_node_or_null("FactoryWorkspaceUI/TechnologyPanel") as Control
+	var campaign := main.get_node_or_null("FactoryWorkspaceUI/CampaignWorkspace") as Control
+	var blueprint := main.get_node_or_null("FactoryWorkspaceUI/BlueprintWorkspace") as Control
+	var exclusivity_controls_present := technology_button != null and campaign_button != null and blueprint_button != null and technology != null and campaign != null and blueprint != null
+	_expect(exclusivity_controls_present, "all four formal workspace entries are player-operable")
+	if exclusivity_controls_present:
+		for toggle in [technology_button, campaign_button, blueprint_button, analysis_button]:
+			toggle.pressed.emit()
+			await get_tree().process_frame
+			_expect(_visible_workspace_count([technology, campaign, blueprint, workspace]) == 1, "opening a formal workspace hides the other three")
+
+	statistics_tab.pressed.emit()
+	statistics_search.text = ""
+	statistics_search.text_changed.emit(statistics_search.text)
+	var replacement_state := GameState.new()
+	GameManager.replace_game_state(replacement_state)
+	var replacement_statistics := GameManager.get_simulation_engine().statistics_system
+	replacement_statistics.record_produced("copper_ingot", 3.0)
+	replacement_statistics.update(1.0)
+	EventBus.simulation_updated.emit()
+	await get_tree().process_frame
+	var replacement_rows := statistics_scroll.get_node("Results") as VBoxContainer
+	_expect(_find_row_by_meta(replacement_rows, "item_id", "iron_ingot") == null and _find_row_by_meta(replacement_rows, "item_id", "copper_ingot") != null, "visible statistics rebinds to the replacement simulation and drops old history")
+
+	viewport.queue_free()
+	await get_tree().process_frame
+
+func _test_diagnostic_locate_routes_through_main_without_mutating_factory() -> void:
+	var state := GameState.new()
+	_add_building(state, "belt_source", "storage", {"output_buffer": {"iron_ore": 3.0}})
+	_add_building(state, "locatable_smelter", "smelter", {
+		"position": Vector2(210.0, 260.0),
+		"recipe_id": "iron_ingot_recipe",
+		"power_efficiency": 1.0,
+		"progress": 0.37,
+		"input_buffer": {},
+		"output_buffer": {"iron_ingot": 2.0},
+	})
+	_add_connection(state, "configured_belt", "belt_source", "locatable_smelter", 12.0, "iron_ore")
+	state.connections["configured_belt"].merge({
+		"tier": "conveyor_belt_mk2",
+		"parallel_count": 2,
+		"stack_size": 4,
+		"priority": 1,
+		"route_mode": "upper",
+		"monitor_enabled": true,
+	}, true)
+	GameManager.replace_game_state(state)
+	var before_recipe := String(state.buildings["locatable_smelter"]["recipe_id"])
+	var before_input: Dictionary = state.buildings["locatable_smelter"]["input_buffer"].duplicate(true)
+	var before_output: Dictionary = state.buildings["locatable_smelter"]["output_buffer"].duplicate(true)
+	var before_progress := float(state.buildings["locatable_smelter"]["progress"])
+	var before_connections := state.connections.duplicate(true)
+
+	var viewport := SubViewport.new()
+	viewport.size = Vector2i(1152, 648)
+	add_child(viewport)
+	var main: Node = load("res://scenes/main/Main.tscn").instantiate()
+	viewport.add_child(main)
+	await get_tree().process_frame
+	main.get_node("AppShell").call("_on_session_started", 0, true)
+	await get_tree().process_frame
+	var analysis_button := main.get_node("FactoryWorkspaceUI/TopBar/AnalysisButton") as Button
+	var diagnostics_tab := main.get_node("FactoryWorkspaceUI/CodexWorkspace/Layout/Tabs/Diagnostics") as Button
+	analysis_button.pressed.emit()
+	diagnostics_tab.pressed.emit()
+	await get_tree().process_frame
+	var results := main.get_node("FactoryWorkspaceUI/CodexWorkspace/Layout/Content/DiagnosticsPanel/ResultsScroll/Results") as VBoxContainer
+	var row := _find_row_by_meta(results, "entity_id", "locatable_smelter")
+	var locate := row.get_node_or_null("Locate") as Button if row != null else null
+	_expect(locate != null, "a real missing-input diagnostic exposes a locate action")
+	if locate != null:
+		locate.pressed.emit()
+		await get_tree().process_frame
+	var input_handler := main.get_node("InputHandler")
+	var camera := main.get_node("WorldCamera") as Camera2D
+	_expect(input_handler.get_selected_entity_ids() == ["locatable_smelter"] and camera.global_position == Vector2(210.0, 260.0), "diagnostic locate moves the real camera and establishes one authoritative selection")
+	var building: Dictionary = state.buildings["locatable_smelter"]
+	_expect(String(building["recipe_id"]) == before_recipe and building["input_buffer"] == before_input and building["output_buffer"] == before_output and is_equal_approx(float(building["progress"]), before_progress) and state.connections == before_connections, "diagnostic locate leaves recipe, buffers, progress, and line configuration unchanged")
+	viewport.queue_free()
+	await get_tree().process_frame
+
+func _find_row_by_meta(container: Container, key: String, value: String) -> Control:
+	if container == null:
+		return null
+	for child in container.get_children():
+		if child is Control and String(child.get_meta(key, "")) == value:
+			return child as Control
+	return null
+
+func _visible_workspace_count(workspaces: Array) -> int:
+	var count := 0
+	for workspace in workspaces:
+		if workspace != null and workspace.visible:
+			count += 1
+	return count
 
 func _make_powered_smelter_state() -> GameState:
 	var state := GameState.new()
