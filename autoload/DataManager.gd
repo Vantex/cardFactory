@@ -357,6 +357,15 @@ func get_recipe(recipe_id: String) -> Dictionary:
 func get_technology(technology_id: String) -> Dictionary:
     return all_technologies.get(technology_id, {})
 
+func get_all_items() -> Dictionary:
+    return all_items.duplicate(true)
+
+func get_all_recipes() -> Dictionary:
+    return all_recipes.duplicate(true)
+
+func get_all_buildings() -> Dictionary:
+    return all_buildings.duplicate(true)
+
 func get_all_technologies() -> Dictionary:
     return all_technologies.duplicate(true)
 

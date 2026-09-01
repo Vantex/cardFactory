@@ -14,6 +14,8 @@ func _ready() -> void:
 	_test_invalid_record_amounts_do_not_pollute_rates()
 	_test_belts_record_successful_transfers()
 	_test_statistics_panel_uses_the_engine_statistics_service()
+	_test_production_diagnostics_report_stable_reasons_without_mutating_state()
+	_test_recipe_graph_indexes_catalog_and_reports_upstream_risks()
 	if _failures > 0:
 		printerr("STATISTICS CODEX TESTS FAILED")
 		get_tree().quit(1)
@@ -105,6 +107,66 @@ func _test_statistics_panel_uses_the_engine_statistics_service() -> void:
 	panel._process(0.0)
 	_expect(shared_statistics.get_history_size() == history_size, "statistics panel does not advance statistics outside the simulation phase")
 	panel.queue_free()
+
+func _test_production_diagnostics_report_stable_reasons_without_mutating_state() -> void:
+	var state := GameState.new()
+	_add_building(state, "no_recipe_machine", "smelter", {"position": Vector2(1.0, 2.0)})
+	_add_building(state, "no_power_machine", "smelter", {"recipe_id": "iron_ingot_recipe", "power_efficiency": 0.0})
+	_add_building(state, "missing_input_machine", "smelter", {"recipe_id": "iron_ingot_recipe", "power_efficiency": 1.0})
+	_add_building(state, "output_full_machine", "smelter", {"recipe_id": "iron_ingot_recipe", "power_efficiency": 1.0, "input_buffer": {"iron_ore": 1.0}, "output_buffer": {"iron_ingot": 24.0}})
+	_add_building(state, "belt_source", "storage", {"output_buffer": {"iron_ore": 1.0}})
+	_add_building(state, "empty_belt_source", "storage")
+	_add_building(state, "belt_target", "smelter", {"input_buffer": {"iron_ore": 24.0}})
+	_add_connection(state, "blocked_belt", "belt_source", "belt_target", 10.0, "iron_ore")
+	_add_connection(state, "empty_source_belt", "empty_belt_source", "belt_target", 10.0, "iron_ore")
+	_add_connection(state, "disabled_belt", "belt_source", "belt_target", 10.0, "iron_ore")
+	state.connections["disabled_belt"]["enabled"] = false
+	var before := GameStateCodec.state_digest_payload(state)
+	var diagnostics := ProductionDiagnostics.new(state)
+	var entries: Array = diagnostics.get_all_diagnostics()
+	var unpowered_state := GameState.new()
+	_add_building(unpowered_state, "unpowered_miner", "miner")
+	SimulationEngine.new(unpowered_state).update(FIXED_DELTA)
+	var unpowered_entries: Array = ProductionDiagnostics.new(unpowered_state).get_all_diagnostics()
+	var codes := entries.map(func(entry): return entry["code"])
+	_expect(codes.has("no_recipe"), "configurable machines diagnose missing recipes")
+	_expect(codes.has("no_power"), "powered machines diagnose a zero power ratio")
+	_expect(unpowered_entries.any(func(entry): return entry["entity_id"] == "unpowered_miner" and entry["code"] == "no_power"), "unpowered extractors diagnose the real simulation power state")
+	_expect(codes.has("missing_input"), "recipes diagnose their first missing input")
+	_expect(codes.has("output_full"), "recipes diagnose full output buffers")
+	_expect(codes.has("belt_blocked"), "belts diagnose a full target buffer")
+	_expect(codes.has("belt_disabled"), "disabled belts remain distinguishable from congestion")
+	_expect(not entries.any(func(entry): return entry["entity_id"] == "empty_source_belt" and entry["code"] == "belt_blocked"), "empty sources do not report target congestion")
+	var entity_ids := entries.map(func(entry): return entry["entity_id"])
+	var sorted_entity_ids := entity_ids.duplicate()
+	sorted_entity_ids.sort()
+	_expect(entity_ids == sorted_entity_ids, "diagnostics are stably sorted by entity id")
+	var no_recipe: Dictionary = entries.filter(func(entry): return entry["entity_id"] == "no_recipe_machine")[0]
+	_expect(no_recipe["building_id"] == "no_recipe_machine" and no_recipe["planet_id"] == "home" and no_recipe["world_position"] == Vector2(1.0, 2.0), "building diagnostics carry stable location metadata")
+	_expect(GameStateCodec.state_digest_payload(state) == before, "diagnostic queries do not mutate game state")
+
+func _test_recipe_graph_indexes_catalog_and_reports_upstream_risks() -> void:
+	var original_items := DataManager.get_all_items()
+	var original_recipes := DataManager.get_all_recipes()
+	var original_buildings := DataManager.get_all_buildings()
+	var graph := RecipeGraph.new(original_items, original_recipes, original_buildings)
+	original_recipes["iron_ingot_recipe"]["duration"] = 999.0
+	_expect(graph.get_producers("iron_ingot").has("iron_ingot_recipe"), "items reverse-map to producer recipes")
+	_expect(graph.get_recipe_buildings("iron_ingot_recipe").has("smelter"), "recipes map to supported buildings")
+	var two_layers: Dictionary = graph.build_upstream_chain("matrix_science_1", 2)
+	var full_chain: Dictionary = graph.build_upstream_chain("matrix_science_1", -1)
+	_expect(two_layers["max_depth"] == 2, "two-layer chains stop at the requested depth")
+	_expect(full_chain["nodes"].size() >= two_layers["nodes"].size(), "full chains include the two-layer view")
+	_expect(is_equal_approx(float(graph.get_theoretical_rate_per_minute("iron_ingot_recipe", "iron_ingot")), 60.0), "recipe graph calculates output amount per duration per minute")
+	_expect(float(graph.get_theoretical_rate_per_minute("iron_ingot_recipe", "iron_ingot")) != 1.0 / 999.0 * 60.0, "recipe graph owns a deep-copied catalog index")
+	var cycle_graph := RecipeGraph.new({}, {
+		"a_recipe": {"id": "a_recipe", "building_id": "machine", "inputs": [{"item_id": "b", "amount": 1}], "outputs": [{"item_id": "a", "amount": 1}], "duration": 1.0},
+		"b_recipe": {"id": "b_recipe", "building_id": "machine", "inputs": [{"item_id": "a", "amount": 1}], "outputs": [{"item_id": "b", "amount": 1}], "duration": 1.0},
+	}, {"machine": {"id": "machine"}})
+	_expect(not cycle_graph.build_upstream_chain("a", -1)["cycles"].is_empty(), "upstream DFS returns catalog cycles instead of recursing forever")
+	var gap_graph := RecipeGraph.new({}, {"target_recipe": {"id": "target_recipe", "building_id": "machine", "inputs": [{"item_id": "unmade", "amount": 1}], "outputs": [{"item_id": "target", "amount": 1}], "duration": 1.0}}, {"machine": {"id": "machine"}})
+	_expect(gap_graph.build_upstream_chain("target", -1)["gaps"].has("unmade"), "upstream chains report inputs with no producer")
+	_expect(DataManager.get_all_items() == original_items and DataManager.get_all_recipes()["iron_ingot_recipe"]["duration"] != 999.0 and DataManager.get_all_buildings() == original_buildings, "catalog query results are deep copies")
 
 func _make_powered_smelter_state() -> GameState:
 	var state := GameState.new()
