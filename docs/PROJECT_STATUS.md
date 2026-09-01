@@ -2,9 +2,9 @@
 
 本文只记录可由当前代码和权威门禁证明的状态。运行与测试方法以根目录 [`README.md`](../README.md) 为准。
 
-## Stage 3：进行中
+## Stage 3：已完成
 
-Stage 0 的可信门禁、版本化权威状态和可靠本地存档入口已经完成；Stage 1 已交付固定步长、真实电力、守恒库存、基础手工制造和从原矿到基础研究矩阵的完整科学链；Stage 2 已交付高级画布/线路编辑、蓝图与实时小地图。Stage 3 的任务 9 已交付正式教程、战役骨架和本地成就，任务 10 已交付数据驱动科技推进；生产诊断仍待任务 11。
+Stage 0 的可信门禁、版本化权威状态和可靠本地存档入口已经完成；Stage 1 已交付固定步长、真实电力、守恒库存、基础手工制造和从原矿到基础研究矩阵的完整科学链；Stage 2 已交付高级画布/线路编辑、蓝图与实时小地图。Stage 3 的任务 9 已交付正式教程、战役骨架和本地成就，任务 10 已交付数据驱动科技推进，任务 11 已交付固定采样统计、稳定生产诊断、生产资料库和正式分析工作区。
 
 ## 活跃运行树与数据流
 
@@ -26,6 +26,7 @@ project.godot
                + InputHandler + FactoryWorkspaceUI
                               ├─ BlueprintWorkspace
                               ├─ CampaignWorkspace + TutorialOverlay
+                              ├─ CodexWorkspace（统计、诊断、资料库）
                               └─ MiniMap
 ```
 
@@ -39,7 +40,7 @@ project.godot
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1
 ```
 
-它先自动执行一次无窗口编辑器导入，再顺序运行 `TestBaseline`、`TestFactoryWorkspace`、`TestStatePersistence`、`TestSimulationCore`、`TestInventoryConstruction`、`TestAdvancedCanvas`、`TestBlueprints` 与 `TestProgression`，要求各自唯一的成功标记。门禁会在 Godot 非零退出、`SCRIPT ERROR`、`Parse Error`、失败标记、成功标记缺失/重复、ObjectDB 泄漏或资源仍被占用时失败。全新检出不再需要人工预热全局脚本类缓存。
+它先自动执行一次无窗口编辑器导入，再顺序运行 `TestBaseline`、`TestFactoryWorkspace`、`TestStatePersistence`、`TestSimulationCore`、`TestInventoryConstruction`、`TestAdvancedCanvas`、`TestBlueprints`、`TestProgression` 与 `TestStatisticsCodex`，要求各自唯一的成功标记。门禁会在 Godot 非零退出、`SCRIPT ERROR`、`Parse Error`、失败标记、成功标记缺失/重复、ObjectDB 泄漏或资源仍被占用时失败。全新检出不再需要人工预热全局脚本类缓存。
 
 工作区测试覆盖：
 
@@ -71,6 +72,9 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1
 - 新游戏立即落盘，活动会话每 120 秒自动保存，返回菜单和窗口关闭前使用同一保存协调器；保存不会改变玩家暂停意图，重叠写入会被拒绝。开始菜单提供继续最近游戏，槽位页提供新建、继续、删除确认和可操作错误提示。
 - 模拟以 1/60 秒固定 tick 推进；60×1/60、10×0.1 与保留并排空追赶积压的 1×1 秒输入得到相同权威摘要。每个渲染帧最多追赶 10 个 tick，超额时间不会丢失。
 - 每个 tick 固定执行“电力 → 生产/采集 → 线路 → 研究 → 统计”。研究只有在已支付矩阵成本且存在供电的合法 `matrix_lab` 时推进；暂停、取消和断电都保留已投入成本/进度，完成或空闲研究阶段按 FIFO 原子启动可支付的队首，资源到位后自动重试。科技效果会实际乘入生产和采集速度，线路吞吐同时受两端供电倍率约束。
+- `StatisticsSystem` 只由固定模拟时间更新，记录真实完成配方、消耗和成功线路转移；60/300/600 秒窗口从最多 600 个样本计算生产、消耗、净值和吞吐。历史是有界可重建缓存，不进入 `GameState`、存档 schema 或持久化 codec。
+- `ProductionDiagnostics` 只读当前状态，稳定排序报告无配方、无电、缺料、输出满、线路堵塞和禁用线路等原因，不改变工厂。`RecipeGraph` 深拷贝目录索引，支持物品—配方—建筑正反查、两层/完整上游链、循环、缺口和理论速率查询。
+- 正式 Main 的“分析”入口打开统计、诊断和资料库三个互斥于科技/战役/蓝图的真实工作区。统计和资料库支持搜索、固定窗口或链深度与真实滚动；诊断定位只路由 Main 改变相机及权威会话选择，不修改配方、缓冲区、进度或线路配置。
 - 燃料发电机无燃料时发电量为零并显示缺燃料状态；太阳能和风能使用显式的 0～1 发电倍率。放置基础发电机时最多从行星托盘转移 10 单位煤形成 300 秒启动燃料，拆除按剩余燃烧时间返还未用煤；正式补充燃料交互仍待后续任务接入。
 - `power_efficiency` 与实际 `power_output` 是可重建运行时字段，不写入规范存档；燃料剩余时间、燃料物品和可再生倍率会持久化并接受完整性校验。
 - 用户已手动验收开始菜单、槽位页面、进入游戏及保存/继续流程；真实窗口布局未复现旧的 UI 重叠问题。
@@ -84,7 +88,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1
 ## 已知缺口与延期范围
 
 - 建筑缩略图仍未交付。
-- 移动端布局、云存档和正式胜负系统未进入活跃主场景；正式目标与本地成就已经接入，但完整科技、多行星和戴森章节仍依赖后续领域系统。
+- 移动端布局、云存档和正式胜负系统未进入活跃主场景；当前只有单行星工厂，完整多行星、星图和戴森章节仍依赖后续领域系统。
 - 本地存档已经交付，但当前没有单独的“立即保存”按钮；保存以新建、120 秒自动保存、返回菜单和退出握手触发。
 - 云同步、云备份、云恢复、存档压缩、解压和迁移均为延期能力，当前统一返回 `ERR_UNAVAILABLE`，不会伪装成功；`PerformanceSystem` 也明确报告未启用 Worker 支持。
 - 当前电力仍是单一全局电网；尚未实现电网分区、储能、发电优先级、正式燃料补给 UI 和昼夜/天气驱动的可再生波动。
@@ -93,7 +97,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1
 
 ## 下一阶段建议
 
-用户已批准继续对齐 DSPONLINE 的完整单机玩法，并明确排除账号、云存档、排行榜、在线社交和服务器运维。版本化状态、可靠本地存档、固定步长、真实电力、守恒施工库存、第一条科学链、多选批量编辑、线路配置、蓝图、实时小地图以及正式教程/战役/成就和数据驱动科技推进已经完成；下一项按[单机实施路线图](current/SINGLE_PLAYER_ROADMAP.md)开展任务 11 的统计诊断，再推进多行星物流、戴森终局及产品化。
+用户已批准继续对齐 DSPONLINE 的完整单机玩法，并明确排除账号、云存档、排行榜、在线社交和服务器运维。版本化状态、可靠本地存档、固定步长、真实电力、守恒施工库存、第一条科学链、多选批量编辑、线路配置、蓝图、实时小地图、正式教程/战役/成就、数据驱动科技推进以及统计诊断资料库已经完成；下一项按[单机实施路线图](current/SINGLE_PLAYER_ROADMAP.md)开展任务 12 的多行星工厂与星图，再推进星际物流、戴森终局及产品化。
 
 `DSPONLINE` 只在其非商业许可范围内作为行为和架构参考；不复制其源码或素材，也不把账号、云档、多核 Worker、排行榜等高级能力作为 CardFactory 当前开发的前置条件。
 

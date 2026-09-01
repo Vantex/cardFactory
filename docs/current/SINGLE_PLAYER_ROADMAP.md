@@ -516,28 +516,30 @@ git commit -m "feat: add data driven technology progression"
 - 创建：`scenes/test/TestStatisticsCodex.tscn`
 - 修改：`tools/run_tests.ps1`
 
-- [ ] **步骤 1：写采样窗口和诊断失败测试**
+- [x] **步骤 1：写采样窗口和诊断失败测试**
 
 覆盖生产/消耗/净值、多个时间窗口、断电、缺料、输出满、线路堵塞和无配方原因。
 
-- [ ] **步骤 2：实现有界统计历史**
+- [x] **步骤 2：实现有界统计历史**
 
 统计按固定模拟时间采样，限制历史大小；统计缓存可重建，不阻塞存档。
 
-- [ ] **步骤 3：实现生产链图**
+- [x] **步骤 3：实现生产链图**
 
 支持物品→配方→建筑正反查、两层链和完整链；检测循环，输出缺口和理论速率。
 
-- [ ] **步骤 4：实现生产定位**
+- [x] **步骤 4：实现生产定位**
 
 从统计或资料库跳回正确行星，聚焦并高亮真实生产/阻塞建筑，不修改选择之外的状态。
 
-- [ ] **步骤 5：提交**
+- [x] **步骤 5：提交**
 
 ```powershell
-git add scripts/game/StatisticsSystem.gd scripts/game/ProductionDiagnostics.gd scripts/game/RecipeGraph.gd scenes/ui/StatisticsPanel.gd scenes/ui/CodexWorkspace.gd scripts/test/TestStatisticsCodex.gd scenes/test/TestStatisticsCodex.tscn tools/run_tests.ps1
-git commit -m "feat: add production diagnostics and codex"
+git add scripts/game/StatisticsSystem.gd scripts/game/ProductionDiagnostics.gd scripts/game/RecipeGraph.gd scenes/ui/StatisticsPanel.gd scenes/ui/CodexWorkspace.gd scripts/test/TestStatisticsCodex.gd scenes/test/TestStatisticsCodex.tscn tools/run_tests.ps1 README.md docs/PROJECT_STATUS.md docs/current/SINGLE_PLAYER_ROADMAP.md
+git commit -m "docs: complete statistics diagnostics task"
 ```
+
+**完成记录（2026-09-01）：** 已交付固定模拟时间采样的生产、消耗、净值和线路吞吐统计；60/300/600 秒窗口使用最多 600 个历史样本，60×1/60 与 10×0.1 的权威摘要一致。统计历史是运行时可重建缓存，不写入 `GameState` 或存档 schema。`ProductionDiagnostics` 以稳定顺序只读报告无配方、无电、缺料、输出满、线路堵塞和禁用线路；定位只经 Main 改变相机与会话选择。`RecipeGraph` 深拷贝目录，支持物品—配方—建筑正反查、两层/完整上游链、循环、缺口及理论速率。正式“分析”工作区提供统计、诊断和资料库三页、搜索、固定窗口/链深度与真实滚动，并与科技、战役、蓝图互斥。`TestStatisticsCodex` 已成为第九个严格门禁场景；门禁验证成功标记恰好一次、失败标记、Godot 退出码、脚本/解析错误及 ObjectDB/资源泄漏。当前范围仍为单行星；下一步是任务 12 的独立行星工厂与星图，账号、云存档、排行榜、在线社交和服务器运维继续排除。
 
 ---
 
