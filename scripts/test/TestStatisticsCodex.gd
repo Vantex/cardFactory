@@ -272,6 +272,23 @@ func _test_formal_codex_workspace_uses_live_services_and_real_controls() -> void
 	await get_tree().process_frame
 	var filtered_codex_rows := codex_scroll.get_node("Results") as VBoxContainer
 	_expect(filtered_codex_rows.get_child_count() == 1 and _find_row_by_meta(filtered_codex_rows, "item_id", "matrix_science_1") != null, "recipe codex search retains the matching real catalog row")
+	var two_layer_row := _find_row_by_meta(filtered_codex_rows, "item_id", "matrix_science_1")
+	var two_layer_detail := String(two_layer_row.get_node("Details").text) if two_layer_row != null else ""
+	_expect(two_layer_detail.contains("circuit_recipe") and not two_layer_detail.contains("copper_ingot_recipe"), "two-layer control renders shallow chain identities without deeper smelting recipes")
+	_expect(two_layer_detail.contains("支持建筑：矩阵研究站"), "recipe codex renders RecipeGraph-supported buildings for the matrix recipe")
+	chain_depth.select(1)
+	chain_depth.item_selected.emit(1)
+	await get_tree().process_frame
+	var full_chain_rows := codex_scroll.get_node("Results") as VBoxContainer
+	var full_chain_row := _find_row_by_meta(full_chain_rows, "item_id", "matrix_science_1")
+	var full_chain_detail := String(full_chain_row.get_node("Details").text) if full_chain_row != null else ""
+	_expect(full_chain_detail != two_layer_detail and full_chain_detail.contains("copper_ingot_recipe") and full_chain_detail.contains("iron_ore") and full_chain_detail.contains("支持建筑：熔炉") and full_chain_detail.contains("→"), "full-chain control reveals deeper recipe, item, relationship, and supported-building details")
+	chain_depth.select(0)
+	chain_depth.item_selected.emit(0)
+	await get_tree().process_frame
+	var restored_two_layer_row := _find_row_by_meta(codex_scroll.get_node("Results") as VBoxContainer, "item_id", "matrix_science_1")
+	var restored_two_layer_detail := String(restored_two_layer_row.get_node("Details").text) if restored_two_layer_row != null else ""
+	_expect(restored_two_layer_detail == two_layer_detail and not restored_two_layer_detail.contains("copper_ingot_recipe"), "selecting the two-layer option restores the shallow real chain details")
 	codex_search.text = ""
 	codex_search.text_changed.emit(codex_search.text)
 	await get_tree().process_frame

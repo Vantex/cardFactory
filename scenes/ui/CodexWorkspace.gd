@@ -201,12 +201,15 @@ func _create_codex_row(item_id: String, item: Dictionary, graph: RecipeGraph) ->
 	var detail := Label.new()
 	detail.name = "Details"
 	detail.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	detail.text = "生产：%s\n消耗：%s\n上游：%d 节点 · 缺口 %s · 循环 %d" % [
+	detail.text = "生产：%s\n消耗：%s\n上游链（%s）：%d 节点\n%s\n关系：\n%s\n缺口：%s\n循环：%s" % [
 		_format_recipe_rates(producers, item_id, graph),
 		_format_recipe_names(consumers),
+		"两层" if _chain_depth == 2 else "完整",
 		chain.get("nodes", []).size(),
-		_format_item_names(chain.get("gaps", [])),
-		chain.get("cycles", []).size(),
+		_format_chain_nodes(chain, graph),
+		_format_chain_edges(chain),
+		_format_item_identities(chain.get("gaps", [])),
+		_format_cycles(chain.get("cycles", [])),
 	]
 	detail.add_theme_color_override("font_color", Color("#d7e2de"))
 	row.add_child(detail)
@@ -273,8 +276,65 @@ func _format_recipe_rates(recipe_ids: Array, item_id: String, graph: RecipeGraph
 	for recipe_id_value in recipe_ids:
 		var recipe_id := String(recipe_id_value)
 		var recipe := DataManager.get_recipe(recipe_id)
-		parts.append("%s %.2f/min" % [recipe.get("name", recipe_id), graph.get_theoretical_rate_per_minute(recipe_id, item_id)])
+		parts.append("%s %.2f/min · 支持建筑：%s" % [recipe.get("name", recipe_id), graph.get_theoretical_rate_per_minute(recipe_id, item_id), _format_recipe_buildings(recipe_id, graph)])
 	return "，".join(parts)
+
+func _format_chain_nodes(chain: Dictionary, graph: RecipeGraph) -> String:
+	var parts: Array[String] = []
+	for node_value in chain.get("nodes", []):
+		var node: Dictionary = node_value
+		var node_id := String(node.get("id", ""))
+		if String(node.get("kind", "")) == "recipe":
+			var recipe := DataManager.get_recipe(node_id)
+			var rates: Dictionary = chain.get("rates_per_minute", {}).get(node_id, {})
+			parts.append("配方 %s [%s] · 支持建筑：%s · 理论产能：%s" % [recipe.get("name", node_id), node_id, _format_recipe_buildings(node_id, graph), _format_rate_map(rates)])
+		else:
+			parts.append("物品 %s" % _format_catalog_identity(node_id))
+	return "\n".join(parts) if not parts.is_empty() else "无"
+
+func _format_chain_edges(chain: Dictionary) -> String:
+	var parts: Array[String] = []
+	for edge_value in chain.get("edges", []):
+		var edge: Dictionary = edge_value
+		var relation := "生产" if String(edge.get("kind", "")) == "produces" else "消耗"
+		parts.append("%s → %s（%s）" % [_format_catalog_identity(String(edge.get("from", ""))), _format_catalog_identity(String(edge.get("to", ""))), relation])
+	return "\n".join(parts) if not parts.is_empty() else "无"
+
+func _format_cycles(cycles: Array) -> String:
+	if cycles.is_empty():
+		return "无"
+	var parts: Array[String] = []
+	for cycle_value in cycles:
+		var identities: Array[String] = []
+		for item_id_value in cycle_value:
+			identities.append(_format_catalog_identity(String(item_id_value)))
+		parts.append(" → ".join(identities))
+	return "；".join(parts)
+
+func _format_recipe_buildings(recipe_id: String, graph: RecipeGraph) -> String:
+	var building_names: Array[String] = []
+	for building_id_value in graph.get_recipe_buildings(recipe_id):
+		var building_id := String(building_id_value)
+		building_names.append(String(DataManager.get_building(building_id).get("name", building_id)))
+	return "、".join(building_names) if not building_names.is_empty() else "无"
+
+func _format_rate_map(rates: Dictionary) -> String:
+	if rates.is_empty():
+		return "无"
+	var item_ids: Array = rates.keys()
+	item_ids.sort()
+	var parts: Array[String] = []
+	for item_id_value in item_ids:
+		var item_id := String(item_id_value)
+		parts.append("%s %.2f/min" % [_format_catalog_identity(item_id), float(rates[item_id])])
+	return "，".join(parts)
+
+func _format_catalog_identity(id: String) -> String:
+	var recipe := DataManager.get_recipe(id)
+	if not recipe.is_empty():
+		return "%s [%s]" % [recipe.get("name", id), id]
+	var item := DataManager.get_item(id)
+	return "%s [%s]" % [item.get("name", id), id]
 
 func _format_recipe_names(recipe_ids: Array) -> String:
 	if recipe_ids.is_empty():
@@ -285,13 +345,12 @@ func _format_recipe_names(recipe_ids: Array) -> String:
 		parts.append(String(DataManager.get_recipe(recipe_id).get("name", recipe_id)))
 	return "，".join(parts)
 
-func _format_item_names(item_ids: Array) -> String:
+func _format_item_identities(item_ids: Array) -> String:
 	if item_ids.is_empty():
 		return "无"
 	var parts: Array[String] = []
 	for item_id_value in item_ids:
-		var item_id := String(item_id_value)
-		parts.append(String(DataManager.get_item(item_id).get("name", item_id)))
+		parts.append(_format_catalog_identity(String(item_id_value)))
 	return "，".join(parts)
 
 func _catalog_sort_key(items: Dictionary, item_id: String) -> String:
