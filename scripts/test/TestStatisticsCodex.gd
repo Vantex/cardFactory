@@ -12,8 +12,12 @@ func _ready() -> void:
 	_test_windows_are_bounded_and_use_their_covered_samples()
 	_test_building_rates_keep_buildings_isolated()
 	_test_invalid_record_amounts_do_not_pollute_rates()
+	_test_large_finite_amounts_keep_public_rates_finite()
 	_test_belts_record_successful_transfers()
+	_test_fueled_generators_record_real_consumption()
+	_test_compatibility_queries_follow_runtime_facts()
 	_test_statistics_panel_uses_the_engine_statistics_service()
+	await _test_hidden_statistics_panel_ignores_simulation_signals()
 	_test_production_diagnostics_report_stable_reasons_without_mutating_state()
 	_test_recipe_graph_indexes_catalog_and_reports_upstream_risks()
 	await _test_formal_codex_workspace_uses_live_services_and_real_controls()
@@ -88,6 +92,21 @@ func _test_invalid_record_amounts_do_not_pollute_rates() -> void:
 	_expect(is_finite(rates["produced_per_minute"]) and rates["produced_per_minute"] == 120.0, "NaN, INF, zero, and negative amounts are ignored")
 	_expect(rates["consumed_per_minute"] == 0.0 and rates["transferred_per_minute"] == 0.0, "invalid amounts leave every event category unpolluted")
 
+func _test_large_finite_amounts_keep_public_rates_finite() -> void:
+	var stats := StatisticsSystem.new(GameState.new())
+	for _record in range(2):
+		stats.record_produced("iron_ingot", 1.0e308, "smelter")
+		stats.record_consumed("iron_ingot", 1.0e308, "smelter")
+		stats.record_transferred("iron_ingot", 1.0e308, "belt")
+	stats.update(1.0)
+	var rates: Dictionary = stats.get_item_rates("iron_ingot", 60)
+	var building_rates: Dictionary = stats.get_building_item_rates("smelter", "iron_ingot", 60)
+	var summary: Dictionary = stats.get_statistics_summary(60)
+	_expect(rates.values().all(func(value): return is_finite(float(value))), "finite record accumulation and per-minute conversion keep item rates finite")
+	_expect(building_rates.values().all(func(value): return is_finite(float(value))), "finite record accumulation keeps building rates finite")
+	_expect(summary.get("items", {}).get("iron_ingot", {}).values().all(func(value): return is_finite(float(value))), "statistics summaries never expose INF or NAN item rates")
+	_expect(is_finite(float(summary.get("production", {}).get("iron_ingot", 0.0))) and is_finite(float(summary.get("consumption", {}).get("iron_ingot", 0.0))) and is_finite(float(summary.get("transferred", {}).get("iron_ingot", 0.0))), "statistics summary category maps keep public rates finite")
+
 func _test_belts_record_successful_transfers() -> void:
 	var state := GameState.new()
 	_add_building(state, "solar", "solar_panel")
@@ -97,6 +116,58 @@ func _test_belts_record_successful_transfers() -> void:
 	var engine := SimulationEngine.new(state)
 	_run_seconds(engine, 1.0)
 	_expect(engine.statistics_system.get_item_rates("iron_ore", 60)["transferred_per_minute"] > 0.0, "belt statistics include only successful real transfers")
+
+func _test_fueled_generators_record_real_consumption() -> void:
+	var state := GameState.new()
+	_add_building(state, "generator", "power_generator", {"input_buffer": {"coal": 1.0}})
+	_add_building(state, "miner", "miner")
+	var engine := SimulationEngine.new(state)
+	_run_seconds(engine, 1.0)
+	var coal_rates: Dictionary = engine.statistics_system.get_item_rates("coal", 60)
+	var generator_rates: Dictionary = engine.statistics_system.get_building_item_rates("generator", "coal", 60)
+	_expect(state.buildings["generator"].get("input_buffer", {}).get("coal", -1.0) == 0.0, "a real fixed tick removes one generator fuel unit")
+	_expect(is_equal_approx(float(coal_rates["consumed_per_minute"]), 60.0) and is_equal_approx(float(coal_rates["net_per_minute"]), -60.0), "generator fuel removal contributes actual item consumption and net rates")
+	_expect(is_equal_approx(float(generator_rates["consumed_per_minute"]), 60.0), "generator fuel consumption is attributed to the real generator id")
+
+func _test_compatibility_queries_follow_runtime_facts() -> void:
+	var logistics := GameState.new()
+	_add_building(logistics, "source", "storage", {"output_buffer": {"iron_ore": 10.0, "coal": 10.0, "copper_ore": 10.0}})
+	_add_building(logistics, "empty_source", "storage")
+	_add_building(logistics, "live_target", "storage")
+	_add_building(logistics, "blocked_target", "storage", {"input_buffer": {"coal": 1.0}, "input_buffer_capacity": 1.0})
+	_add_building(logistics, "disabled_target", "storage")
+	_add_building(logistics, "unpowered_target", "smelter")
+	_add_building(logistics, "empty_target", "storage")
+	_add_connection(logistics, "live_belt", "source", "live_target", 2.0, "iron_ore")
+	_add_connection(logistics, "blocked_belt", "source", "blocked_target", 2.0, "coal")
+	_add_connection(logistics, "disabled_belt", "source", "disabled_target", 2.0, "copper_ore")
+	_add_connection(logistics, "unpowered_belt", "source", "unpowered_target", 2.0, "copper_ore")
+	_add_connection(logistics, "empty_belt", "empty_source", "empty_target", 2.0, "coal")
+	logistics.connections["disabled_belt"]["enabled"] = false
+	var logistics_engine := SimulationEngine.new(logistics)
+	_run_seconds(logistics_engine, 1.0)
+	var throughput: Dictionary = logistics_engine.statistics_system.get_logistics_throughput()
+	_expect(is_equal_approx(float(throughput.get("iron_ore", 0.0)), 120.0), "compatibility throughput reports the real transferred amount per minute")
+	_expect(float(throughput.get("coal", 0.0)) == 0.0, "blocked and empty-source belts contribute zero compatibility throughput")
+	_expect(float(throughput.get("copper_ore", 0.0)) == 0.0, "disabled and unpowered belts contribute zero compatibility throughput")
+
+	var empty_fuel := GameState.new()
+	_add_building(empty_fuel, "generator", "power_generator")
+	_add_building(empty_fuel, "miner", "miner")
+	var empty_engine := SimulationEngine.new(empty_fuel)
+	empty_engine.update(FIXED_DELTA)
+	var empty_power: Dictionary = empty_engine.statistics_system.get_power_statistics()
+	_expect(empty_power == {"total_demand": 10.0, "total_generation": 0.0, "balance": -10.0, "efficiency": 0.0}, "empty fuel reports zero runtime generation and current demand")
+
+	var derated := GameState.new()
+	_add_building(derated, "solar", "solar_panel", {"generation_factor": 30.0 / 360.0})
+	_add_building(derated, "miner", "miner")
+	_add_building(derated, "smelter", "smelter")
+	var derated_engine := SimulationEngine.new(derated)
+	derated_engine.update(FIXED_DELTA)
+	var derated_power: Dictionary = derated_engine.statistics_system.get_power_statistics()
+	_expect(is_equal_approx(float(derated_power["total_demand"]), 60.0) and is_equal_approx(float(derated_power["total_generation"]), 30.0), "power compatibility statistics use current demand and derated power_output")
+	_expect(is_equal_approx(float(derated_power["balance"]), -30.0) and is_equal_approx(float(derated_power["efficiency"]), 0.5), "power balance and efficiency derive from runtime power facts")
 
 func _test_statistics_panel_uses_the_engine_statistics_service() -> void:
 	GameManager.replace_game_state(GameState.new())
@@ -110,6 +181,43 @@ func _test_statistics_panel_uses_the_engine_statistics_service() -> void:
 		panel.refresh_now()
 	_expect(shared_statistics.get_history_size() == history_size, "statistics panel refresh does not advance statistics outside the simulation phase")
 	panel.queue_free()
+
+func _test_hidden_statistics_panel_ignores_simulation_signals() -> void:
+	var original_state := GameState.new()
+	GameManager.replace_game_state(original_state)
+	var original_statistics := GameManager.get_simulation_engine().statistics_system
+	original_statistics.record_produced("iron_ingot", 1.0)
+	original_statistics.update(1.0)
+	var panel_script := load("res://scenes/ui/StatisticsPanel.gd")
+	var panel: StatisticsPanel = panel_script.new()
+	add_child(panel)
+	await get_tree().process_frame
+	var results := panel.get_node("ResultsScroll/Results") as VBoxContainer
+	var original_row := _find_row_by_meta(results, "item_id", "iron_ingot")
+	var original_row_id := original_row.get_instance_id() if original_row != null else 0
+	panel.hide()
+	await get_tree().process_frame
+
+	var detached_state := GameState.new()
+	var detached_engine := SimulationEngine.new(detached_state)
+	GameManager.game_state = detached_state
+	GameManager.simulation_engine = detached_engine
+	EventBus.simulation_updated.emit()
+	await get_tree().process_frame
+	var hidden_row := _find_row_by_meta(results, "item_id", "iron_ingot")
+	_expect(panel.stats_system == original_statistics, "a hidden statistics panel guards simulation signals before rebinding")
+	_expect(hidden_row != null and hidden_row.get_instance_id() == original_row_id, "a hidden statistics panel does not redraw existing rows on simulation signals")
+
+	GameManager.replace_game_state(detached_state)
+	var replacement_statistics := GameManager.get_simulation_engine().statistics_system
+	await get_tree().process_frame
+	var replacement_hidden_row := _find_row_by_meta(results, "item_id", "iron_ingot")
+	_expect(panel.stats_system == replacement_statistics and replacement_hidden_row != null and replacement_hidden_row.get_instance_id() == original_row_id, "hidden state replacement updates the authoritative reference without redrawing")
+	panel.show()
+	await get_tree().process_frame
+	_expect(_find_row_by_meta(results, "item_id", "iron_ingot") == null, "opening a hidden statistics panel immediately renders the replacement state")
+	panel.queue_free()
+	await get_tree().process_frame
 
 func _test_production_diagnostics_report_stable_reasons_without_mutating_state() -> void:
 	var state := GameState.new()
@@ -169,6 +277,8 @@ func _test_recipe_graph_indexes_catalog_and_reports_upstream_risks() -> void:
 	_expect(not cycle_graph.build_upstream_chain("a", -1)["cycles"].is_empty(), "upstream DFS returns catalog cycles instead of recursing forever")
 	var gap_graph := RecipeGraph.new({}, {"target_recipe": {"id": "target_recipe", "building_id": "machine", "inputs": [{"item_id": "unmade", "amount": 1}], "outputs": [{"item_id": "target", "amount": 1}], "duration": 1.0}}, {"machine": {"id": "machine"}})
 	_expect(gap_graph.build_upstream_chain("target", -1)["gaps"].has("unmade"), "upstream chains report inputs with no producer")
+	for resource_id in ["coal", "copper_ore", "crude_oil", "iron_ore", "water"]:
+		_expect(not graph.build_upstream_chain(resource_id, -1)["gaps"].has(resource_id), "real catalog extraction marks %s as a legal resource leaf" % resource_id)
 	_expect(DataManager.get_all_items() == original_items and DataManager.get_all_recipes()["iron_ingot_recipe"]["duration"] != 999.0 and DataManager.get_all_buildings() == original_buildings, "catalog query results are deep copies")
 
 func _test_formal_codex_workspace_uses_live_services_and_real_controls() -> void:
@@ -236,6 +346,18 @@ func _test_formal_codex_workspace_uses_live_services_and_real_controls() -> void
 	var statistics_rows := statistics_scroll.get_node_or_null("Results") as VBoxContainer
 	var iron_row := _find_row_by_meta(statistics_rows, "item_id", "iron_ingot")
 	_expect(iron_row != null and String(iron_row.get_node("Rates").text).contains("生产") and String(iron_row.get_node("Rates").text).contains("消耗") and String(iron_row.get_node("Rates").text).contains("净值") and String(iron_row.get_node("Rates").text).contains("吞吐"), "statistics rows render live production, consumption, net, and throughput rates")
+	var iron_row_id := iron_row.get_instance_id() if iron_row != null else 0
+	EventBus.simulation_updated.emit()
+	EventBus.simulation_updated.emit()
+	await get_tree().process_frame
+	var repeated_iron_row := _find_row_by_meta(statistics_scroll.get_node("Results") as VBoxContainer, "item_id", "iron_ingot")
+	_expect(repeated_iron_row != null and repeated_iron_row.get_instance_id() == iron_row_id, "repeated simulation signals within one statistics sample preserve the real row instance")
+	statistics.record_produced("iron_ingot", 1.0, "missing_input_machine")
+	statistics.update(1.0)
+	EventBus.simulation_updated.emit()
+	await get_tree().process_frame
+	var next_sample_iron_row := _find_row_by_meta(statistics_scroll.get_node("Results") as VBoxContainer, "item_id", "iron_ingot")
+	_expect(next_sample_iron_row != null and next_sample_iron_row.get_instance_id() != iron_row_id, "a newly sealed statistics sample refreshes the real row")
 	statistics_search.text = "不存在的物品"
 	statistics_search.text_changed.emit(statistics_search.text)
 	await get_tree().process_frame
@@ -246,7 +368,19 @@ func _test_formal_codex_workspace_uses_live_services_and_real_controls() -> void
 	diagnostics_tab.pressed.emit()
 	await get_tree().process_frame
 	var diagnostic_rows := diagnostics_scroll.get_node_or_null("Results") as VBoxContainer
-	_expect(diagnostics_panel.visible and _find_row_by_meta(diagnostic_rows, "entity_id", "missing_input_machine") != null, "diagnostics tab renders real ProductionDiagnostics entries")
+	var missing_input_row := _find_row_by_meta(diagnostic_rows, "entity_id", "missing_input_machine")
+	_expect(diagnostics_panel.visible and missing_input_row != null, "diagnostics tab renders real ProductionDiagnostics entries")
+	var missing_input_row_id := missing_input_row.get_instance_id() if missing_input_row != null else 0
+	EventBus.simulation_updated.emit()
+	EventBus.simulation_updated.emit()
+	await get_tree().process_frame
+	var repeated_diagnostic_row := _find_row_by_meta(diagnostics_scroll.get_node("Results") as VBoxContainer, "entity_id", "missing_input_machine")
+	_expect(repeated_diagnostic_row != null and repeated_diagnostic_row.get_instance_id() == missing_input_row_id, "repeated simulation signals inside the diagnostic throttle preserve the real row instance")
+	statistics.update(1.0)
+	EventBus.simulation_updated.emit()
+	await get_tree().process_frame
+	var next_sample_diagnostic_row := _find_row_by_meta(diagnostics_scroll.get_node("Results") as VBoxContainer, "entity_id", "missing_input_machine")
+	_expect(next_sample_diagnostic_row != null and next_sample_diagnostic_row.get_instance_id() != missing_input_row_id, "diagnostics refresh when the one-second statistics sample advances")
 	diagnostics_search.text = "不存在的诊断"
 	diagnostics_search.text_changed.emit(diagnostics_search.text)
 	await get_tree().process_frame
@@ -283,6 +417,7 @@ func _test_formal_codex_workspace_uses_live_services_and_real_controls() -> void
 	var full_chain_row := _find_row_by_meta(full_chain_rows, "item_id", "matrix_science_1")
 	var full_chain_detail := String(full_chain_row.get_node("Details").text) if full_chain_row != null else ""
 	_expect(full_chain_detail != two_layer_detail and full_chain_detail.contains("copper_ingot_recipe") and full_chain_detail.contains("iron_ore") and full_chain_detail.contains("支持建筑：熔炉") and full_chain_detail.contains("→"), "full-chain control reveals deeper recipe, item, relationship, and supported-building details")
+	_expect(full_chain_detail.contains("缺口：无"), "formal recipe codex does not render real catalog extraction resources as gaps")
 	chain_depth.select(0)
 	chain_depth.item_selected.emit(0)
 	await get_tree().process_frame

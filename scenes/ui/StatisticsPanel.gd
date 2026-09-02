@@ -8,12 +8,12 @@ var game_state: GameState
 var _window_seconds := 60
 var _filter_text := ""
 var _scroll_offset := 0.0
+var _last_rendered_sample_generation := -1
 var _results: VBoxContainer
 var _scroll: ScrollContainer
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
-	_bind_current_simulation()
 	_build_ui()
 	visibility_changed.connect(_on_visibility_changed)
 	EventBus.simulation_updated.connect(_on_simulation_updated)
@@ -66,8 +66,16 @@ func _build_ui() -> void:
 	_scroll.add_child(_results)
 
 func refresh_now(_arg_1 = null, _arg_2 = null, _arg_3 = null) -> void:
+	if not is_visible_in_tree() or _results == null:
+		return
 	_bind_current_simulation()
+	_refresh_rows(true)
+
+func _refresh_rows(force_refresh: bool) -> void:
 	if not is_visible_in_tree() or _results == null or stats_system == null:
+		return
+	var sample_generation := stats_system.get_sample_generation()
+	if not force_refresh and sample_generation == _last_rendered_sample_generation:
 		return
 	var desired_scroll := _scroll_offset
 	_clear_results()
@@ -82,6 +90,7 @@ func refresh_now(_arg_1 = null, _arg_2 = null, _arg_3 = null) -> void:
 		if not _matches_filter(item_id, display_name):
 			continue
 		_results.add_child(_create_rate_row(item_id, display_name, item_rates[item_id]))
+	_last_rendered_sample_generation = sample_generation
 	call_deferred("_restore_scroll", desired_scroll)
 
 func _create_rate_row(item_id: String, display_name: String, rates: Dictionary) -> HBoxContainer:
@@ -107,18 +116,23 @@ func _create_rate_row(item_id: String, display_name: String, rates: Dictionary) 
 	row.add_child(rates_label)
 	return row
 
-func _bind_current_simulation() -> void:
-	game_state = GameManager.get_game_state()
+func _bind_current_simulation(state: GameState = null) -> void:
+	game_state = state if state != null else GameManager.get_game_state()
 	var simulation_engine := GameManager.get_simulation_engine()
-	stats_system = simulation_engine.statistics_system if simulation_engine != null else null
+	var current_statistics: StatisticsSystem = simulation_engine.statistics_system if simulation_engine != null else null
+	if stats_system != current_statistics:
+		_last_rendered_sample_generation = -1
+	stats_system = current_statistics
 
 func _on_game_state_replaced(state: GameState) -> void:
-	game_state = state
-	_bind_current_simulation()
-	refresh_now()
+	_bind_current_simulation(state)
+	if is_visible_in_tree():
+		_refresh_rows(true)
 
 func _on_simulation_updated(_arg_1 = null, _arg_2 = null, _arg_3 = null) -> void:
-	refresh_now()
+	if not is_visible_in_tree():
+		return
+	_refresh_rows(false)
 
 func _on_visibility_changed() -> void:
 	if is_visible_in_tree():

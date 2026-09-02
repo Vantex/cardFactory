@@ -6,6 +6,7 @@ var _recipes: Dictionary
 var _buildings: Dictionary
 var _producers_by_item: Dictionary = {}
 var _consumers_by_item: Dictionary = {}
+var _extractors_by_item: Dictionary = {}
 var _buildings_by_recipe: Dictionary = {}
 var _rates_by_recipe: Dictionary = {}
 
@@ -66,6 +67,22 @@ func build_upstream_chain(item_id: String, max_depth: int = -1) -> Dictionary:
 	return result
 
 func _build_indexes() -> void:
+	var building_ids: Array = _buildings.keys()
+	building_ids.sort()
+	for building_id_value in building_ids:
+		var building_id := String(building_id_value)
+		var building_value: Variant = _buildings[building_id_value]
+		if not building_value is Dictionary:
+			continue
+		var extraction: Dictionary = building_value.get("extraction", {})
+		if extraction.is_empty():
+			continue
+		var extracted_items: Array = extraction.get("items", []).duplicate()
+		var default_item := String(extraction.get("item_id", ""))
+		if not default_item.is_empty() and not extracted_items.has(default_item):
+			extracted_items.append(default_item)
+		for item_id_value in extracted_items:
+			_append_index(_extractors_by_item, String(item_id_value), building_id)
 	var recipe_ids: Array = _recipes.keys()
 	recipe_ids.sort()
 	for recipe_id_value in recipe_ids:
@@ -86,12 +103,13 @@ func _build_indexes() -> void:
 		_buildings_by_recipe[recipe_id] = supported
 		_rates_by_recipe[recipe_id] = _output_rates(recipe)
 
-func _append_index(index: Dictionary, item_id: String, recipe_id: String) -> void:
+func _append_index(index: Dictionary, item_id: String, value_id: String) -> void:
 	if item_id.is_empty():
 		return
 	if not index.has(item_id):
 		index[item_id] = []
-	index[item_id].append(recipe_id)
+	if not index[item_id].has(value_id):
+		index[item_id].append(value_id)
 	index[item_id].sort()
 
 func _output_rates(recipe: Dictionary) -> Dictionary:
@@ -114,7 +132,8 @@ func _walk_item(item_id: String, depth: int, max_depth: int, path: Array, result
 		return
 	var producers := get_producers(item_id)
 	if producers.is_empty():
-		gaps[item_id] = true
+		if not _extractors_by_item.has(item_id):
+			gaps[item_id] = true
 		return
 	for recipe_id_value in producers:
 		var recipe_id := String(recipe_id_value)

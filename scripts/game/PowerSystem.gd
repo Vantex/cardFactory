@@ -2,13 +2,15 @@ class_name PowerSystem
 extends RefCounted
 
 var game_state: GameState
+var statistics_system: StatisticsSystem
 var total_generation := 0.0
 var total_consumption := 0.0
 var power_balance := 0.0
 var power_ratio := 1.0
 
-func _init(state: GameState) -> void:
+func _init(state: GameState, statistics: StatisticsSystem = null) -> void:
 	game_state = state
+	statistics_system = statistics
 
 func update(delta: float) -> void:
 	_calculate_power(delta)
@@ -52,9 +54,12 @@ func _consume_fuel_time(building: Dictionary, rule: Dictionary, delta: float) ->
 		if item_id.is_empty() or float(input_buffer.get(item_id, 0.0)) < 1.0:
 			building["fuel_remaining"] = 0.0
 			return 0.0
-		input_buffer[item_id] = float(input_buffer.get(item_id, 0.0)) - 1.0
+		var fuel_before := float(input_buffer.get(item_id, 0.0))
+		input_buffer[item_id] = fuel_before - 1.0
 		building["input_buffer"] = input_buffer
 		building["fuel_item"] = item_id
+		if statistics_system != null:
+			statistics_system.record_consumed(item_id, fuel_before - float(input_buffer[item_id]), String(building.get("id", "")))
 		remaining = float(rule.get("burn_duration", 0.0))
 	if delta <= 0.0:
 		building["fuel_remaining"] = remaining

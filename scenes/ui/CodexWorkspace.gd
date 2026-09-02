@@ -19,6 +19,7 @@ var _codex_filter := ""
 var _chain_depth := 2
 var _diagnostics_scroll_offset := 0.0
 var _codex_scroll_offset := 0.0
+var _last_diagnostics_sample_generation := -1
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
@@ -139,8 +140,11 @@ func _show_view(view_name: String) -> void:
 	if is_visible_in_tree():
 		call_deferred("_refresh_active_view")
 
-func _refresh_diagnostics() -> void:
+func _refresh_diagnostics(force_refresh: bool = true) -> void:
 	if not is_visible_in_tree() or not _diagnostics_panel.visible:
+		return
+	var sample_generation := _current_sample_generation()
+	if not force_refresh and sample_generation == _last_diagnostics_sample_generation:
 		return
 	var desired_scroll := _diagnostics_scroll_offset
 	_clear_container(_diagnostics_results)
@@ -148,6 +152,7 @@ func _refresh_diagnostics() -> void:
 		var entry: Dictionary = entry_value
 		if _matches_diagnostic(entry):
 			_diagnostics_results.add_child(_create_diagnostic_row(entry))
+	_last_diagnostics_sample_generation = sample_generation
 	call_deferred("_restore_scroll", _diagnostics_scroll, desired_scroll)
 
 func _create_diagnostic_row(entry: Dictionary) -> HBoxContainer:
@@ -231,15 +236,22 @@ func _refresh_active_view() -> void:
 
 func _on_simulation_updated(_arg_1 = null, _arg_2 = null, _arg_3 = null) -> void:
 	if is_visible_in_tree() and _diagnostics_panel.visible:
-		_refresh_diagnostics()
+		_refresh_diagnostics(false)
 
 func _on_game_state_replaced(_state: GameState) -> void:
+	_last_diagnostics_sample_generation = -1
 	if not is_visible_in_tree():
 		return
 	if _diagnostics_panel.visible:
 		_refresh_diagnostics()
 	elif _codex_panel.visible:
 		_refresh_codex()
+
+func _current_sample_generation() -> int:
+	var simulation_engine := GameManager.get_simulation_engine()
+	if simulation_engine == null or simulation_engine.statistics_system == null:
+		return -1
+	return simulation_engine.statistics_system.get_sample_generation()
 
 func _on_diagnostics_search_changed(text: String) -> void:
 	_diagnostics_filter = text.strip_edges().to_lower()
