@@ -2,19 +2,26 @@
 class_name GameState
 extends RefCounted
 
-const SCHEMA_VERSION: int = 5
+const SCHEMA_VERSION: int = 6
+const HOME_PLANET_ID := "home"
 
 # 游戏状态
 var paused: bool = false
 var speed: float = 1.0
 var elapsed_time: float = 0.0
-var planet_inventory: Dictionary = {
-    "coal": 10.0,
-    "copper_ingot": 4.0,
-    "gear": 4.0,
-    "iron_ingot": 12.0,
-    "stone": 4.0,
-}
+# Runtime compatibility view for the currently active planet. It is never persisted directly.
+var planet_inventory: Dictionary = {}
+var active_planet_id := HOME_PLANET_ID
+var galaxy_seed := 240721
+var explored_system_ids: Array = ["helios"]
+var colonized_planet_ids: Array = [HOME_PLANET_ID]
+var exploration_missions: Array = []
+var survey_progress_by_system := {"helios": 1.0}
+var planet_inventories := {HOME_PLANET_ID: {}}
+var planet_viewports := {HOME_PLANET_ID: {"position": Vector2.ZERO, "zoom": Vector2.ONE}}
+var planet_metrics := {HOME_PLANET_ID: {}}
+var portable_fleet := {"logistics_drone": 0, "logistics_vessel": 0}
+var resource_sites: Dictionary = {}
 var construction_inventory: Dictionary = {
     "miner": 1.0,
     "smelter": 1.0,
@@ -107,6 +114,29 @@ var sorter_speed_config: Dictionary = {
     "sorter_mk3": 3.0
 }
 
+func _init() -> void:
+    sync_active_planet_inventory()
+
+func get_planet_inventory(planet_id: String) -> Dictionary:
+    if not planet_inventories.has(planet_id):
+        return {}
+    return planet_inventories[planet_id]
+
+func get_active_planet_inventory() -> Dictionary:
+    return get_planet_inventory(active_planet_id)
+
+func set_active_planet(planet_id: String) -> bool:
+    if planet_id.is_empty() or not colonized_planet_ids.has(planet_id) or not planet_inventories.has(planet_id):
+        return false
+    sync_active_planet_inventory()
+    active_planet_id = planet_id
+    planet_inventory = planet_inventories[planet_id]
+    return true
+
+func sync_active_planet_inventory() -> void:
+    planet_inventories[active_planet_id] = planet_inventory.duplicate(true)
+    planet_inventory = planet_inventories[active_planet_id]
+
 func generate_id(prefix: String) -> String:
     var id = prefix + "_" + str(_next_id)
     _next_id += 1
@@ -115,6 +145,7 @@ func generate_id(prefix: String) -> String:
 func add_building(building_data: Dictionary) -> String:
     var id = generate_id("building")
     building_data["id"] = id
+    building_data["planet_id"] = String(building_data.get("planet_id", active_planet_id))
     buildings[id] = building_data
     EventBus.card_placed.emit(id, building_data.get("position", Vector2.ZERO))
     return id
@@ -139,6 +170,7 @@ func add_connection(connection_data: Dictionary) -> String:
     connection_data["enabled"] = bool(connection_data.get("enabled", true))
     connection_data["active"] = bool(connection_data.get("active", false))
     connection_data["current_flow"] = float(connection_data.get("current_flow", 0.0))
+    connection_data["planet_id"] = String(connection_data.get("planet_id", active_planet_id))
     _normalize_belt_connection(connection_data)
     connections[id] = connection_data
     EventBus.connection_created.emit(id, connection_data.source_id, connection_data.target_id)
@@ -149,6 +181,8 @@ func try_add_connection(source_id: String, target_id: String, requested_output_i
         return {"ok": false, "message": "连接建筑不存在"}
     if source_id == target_id:
         return {"ok": false, "message": "不能连接建筑自身"}
+    if String(buildings[source_id].get("planet_id", active_planet_id)) != String(buildings[target_id].get("planet_id", active_planet_id)):
+        return {"ok": false, "message": "不能跨行星连接"}
 
     for connection in connections.values():
         if connection.get("source_id", "") == source_id and connection.get("target_id", "") == target_id:
@@ -948,6 +982,9 @@ func copy_state() -> GameState:
     new_state.install_state(self)
     return new_state
 
+func copy_from(source: GameState) -> void:
+    install_state(source)
+
 func install_state(source: GameState) -> void:
     if source == null:
         return
@@ -956,6 +993,17 @@ func install_state(source: GameState) -> void:
     elapsed_time = source.elapsed_time
     paused = source.paused
     speed = source.speed
+    active_planet_id = source.active_planet_id
+    galaxy_seed = source.galaxy_seed
+    explored_system_ids = source.explored_system_ids.duplicate(true)
+    colonized_planet_ids = source.colonized_planet_ids.duplicate(true)
+    exploration_missions = source.exploration_missions.duplicate(true)
+    survey_progress_by_system = source.survey_progress_by_system.duplicate(true)
+    planet_inventories = source.planet_inventories.duplicate(true)
+    planet_viewports = source.planet_viewports.duplicate(true)
+    planet_metrics = source.planet_metrics.duplicate(true)
+    portable_fleet = source.portable_fleet.duplicate(true)
+    resource_sites = source.resource_sites.duplicate(true)
     planet_inventory = source.planet_inventory.duplicate(true)
     construction_inventory = source.construction_inventory.duplicate(true)
     cursor_payload = source.cursor_payload.duplicate(true)
@@ -974,6 +1022,7 @@ func install_state(source: GameState) -> void:
     unlocked_progression_ids = source.unlocked_progression_ids.duplicate(true)
     simulation_budget = source.simulation_budget.duplicate(true)
     _next_id = source._next_id
+    sync_active_planet_inventory()
 
 # 5. 实体锁定检查
 func is_entity_interaction_locked(entity_id: String) -> bool:

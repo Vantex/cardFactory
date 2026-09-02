@@ -16,7 +16,6 @@ var _session_active := false
 var _save_in_progress := false
 var _autosave_interval := DEFAULT_AUTOSAVE_INTERVAL
 var _autosave_elapsed := 0.0
-var _active_planet := "home"
 
 func _ready() -> void:
 	get_tree().auto_accept_quit = false
@@ -46,7 +45,7 @@ func get_save_system() -> SaveSystem:
 
 func start_new_game(slot: int) -> Dictionary:
 	var new_state := GameState.new()
-	var save_result := _save_system.save_slot(slot, new_state, {"active_planet": _active_planet})
+	var save_result := _save_system.save_slot(slot, new_state)
 	if not save_result.get("ok", false):
 		session_error.emit(save_result.get("error", {}))
 		return save_result
@@ -70,7 +69,6 @@ func continue_game(slot: int) -> Dictionary:
 	_current_slot = slot
 	_session_active = true
 	_autosave_elapsed = 0.0
-	_active_planet = String(load_result.get("metadata", {}).get("active_planet", "home"))
 	replace_game_state(loaded_state)
 	session_started.emit(slot, false)
 	return load_result
@@ -81,7 +79,7 @@ func save_current_game(reason: String = "manual") -> Dictionary:
 	if _save_in_progress:
 		return _failure("save_in_progress", "已有存档写入正在进行")
 	_save_in_progress = true
-	var result := _save_system.save_slot(_current_slot, game_state, {"active_planet": _active_planet})
+	var result := _save_system.save_slot(_current_slot, game_state)
 	_save_in_progress = false
 	if result.get("ok", false):
 		_autosave_elapsed = 0.0
@@ -126,7 +124,7 @@ func set_autosave_interval(seconds: float) -> void:
 	_autosave_elapsed = minf(_autosave_elapsed, _autosave_interval)
 
 func get_active_planet() -> String:
-	return _active_planet
+	return game_state.active_planet_id
 
 func _process(delta: float) -> void:
 	if not _session_active:

@@ -34,7 +34,7 @@ func save_slot(slot: int, game_state: GameState, metadata_overrides: Dictionary 
 		"schema_version": GameState.SCHEMA_VERSION,
 		"saved_at": Time.get_unix_time_from_system(),
 		"elapsed_time": game_state.elapsed_time,
-		"active_planet": String(metadata_overrides.get("active_planet", "home")),
+		"active_planet": game_state.active_planet_id,
 		"digest": digest,
 	}
 	var envelope := {
@@ -258,8 +258,7 @@ func _read_slot_file(path: String) -> Dictionary:
 	metadata["schema_version"] = GameState.SCHEMA_VERSION
 	metadata["elapsed_time"] = decoded_state.elapsed_time
 	metadata["digest"] = actual_digest
-	if not metadata.has("active_planet"):
-		metadata["active_planet"] = "home"
+	metadata["active_planet"] = decoded_state.active_planet_id
 	return _success({"state": decoded_state, "metadata": metadata})
 
 func _restore_primary_from_backup(primary_path: String, backup_path: String) -> void:
@@ -349,7 +348,7 @@ func _digest_payload(payload: Dictionary) -> String:
 
 func _normalize_stored_digest_types(payload: Dictionary) -> Dictionary:
 	var normalized := payload.duplicate(true)
-	for integer_field in ["schema_version", "next_id", "construction_points"]:
+	for integer_field in ["schema_version", "next_id", "construction_points", "galaxy_seed"]:
 		var field_value: Variant = normalized.get(integer_field)
 		if _is_integral_number(field_value):
 			normalized[integer_field] = int(field_value)
@@ -368,6 +367,12 @@ func _normalize_stored_digest_types(payload: Dictionary) -> Dictionary:
 			var level_value: Variant = technology_levels_value[technology_id_value]
 			if _is_integral_number(level_value):
 				technology_levels_value[technology_id_value] = int(level_value)
+	var portable_fleet_value: Variant = normalized.get("portable_fleet")
+	if portable_fleet_value is Dictionary:
+		for fleet_item_id in portable_fleet_value:
+			var fleet_amount: Variant = portable_fleet_value[fleet_item_id]
+			if _is_integral_number(fleet_amount):
+				portable_fleet_value[fleet_item_id] = int(fleet_amount)
 	return normalized
 
 func _is_number(value: Variant) -> bool:

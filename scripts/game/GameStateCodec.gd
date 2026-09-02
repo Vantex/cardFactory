@@ -19,6 +19,7 @@ const CONNECTION_RUNTIME_FIELDS := {
 }
 
 static func to_persistent_dict(state: GameState) -> Dictionary:
+	state.sync_active_planet_inventory()
 	var completed_technologies: Array = state.completed_technologies.duplicate(true)
 	completed_technologies.sort()
 	var completed_objective_ids: Array = state.completed_objective_ids.duplicate(true)
@@ -36,10 +37,20 @@ static func to_persistent_dict(state: GameState) -> Dictionary:
 		"schema_version": GameState.SCHEMA_VERSION,
 		"next_id": state._next_id,
 		"elapsed_time": state.elapsed_time,
-		"planet_inventory": state.planet_inventory,
+		"active_planet_id": state.active_planet_id,
+		"galaxy_seed": state.galaxy_seed,
+		"explored_system_ids": state.explored_system_ids,
+		"colonized_planet_ids": state.colonized_planet_ids,
+		"exploration_missions": state.exploration_missions,
+		"survey_progress_by_system": state.survey_progress_by_system,
+		"planet_inventories": state.planet_inventories,
+		"planet_viewports": state.planet_viewports,
+		"planet_metrics": state.planet_metrics,
+		"portable_fleet": state.portable_fleet,
+		"resource_sites": state.resource_sites,
 		"construction_inventory": state.construction_inventory,
 		"cursor_payload": state.cursor_payload,
-		"handcraft_queue": state.handcraft_queue,
+		"handcraft_queue": _encode_handcraft_queue(state.handcraft_queue, state.active_planet_id),
 		"completed_technologies": completed_technologies,
 		"research_current_id": state.research_current_id,
 		"research_queue": research_queue,
@@ -52,8 +63,8 @@ static func to_persistent_dict(state: GameState) -> Dictionary:
 		"claimed_progression_reward_ids": claimed_reward_ids,
 		"completed_achievement_ids": completed_achievement_ids,
 		"unlocked_progression_ids": unlocked_progression_ids,
-		"buildings": _encode_entity_collection(state.buildings, BUILDING_RUNTIME_FIELDS),
-		"connections": _encode_entity_collection(state.connections, CONNECTION_RUNTIME_FIELDS),
+		"buildings": _encode_entity_collection(state.buildings, BUILDING_RUNTIME_FIELDS, state.active_planet_id),
+		"connections": _encode_entity_collection(state.connections, CONNECTION_RUNTIME_FIELDS, state.active_planet_id),
 	}
 	return _encode_dictionary(payload, ROOT_RUNTIME_FIELDS)
 
@@ -65,7 +76,17 @@ static func from_persistent_dict(payload: Variant) -> GameState:
 	var data: Dictionary = migration_result["data"]
 	var state := GameState.new()
 	state.elapsed_time = float(data["elapsed_time"])
-	state.planet_inventory = data["planet_inventory"].duplicate(true)
+	state.active_planet_id = String(data["active_planet_id"])
+	state.galaxy_seed = int(data["galaxy_seed"])
+	state.explored_system_ids = data["explored_system_ids"].duplicate(true)
+	state.colonized_planet_ids = data["colonized_planet_ids"].duplicate(true)
+	state.exploration_missions = data["exploration_missions"].duplicate(true)
+	state.survey_progress_by_system = data["survey_progress_by_system"].duplicate(true)
+	state.planet_inventories = data["planet_inventories"].duplicate(true)
+	state.planet_viewports = _decode_viewports(data["planet_viewports"])
+	state.planet_metrics = data["planet_metrics"].duplicate(true)
+	state.portable_fleet = data["portable_fleet"].duplicate(true)
+	state.resource_sites = _decode_resource_sites(data["resource_sites"])
 	state.construction_inventory = data["construction_inventory"].duplicate(true)
 	state.cursor_payload = data["cursor_payload"].duplicate(true)
 	state.handcraft_queue = data["handcraft_queue"].duplicate(true)
@@ -84,19 +105,36 @@ static func from_persistent_dict(payload: Variant) -> GameState:
 	state._next_id = int(data["next_id"])
 	state.buildings = _decode_buildings(data["buildings"])
 	state.connections = _decode_connections(data["connections"])
+	state.planet_inventory = state.get_active_planet_inventory()
+	state.sync_active_planet_inventory()
 	return state
 
 static func state_digest_payload(state: GameState) -> Dictionary:
 	return to_persistent_dict(state)
 
-static func _encode_entity_collection(source: Dictionary, runtime_fields: Dictionary) -> Dictionary:
+static func _encode_entity_collection(source: Dictionary, runtime_fields: Dictionary, fallback_planet_id: String) -> Dictionary:
 	var encoded: Dictionary = {}
 	var keys: Array = source.keys()
 	keys.sort()
 	for key_value in keys:
 		var entity_value: Variant = source[key_value]
 		if entity_value is Dictionary:
-			encoded[String(key_value)] = _encode_dictionary(entity_value, runtime_fields)
+			var entity: Dictionary = entity_value.duplicate(true)
+			if String(entity.get("planet_id", "")).is_empty():
+				entity["planet_id"] = fallback_planet_id
+			encoded[String(key_value)] = _encode_dictionary(entity, runtime_fields)
+	return encoded
+
+static func _encode_handcraft_queue(source: Array, fallback_planet_id: String) -> Array:
+	var encoded: Array = []
+	for value in source:
+		if not value is Dictionary:
+			encoded.append(value)
+			continue
+		var job: Dictionary = value.duplicate(true)
+		if String(job.get("planet_id", "")).is_empty():
+			job["planet_id"] = fallback_planet_id
+		encoded.append(job)
 	return encoded
 
 static func _encode_dictionary(source: Dictionary, excluded_fields: Dictionary = {}) -> Dictionary:
@@ -155,3 +193,25 @@ static func _decode_connections(encoded_connections: Dictionary) -> Dictionary:
 			connection["construction_accounted"] = true
 		connections[String(connection_id)] = connection
 	return connections
+
+static func _decode_viewports(encoded_viewports: Dictionary) -> Dictionary:
+	var viewports := encoded_viewports.duplicate(true)
+	for planet_id in viewports:
+		var viewport: Dictionary = viewports[planet_id]
+		viewport["position"] = _vector2_from_value(viewport.get("position", {}))
+		viewport["zoom"] = _vector2_from_value(viewport.get("zoom", {}))
+	return viewports
+
+static func _decode_resource_sites(encoded_sites: Dictionary) -> Dictionary:
+	var sites := encoded_sites.duplicate(true)
+	for site_id in sites:
+		var site: Dictionary = sites[site_id]
+		site["position"] = _vector2_from_value(site.get("position", {}))
+	return sites
+
+static func _vector2_from_value(value: Variant) -> Vector2:
+	if value is Vector2:
+		return value
+	if value is Dictionary:
+		return Vector2(float(value.get("x", 0.0)), float(value.get("y", 0.0)))
+	return Vector2.ZERO

@@ -34,10 +34,13 @@ static func migrate_to_current(payload: Variant) -> Dictionary:
 			4:
 				migrated = _migrate_v4_to_v5(migrated)
 				version = 5
+			5:
+				migrated = _migrate_v5_to_v6(migrated)
+				version = 6
 			_:
 				return _failure("missing_migration", "缺少从版本 %d 开始的迁移" % version)
 
-	for integer_field in ["next_id"]:
+	for integer_field in ["next_id", "galaxy_seed"]:
 		var field_value: Variant = migrated.get(integer_field)
 		if _is_integral_number(field_value):
 			migrated[integer_field] = int(field_value)
@@ -56,6 +59,12 @@ static func migrate_to_current(payload: Variant) -> Dictionary:
 			var level_value: Variant = technology_levels_value[technology_id_value]
 			if _is_integral_number(level_value):
 				technology_levels_value[technology_id_value] = int(level_value)
+	var portable_fleet_value: Variant = migrated.get("portable_fleet")
+	if portable_fleet_value is Dictionary:
+		for fleet_item_id in portable_fleet_value:
+			var fleet_amount: Variant = portable_fleet_value[fleet_item_id]
+			if _is_integral_number(fleet_amount):
+				portable_fleet_value[fleet_item_id] = int(fleet_amount)
 
 	var validation_errors := GameStateValidator.validate_persistent_dict(migrated)
 	if not validation_errors.is_empty():
@@ -140,6 +149,75 @@ static func _migrate_v4_to_v5(legacy: Dictionary) -> Dictionary:
 				levels[technology_id] = 1
 	migrated["technology_levels"] = levels
 	return migrated
+
+static func _migrate_v5_to_v6(legacy: Dictionary) -> Dictionary:
+	var migrated := legacy.duplicate(true)
+	var legacy_inventory: Variant = migrated.get("planet_inventory", {})
+	migrated.erase("planet_inventory")
+	migrated["schema_version"] = 6
+	migrated["active_planet_id"] = GameState.HOME_PLANET_ID
+	migrated["galaxy_seed"] = 240721
+	migrated["explored_system_ids"] = ["helios"]
+	migrated["colonized_planet_ids"] = [GameState.HOME_PLANET_ID]
+	migrated["exploration_missions"] = []
+	migrated["survey_progress_by_system"] = {"helios": 1.0}
+	migrated["planet_inventories"] = {GameState.HOME_PLANET_ID: legacy_inventory.duplicate(true) if legacy_inventory is Dictionary else {}}
+	migrated["planet_viewports"] = {}
+	migrated["planet_metrics"] = {}
+	migrated["portable_fleet"] = {"logistics_drone": 0, "logistics_vessel": 0}
+	migrated["resource_sites"] = {}
+	var galaxy := GalaxySystem.new(GameState.new())
+	for planet_id in galaxy.get_all_planet_ids():
+		migrated["planet_viewports"][planet_id] = {"position": {"x": 0.0, "y": 0.0}, "zoom": {"x": 1.0, "y": 1.0}}
+		migrated["planet_metrics"][planet_id] = {}
+		for site_id in galaxy.build_resource_sites_for_planet(String(planet_id), int(migrated["galaxy_seed"])):
+			var site: Dictionary = galaxy.build_resource_sites_for_planet(String(planet_id), int(migrated["galaxy_seed"]))[site_id]
+			var persisted_site := site.duplicate(true)
+			var position: Vector2 = persisted_site.get("position", Vector2.ZERO)
+			persisted_site["position"] = {"x": position.x, "y": position.y}
+			migrated["resource_sites"][site_id] = persisted_site
+	for collection_name in ["buildings", "connections"]:
+		var collection: Variant = migrated.get(collection_name, {})
+		if collection is Dictionary:
+			for entity_id in collection:
+				if collection[entity_id] is Dictionary:
+					collection[entity_id]["planet_id"] = GameState.HOME_PLANET_ID
+	var jobs: Variant = migrated.get("handcraft_queue", [])
+	if jobs is Array:
+		for job in jobs:
+			if job is Dictionary:
+				job["planet_id"] = GameState.HOME_PLANET_ID
+	_bind_legacy_home_extractors(migrated)
+	return migrated
+
+static func _bind_legacy_home_extractors(migrated: Dictionary) -> void:
+	var buildings: Variant = migrated.get("buildings", {})
+	var sites: Variant = migrated.get("resource_sites", {})
+	if not buildings is Dictionary or not sites is Dictionary:
+		return
+	var building_ids: Array = buildings.keys()
+	building_ids.sort()
+	for building_id_value in building_ids:
+		var building: Dictionary = buildings[building_id_value]
+		var item_id := String(building.get("output_item", ""))
+		if item_id.is_empty():
+			continue
+		var candidates: Array = []
+		var building_position: Dictionary = building.get("position", {})
+		for site_id_value in sites:
+			var site: Dictionary = sites[site_id_value]
+			if String(site.get("planet_id", "")) == GameState.HOME_PLANET_ID and String(site.get("item_id", "")) == item_id:
+				var site_position: Dictionary = site.get("position", {})
+				var dx := float(building_position.get("x", 0.0)) - float(site_position.get("x", 0.0))
+				var dy := float(building_position.get("y", 0.0)) - float(site_position.get("y", 0.0))
+				candidates.append({"id": String(site_id_value), "distance_squared": dx * dx + dy * dy})
+		candidates.sort_custom(func(left: Dictionary, right: Dictionary) -> bool:
+			if not is_equal_approx(float(left["distance_squared"]), float(right["distance_squared"])):
+				return float(left["distance_squared"]) < float(right["distance_squared"])
+			return String(left["id"]) < String(right["id"])
+		)
+		if not candidates.is_empty():
+			building["resource_site_id"] = candidates[0]["id"]
 
 static func _failure(code: String, message: String) -> Dictionary:
 	return {

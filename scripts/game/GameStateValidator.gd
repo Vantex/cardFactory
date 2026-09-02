@@ -23,7 +23,8 @@ static func validate_persistent_dict(payload: Variant) -> Array:
 	_validate_research_state(errors, data)
 	for progression_field in ["completed_objective_ids", "claimed_progression_reward_ids", "completed_achievement_ids", "unlocked_progression_ids"]:
 		_validate_stable_id_array(errors, progression_field, data.get(progression_field))
-	_validate_root_inventory(errors, "planet_inventory", data.get("planet_inventory"), InventorySystem.MAX_PLANET_STACK)
+	var galaxy := GalaxySystem.new(GameState.new())
+	_validate_galaxy_state(errors, data, galaxy)
 	_validate_root_inventory(errors, "construction_inventory", data.get("construction_inventory"), 99.0, true)
 	_validate_cursor_payload(errors, data.get("cursor_payload"))
 	var handcraft_queue_value: Variant = data.get("handcraft_queue")
@@ -58,6 +59,8 @@ static func validate_persistent_dict(payload: Variant) -> Array:
 		_validate_inventory(errors, building_id, "output_buffer", building.get("output_buffer", {}))
 		_validate_power_state(errors, building_id, building)
 		_validate_catalog_configuration(errors, building_id, building)
+		_validate_entity_planet(errors, "building", building_id, building, data.get("colonized_planet_ids", []), galaxy)
+		_validate_resource_binding(errors, building_id, building, data.get("resource_sites", {}))
 
 	for connection_key in connections:
 		var connection_id := String(connection_key)
@@ -76,6 +79,11 @@ static func validate_persistent_dict(payload: Variant) -> Array:
 			_add_error(errors, "dangling_connection_source", "connection", connection_id, "连接源建筑不存在")
 		if not buildings.has(target_id):
 			_add_error(errors, "dangling_connection_target", "connection", connection_id, "连接目标建筑不存在")
+		_validate_entity_planet(errors, "connection", connection_id, connection, data.get("colonized_planet_ids", []), galaxy)
+		if buildings.has(source_id) and buildings.has(target_id):
+			var connection_planet := String(connection.get("planet_id", ""))
+			if connection_planet != String(buildings[source_id].get("planet_id", "")) or connection_planet != String(buildings[target_id].get("planet_id", "")):
+				_add_error(errors, "cross_planet_connection", "connection", connection_id, "线路和端点必须属于同一行星")
 
 	if handcraft_queue_value is Array:
 		var seen_job_ids: Dictionary = {}
@@ -87,12 +95,102 @@ static func validate_persistent_dict(payload: Variant) -> Array:
 			var job_id := String(job.get("id", ""))
 			highest_id = maxi(highest_id, _numeric_id_suffix(job_id))
 			_validate_handcraft_job(errors, job, seen_job_ids)
+			if String(job.get("planet_id", "")).is_empty() or not data.get("colonized_planet_ids", []).has(String(job.get("planet_id", ""))):
+				_add_error(errors, "invalid_handcraft_planet", "handcraft", job_id, "手工制造任务必须属于已殖民行星")
 			seen_job_ids[job_id] = true
 
 	if _is_integral_number(next_id) and int(next_id) <= highest_id:
 		_add_error(errors, "next_id_not_ahead", "state", "", "下一实体 ID 必须大于所有已保存 ID")
 
 	return errors
+
+static func _validate_galaxy_state(errors: Array, data: Dictionary, galaxy: GalaxySystem) -> void:
+	var active_planet_id := String(data.get("active_planet_id", ""))
+	if galaxy.get_planet(active_planet_id).is_empty():
+		_add_error(errors, "unknown_active_planet", "state", active_planet_id, "活动行星不存在于星区目录")
+	var colonized_value: Variant = data.get("colonized_planet_ids")
+	if not colonized_value is Array:
+		_add_error(errors, "invalid_colonized_planet_ids", "state", "", "已殖民行星必须是数组")
+		return
+	var colonized: Array = colonized_value
+	if not colonized.has(active_planet_id):
+		_add_error(errors, "active_planet_not_colonized", "state", active_planet_id, "活动行星必须已殖民")
+	for planet_id_value in colonized:
+		var planet_id := String(planet_id_value)
+		if galaxy.get_planet(planet_id).is_empty():
+			_add_error(errors, "unknown_colonized_planet", "state", planet_id, "已殖民行星不存在于星区目录")
+	var explored_value: Variant = data.get("explored_system_ids")
+	if not explored_value is Array:
+		_add_error(errors, "invalid_explored_system_ids", "state", "", "已探索星系必须是数组")
+	else:
+		for system_id_value in explored_value:
+			var system_id := String(system_id_value)
+			if galaxy.get_star_system(system_id).is_empty():
+				_add_error(errors, "unknown_explored_system", "state", system_id, "已探索星系不存在于星区目录")
+	var inventories_value: Variant = data.get("planet_inventories")
+	if not inventories_value is Dictionary:
+		_add_error(errors, "invalid_planet_inventories", "state", "", "行星托盘必须是字典")
+	else:
+		for planet_id_value in colonized:
+			var planet_id := String(planet_id_value)
+			if not inventories_value.has(planet_id):
+				_add_error(errors, "missing_planet_inventory", "state", planet_id, "已殖民行星缺少材料托盘")
+			else:
+				_validate_root_inventory(errors, "planet_inventory", inventories_value[planet_id], InventorySystem.MAX_PLANET_STACK)
+	_validate_viewports(errors, data.get("planet_viewports"), colonized)
+	_validate_resource_sites(errors, data.get("resource_sites"), galaxy)
+	if not _is_integral_number(data.get("galaxy_seed")):
+		_add_error(errors, "invalid_galaxy_seed", "state", "", "星区种子必须是整数")
+	if not data.get("exploration_missions") is Array or not data.get("survey_progress_by_system") is Dictionary:
+		_add_error(errors, "invalid_exploration_state", "state", "", "勘探状态无效")
+	if not data.get("planet_metrics") is Dictionary or not data.get("portable_fleet") is Dictionary:
+		_add_error(errors, "invalid_planet_metadata", "state", "", "行星元数据无效")
+
+static func _validate_entity_planet(errors: Array, source: String, entity_id: String, entity: Dictionary, colonized: Variant, galaxy: GalaxySystem) -> void:
+	var planet_id := String(entity.get("planet_id", ""))
+	if planet_id.is_empty() or galaxy.get_planet(planet_id).is_empty() or not colonized is Array or not colonized.has(planet_id):
+		_add_error(errors, "invalid_entity_planet", source, entity_id, "实体必须属于已殖民行星")
+
+static func _validate_resource_binding(errors: Array, building_id: String, building: Dictionary, sites_value: Variant) -> void:
+	if not building.has("resource_site_id"):
+		return
+	var site_id := String(building.get("resource_site_id", ""))
+	var site: Variant = sites_value.get(site_id) if sites_value is Dictionary else null
+	if not site is Dictionary or String(site.get("planet_id", "")) != String(building.get("planet_id", "")) or String(site.get("item_id", "")) != String(building.get("output_item", "")):
+		_add_error(errors, "invalid_resource_binding", "building", building_id, "采集建筑资源点绑定无效")
+
+static func _validate_viewports(errors: Array, value: Variant, colonized: Array) -> void:
+	if not value is Dictionary:
+		_add_error(errors, "invalid_planet_viewports", "state", "", "行星视口必须是字典")
+		return
+	for planet_id_value in colonized:
+		var planet_id := String(planet_id_value)
+		var viewport: Variant = value.get(planet_id)
+		if not viewport is Dictionary or not _is_vector2_dict(viewport.get("position")) or not _is_vector2_dict(viewport.get("zoom")):
+			_add_error(errors, "invalid_planet_viewport", "state", planet_id, "已殖民行星视口无效")
+
+static func _validate_resource_sites(errors: Array, value: Variant, galaxy: GalaxySystem) -> void:
+	if not value is Dictionary:
+		_add_error(errors, "invalid_resource_sites", "state", "", "资源点必须是字典")
+		return
+	var seen: Dictionary = {}
+	for site_id_value in value:
+		var site_id := String(site_id_value)
+		var site: Variant = value[site_id_value]
+		var declared_site_id := String(site.get("id", "")) if site is Dictionary else ""
+		if not site is Dictionary or seen.has(declared_site_id) or declared_site_id != site_id:
+			_add_error(errors, "invalid_resource_site", "resource_site", site_id, "资源点 ID 无效")
+			continue
+		seen[declared_site_id] = true
+		if galaxy.get_planet(String(site.get("planet_id", ""))).is_empty() or DataManager.get_item(String(site.get("item_id", ""))).is_empty():
+			_add_error(errors, "invalid_resource_site", "resource_site", site_id, "资源点目录绑定无效")
+		var capacity: Variant = site.get("capacity")
+		var remaining: Variant = site.get("remaining")
+		if not _is_finite_number(capacity) or not _is_finite_number(remaining) or float(capacity) < 0.0 or float(remaining) < 0.0 or (not bool(site.get("infinite", false)) and (float(capacity) <= 0.0 or float(remaining) > float(capacity))):
+			_add_error(errors, "invalid_resource_reserve", "resource_site", site_id, "资源储量必须有限且合法")
+
+static func _is_vector2_dict(value: Variant) -> bool:
+	return value is Dictionary and _is_finite_number(value.get("x")) and _is_finite_number(value.get("y"))
 
 static func _validate_stable_id_array(errors: Array, field_name: String, value: Variant) -> void:
 	if not value is Array:
