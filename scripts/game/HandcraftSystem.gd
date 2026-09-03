@@ -96,7 +96,7 @@ func queue_craft(recipe_id: String, quantity: int) -> Dictionary:
 	if not preview.get("missing", {}).is_empty():
 		return {"ok": false, "message": "手工制造材料不足", "missing": preview.get("missing", {}).duplicate(true)}
 	var recipe: Dictionary = RECIPES[recipe_id]
-	if not _can_reserve_output(recipe, quantity):
+	if not _can_reserve_output(recipe, quantity, game_state.active_planet_id):
 		return {"ok": false, "message": "制造输出库存容量不足"}
 	var inventory := InventorySystem.new(game_state)
 	var reservation := inventory.try_remove_batch(preview.get("required", {}))
@@ -131,9 +131,10 @@ func update(delta: float) -> void:
 		game_state.handcraft_queue[0] = job
 		if progress + AMOUNT_EPSILON < duration:
 			return
-		if not _can_deliver_one(recipe):
+		var planet_id := String(job.get("planet_id", game_state.active_planet_id))
+		if not _can_deliver_one(recipe, planet_id):
 			return
-		_deliver_one(recipe)
+		_deliver_one(recipe, planet_id)
 		job["quantity_remaining"] = int(job.get("quantity_remaining", 0)) - 1
 		job["progress"] = 0.0
 		if int(job["quantity_remaining"]) <= 0:
@@ -164,42 +165,45 @@ func _find_planet_output_recipe(item_id: String) -> String:
 			return String(recipe_id)
 	return ""
 
-func _can_reserve_output(recipe: Dictionary, quantity: int) -> bool:
+func _can_reserve_output(recipe: Dictionary, quantity: int, planet_id: String = "") -> bool:
 	var target := String(recipe.get("output_target", ""))
 	var outputs: Dictionary = recipe.get("outputs", {})
 	for item_key in outputs:
 		var item_id := String(item_key)
-		var current := float(game_state.construction_inventory.get(item_id, 0.0)) if target == "construction" else float(game_state.planet_inventory.get(item_id, 0.0))
-		var reserved := _reserved_output(target, item_id)
+		var resolved_planet_id := game_state.active_planet_id if planet_id.is_empty() else planet_id
+		var current := float(game_state.construction_inventory.get(item_id, 0.0)) if target == "construction" else float(game_state.get_planet_inventory(resolved_planet_id).get(item_id, 0.0))
+		var reserved := _reserved_output(target, item_id, resolved_planet_id)
 		var limit := MAX_CONSTRUCTION_STACK if target == "construction" else InventorySystem.MAX_PLANET_STACK
 		if current + reserved + float(outputs[item_key]) * quantity > limit + AMOUNT_EPSILON:
 			return false
 	return true
 
-func _reserved_output(target: String, item_id: String) -> float:
+func _reserved_output(target: String, item_id: String, planet_id: String) -> float:
 	var reserved := 0.0
 	for job_value in game_state.handcraft_queue:
 		var job: Dictionary = job_value
 		var recipe: Dictionary = RECIPES.get(String(job.get("recipe_id", "")), {})
 		if recipe.get("output_target", "") != target:
 			continue
+		if target == "planet" and String(job.get("planet_id", "")) != planet_id:
+			continue
 		reserved += float(recipe.get("outputs", {}).get(item_id, 0.0)) * int(job.get("quantity_remaining", 0))
 	return reserved
 
-func _can_deliver_one(recipe: Dictionary) -> bool:
+func _can_deliver_one(recipe: Dictionary, planet_id: String) -> bool:
 	var target := String(recipe.get("output_target", ""))
 	var outputs: Dictionary = recipe.get("outputs", {})
 	if target == "planet":
-		return InventorySystem.new(game_state).can_add_batch(outputs)
+		return InventorySystem.new(game_state).can_add_batch(outputs, planet_id)
 	for item_key in outputs:
 		if float(game_state.construction_inventory.get(item_key, 0.0)) + float(outputs[item_key]) > MAX_CONSTRUCTION_STACK + AMOUNT_EPSILON:
 			return false
 	return true
 
-func _deliver_one(recipe: Dictionary) -> void:
+func _deliver_one(recipe: Dictionary, planet_id: String) -> void:
 	var outputs: Dictionary = recipe.get("outputs", {})
 	if recipe.get("output_target", "") == "planet":
-		InventorySystem.new(game_state).try_add_batch(outputs)
+		InventorySystem.new(game_state).try_add_batch(outputs, planet_id)
 		return
 	for item_key in outputs:
 		var item_id := String(item_key)

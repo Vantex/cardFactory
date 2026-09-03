@@ -19,6 +19,7 @@ func _ready() -> void:
 	_test_statistics_panel_uses_the_engine_statistics_service()
 	await _test_hidden_statistics_panel_ignores_simulation_signals()
 	_test_production_diagnostics_report_stable_reasons_without_mutating_state()
+	_test_planet_statistics_and_diagnostics_keep_real_ownership()
 	_test_recipe_graph_indexes_catalog_and_reports_upstream_risks()
 	await _test_formal_codex_workspace_uses_live_services_and_real_controls()
 	await _test_diagnostic_locate_routes_through_main_without_mutating_factory()
@@ -255,6 +256,38 @@ func _test_production_diagnostics_report_stable_reasons_without_mutating_state()
 	var no_recipe: Dictionary = entries.filter(func(entry): return entry["entity_id"] == "no_recipe_machine")[0]
 	_expect(no_recipe["building_id"] == "no_recipe_machine" and no_recipe["planet_id"] == "home" and no_recipe["world_position"] == Vector2(1.0, 2.0), "building diagnostics carry stable location metadata")
 	_expect(GameStateCodec.state_digest_payload(state) == before, "diagnostic queries do not mutate game state")
+
+func _test_planet_statistics_and_diagnostics_keep_real_ownership() -> void:
+	var state := GameState.new()
+	state.explored_system_ids.append("borealis")
+	state.colonized_planet_ids.append("frost")
+	state.planet_inventories["frost"] = {}
+	state.planet_viewports["frost"] = {"position": Vector2.ZERO, "zoom": Vector2.ONE}
+	state.planet_metrics["frost"] = {}
+	_add_building(state, "home_generator", "power_generator", {"planet_id": "home", "input_buffer": {"coal": 1.0}})
+	_add_building(state, "home_smelter", "smelter", {"planet_id": "home", "recipe_id": "iron_ingot_recipe", "input_buffer": {"iron_ore": 1.0}})
+	_add_building(state, "frost_generator", "power_generator", {"planet_id": "frost", "input_buffer": {"coal": 1.0}})
+	_add_building(state, "frost_smelter", "smelter", {"planet_id": "frost", "recipe_id": "iron_ingot_recipe", "input_buffer": {"iron_ore": 1.0}})
+	var engine := SimulationEngine.new(state)
+	_run_seconds(engine, 1.0)
+	var global_summary := engine.statistics_system.get_statistics_summary()
+	_expect(float(global_summary["production"].get("iron_ingot", 0.0)) == 120.0, "global statistics retain both planets' production")
+	_expect(engine.statistics_system.has_method("get_planet_summary"), "statistics exposes a planet summary")
+	if engine.statistics_system.has_method("get_planet_summary"):
+		var home_summary: Dictionary = engine.statistics_system.call("get_planet_summary", "home")
+		var frost_summary: Dictionary = engine.statistics_system.call("get_planet_summary", "frost")
+		_expect(float(home_summary["production"].get("iron_ingot", 0.0)) == 60.0 and float(frost_summary["production"].get("iron_ingot", 0.0)) == 60.0, "planet summaries isolate production rates")
+		_expect(home_summary["total_buildings"] == 2 and frost_summary["total_buildings"] == 2, "planet summaries isolate runtime entity counts")
+
+	var frost_diagnostic_state := GameState.new()
+	frost_diagnostic_state.explored_system_ids.append("borealis")
+	frost_diagnostic_state.colonized_planet_ids.append("frost")
+	frost_diagnostic_state.planet_inventories["frost"] = {}
+	frost_diagnostic_state.planet_viewports["frost"] = {"position": Vector2.ZERO, "zoom": Vector2.ONE}
+	frost_diagnostic_state.planet_metrics["frost"] = {}
+	_add_building(frost_diagnostic_state, "frost_missing_recipe", "smelter", {"planet_id": "frost"})
+	var frost_entry: Dictionary = ProductionDiagnostics.new(frost_diagnostic_state).get_all_diagnostics()[0]
+	_expect(frost_entry.get("planet_id") == "frost", "building diagnostics carry the entity's real planet")
 
 func _test_recipe_graph_indexes_catalog_and_reports_upstream_risks() -> void:
 	var original_items := DataManager.get_all_items()
@@ -565,6 +598,7 @@ func _add_building(state: GameState, id: String, type: String, overrides: Dictio
 		"speed": definition.get("speed", 1.0),
 	}
 	building.merge(overrides, true)
+	building["planet_id"] = String(building.get("planet_id", "home"))
 	state.buildings[id] = building
 
 func _add_connection(state: GameState, id: String, source_id: String, target_id: String, flow_rate: float, item_id: String) -> void:
@@ -572,6 +606,7 @@ func _add_connection(state: GameState, id: String, source_id: String, target_id:
 		"id": id,
 		"source_id": source_id,
 		"target_id": target_id,
+		"planet_id": String(state.buildings[source_id].get("planet_id", "home")),
 		"item_id": item_id,
 		"flow_rate": flow_rate,
 		"enabled": true,

@@ -98,9 +98,11 @@ func _count_valid_connections(state: GameState) -> int:
 	return count
 
 func _get_item_amount(state: GameState, item_id: String) -> float:
-	var total := float(state.planet_inventory.get(item_id, 0.0))
+	var total := float(state.get_active_planet_inventory().get(item_id, 0.0))
 	for building_value in state.buildings.values():
 		var building: Dictionary = building_value
+		if String(building.get("planet_id", "")) != state.active_planet_id:
+			continue
 		total += float(building.get("input_buffer", {}).get(item_id, 0.0))
 		total += float(building.get("output_buffer", {}).get(item_id, 0.0))
 	return total

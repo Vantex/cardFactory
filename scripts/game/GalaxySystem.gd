@@ -67,6 +67,28 @@ func system_exists(system_id: String) -> bool:
 func get_system_count() -> int:
 	return _systems.size()
 
+func update_exploration(delta: float) -> void:
+	var step := maxf(delta, 0.0)
+	var remaining_missions: Array = []
+	for mission_value in game_state.exploration_missions:
+		if not mission_value is Dictionary:
+			continue
+		var mission: Dictionary = mission_value
+		var system_id := String(mission.get("system_id", ""))
+		var duration := maxf(float(mission.get("duration_seconds", 0.0)), 0.0)
+		if system_id.is_empty() or duration <= 0.0 or not _systems.has(system_id) or game_state.explored_system_ids.has(system_id):
+			continue
+		var progress := minf(maxf(float(mission.get("progress", 0.0)), 0.0) + step, duration)
+		mission["progress"] = progress
+		game_state.survey_progress_by_system[system_id] = progress / duration
+		if progress + 0.0000001 >= duration:
+			game_state.explored_system_ids.append(system_id)
+			game_state.explored_system_ids.sort()
+			game_state.survey_progress_by_system[system_id] = 1.0
+		else:
+			remaining_missions.append(mission)
+	game_state.exploration_missions = remaining_missions
+
 func build_resource_sites_for_planet(planet_id: String, seed: int) -> Dictionary:
 	var planet: Dictionary = _planets.get(planet_id, {})
 	if planet.is_empty():

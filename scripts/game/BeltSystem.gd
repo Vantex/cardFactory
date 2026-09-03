@@ -23,6 +23,8 @@ func update(delta: float):
 	connection_ids.sort_custom(_connection_precedes)
 	for conn_id in connection_ids:
 		var connection = game_state.connections[conn_id]
+		if not _is_connection_planet_local(connection):
+			continue
 		_update_connection(connection, delta)
 
 func _connection_precedes(left_id: Variant, right_id: Variant) -> bool:
@@ -76,7 +78,7 @@ func _update_connection(connection: Dictionary, delta: float):
 		if connection.get("monitor_enabled", false):
 			connection["total_transferred"] = float(connection.get("total_transferred", 0.0)) + transfer_amount
 		if statistics_system != null:
-			statistics_system.record_transferred(String(item_id), transfer_amount, String(connection.get("id", "")))
+			statistics_system.record_transferred(String(item_id), transfer_amount, String(connection.get("id", "")), String(connection.get("planet_id", game_state.active_planet_id)))
 
 func _effective_throughput(connection: Dictionary) -> float:
 	var connection_type := String(connection.get("type", "belt"))
@@ -88,5 +90,24 @@ func _effective_throughput(connection: Dictionary) -> float:
 	return maxf(float(configuration.get("effective_throughput", 10.0)), 0.0)
 
 func create_belt(source_id: String, target_id: String, item_id: String, flow_rate: float = 10.0) -> String:
-	var result := game_state.try_add_connection(source_id, target_id, item_id)
+	var result := try_create_belt(source_id, target_id, item_id, flow_rate)
 	return String(result.get("id", "")) if result.get("ok", false) else ""
+
+func try_create_belt(source_id: String, target_id: String, item_id: String = "", flow_rate: float = 10.0) -> Dictionary:
+	if not game_state.buildings.has(source_id) or not game_state.buildings.has(target_id):
+		return {"ok": false, "message": "连接建筑不存在"}
+	var source_planet := String(game_state.buildings[source_id].get("planet_id", ""))
+	var target_planet := String(game_state.buildings[target_id].get("planet_id", ""))
+	if source_planet.is_empty() or source_planet != target_planet:
+		return {"ok": false, "message": "不能跨行星连接"}
+	if source_planet != game_state.active_planet_id:
+		return {"ok": false, "message": "只能连接活动行星上的建筑"}
+	return game_state.try_add_connection(source_id, target_id, item_id)
+
+func _is_connection_planet_local(connection: Dictionary) -> bool:
+	var source: Dictionary = game_state.get_building(String(connection.get("source_id", "")))
+	var target: Dictionary = game_state.get_building(String(connection.get("target_id", "")))
+	if source.is_empty() or target.is_empty():
+		return false
+	var planet_id := String(connection.get("planet_id", ""))
+	return not planet_id.is_empty() and planet_id == String(source.get("planet_id", "")) and planet_id == String(target.get("planet_id", ""))

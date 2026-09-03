@@ -154,7 +154,10 @@ func start_connection(source_id: String) -> void:
 func complete_connection(target_id: String) -> bool:
 	if current_mode != Mode.CONNECTING or connecting_source_id.is_empty():
 		return false
-	var result: Dictionary = GameManager.get_game_state().try_add_connection(connecting_source_id, target_id)
+	var state := GameManager.get_game_state()
+	var engine := GameManager.get_simulation_engine()
+	var belts := engine.belt_system if engine != null and engine.game_state == state else BeltSystem.new(state)
+	var result: Dictionary = belts.try_create_belt(connecting_source_id, target_id)
 	_publish_command_result(result)
 	cancel_operation()
 	return result.get("ok", false)

@@ -11,6 +11,10 @@ func _ready() -> void:
 	_test_resource_sites_bind_and_deplete()
 	_test_planet_boundaries_preserve_state()
 	_test_resource_site_ties_and_terminal_depletion()
+	_test_power_and_belt_boundaries_are_planet_local()
+	_test_exploration_update_advances_each_mission_once()
+	_test_objectives_read_only_the_active_planet_inventory()
+	_test_input_handler_routes_connection_through_active_planet_boundary()
 	if _failures > 0:
 		printerr("GALAXY LOGISTICS TESTS FAILED")
 		get_tree().quit(1)
@@ -219,11 +223,92 @@ func _test_resource_site_ties_and_terminal_depletion() -> void:
 	production.update(60.0)
 	_expect(state.buildings[miner].get("status", "") == "resource_depleted" and float(state.resource_sites["a_site"]["remaining"]) == 0.0 and float(state.buildings[miner]["output_buffer"].get("iron_ore", 0.0)) == output_after_depletion, "a second depleted tick is stable and produces nothing")
 
+func _test_power_and_belt_boundaries_are_planet_local() -> void:
+	var state := GameState.new()
+	_prepare_frost(state)
+	var home_generator := state.add_building({"type": "power_generator", "planet_id": "home", "position": Vector2.ZERO, "input_buffer": {"coal": 1.0}, "output_buffer": {}})
+	var home_smelter := state.add_building({"type": "smelter", "planet_id": "home", "position": Vector2(20, 0), "recipe_id": "iron_ingot_recipe", "input_buffer": {}, "output_buffer": {}})
+	var frost_smelter := state.add_building({"type": "smelter", "planet_id": "frost", "position": Vector2(40, 0), "recipe_id": "iron_ingot_recipe", "input_buffer": {}, "output_buffer": {}})
+	var power := PowerSystem.new(state)
+	power.update(1.0 / 60.0)
+	_expect(float(state.buildings[home_smelter]["power_efficiency"]) > 0.0, "home generator powers home")
+	_expect(float(state.buildings[frost_smelter]["power_efficiency"]) == 0.0, "home power does not cross planets")
+	var supports_planet_query := _method_argument_count(power, "get_power_info") == 1
+	_expect(supports_planet_query, "power summaries accept an explicit planet query")
+	if supports_planet_query:
+		var home_power: Dictionary = power.call("get_power_info", "home")
+		var frost_power: Dictionary = power.call("get_power_info", "frost")
+		_expect(float(home_power["generation"]) == 500.0 and float(frost_power["generation"]) == 0.0, "power summaries can query each planet explicitly")
+
+	var belt_pieces_before := float(state.construction_inventory["conveyor_belt_mk1"])
+	var next_id_before: int = state.get("_next_id")
+	var belts := BeltSystem.new(state)
+	_expect(belts.create_belt(home_smelter, frost_smelter, "iron_ingot") == "", "belt command rejects a cross-planet edge")
+	_expect(float(state.construction_inventory["conveyor_belt_mk1"]) == belt_pieces_before and state.connections.is_empty() and int(state.get("_next_id")) == next_id_before, "cross-planet rejection consumes no construction pieces or ids")
+	var forged := state.add_connection({"source_id": home_smelter, "target_id": frost_smelter, "planet_id": "home", "item_id": "iron_ingot", "type": "conveyor_belt_mk1"})
+	var payload := GameStateCodec.to_persistent_dict(state)
+	_expect(_error_codes(GameStateValidator.validate_persistent_dict(payload)).has("cross_planet_connection"), "validator rejects a cross-planet edge")
+	state.buildings[home_smelter]["output_buffer"] = {"iron_ingot": 1.0}
+	belts.update(1.0)
+	_expect(float(state.buildings[frost_smelter]["input_buffer"].get("iron_ingot", 0.0)) == 0.0, "runtime ignores a forged cross-planet edge")
+	_expect(ProductionDiagnostics.new(state).get_all_diagnostics().any(func(entry): return entry.get("entity_id") == forged and entry.get("code") == "cross_planet_connection" and entry.get("building_id") == frost_smelter and entry.get("planet_id") == "frost" and entry.get("world_position") == Vector2(40, 0)), "runtime reports and locates a forged cross-planet edge on its target planet")
+
+	state.connections.clear()
+	var frost_source := state.add_building({"type": "smelter", "planet_id": "frost", "position": Vector2(60, 0), "recipe_id": "iron_ingot_recipe", "input_buffer": {}, "output_buffer": {"iron_ingot": 1.0}})
+	var frost_target := state.add_building({"type": "assembling_machine_mk1", "planet_id": "frost", "position": Vector2(80, 0), "recipe_id": "circuit_recipe", "input_buffer": {}, "output_buffer": {}})
+	_expect(belts.create_belt(frost_source, frost_target, "iron_ingot") == "", "belt command rejects endpoints outside the active planet")
+	state.set_active_planet("frost")
+	var legal := belts.create_belt(frost_source, frost_target, "iron_ingot")
+	_expect(not legal.is_empty() and state.connections[legal].get("planet_id") == "frost", "legal belt persists the common endpoint planet")
+
+func _test_exploration_update_advances_each_mission_once() -> void:
+	var state := GameState.new()
+	state.exploration_missions = [{"system_id": "borealis", "progress": 23.5, "duration_seconds": 24.0}]
+	var galaxy := GalaxySystem.new(state)
+	_expect(galaxy.has_method("update_exploration"), "galaxy exposes the fixed-tick exploration phase")
+	if not galaxy.has_method("update_exploration"):
+		return
+	galaxy.call("update_exploration", 0.25)
+	_expect(is_equal_approx(float(state.exploration_missions[0]["progress"]), 23.75) and is_equal_approx(float(state.survey_progress_by_system["borealis"]), 23.75 / 24.0), "galaxy phase advances an existing mission by exactly delta")
+	galaxy.call("update_exploration", 0.25)
+	_expect(state.exploration_missions.is_empty() and state.explored_system_ids.has("borealis") and float(state.survey_progress_by_system["borealis"]) == 1.0, "galaxy phase completes and removes a finished mission")
+
+func _test_objectives_read_only_the_active_planet_inventory() -> void:
+	var state := GameState.new()
+	_prepare_frost(state)
+	state.planet_inventory["iron_ingot"] = 1.0
+	state.get_planet_inventory("frost")["iron_ingot"] = 100.0
+	state.add_building({"type": "storage", "planet_id": "home", "position": Vector2.ZERO, "input_buffer": {}, "output_buffer": {"iron_ingot": 2.0}})
+	state.add_building({"type": "storage", "planet_id": "frost", "position": Vector2.ZERO, "input_buffer": {}, "output_buffer": {"iron_ingot": 100.0}})
+	var progress := ObjectiveSystem.new().get_condition_progress(state, {"fact": "item_amount", "item_id": "iron_ingot", "at_least": 4.0})
+	_expect(float(progress["current"]) == 3.0 and not progress["complete"], "active home objectives ignore frost tray and building buffers")
+
+func _test_input_handler_routes_connection_through_active_planet_boundary() -> void:
+	var state := GameState.new()
+	_prepare_frost(state)
+	var frost_source := state.add_building({"type": "smelter", "planet_id": "frost", "position": Vector2.ZERO, "recipe_id": "iron_ingot_recipe", "input_buffer": {}, "output_buffer": {}})
+	var frost_target := state.add_building({"type": "assembling_machine_mk1", "planet_id": "frost", "position": Vector2(20, 0), "recipe_id": "", "input_buffer": {}, "output_buffer": {}})
+	GameManager.replace_game_state(state)
+	var input_handler: Node = load("res://scripts/input/InputHandler.gd").new()
+	var pieces_before := float(state.construction_inventory["conveyor_belt_mk1"])
+	input_handler.call("start_connection", frost_source)
+	var connected := bool(input_handler.call("complete_connection", frost_target))
+	_expect(not connected, "real input handler rejects same-planet endpoints outside the active planet")
+	_expect(state.connections.is_empty() and float(state.construction_inventory["conveyor_belt_mk1"]) == pieces_before and String(state.buildings[frost_target].get("recipe_id", "")).is_empty(), "input rejection preserves lines, construction pieces, and target recipe")
+	input_handler.queue_free()
+
 func _prepare_ashen(state: GameState) -> void:
 	state.colonized_planet_ids.append("ashen")
 	state.planet_inventories["ashen"] = {}
 	state.planet_viewports["ashen"] = {"position": Vector2.ZERO, "zoom": Vector2.ONE}
 	state.planet_metrics["ashen"] = {}
+
+func _prepare_frost(state: GameState) -> void:
+	state.explored_system_ids.append("borealis")
+	state.colonized_planet_ids.append("frost")
+	state.planet_inventories["frost"] = {}
+	state.planet_viewports["frost"] = {"position": Vector2.ZERO, "zoom": Vector2.ONE}
+	state.planet_metrics["frost"] = {}
 
 func _has_changed_finite_reserve(first: Dictionary, changed: Dictionary) -> bool:
 	for site_id in first:
@@ -243,6 +328,12 @@ func _error_codes(errors: Array) -> Array:
 		if error_value is Dictionary:
 			codes.append(String(error_value.get("code", "")))
 	return codes
+
+func _method_argument_count(target: Object, method_name: String) -> int:
+	for method_value in target.get_method_list():
+		if String(method_value.get("name", "")) == method_name:
+			return method_value.get("args", []).size()
+	return -1
 
 func _expect(condition: bool, description: String) -> void:
 	if condition:

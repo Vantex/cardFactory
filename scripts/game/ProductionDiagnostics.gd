@@ -39,9 +39,9 @@ func _diagnose_building(building_id: String, building: Dictionary) -> Dictionary
 	var recipe_id := String(building.get("recipe_id", ""))
 	var recipe := DataManager.get_recipe(recipe_id)
 	if recipe_machine and (recipe_id.is_empty() or recipe.is_empty() or not DataManager.is_recipe_supported_by_building(recipe, building_type)):
-		return _make_entry("no_recipe", "未配置可用配方", building_id, building_id, building.get("position", Vector2.ZERO))
+		return _make_entry("no_recipe", "未配置可用配方", building_id, building_id, building.get("position", Vector2.ZERO), String(building.get("planet_id", "")))
 	if _is_powered_producer(recipe_machine, definition) and _power_ratio_for(building, definition) <= EPSILON:
-		return _make_entry("no_power", "供电不足，设备无法运行", building_id, building_id, building.get("position", Vector2.ZERO))
+		return _make_entry("no_power", "供电不足，设备无法运行", building_id, building_id, building.get("position", Vector2.ZERO), String(building.get("planet_id", "")))
 	if not recipe_machine:
 		return {}
 	var input_buffer: Dictionary = building.get("input_buffer", {})
@@ -52,7 +52,7 @@ func _diagnose_building(building_id: String, building: Dictionary) -> Dictionary
 		var item_id := String(input.get("item_id", ""))
 		var required := float(input.get("amount", 0.0))
 		if float(input_buffer.get(item_id, 0.0)) + EPSILON < required:
-			return _make_entry("missing_input", "缺少输入物料：%s" % item_id, building_id, building_id, building.get("position", Vector2.ZERO))
+			return _make_entry("missing_input", "缺少输入物料：%s" % item_id, building_id, building_id, building.get("position", Vector2.ZERO), String(building.get("planet_id", "")))
 	var output_buffer: Dictionary = building.get("output_buffer", {})
 	var capacity := _buffer_capacity(building, definition, "output")
 	for output_value in recipe.get("outputs", []):
@@ -62,16 +62,19 @@ func _diagnose_building(building_id: String, building: Dictionary) -> Dictionary
 		var item_id := String(output.get("item_id", ""))
 		var amount := float(output.get("amount", 0.0))
 		if float(output_buffer.get(item_id, 0.0)) + amount > capacity + EPSILON:
-			return _make_entry("output_full", "输出缓冲区空间不足：%s" % item_id, building_id, building_id, building.get("position", Vector2.ZERO))
+			return _make_entry("output_full", "输出缓冲区空间不足：%s" % item_id, building_id, building_id, building.get("position", Vector2.ZERO), String(building.get("planet_id", "")))
 	return {}
 
 func _diagnose_connection(connection_id: String, connection: Dictionary) -> Dictionary:
 	var target_id := String(connection.get("target_id", ""))
 	var target: Dictionary = game_state.get_building(target_id)
 	var position: Variant = target.get("position", Vector2.ZERO)
-	if not bool(connection.get("enabled", true)):
-		return _make_entry("belt_disabled", "线路已关闭", connection_id, target_id, position)
+	var planet_id := String(connection.get("planet_id", ""))
 	var source: Dictionary = game_state.get_building(String(connection.get("source_id", "")))
+	if not source.is_empty() and not target.is_empty() and (planet_id.is_empty() or planet_id != String(source.get("planet_id", "")) or planet_id != String(target.get("planet_id", ""))):
+		return _make_entry("cross_planet_connection", "线路和端点必须属于同一行星", connection_id, target_id, position, String(target.get("planet_id", "")))
+	if not bool(connection.get("enabled", true)):
+		return _make_entry("belt_disabled", "线路已关闭", connection_id, target_id, position, planet_id)
 	if source.is_empty() or target.is_empty():
 		return {}
 	var item_id := String(connection.get("item_id", ""))
@@ -81,7 +84,7 @@ func _diagnose_connection(connection_id: String, connection: Dictionary) -> Dict
 	var capacity := _buffer_capacity(target, definition, "input")
 	var input_buffer: Dictionary = target.get("input_buffer", {})
 	if not item_id.is_empty() and float(input_buffer.get(item_id, 0.0)) + EPSILON >= capacity:
-		return _make_entry("belt_blocked", "目标输入缓冲区已满：%s" % item_id, connection_id, target_id, position)
+		return _make_entry("belt_blocked", "目标输入缓冲区已满：%s" % item_id, connection_id, target_id, position, planet_id)
 	return {}
 
 func _is_recipe_machine(building_type: String, definition: Dictionary) -> bool:
@@ -98,15 +101,17 @@ func _power_ratio_for(building: Dictionary, definition: Dictionary) -> float:
 		return 1.0
 	if building.has("power_efficiency"):
 		return clampf(float(building.get("power_efficiency", 0.0)), 0.0, 1.0)
-	return _catalog_power_ratio()
+	return _catalog_power_ratio(String(building.get("planet_id", "")))
 
-func _catalog_power_ratio() -> float:
+func _catalog_power_ratio(planet_id: String) -> float:
 	var generation := 0.0
 	var consumption := 0.0
 	for building_value in game_state.buildings.values():
 		if not building_value is Dictionary:
 			continue
 		var building: Dictionary = building_value
+		if String(building.get("planet_id", "")) != planet_id:
+			continue
 		var definition := DataManager.get_building(String(building.get("type", "")))
 		consumption += maxf(float(definition.get("power_demand", 0.0)), 0.0)
 		generation += maxf(float(definition.get("power_generation", 0.0)), 0.0) * clampf(float(building.get("generation_factor", 1.0)), 0.0, 1.0)
@@ -116,12 +121,12 @@ func _buffer_capacity(building: Dictionary, definition: Dictionary, direction: S
 	var key := "%s_buffer_capacity" % direction
 	return maxf(float(building.get(key, definition.get(key, DEFAULT_BUFFER_CAPACITY))), 0.0)
 
-func _make_entry(code: String, message: String, entity_id: String, building_id: String, position: Variant) -> Dictionary:
+func _make_entry(code: String, message: String, entity_id: String, building_id: String, position: Variant, planet_id: String) -> Dictionary:
 	return {
 		"code": code,
 		"message": message,
 		"entity_id": entity_id,
 		"building_id": building_id,
-		"planet_id": "home",
+		"planet_id": planet_id,
 		"world_position": position if position is Vector2 else Vector2.ZERO,
 	}

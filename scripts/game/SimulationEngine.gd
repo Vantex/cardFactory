@@ -4,7 +4,7 @@ extends RefCounted
 const FIXED_DELTA := 1.0 / 60.0
 const MAX_STEPS_PER_FRAME := 10
 const STEP_EPSILON := 0.0000001
-const PHASE_ORDER := ["power", "production", "belt", "research", "statistics"]
+const PHASE_ORDER := ["power", "production", "handcraft", "belt", "galaxy", "research", "statistics"]
 
 var game_state: GameState
 var production_system: ProductionSystem
@@ -13,6 +13,7 @@ var power_system: PowerSystem
 var statistics_system: StatisticsSystem
 var handcraft_system: HandcraftSystem
 var technology_system: TechnologySystem
+var galaxy_system: GalaxySystem
 
 var _accumulator := 0.0
 var _last_step_count := 0
@@ -25,6 +26,7 @@ func _init(state: GameState) -> void:
 	power_system = PowerSystem.new(state, statistics_system)
 	handcraft_system = HandcraftSystem.new(state)
 	technology_system = TechnologySystem.new(state)
+	galaxy_system = GalaxySystem.new(state)
 
 func update(delta: float) -> void:
 	_last_step_count = 0
@@ -48,6 +50,7 @@ func _run_fixed_tick() -> void:
 	production_system.update(FIXED_DELTA)
 	handcraft_system.update(FIXED_DELTA)
 	belt_system.update(FIXED_DELTA)
+	galaxy_system.update_exploration(FIXED_DELTA)
 	_update_research(FIXED_DELTA)
 	statistics_system.update(FIXED_DELTA)
 

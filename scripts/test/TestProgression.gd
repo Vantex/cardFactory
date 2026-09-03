@@ -94,7 +94,7 @@ func _test_retroactive_completion_and_persistence() -> void:
 
 	var payload := GameStateCodec.to_persistent_dict(state)
 	var restored := GameStateCodec.from_persistent_dict(JSON.parse_string(JSON.stringify(payload)))
-	_expect(payload.get("schema_version") == 5 and restored is GameState, "progression persistence upgrades the canonical save contract to schema version 5")
+	_expect(payload.get("schema_version") == 6 and restored is GameState, "progression persistence upgrades the canonical save contract to schema version 6")
 	if restored is GameState:
 		_expect(_same_ids(restored.completed_objective_ids, state.completed_objective_ids), "save/load preserves completed objectives")
 		_expect(_same_ids(restored.claimed_progression_reward_ids, state.claimed_progression_reward_ids), "save/load preserves idempotent reward claims")

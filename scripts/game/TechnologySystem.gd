@@ -169,19 +169,21 @@ func _research_queue_closure_is_valid(queue: Array, current_id: String = "") -> 
 
 func _has_cost_in_inventory(tech_id: String) -> bool:
 	var cost := get_technology_cost(tech_id)
+	var inventory := game_state.get_active_planet_inventory()
 	for item_id_value in cost:
 		var item_id := String(item_id_value)
-		if float(game_state.planet_inventory.get(item_id, 0.0)) + 0.0000001 < float(cost[item_id_value]):
+		if float(inventory.get(item_id, 0.0)) + 0.0000001 < float(cost[item_id_value]):
 			return false
 	return true
 
 func _consume_cost(tech_id: String) -> void:
 	var cost := get_technology_cost(tech_id)
 	var paid: Dictionary = {}
+	var inventory := game_state.get_active_planet_inventory()
 	for item_id_value in cost:
 		var item_id := String(item_id_value)
 		var amount := float(cost[item_id_value])
-		game_state.planet_inventory[item_id] = float(game_state.planet_inventory.get(item_id, 0.0)) - amount
+		inventory[item_id] = float(inventory.get(item_id, 0.0)) - amount
 		paid[item_id] = amount
 	game_state.research_invested_costs[tech_id] = paid
 

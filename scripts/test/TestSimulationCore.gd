@@ -16,6 +16,8 @@ func _ready() -> void:
 	_test_research_requires_powered_matrix_lab()
 	_test_tier_technology_effects_change_real_production()
 	_test_extraction_boundaries()
+	_test_colonized_planets_simulate_without_multiplying_global_time()
+	_test_handcraft_delivery_keeps_queued_planet()
 
 	if _failures > 0:
 		printerr("SIMULATION CORE TESTS FAILED")
@@ -184,7 +186,7 @@ func _test_phase_order_and_tick_boundaries() -> void:
 	_add_building(state, "smelter", "smelter", {"recipe_id": "iron_ingot_recipe"})
 	_add_connection(state, "belt", "miner", "smelter", 60.0)
 	var engine := SimulationEngine.new(state)
-	_expect(engine.has_method("get_phase_order") and engine.get_phase_order() == ["power", "production", "belt", "research", "statistics"], "fixed ticks publish the authoritative phase order")
+	_expect(engine.has_method("get_phase_order") and engine.get_phase_order() == ["power", "production", "handcraft", "belt", "galaxy", "research", "statistics"], "fixed ticks publish the authoritative phase order")
 	engine.update(FIXED_DELTA)
 	_expect(is_equal_approx(state.buildings["smelter"]["input_buffer"].get("iron_ore", 0.0), 1.0), "production runs before belts, so a miner's tick output can enter logistics")
 	_expect(state.buildings["smelter"].get("progress", 0.0) == 0.0, "material delivered by belts is not consumed earlier in the same tick")
@@ -236,6 +238,40 @@ func _test_extraction_boundaries() -> void:
 	state.buildings["miner"]["output_buffer"] = {"iron_ore": 60.0}
 	ProductionSystem.new(state).update(1.0)
 	_expect(state.buildings["miner"].get("status") == "invalid_resource_site", "invalid binding has priority over no-power and full-buffer states")
+
+func _test_colonized_planets_simulate_without_multiplying_global_time() -> void:
+	var state := GameState.new()
+	_prepare_frost(state)
+	_add_building(state, "home_generator", "power_generator", {"planet_id": "home", "input_buffer": {"coal": 1.0}})
+	_add_building(state, "home_generator_backup", "power_generator", {"planet_id": "home", "input_buffer": {"coal": 1.0}})
+	_add_building(state, "home_smelter", "smelter", {"planet_id": "home", "recipe_id": "iron_ingot_recipe", "input_buffer": {"iron_ore": 2.0}})
+	_add_building(state, "home_lab", "matrix_lab", {"planet_id": "home"})
+	_add_building(state, "frost_generator", "power_generator", {"planet_id": "frost", "input_buffer": {"coal": 1.0}})
+	_add_building(state, "frost_smelter", "smelter", {"planet_id": "frost", "recipe_id": "iron_ingot_recipe", "input_buffer": {"iron_ore": 2.0}})
+	state.planet_inventory["matrix_science_1"] = 5.0
+	_expect(TechnologySystem.new(state).start_research("factory_foundations"), "multi-planet fixture starts paid research from the active tray")
+	state.exploration_missions = [{"system_id": "neutron", "progress": 0.0, "duration_seconds": 42.0}]
+	var engine := SimulationEngine.new(state)
+	_run_seconds(engine, 2.0)
+	_expect(float(state.buildings["home_smelter"]["output_buffer"].get("iron_ingot", 0.0)) == 2.0, "active planet production advances for 120 fixed ticks")
+	_expect(float(state.buildings["frost_smelter"]["output_buffer"].get("iron_ingot", 0.0)) == 2.0, "non-active planet production advances for 120 fixed ticks")
+	_expect(is_equal_approx(state.elapsed_time, 2.0), "elapsed time advances once per fixed tick across two planets")
+	_expect(is_equal_approx(state.get_technology_progress("factory_foundations"), 2.0), "global research advances once per fixed tick across two planets")
+	_expect(is_equal_approx(float(state.exploration_missions[0]["progress"]), 2.0), "global exploration advances once per fixed tick across two planets")
+	_expect(engine.statistics_system.get_history_size() == 2, "statistics seals one global sample per simulated second")
+
+func _test_handcraft_delivery_keeps_queued_planet() -> void:
+	var state := GameState.new()
+	_prepare_frost(state)
+	state.set_active_planet("frost")
+	state.planet_inventory["iron_ingot"] = 1.0
+	var handcraft := HandcraftSystem.new(state)
+	var queued := handcraft.queue_craft("handcraft_gear", 1)
+	_expect(queued.get("ok", false) and state.handcraft_queue[0].get("planet_id") == "frost", "handcraft captures frost when the job is queued")
+	state.set_active_planet("home")
+	_run_seconds(SimulationEngine.new(state), 0.5)
+	_expect(float(state.get_planet_inventory("frost").get("gear", 0.0)) == 1.0, "completed handcraft output enters the queued frost tray")
+	_expect(float(state.get_planet_inventory("home").get("gear", 0.0)) == 0.0, "completed frost handcraft output never enters the active home tray")
 
 func _iron_output_after_seconds(completed: Array, levels: Dictionary, seconds: float) -> float:
 	var state := GameState.new()
@@ -289,12 +325,20 @@ func _add_connection(state: GameState, id: String, source_id: String, target_id:
 		"id": id,
 		"source_id": source_id,
 		"target_id": target_id,
+		"planet_id": String(state.buildings[source_id].get("planet_id", "home")),
 		"item_id": item_id,
 		"flow_rate": flow_rate,
 		"enabled": true,
 		"active": false,
 		"current_flow": 0.0,
 	}
+
+func _prepare_frost(state: GameState) -> void:
+	state.explored_system_ids.append("borealis")
+	state.colonized_planet_ids.append("frost")
+	state.planet_inventories["frost"] = {}
+	state.planet_viewports["frost"] = {"position": Vector2.ZERO, "zoom": Vector2.ONE}
+	state.planet_metrics["frost"] = {}
 
 func _run_seconds(engine: SimulationEngine, seconds: float) -> void:
 	var tick_count := int(round(seconds / FIXED_DELTA))

@@ -102,7 +102,7 @@ func _update_extractor(building: Dictionary, building_definition: Dictionary, de
 	output_buffer[output_item] = next_amount
 	building["output_buffer"] = output_buffer
 	if statistics_system != null:
-		statistics_system.record_produced(output_item, produced, String(building.get("id", "")))
+		statistics_system.record_produced(output_item, produced, String(building.get("id", "")), String(building.get("planet_id", game_state.active_planet_id)))
 	building["status"] = "blocked" if current_amount >= capacity else ("resource_depleted" if not resource_site_id.is_empty() and not bool(game_state.resource_sites.get(resource_site_id, {}).get("infinite", false)) and float(game_state.resource_sites.get(resource_site_id, {}).get("remaining", 0.0)) <= PROGRESS_EPSILON else "running")
 
 func _has_required_inputs(building: Dictionary, recipe: Dictionary) -> bool:
@@ -132,7 +132,7 @@ func _consume_inputs(building: Dictionary, recipe: Dictionary) -> void:
 		var amount := float(input_value.get("amount", 0.0))
 		input_buffer[item_id] = maxf(float(input_buffer.get(item_id, 0.0)) - amount, 0.0)
 		if statistics_system != null:
-			statistics_system.record_consumed(item_id, amount, String(building.get("id", "")))
+			statistics_system.record_consumed(item_id, amount, String(building.get("id", "")), String(building.get("planet_id", game_state.active_planet_id)))
 	building["input_buffer"] = input_buffer
 
 func _produce_outputs(building: Dictionary, recipe: Dictionary) -> void:
@@ -142,7 +142,7 @@ func _produce_outputs(building: Dictionary, recipe: Dictionary) -> void:
 		var amount := float(output_value.get("amount", 0.0))
 		output_buffer[item_id] = float(output_buffer.get(item_id, 0.0)) + amount
 		if statistics_system != null:
-			statistics_system.record_produced(item_id, amount, String(building.get("id", "")))
+			statistics_system.record_produced(item_id, amount, String(building.get("id", "")), String(building.get("planet_id", game_state.active_planet_id)))
 	building["output_buffer"] = output_buffer
 
 func _emit_production_completed(building: Dictionary, recipe: Dictionary) -> void:

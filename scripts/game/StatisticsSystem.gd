@@ -15,14 +15,14 @@ var _history: Array = []
 func _init(state: GameState) -> void:
 	game_state = state
 
-func record_produced(item_id: String, amount: float, building_id: String = "") -> void:
-	_record_amount("produced", item_id, amount, building_id)
+func record_produced(item_id: String, amount: float, building_id: String = "", planet_id: String = "") -> void:
+	_record_amount("produced", item_id, amount, building_id, _resolve_planet_id(building_id, planet_id))
 
-func record_consumed(item_id: String, amount: float, building_id: String = "") -> void:
-	_record_amount("consumed", item_id, amount, building_id)
+func record_consumed(item_id: String, amount: float, building_id: String = "", planet_id: String = "") -> void:
+	_record_amount("consumed", item_id, amount, building_id, _resolve_planet_id(building_id, planet_id))
 
-func record_transferred(item_id: String, amount: float, connection_id: String = "") -> void:
-	_record_amount("transferred", item_id, amount)
+func record_transferred(item_id: String, amount: float, connection_id: String = "", planet_id: String = "") -> void:
+	_record_amount("transferred", item_id, amount, "", _resolve_planet_id(connection_id, planet_id))
 
 func update(delta: float) -> void:
 	_sample_elapsed += maxf(delta, 0.0)
@@ -42,6 +42,24 @@ func get_building_item_rates(building_id: String, item_id: String, window_second
 
 func get_statistics_summary(window_seconds: int = 60) -> Dictionary:
 	var totals := _get_window_totals(window_seconds)
+	return _build_summary(totals, window_seconds, get_total_buildings(), get_total_connections())
+
+func get_planet_summary(planet_id: String = "", window_seconds: int = 60) -> Dictionary:
+	var resolved_planet_id := game_state.active_planet_id if planet_id.is_empty() else planet_id
+	var totals := _get_planet_window_totals(resolved_planet_id, window_seconds)
+	var building_count := 0
+	var connection_count := 0
+	for building_value in game_state.buildings.values():
+		if String(building_value.get("planet_id", "")) == resolved_planet_id:
+			building_count += 1
+	for connection_value in game_state.connections.values():
+		if String(connection_value.get("planet_id", "")) == resolved_planet_id:
+			connection_count += 1
+	var summary := _build_summary(totals, window_seconds, building_count, connection_count)
+	summary["planet_id"] = resolved_planet_id
+	return summary
+
+func _build_summary(totals: Dictionary, window_seconds: int, building_count: int, connection_count: int) -> Dictionary:
 	var item_ids: Array = []
 	for category in ["produced", "consumed", "transferred"]:
 		for item_id in totals[category]:
@@ -55,8 +73,8 @@ func get_statistics_summary(window_seconds: int = 60) -> Dictionary:
 	var consumption := _get_rates_by_item_from_totals(totals, "consumed")
 	var transferred := _get_rates_by_item_from_totals(totals, "transferred")
 	return {
-		"total_buildings": get_total_buildings(),
-		"total_connections": get_total_connections(),
+		"total_buildings": building_count,
+		"total_connections": connection_count,
 		"elapsed_time": game_state.elapsed_time,
 		"window_seconds": window_seconds,
 		"covered_seconds": totals["covered_seconds"],
@@ -171,11 +189,17 @@ func get_resource_statistics() -> Dictionary:
 				stats[item_id]["stored"] = _saturating_add(float(stats[item_id]["stored"]), maxf(float(building[buffer_name][item_id]), 0.0))
 	return stats
 
-func _record_amount(category: String, item_id: String, amount: float, building_id: String = "") -> void:
+func _record_amount(category: String, item_id: String, amount: float, building_id: String, planet_id: String) -> void:
 	if item_id.is_empty() or not is_finite(amount) or amount <= 0.0:
 		return
 	var totals: Dictionary = _current_sample[category]
 	totals[item_id] = _saturating_add(float(totals.get(item_id, 0.0)), amount)
+	var planet_samples: Dictionary = _current_sample["planets"]
+	if not planet_samples.has(planet_id):
+		planet_samples[planet_id] = _empty_categories()
+	var planet_totals: Dictionary = planet_samples[planet_id]
+	var planet_category: Dictionary = planet_totals[category]
+	planet_category[item_id] = _saturating_add(float(planet_category.get(item_id, 0.0)), amount)
 	if building_id.is_empty():
 		return
 	var building_samples: Dictionary = _current_sample["buildings"]
@@ -216,6 +240,24 @@ func _get_building_window_totals(building_id: String, window_seconds: int) -> Di
 		_merge_amounts(totals["produced"], building_totals.get("produced", {}), sample_duration / SAMPLE_INTERVAL)
 		_merge_amounts(totals["consumed"], building_totals.get("consumed", {}), sample_duration / SAMPLE_INTERVAL)
 		_merge_amounts(totals["transferred"], building_totals.get("transferred", {}), sample_duration / SAMPLE_INTERVAL)
+		totals["covered_seconds"] += sample_duration
+		remaining -= sample_duration
+	return totals
+
+func _get_planet_window_totals(planet_id: String, window_seconds: int) -> Dictionary:
+	if planet_id.is_empty() or not SUPPORTED_WINDOWS.has(window_seconds):
+		return _empty_totals()
+	var totals := _empty_totals()
+	var remaining := float(window_seconds)
+	for index in range(_history.size() - 1, -1, -1):
+		if remaining <= 0.0:
+			break
+		var sample: Dictionary = _history[index]
+		var sample_duration := minf(SAMPLE_INTERVAL, remaining)
+		var planet_totals: Dictionary = sample.get("planets", {}).get(planet_id, {})
+		_merge_amounts(totals["produced"], planet_totals.get("produced", {}), sample_duration / SAMPLE_INTERVAL)
+		_merge_amounts(totals["consumed"], planet_totals.get("consumed", {}), sample_duration / SAMPLE_INTERVAL)
+		_merge_amounts(totals["transferred"], planet_totals.get("transferred", {}), sample_duration / SAMPLE_INTERVAL)
 		totals["covered_seconds"] += sample_duration
 		remaining -= sample_duration
 	return totals
@@ -263,7 +305,17 @@ func _finite_signed(value: float) -> float:
 func _empty_sample() -> Dictionary:
 	var sample := _empty_categories()
 	sample["buildings"] = {}
+	sample["planets"] = {}
 	return sample
+
+func _resolve_planet_id(entity_id: String, explicit_planet_id: String) -> String:
+	if not explicit_planet_id.is_empty():
+		return explicit_planet_id
+	if game_state.buildings.has(entity_id):
+		return String(game_state.buildings[entity_id].get("planet_id", game_state.active_planet_id))
+	if game_state.connections.has(entity_id):
+		return String(game_state.connections[entity_id].get("planet_id", game_state.active_planet_id))
+	return game_state.active_planet_id
 
 func _empty_categories() -> Dictionary:
 	return {"produced": {}, "consumed": {}, "transferred": {}}
