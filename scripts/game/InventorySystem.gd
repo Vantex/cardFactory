@@ -10,22 +10,26 @@ var game_state: GameState
 func _init(state: GameState) -> void:
 	game_state = state
 
-func try_add(item_id: String, amount: float) -> Dictionary:
+func get_planet_inventory(planet_id: String = "") -> Dictionary:
+	return game_state.planet_inventory if planet_id.is_empty() else game_state.get_planet_inventory(planet_id)
+
+func try_add(item_id: String, amount: float, planet_id: String = "") -> Dictionary:
 	var error := _validate_item_amount(item_id, amount)
 	if not error.is_empty():
 		return error
-	if not can_add_batch({item_id: amount}):
+	if not can_add_batch({item_id: amount}, planet_id):
 		return _failure("库存容量不足")
-	game_state.planet_inventory[item_id] = float(game_state.planet_inventory.get(item_id, 0.0)) + amount
+	var inventory := get_planet_inventory(planet_id)
+	inventory[item_id] = float(inventory.get(item_id, 0.0)) + amount
 	return _success("物资已加入行星托盘")
 
-func try_remove(item_id: String, amount: float) -> Dictionary:
+func try_remove(item_id: String, amount: float, planet_id: String = "") -> Dictionary:
 	var error := _validate_item_amount(item_id, amount)
 	if not error.is_empty():
 		return error
-	if not can_remove_batch({item_id: amount}):
+	if not can_remove_batch({item_id: amount}, planet_id):
 		return _failure("行星托盘物资不足")
-	_remove_without_validation(item_id, amount)
+	_remove_without_validation(item_id, amount, planet_id)
 	return _success("物资已从行星托盘取出")
 
 func try_pick_up(item_id: String, amount: float) -> Dictionary:
@@ -61,47 +65,51 @@ func try_put_down(amount: float) -> Dictionary:
 	game_state.cursor_payload = {"item_id": "", "amount": 0.0} if remaining <= AMOUNT_EPSILON else {"item_id": item_id, "amount": remaining}
 	return _success("光标物资已放回行星托盘")
 
-func can_add_batch(items: Dictionary) -> bool:
+func can_add_batch(items: Dictionary, planet_id: String = "") -> bool:
+	var inventory := get_planet_inventory(planet_id)
 	for item_key in items:
 		var item_id := String(item_key)
 		var amount := float(items[item_key])
 		if not _validate_item_amount(item_id, amount).is_empty():
 			return false
-		if float(game_state.planet_inventory.get(item_id, 0.0)) + amount > MAX_PLANET_STACK + AMOUNT_EPSILON:
+		if float(inventory.get(item_id, 0.0)) + amount > MAX_PLANET_STACK + AMOUNT_EPSILON:
 			return false
 	return true
 
-func can_remove_batch(items: Dictionary) -> bool:
+func can_remove_batch(items: Dictionary, planet_id: String = "") -> bool:
+	var inventory := get_planet_inventory(planet_id)
 	for item_key in items:
 		var item_id := String(item_key)
 		var amount := float(items[item_key])
 		if not _validate_item_amount(item_id, amount).is_empty():
 			return false
-		if float(game_state.planet_inventory.get(item_id, 0.0)) + AMOUNT_EPSILON < amount:
+		if float(inventory.get(item_id, 0.0)) + AMOUNT_EPSILON < amount:
 			return false
 	return true
 
-func try_add_batch(items: Dictionary) -> Dictionary:
-	if items.is_empty() or not can_add_batch(items):
+func try_add_batch(items: Dictionary, planet_id: String = "") -> Dictionary:
+	if items.is_empty() or not can_add_batch(items, planet_id):
 		return _failure("行星托盘容量不足或物资数量无效")
+	var inventory := get_planet_inventory(planet_id)
 	for item_key in items:
 		var item_id := String(item_key)
-		game_state.planet_inventory[item_id] = float(game_state.planet_inventory.get(item_id, 0.0)) + float(items[item_key])
+		inventory[item_id] = float(inventory.get(item_id, 0.0)) + float(items[item_key])
 	return _success("批量物资已加入行星托盘")
 
-func try_remove_batch(items: Dictionary) -> Dictionary:
-	if items.is_empty() or not can_remove_batch(items):
+func try_remove_batch(items: Dictionary, planet_id: String = "") -> Dictionary:
+	if items.is_empty() or not can_remove_batch(items, planet_id):
 		return _failure("行星托盘物资不足或数量无效")
 	for item_key in items:
-		_remove_without_validation(String(item_key), float(items[item_key]))
+		_remove_without_validation(String(item_key), float(items[item_key]), planet_id)
 	return _success("批量物资已从行星托盘取出")
 
-func _remove_without_validation(item_id: String, amount: float) -> void:
-	var remaining := maxf(float(game_state.planet_inventory.get(item_id, 0.0)) - amount, 0.0)
+func _remove_without_validation(item_id: String, amount: float, planet_id: String = "") -> void:
+	var inventory := get_planet_inventory(planet_id)
+	var remaining := maxf(float(inventory.get(item_id, 0.0)) - amount, 0.0)
 	if remaining <= AMOUNT_EPSILON:
-		game_state.planet_inventory.erase(item_id)
+		inventory.erase(item_id)
 	else:
-		game_state.planet_inventory[item_id] = remaining
+		inventory[item_id] = remaining
 
 func _validate_item_amount(item_id: String, amount: float) -> Dictionary:
 	if item_id.is_empty():

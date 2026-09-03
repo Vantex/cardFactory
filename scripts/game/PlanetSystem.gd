@@ -1,370 +1,189 @@
-# scripts/game/PlanetSystem.gd
 class_name PlanetSystem
 extends RefCounted
 
+const AMOUNT_EPSILON := 0.0000001
+
 var game_state: GameState
+var galaxy_system: GalaxySystem
 
-# 行星定义
-var planets: Dictionary = {}
+func _init(state: GameState, galaxy: GalaxySystem = null) -> void:
+	game_state = state
+	galaxy_system = galaxy if galaxy != null else GalaxySystem.new(state)
+	for planet_id_value in game_state.colonized_planet_ids:
+		var planet_id := String(planet_id_value)
+		var sites := galaxy_system.build_resource_sites_for_planet(planet_id, game_state.galaxy_seed)
+		for site_id in sites:
+			if not game_state.resource_sites.has(site_id):
+				game_state.resource_sites[site_id] = sites[site_id]
 
-func _init(state: GameState):
-    game_state = state
-    _load_planets()
-
-func _load_planets():
-    # 母星系
-    planets["home"] = {
-        "id": "home",
-        "name": "澄海 I",
-        "code": "母星",
-        "color": "#61b2aa",
-        "environment": "海洋型行星",
-        "resources": ["iron", "copper", "stone", "coal", "crude_oil", "water"],
-        "kind": "terrestrial",
-        "system_id": "helios",
-        "orbit_index": 1,
-        "solar_multiplier": 1.0,
-        "description": "工业网络的起点"
-    }
-    
-    planets["ashen"] = {
-        "id": "ashen",
-        "name": "烬原 II",
-        "code": "熔岩星",
-        "color": "#d8794d",
-        "environment": "熔岩型行星",
-        "resources": ["titanium", "silicon", "iron", "copper", "stone", "coal"],
-        "kind": "terrestrial",
-        "system_id": "helios",
-        "orbit_index": 2,
-        "solar_multiplier": 1.5,
-        "description": "高温熔岩行星"
-    }
-    
-    planets["giant"] = {
-        "id": "giant",
-        "name": "苍岚 III",
-        "code": "气态巨星",
-        "color": "#75a9bd",
-        "environment": "冰气态巨星",
-        "resources": ["hydrogen", "deuterium", "fire_ice"],
-        "kind": "gas_giant",
-        "system_id": "helios",
-        "orbit_index": 3,
-        "solar_multiplier": 0.0,
-        "description": "气态巨星，可采集氢和氘"
-    }
-    
-    # 冰原星系
-    planets["frost"] = {
-        "id": "frost",
-        "name": "霜原 I",
-        "code": "冰原星",
-        "color": "#91b8c4",
-        "environment": "永冻冰原行星",
-        "resources": ["iron", "copper", "titanium", "silicon", "fire_ice"],
-        "kind": "terrestrial",
-        "system_id": "borealis",
-        "orbit_index": 1,
-        "solar_multiplier": 0.8,
-        "description": "永冻冰原行星"
-    }
-    
-    # 中子星系
-    planets["magnetar"] = {
-        "id": "magnetar",
-        "name": "极夜 I",
-        "code": "磁暴星",
-        "color": "#a48ac2",
-        "environment": "中子星潮汐锁定行星",
-        "resources": ["iron", "copper", "titanium", "silicon", "unipolar_mag"],
-        "kind": "terrestrial",
-        "system_id": "neutron",
-        "orbit_index": 1,
-        "solar_multiplier": 0.45,
-        "description": "极端磁场环境"
-    }
-    
-    print("Loaded ", planets.size(), " planets")
-
-# === 行星系统功能（40个） ===
-
-# 1. 获取行星定义
 func get_planet(planet_id: String) -> Dictionary:
-    return planets.get(planet_id, {})
+	return galaxy_system.get_planet(planet_id)
 
-# 2. 获取所有行星
 func get_all_planets() -> Dictionary:
-    return planets
+	var planets: Dictionary = {}
+	for planet_id in galaxy_system.get_all_planet_ids():
+		planets[planet_id] = galaxy_system.get_planet(planet_id)
+	return planets
 
-# 3. 获取行星名称
 func get_planet_name(planet_id: String) -> String:
-    var planet = get_planet(planet_id)
-    return planet.get("name", "")
+	return String(get_planet(planet_id).get("name", ""))
 
-# 4. 获取行星代码
-func get_planet_code(planet_id: String) -> String:
-    var planet = get_planet(planet_id)
-    return planet.get("code", "")
-
-# 5. 获取行星颜色
-func get_planet_color(planet_id: String) -> String:
-    var planet = get_planet(planet_id)
-    return planet.get("color", "#ffffff")
-
-# 6. 获取行星环境
-func get_planet_environment(planet_id: String) -> String:
-    var planet = get_planet(planet_id)
-    return planet.get("environment", "")
-
-# 7. 获取行星资源
 func get_planet_resources(planet_id: String) -> Array:
-    var planet = get_planet(planet_id)
-    return planet.get("resources", [])
+	var items: Array = []
+	for site_value in get_planet(planet_id).get("resource_sites", []):
+		if site_value is Dictionary:
+			items.append(String(site_value.get("item_id", "")))
+	return items
 
-# 8. 获取行星类型
-func get_planet_kind(planet_id: String) -> String:
-    var planet = get_planet(planet_id)
-    return planet.get("kind", "")
-
-# 9. 获取行星所属星系
-func get_planet_system(planet_id: String) -> String:
-    var planet = get_planet(planet_id)
-    return planet.get("system_id", "")
-
-# 10. 获取行星轨道位置
-func get_planet_orbit_index(planet_id: String) -> int:
-    var planet = get_planet(planet_id)
-    return planet.get("orbit_index", 0)
-
-# 11. 获取行星光照倍率
-func get_planet_solar_multiplier(planet_id: String) -> float:
-    var planet = get_planet(planet_id)
-    return planet.get("solar_multiplier", 1.0)
-
-# 12. 获取行星描述
-func get_planet_description(planet_id: String) -> String:
-    var planet = get_planet(planet_id)
-    return planet.get("description", "")
-
-# 13. 检查行星是否有某种资源
-func planet_has_resource(planet_id: String, resource_id: String) -> bool:
-    var resources = get_planet_resources(planet_id)
-    return resource_id in resources
-
-# 14. 获取行星资源列表
-func get_planet_resource_list(planet_id: String) -> String:
-    var resources = get_planet_resources(planet_id)
-    return ", ".join(resources)
-
-# 15. 获取星系中的行星
 func get_planets_in_system(system_id: String) -> Array:
-    var result = []
-    for planet_id in planets:
-        if planets[planet_id].get("system_id") == system_id:
-            result.append(planet_id)
-    return result
+	return galaxy_system.get_system_planets(system_id)
 
-# 16. 获取所有星系ID
-func get_all_system_ids() -> Array:
-    var system_ids = []
-    for planet_id in planets:
-        var system_id = planets[planet_id].get("system_id")
-        if system_id not in system_ids:
-            system_ids.append(system_id)
-    return system_ids
-
-# 17. 检查行星是否为气态巨星
-func is_gas_giant(planet_id: String) -> bool:
-    return get_planet_kind(planet_id) == "gas_giant"
-
-# 18. 检查行星是否为陆地行星
-func is_terrestrial(planet_id: String) -> bool:
-    return get_planet_kind(planet_id) == "terrestrial"
-
-# 19. 获取行星信息摘要
-func get_planet_summary(planet_id: String) -> Dictionary:
-    var planet = get_planet(planet_id)
-    return {
-        "id": planet_id,
-        "name": planet.get("name", ""),
-        "kind": planet.get("kind", ""),
-        "environment": planet.get("environment", ""),
-        "resources": planet.get("resources", []),
-        "solar_multiplier": planet.get("solar_multiplier", 1.0)
-    }
-
-# 20. 获取所有行星列表
-func get_all_planet_ids() -> Array:
-    return planets.keys()
-
-# 21. 获取行星数量
-func get_planet_count() -> int:
-    return planets.size()
-
-# 22. 获取星系数量
-func get_system_count() -> int:
-    return get_all_system_ids().size()
-
-# 23. 检查行星是否存在
-func planet_exists(planet_id: String) -> bool:
-    return planets.has(planet_id)
-
-# 24. 获取母星
-func get_home_planet() -> String:
-    return "home"
-
-# 25. 获取行星资源数量
-func get_planet_resource_count(planet_id: String) -> int:
-    return get_planet_resources(planet_id).size()
-
-# 26. 获取行星工业能力
-func get_planet_industrial_capacity(planet_id: String) -> float:
-    var resources = get_planet_resources(planet_id)
-    var capacity = 0.0
-    for resource in resources:
-        if resource in ["iron", "copper", "titanium", "silicon"]:
-            capacity += 1.0
-    return capacity
-
-# 27. 获取行星能源能力
-func get_planet_energy_capacity(planet_id: String) -> float:
-    var solar = get_planet_solar_multiplier(planet_id)
-    var resources = get_planet_resources(planet_id)
-    var capacity = solar
-    if "coal" in resources:
-        capacity += 0.5
-    if "crude_oil" in resources:
-        capacity += 0.3
-    return capacity
-
-# 28. 获取行星宜居性
-func get_planet_habitability(planet_id: String) -> float:
-    var environment = get_planet_environment(planet_id)
-    if "海洋" in environment or "草原" in environment:
-        return 1.0
-    elif "冰" in environment or "沙漠" in environment:
-        return 0.7
-    elif "熔岩" in environment or "火山" in environment:
-        return 0.3
-    else:
-        return 0.5
-
-# 29. 获取行星探索成本
-func get_planet_exploration_cost(planet_id: String) -> Dictionary:
-    var orbit = get_planet_orbit_index(planet_id)
-    return {"space_warper": orbit}
-
-# 30. 获取行星殖民成本
-func get_planet_colonization_cost(planet_id: String) -> Dictionary:
-    return {"building": 10, "resource": 100}
-
-# 31. 获取行星列表按星系
-func get_planets_grouped_by_system() -> Dictionary:
-    var grouped = {}
-    for planet_id in planets:
-        var system_id = planets[planet_id].get("system_id", "")
-        if not grouped.has(system_id):
-            grouped[system_id] = []
-        grouped[system_id].append(planet_id)
-    return grouped
-
-# 32. 获取行星颜色值
-func get_planet_color_value(planet_id: String) -> Color:
-    var color_hex = get_planet_color(planet_id)
-    return Color.html(color_hex)
-
-# 33. 获取行星图标
-func get_planet_icon(planet_id: String) -> String:
-    var kind = get_planet_kind(planet_id)
-    if kind == "gas_giant":
-        return "🪐"
-    else:
-        return "🌍"
-
-# 34. 获取行星资源图标
-func get_resource_icon(resource_id: String) -> String:
-    var icons = {
-        "iron": "⛏️",
-        "copper": "⛏️",
-        "coal": "�ite",
-        "stone": "🪨",
-        "crude_oil": "⛽",
-        "water": "💧",
-        "titanium": "⛏️",
-        "silicon": "⛏️",
-        "hydrogen": "💨",
-        "deuterium": "💨",
-        "fire_ice": "🔥",
-        "unipolar_mag": "🧲"
-    }
-    return icons.get(resource_id, "❓")
-
-# 35. 获取行星信息格式化
-func get_planet_info_formatted(planet_id: String) -> String:
-    var planet = get_planet(planet_id)
-    var info = ""
-    info += "名称: %s\n" % planet.get("name", "")
-    info += "类型: %s\n" % planet.get("kind", "")
-    info += "环境: %s\n" % planet.get("environment", "")
-    info += "资源: %s\n" % get_planet_resource_list(planet_id)
-    info += "光照: %.1fx\n" % planet.get("solar_multiplier", 1.0)
-    info += "描述: %s" % planet.get("description", "")
-    return info
-
-# 36. 获取行星列表格式化
-func get_planet_list_formatted() -> String:
-    var list = ""
-    for planet_id in planets:
-        var planet = planets[planet_id]
-        list += "%s - %s (%s)\n" % [planet.get("name", ""), planet.get("code", ""), planet.get("system_id", "")]
-    return list
-
-# 37. 获取星系列表格式化
-func get_system_list_formatted() -> String:
-    var systems = get_planets_grouped_by_system()
-    var list = ""
-    for system_id in systems:
-        var planets_in_system = systems[system_id]
-        list += "星系 %s: %d个行星\n" % [system_id, planets_in_system.size()]
-    return list
-
-# 38. 获取行星统计
 func get_planet_statistics() -> Dictionary:
-    var stats = {
-        "total_planets": get_planet_count(),
-        "total_systems": get_system_count(),
-        "terrestrial_count": 0,
-        "gas_giant_count": 0,
-        "resource_distribution": {}
-    }
-    
-    for planet_id in planets:
-        var planet = planets[planet_id]
-        if planet.get("kind") == "terrestrial":
-            stats.terrestrial_count += 1
-        elif planet.get("kind") == "gas_giant":
-            stats.gas_giant_count += 1
-        
-        for resource in planet.get("resources", []):
-            if not stats.resource_distribution.has(resource):
-                stats.resource_distribution[resource] = 0
-            stats.resource_distribution[resource] += 1
-    
-    return stats
+	var terrestrial := 0
+	var gas_giant := 0
+	for planet_id in galaxy_system.get_all_planet_ids():
+		if String(get_planet(planet_id).get("kind", "")) == "gas_giant":
+			gas_giant += 1
+		else:
+			terrestrial += 1
+	return {"total_planets": galaxy_system.get_all_planet_ids().size(), "total_systems": galaxy_system.get_all_system_ids().size(), "terrestrial_count": terrestrial, "gas_giant_count": gas_giant}
 
-# 39. 获取推荐开发行星
-func get_recommended_planets() -> Array:
-    var recommended = []
-    for planet_id in planets:
-        var planet = planets[planet_id]
-        var resources = planet.get("resources", [])
-        if "iron" in resources and "copper" in resources:
-            recommended.append(planet_id)
-    return recommended
+func get_planet_buildings(planet_id: String) -> Array:
+	var buildings: Array = []
+	for building_id in game_state.buildings.keys():
+		var building: Dictionary = game_state.buildings[building_id]
+		if String(building.get("planet_id", "")) == planet_id:
+			buildings.append(building.duplicate(true))
+	buildings.sort_custom(func(left: Dictionary, right: Dictionary) -> bool: return String(left.get("id", "")) < String(right.get("id", "")))
+	return buildings
 
-# 40. 重置行星系统
-func reset():
-    planets.clear()
-    _load_planets()
-    print("Planet system reset")
+func get_planet_connections(planet_id: String) -> Array:
+	var connections: Array = []
+	for connection_id in game_state.connections.keys():
+		var connection: Dictionary = game_state.connections[connection_id]
+		if String(connection.get("planet_id", "")) == planet_id:
+			connections.append(connection.duplicate(true))
+	connections.sort_custom(func(left: Dictionary, right: Dictionary) -> bool: return String(left.get("id", "")) < String(right.get("id", "")))
+	return connections
+
+func get_planet_resource_sites(planet_id: String) -> Array:
+	var sites: Array = []
+	for site_id in game_state.resource_sites.keys():
+		var site: Dictionary = game_state.resource_sites[site_id]
+		if String(site.get("planet_id", "")) == planet_id:
+			sites.append(site.duplicate(true))
+	sites.sort_custom(func(left: Dictionary, right: Dictionary) -> bool: return String(left.get("id", "")) < String(right.get("id", "")))
+	return sites
+
+func get_colonization_requirements(planet_id: String) -> Dictionary:
+	var planet := get_planet(planet_id)
+	if planet.is_empty():
+		return {}
+	var materials: Dictionary = {}
+	var vehicles: Dictionary = {}
+	for cost_value in planet.get("colonization_cost", []):
+		if not cost_value is Dictionary:
+			continue
+		var item_id := String(cost_value.get("item_id", ""))
+		var amount := float(cost_value.get("amount", 0.0))
+		if item_id.begins_with("logistics_"):
+			vehicles[item_id] = amount
+		else:
+			materials[item_id] = amount
+	return {"planet_id": planet_id, "materials": materials, "vehicles": vehicles, "required_technology_id": String(planet.get("required_technology_id", "")), "system_id": String(planet.get("system_id", ""))}
+
+func try_colonize_planet(planet_id: String) -> Dictionary:
+	var planet := get_planet(planet_id)
+	if planet.is_empty():
+		return _failure("unknown_planet", "目标行星不存在")
+	if game_state.colonized_planet_ids.has(planet_id):
+		return _failure("already_colonized", "目标行星已殖民")
+	var system_id := String(planet.get("system_id", ""))
+	if not game_state.explored_system_ids.has(system_id):
+		return _failure("system_locked", "目标星系尚未探索")
+	var required_technology := String(planet.get("required_technology_id", ""))
+	if not required_technology.is_empty() and not game_state.completed_technologies.has(required_technology):
+		return _failure("technology_locked", "缺少殖民所需科技")
+	game_state.sync_active_planet_inventory()
+	var requirements := get_colonization_requirements(planet_id)
+	var source_inventory: Dictionary = game_state.get_active_planet_inventory().duplicate(true)
+	var fleet: Dictionary = game_state.portable_fleet.duplicate(true)
+	for vehicle_id_value in requirements["vehicles"]:
+		var vehicle_id := String(vehicle_id_value)
+		if float(fleet.get(vehicle_id, 0.0)) + AMOUNT_EPSILON < float(requirements["vehicles"][vehicle_id]):
+			return _failure("missing_vehicle", "全局物流载具不足", {"item_id": vehicle_id, "required": requirements["vehicles"][vehicle_id]})
+	for item_id_value in requirements["materials"]:
+		var item_id := String(item_id_value)
+		if float(source_inventory.get(item_id, 0.0)) + AMOUNT_EPSILON < float(requirements["materials"][item_id]):
+			return _failure("missing_materials", "活动行星材料不足", {"item_id": item_id, "required": requirements["materials"][item_id]})
+	for vehicle_id_value in requirements["vehicles"]:
+		var vehicle_id := String(vehicle_id_value)
+		fleet[vehicle_id] = float(fleet.get(vehicle_id, 0.0)) - float(requirements["vehicles"][vehicle_id])
+	for item_id_value in requirements["materials"]:
+		var item_id := String(item_id_value)
+		var remaining := float(source_inventory.get(item_id, 0.0)) - float(requirements["materials"][item_id])
+		if remaining <= AMOUNT_EPSILON:
+			source_inventory.erase(item_id)
+		else:
+			source_inventory[item_id] = remaining
+	var sites := galaxy_system.build_resource_sites_for_planet(planet_id, game_state.galaxy_seed)
+	game_state.planet_inventories[game_state.active_planet_id] = source_inventory
+	game_state.planet_inventory = source_inventory
+	game_state.portable_fleet = fleet
+	game_state.colonized_planet_ids.append(planet_id)
+	game_state.planet_inventories[planet_id] = {}
+	game_state.planet_viewports[planet_id] = {"position": Vector2.ZERO, "zoom": Vector2.ONE}
+	game_state.planet_metrics[planet_id] = {}
+	for site_id in sites:
+		game_state.resource_sites[site_id] = sites[site_id]
+	return _success("行星殖民完成", {"planet_id": planet_id})
+
+func try_set_active_planet(planet_id: String) -> Dictionary:
+	if get_planet(planet_id).is_empty():
+		return _failure("unknown_planet", "目标行星不存在")
+	if not game_state.colonized_planet_ids.has(planet_id):
+		return _failure("not_colonized", "目标行星尚未殖民")
+	if not game_state.set_active_planet(planet_id):
+		return _failure("not_colonized", "目标行星没有可用托盘")
+	return _success("已切换活动行星", {"planet_id": planet_id})
+
+func try_bind_extractor(building_id: String, resource_site_id: String) -> Dictionary:
+	if not game_state.buildings.has(building_id):
+		return _failure("unknown_building", "采集建筑不存在")
+	var building: Dictionary = game_state.buildings[building_id]
+	var definition := DataManager.get_building(String(building.get("type", "")))
+	if String(definition.get("kind", "")) != "extractor":
+		return _failure("invalid_extractor", "建筑不是采集器")
+	var site: Variant = game_state.resource_sites.get(resource_site_id)
+	if not site is Dictionary or String(site.get("planet_id", "")) != String(building.get("planet_id", "")):
+		return _failure("invalid_resource_site", "资源点不属于建筑所在行星")
+	var output_item := String(building.get("output_item", definition.get("extraction", {}).get("item_id", "")))
+	if String(site.get("item_id", "")) != output_item:
+		return _failure("resource_mismatch", "资源点物品与采集器不匹配")
+	if not bool(site.get("infinite", false)) and float(site.get("remaining", 0.0)) <= AMOUNT_EPSILON:
+		return _failure("resource_depleted", "资源点已耗尽")
+	building["resource_site_id"] = resource_site_id
+	game_state.buildings[building_id] = building
+	return _success("采集器已绑定资源点", {"building_id": building_id, "resource_site_id": resource_site_id})
+
+func find_nearest_resource_site(planet_id: String, item_id: String, position: Vector2) -> Dictionary:
+	var best: Dictionary = {}
+	var best_distance := INF
+	for site in get_planet_resource_sites(planet_id):
+		if String(site.get("item_id", "")) != item_id or (not bool(site.get("infinite", false)) and float(site.get("remaining", 0.0)) <= AMOUNT_EPSILON):
+			continue
+		var distance := position.distance_squared_to(site.get("position", Vector2.ZERO))
+		if distance < best_distance - AMOUNT_EPSILON or (is_equal_approx(distance, best_distance) and (best.is_empty() or String(site.get("id", "")) < String(best.get("id", "")))):
+			best = site
+			best_distance = distance
+	return best
+
+func get_planet_industrial_summary(planet_id: String) -> Dictionary:
+	var buildings := get_planet_buildings(planet_id)
+	return {"planet_id": planet_id, "building_count": buildings.size(), "connection_count": get_planet_connections(planet_id).size(), "resource_site_count": get_planet_resource_sites(planet_id).size(), "inventory": game_state.get_planet_inventory(planet_id).duplicate(true)}
+
+func _success(message: String, details: Dictionary = {}) -> Dictionary:
+	return {"ok": true, "reason": "", "message": message, "details": details}
+
+func _failure(reason: String, message: String, details: Dictionary = {}) -> Dictionary:
+	return {"ok": false, "reason": reason, "message": message, "details": details}

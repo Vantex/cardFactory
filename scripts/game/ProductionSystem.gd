@@ -76,12 +76,27 @@ func _update_extractor(building: Dictionary, building_definition: Dictionary, de
 	var output_buffer: Dictionary = building.get("output_buffer", {})
 	var current_amount := float(output_buffer.get(output_item, 0.0))
 	var capacity := _get_buffer_capacity(building, building_definition, "output")
-	var next_amount := minf(current_amount + output_rate * delta * speed * power_efficiency * game_state.get_technology_effect_multiplier("production_speed"), capacity)
+	var produced := minf(output_rate * delta * speed * power_efficiency * game_state.get_technology_effect_multiplier("production_speed"), capacity - current_amount)
+	var resource_site_id := String(building.get("resource_site_id", ""))
+	if not resource_site_id.is_empty():
+		var site: Variant = game_state.resource_sites.get(resource_site_id)
+		if not site is Dictionary or String(site.get("planet_id", "")) != String(building.get("planet_id", "")) or String(site.get("item_id", "")) != output_item:
+			building["status"] = "resource_depleted"
+			return
+		if not bool(site.get("infinite", false)):
+			var remaining := maxf(float(site.get("remaining", 0.0)), 0.0)
+			if remaining <= PROGRESS_EPSILON:
+				building["status"] = "resource_depleted"
+				return
+			produced = minf(produced, remaining)
+			site["remaining"] = maxf(remaining - produced, 0.0)
+			game_state.resource_sites[resource_site_id] = site
+	var next_amount := current_amount + produced
 	output_buffer[output_item] = next_amount
 	building["output_buffer"] = output_buffer
 	if statistics_system != null:
-		statistics_system.record_produced(output_item, next_amount - current_amount, String(building.get("id", "")))
-	building["status"] = "blocked" if current_amount >= capacity else "running"
+		statistics_system.record_produced(output_item, produced, String(building.get("id", "")))
+	building["status"] = "blocked" if current_amount >= capacity else ("resource_depleted" if not resource_site_id.is_empty() and not bool(game_state.resource_sites.get(resource_site_id, {}).get("infinite", false)) and float(game_state.resource_sites.get(resource_site_id, {}).get("remaining", 0.0)) <= PROGRESS_EPSILON else "running")
 
 func _has_required_inputs(building: Dictionary, recipe: Dictionary) -> bool:
 	var input_buffer: Dictionary = building.get("input_buffer", {})

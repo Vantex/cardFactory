@@ -7,6 +7,8 @@ func _ready() -> void:
 	_test_catalog_is_strict_and_deterministic()
 	_test_v5_migration_is_lossless()
 	_test_v6_ownership_and_validator_boundaries()
+	_test_planet_commands_are_atomic()
+	_test_resource_sites_bind_and_deplete()
 	if _failures > 0:
 		printerr("GALAXY LOGISTICS TESTS FAILED")
 		get_tree().quit(1)
@@ -121,6 +123,62 @@ func _test_v6_ownership_and_validator_boundaries() -> void:
 	var exploration_errors := _error_codes(GameStateValidator.validate_persistent_dict(exploration_payload))
 	_expect(exploration_errors.has("invalid_exploration_mission"), "validator rejects exploration missions for explored systems")
 	_expect(exploration_errors.has("invalid_survey_progress"), "validator rejects survey progress for unknown systems")
+
+func _test_planet_commands_are_atomic() -> void:
+	var state := GameState.new()
+	var planets := PlanetSystem.new(state)
+	_expect(planets.try_colonize_planet("unknown").get("reason") == "unknown_planet", "unknown planets have a stable rejection")
+	_expect(planets.try_colonize_planet("frost").get("reason") == "system_locked", "unexplored systems are locked")
+	state.explored_system_ids.append("borealis")
+	_expect(planets.try_colonize_planet("frost").get("reason") == "technology_locked", "planet technology gates colonization")
+	state.completed_technologies.append("interstellar_logistics")
+	state.planet_inventory = {"titanium_alloy": 2.0}
+	var before_vehicle := GameStateCodec.state_digest_payload(state)
+	_expect(planets.try_colonize_planet("frost").get("reason") == "missing_vehicle", "vehicle shortages have a stable rejection")
+	_expect(GameStateCodec.state_digest_payload(state) == before_vehicle, "vehicle rejection leaves every persisted field unchanged")
+	state.portable_fleet["logistics_vessel"] = 1.0
+	state.planet_inventory = {}
+	_expect(planets.try_colonize_planet("frost").get("reason") == "missing_materials", "active planet materials pay colonization costs")
+	state.planet_inventory = {"titanium_alloy": 2.0}
+	var fleet_before := float(state.portable_fleet["logistics_vessel"])
+	var colonize: Dictionary = planets.try_colonize_planet("frost")
+	_expect(colonize["ok"], "ready planet colonizes")
+	_expect(state.colonized_planet_ids.has("frost"), "target becomes colonized")
+	_expect(state.planet_inventories.has("frost"), "target tray initializes")
+	_expect(state.planet_viewports.has("frost"), "target viewport initializes")
+	_expect(float(state.portable_fleet["logistics_vessel"]) == fleet_before - 1.0, "vehicle is charged once")
+	_expect(planets.try_colonize_planet("frost").get("reason") == "already_colonized", "colonized planets cannot be colonized twice")
+	_expect(planets.try_set_active_planet("ashen").get("reason") == "not_colonized", "uncolonized planets cannot become active")
+	_expect(planets.try_set_active_planet("frost")["ok"], "colonized target becomes active")
+	_expect(state.active_planet_id == "frost", "authority records the active planet")
+
+func _test_resource_sites_bind_and_deplete() -> void:
+	var state := GameState.new()
+	var planets := PlanetSystem.new(state)
+	state.explored_system_ids.append("borealis")
+	state.completed_technologies.append("interstellar_logistics")
+	state.planet_inventory = {"titanium_alloy": 2.0}
+	state.portable_fleet["logistics_vessel"] = 1.0
+	planets.try_colonize_planet("frost")
+	var home_miner := state.add_building({"type": "miner", "planet_id": "home", "position": Vector2(-470, -250), "output_item": "iron_ore", "input_buffer": {}, "output_buffer": {}})
+	_expect(planets.try_bind_extractor(home_miner, "frost_iron_1").get("reason") == "invalid_resource_site", "cross-planet resource sites cannot bind")
+	_expect(planets.try_bind_extractor(home_miner, "home_copper_1").get("reason") == "resource_mismatch", "extractors only bind matching resources")
+	state.resource_sites["home_iron_1"]["remaining"] = 0.0
+	_expect(planets.try_bind_extractor(home_miner, "home_iron_1").get("reason") == "resource_depleted", "empty finite sites reject bindings")
+	state.resource_sites["home_iron_1"]["remaining"] = 1.0
+	_expect(planets.try_bind_extractor(home_miner, "home_iron_1")["ok"], "matching live resource sites bind")
+	var production := ProductionSystem.new(state)
+	var before := float(state.resource_sites["home_iron_1"]["remaining"])
+	var output_before := float(state.buildings[home_miner]["output_buffer"].get("iron_ore", 0.0))
+	production.update(60.0)
+	var produced := float(state.buildings[home_miner]["output_buffer"].get("iron_ore", 0.0)) - output_before
+	_expect(is_equal_approx(float(state.resource_sites["home_iron_1"]["remaining"]), before - produced), "actual output depletes the reserve")
+	_expect(float(state.resource_sites["home_iron_1"]["remaining"]) >= 0.0, "reserve never becomes negative")
+	var water_miner := state.add_building({"type": "miner", "planet_id": "home", "position": Vector2(0, -360), "output_item": "water", "input_buffer": {}, "output_buffer": {}})
+	_expect(planets.try_bind_extractor(water_miner, "home_water_1")["ok"], "infinite water sites bind")
+	var water_before := float(state.resource_sites["home_water_1"]["remaining"])
+	production.update(60.0)
+	_expect(float(state.resource_sites["home_water_1"]["remaining"]) == water_before, "infinite water remains unchanged after production")
 
 func _prepare_ashen(state: GameState) -> void:
 	state.colonized_planet_ids.append("ashen")

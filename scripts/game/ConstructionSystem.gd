@@ -30,6 +30,14 @@ func try_place_building(building_type: String, position: Vector2) -> Dictionary:
 			return _failure("建筑卡片重叠")
 	if not _has_construction_item(building_type):
 		return _failure("缺少%s施工件" % building_definition.get("name", building_type))
+	var resource_site_id := ""
+	var extraction: Dictionary = building_definition.get("extraction", {})
+	if building_definition.get("kind", "") == "extractor":
+		var output_item := String(extraction.get("item_id", ""))
+		var nearest := PlanetSystem.new(game_state).find_nearest_resource_site(game_state.active_planet_id, output_item, position)
+		if nearest.is_empty():
+			return _failure("附近没有可用资源点")
+		resource_site_id = String(nearest.get("id", ""))
 
 	_consume_construction_item(building_type)
 	var building_data := {
@@ -41,10 +49,11 @@ func try_place_building(building_type: String, position: Vector2) -> Dictionary:
 		"input_buffer": {},
 		"output_buffer": {},
 		"speed": building_definition.get("speed", 1.0),
+		"planet_id": game_state.active_planet_id,
 	}
-	var extraction: Dictionary = building_definition.get("extraction", {})
 	if building_definition.get("kind", "") == "extractor":
 		building_data["output_item"] = String(extraction.get("item_id", ""))
+		building_data["resource_site_id"] = resource_site_id
 	var fuel_rule: Dictionary = building_definition.get("fuel", {})
 	if not fuel_rule.is_empty():
 		var fuel_item := String(fuel_rule.get("item_id", ""))

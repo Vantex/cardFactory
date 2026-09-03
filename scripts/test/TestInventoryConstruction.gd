@@ -17,6 +17,7 @@ func _ready() -> void:
 		_test_planet_inventory_is_atomic_and_bounded()
 		_test_cursor_payload_preserves_ownership()
 		_test_construction_consumes_and_refunds_real_items()
+		_test_extractor_placement_binds_active_planet_site()
 		_test_handcraft_preview_queue_and_persistence()
 		_test_legacy_points_migrate_into_construction_inventory()
 		await _test_workspace_inventory_contract()
@@ -141,6 +142,16 @@ func _test_construction_consumes_and_refunds_real_items() -> void:
 	_expect(fuel_construction.try_remove_building(generator_id).get("ok", false), "a fueled generator can be safely dismantled")
 	_expect(fuel_state.get("planet_inventory").get("coal", 0.0) == 10.0, "dismantling refunds the generator's unburned startup fuel")
 
+func _test_extractor_placement_binds_active_planet_site() -> void:
+	var state := GameState.new()
+	state.construction_inventory = {"miner": 1.0}
+	var construction: RefCounted = _construction_script.new(state)
+	var result: Dictionary = construction.try_place_building("miner", Vector2(-470, -250))
+	var building: Dictionary = state.buildings.get(String(result.get("id", "")), {})
+	_expect(result.get("ok", false), "a miner can be placed on the active home planet")
+	_expect(building.get("planet_id", "") == "home", "construction records the active planet as building ownership")
+	_expect(building.get("resource_site_id", "") == "home_iron_1", "extractor placement chooses the nearest compatible resource site")
+
 func _test_handcraft_preview_queue_and_persistence() -> void:
 	var state := GameState.new()
 	state.set("planet_inventory", {"iron_ingot": 3.0})
@@ -203,7 +214,7 @@ func _test_legacy_points_migrate_into_construction_inventory() -> void:
 	var migrated: Dictionary = migration.get("data", {})
 	_expect(not migrated.has("construction_points"), "legacy construction points are removed after migration")
 	_expect(migrated.get("construction_inventory", {}).get("legacy_credit") == 7.0, "legacy construction value is preserved as migration-only construction credit")
-	_expect(migrated.get("planet_inventory") is Dictionary and migrated.get("cursor_payload") == {"item_id": "", "amount": 0.0} and migrated.get("handcraft_queue") == [], "migration installs every new authoritative inventory field")
+	_expect(migrated.get("planet_inventories", {}).get("home") is Dictionary and migrated.get("cursor_payload") == {"item_id": "", "amount": 0.0} and migrated.get("handcraft_queue") == [], "migration installs every new authoritative inventory field")
 
 func _test_workspace_inventory_contract() -> void:
 	var state := GameState.new()
