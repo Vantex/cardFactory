@@ -373,6 +373,13 @@ func _test_active_planet_projection_and_input_guards() -> void:
 	_expect(move_rejected and state.buildings[home_source].position == Vector2(100, 100), "input rejects dragging an inactive building")
 	input_handler.call("start_connection", home_source)
 	_expect(input_handler.call("get_mode_name") == "idle", "input rejects starting a connection from an inactive building")
+	var line_start_digest := GameStateCodec.state_digest_payload(state)
+	var construction_before_line_start := state.construction_inventory.duplicate(true)
+	var next_id_before_line_start: int = state._next_id
+	var line_started := bool(input_handler.call("start_connection", frost_belt))
+	_expect(not line_started and input_handler.call("get_mode_name") == "idle" and String(input_handler.get("connecting_source_id")).is_empty(), "input rejects an active connection ID as a connection source without changing mode")
+	_expect(GameStateCodec.state_digest_payload(state) == line_start_digest and state.construction_inventory == construction_before_line_start and state._next_id == next_id_before_line_start, "rejected connection-line source preserves the digest, construction inventory, and stable ID sequence")
+	input_handler.call("cancel_operation")
 	input_handler.call("start_connection", frost_source)
 	var cross_active_rejected := not bool(input_handler.call("complete_connection", home_target))
 	_expect(cross_active_rejected and not state.connections.has("connection_from_inactive"), "input rejects completing a connection through an inactive target ID")

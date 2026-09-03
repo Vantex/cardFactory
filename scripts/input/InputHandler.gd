@@ -168,7 +168,8 @@ func start_placing_card(building_type: String) -> void:
 	queue_redraw()
 
 func start_connection(source_id: String) -> bool:
-	if source_id.is_empty() or not _is_active_entity(source_id):
+	var state := GameManager.get_game_state()
+	if source_id.is_empty() or not state.buildings.has(source_id) or not _is_active_entity(source_id):
 		return false
 	placing_building_type = ""
 	connecting_source_id = source_id

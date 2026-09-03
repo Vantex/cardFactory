@@ -16,7 +16,9 @@ func capture_selection(selected_entity_ids: Array) -> Dictionary:
 	for id_value in selected_entity_ids:
 		var entity_id := String(id_value)
 		var selected_entity: Dictionary = game_state.buildings.get(entity_id, game_state.connections.get(entity_id, {}))
-		if not selected_entity.is_empty() and String(selected_entity.get("planet_id", "")) != game_state.active_planet_id:
+		if selected_entity.is_empty():
+			return _failure("invalid_reference", "蓝图选择包含不存在的实体")
+		if String(selected_entity.get("planet_id", "")) != game_state.active_planet_id:
 			return _failure("inactive_entity", "蓝图只能捕获活动行星实体")
 		if not game_state.buildings.has(entity_id):
 			continue
