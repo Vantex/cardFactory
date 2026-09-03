@@ -14,6 +14,7 @@ func _ready() -> void:
 		_test_atomic_deployment_failures(blueprint_script)
 		_test_semantic_deployment_validation(blueprint_script)
 		_test_line_configuration_round_trip(blueprint_script, codec_script)
+		_test_active_planet_capture_and_deployment(blueprint_script)
 		_test_repeated_paste(blueprint_script)
 		_test_restricted_codec(codec_script)
 		await _test_workspace_intents_and_import(codec_script)
@@ -192,6 +193,41 @@ func _test_line_configuration_round_trip(blueprint_script: Script, codec_script:
 	var deployed: Dictionary = blueprint_script.new(target_state).deploy(decoded.blueprint, Vector2.ZERO)
 	var deployed_line: Dictionary = target_state.connections[deployed.connection_ids[0]] if deployed.get("ok", false) else {}
 	_expect(deployed.get("ok", false) and deployed_line.route_offset_y == 33.0 and deployed_line.monitor_enabled and not deployed_line.enabled and deployed_line.current_flow == 0.0 and not deployed_line.active and deployed_line.get("in_transit", []).is_empty(), "deployment restores persistent line configuration with fresh runtime state")
+
+func _test_active_planet_capture_and_deployment(blueprint_script: Script) -> void:
+	var state := GameState.new()
+	state.explored_system_ids.append("borealis")
+	state.colonized_planet_ids.append("frost")
+	state.planet_inventories["frost"] = {}
+	state.planet_viewports["frost"] = {"position": Vector2.ZERO, "zoom": Vector2.ONE}
+	state.planet_metrics["frost"] = {}
+	var home_source := _add_building(state, "miner", Vector2(100, 100), {"planet_id": "home", "output_item": "iron_ore"})
+	var home_target := _add_building(state, "smelter", Vector2(500, 100), {"planet_id": "home", "recipe_id": "iron_ingot_recipe"})
+	var frost_source := _add_building(state, "miner", Vector2(100, 100), {"planet_id": "frost", "output_item": "iron_ore"})
+	var frost_target := _add_building(state, "smelter", Vector2(500, 100), {"planet_id": "frost", "recipe_id": "iron_ingot_recipe"})
+	var home_belt := state.add_connection({"source_id": home_source, "target_id": home_target, "planet_id": "home", "type": "conveyor_belt_mk1", "item_id": "iron_ore"})
+	state.add_connection({"source_id": frost_source, "target_id": frost_target, "planet_id": "frost", "type": "conveyor_belt_mk1", "item_id": "iron_ore"})
+	_add_building(state, "miner", Vector2(900, 100), {"planet_id": "home"})
+	_add_building(state, "smelter", Vector2(1300, 100), {"planet_id": "home"})
+	state.set_active_planet("frost")
+	var system = blueprint_script.new(state)
+	var before := GameStateCodec.state_digest_payload(state)
+	var inactive: Dictionary = system.capture_selection([home_source])
+	var mixed: Dictionary = system.capture_selection([frost_source, home_target])
+	var mixed_line: Dictionary = system.capture_selection([frost_source, home_belt])
+	_expect(not inactive.get("ok", true) and inactive.get("reason", "") == "inactive_entity", "blueprint capture rejects an inactive building ID")
+	_expect(not mixed.get("ok", true) and mixed.get("reason", "") == "inactive_entity", "blueprint capture rejects mixed-planet entity IDs atomically")
+	_expect(not mixed_line.get("ok", true) and mixed_line.get("reason", "") == "inactive_entity", "blueprint capture rejects an inactive line ID mixed into the request")
+	_expect(GameStateCodec.state_digest_payload(state) == before, "rejected inactive blueprint capture leaves the persisted digest unchanged")
+	var captured: Dictionary = system.capture_selection([frost_source, frost_target])
+	_expect(captured.get("ok", false) and captured.blueprint.connections.size() == 1, "blueprint capture accepts one complete active-planet graph")
+	state.construction_inventory = {"miner": 1.0, "smelter": 1.0, "conveyor_belt_mk1": 1.0}
+	var deployed: Dictionary = system.deploy(captured.get("blueprint", {}), Vector2(900, 100))
+	var deployed_entities: Array = deployed.get("entity_ids", [])
+	var deployed_connections: Array = deployed.get("connection_ids", [])
+	_expect(deployed.get("ok", false), "blueprint deployment may overlap another planet on the active canvas")
+	if deployed.get("ok", false):
+		_expect(deployed_entities.all(func(entity_id): return state.buildings[entity_id].get("planet_id", "") == "frost") and deployed_connections.all(func(connection_id): return state.connections[connection_id].get("planet_id", "") == "frost"), "blueprint deployment assigns every new entity and line to the active planet")
 
 func _test_restricted_codec(codec_script: Script) -> void:
 	var codec = codec_script.new()

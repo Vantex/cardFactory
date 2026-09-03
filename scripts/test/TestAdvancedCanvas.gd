@@ -19,6 +19,7 @@ func _ready() -> void:
 	_test_belt_priority_controls_contention()
 	_test_legacy_v2_defaults_and_persistence()
 	_test_connected_network_results_preserve_runtime_state()
+	await _test_active_planet_projection_and_input_guards()
 	await _test_advanced_inspector_and_renderer_contract()
 	if _failures > 0:
 		printerr("ADVANCED CANVAS TESTS FAILED")
@@ -283,7 +284,7 @@ func _test_legacy_v2_defaults_and_persistence() -> void:
 	_expect(not payload.has("selected_entity_ids"), "workspace selection remains absent from schema-v2 persistence")
 	var restored := GameStateCodec.from_persistent_dict(payload)
 	var restored_config: Dictionary = restored.call("get_belt_configuration", belt_id) if restored != null else {}
-	_expect(restored != null and restored.get_state_version() == 5 and restored_config.get("tier") == "conveyor_belt_mk2" and restored_config.get("parallel_count") == 2 and restored_config.get("stack_size") == 2 and restored_config.get("route_mode") == "manual" and restored_config.get("route_offset_y") == 24.0 and restored_config.get("enabled") == false, "new line fields round-trip through the current schema version")
+	_expect(restored != null and restored.get_state_version() == 6 and restored_config.get("tier") == "conveyor_belt_mk2" and restored_config.get("parallel_count") == 2 and restored_config.get("stack_size") == 2 and restored_config.get("route_mode") == "manual" and restored_config.get("route_offset_y") == 24.0 and restored_config.get("enabled") == false, "new line fields round-trip through the current schema version")
 	var legacy_state := GameState.new()
 	var legacy_source_id := _add_building(legacy_state, "legacy_source", "miner", Vector2.ZERO)
 	var legacy_target_id := _add_building(legacy_state, "legacy_target", "smelter", Vector2(400, 0))
@@ -320,6 +321,68 @@ func _test_connected_network_results_preserve_runtime_state() -> void:
 	_expect(state.connections[chained_id].get("active") == true and state.connections[chained_id].get("current_flow") == 6.0 and state.connections[chained_id].get("total_transferred") == 21.0 and state.connections[chained_id].get("in_transit") == [{"amount": 2.0}], "network synchronization preserves flow, cumulative statistics, and in-transit cargo")
 	var missing_template: Dictionary = state.call("apply_belt_configuration_to_network", "")
 	_expect(not missing_template.get("ok", true) and missing_template.get("failed", 0) == 1, "network commands require an explicit valid template line")
+
+func _test_active_planet_projection_and_input_guards() -> void:
+	var state := GameState.new()
+	state.explored_system_ids.append("borealis")
+	state.colonized_planet_ids.append("frost")
+	state.planet_inventories["frost"] = {}
+	state.planet_viewports["frost"] = {"position": Vector2.ZERO, "zoom": Vector2.ONE}
+	state.planet_metrics["frost"] = {}
+	var home_source := _add_building(state, "home_source", "miner", Vector2(100, 100), "home")
+	var home_target := _add_building(state, "home_target", "smelter", Vector2(500, 100), "home")
+	state.buildings[home_source]["output_item"] = "iron_ore"
+	state.buildings[home_target]["recipe_id"] = "iron_ingot_recipe"
+	var home_belt := state.add_connection({"source_id": home_source, "target_id": home_target, "planet_id": "home", "type": "conveyor_belt_mk1", "item_id": "iron_ore"})
+	var frost_source := _add_building(state, "frost_source", "miner", Vector2(100, 100), "frost")
+	var frost_target := _add_building(state, "frost_target", "smelter", Vector2(500, 100), "frost")
+	state.buildings[frost_source]["output_item"] = "iron_ore"
+	state.buildings[frost_target]["recipe_id"] = "iron_ingot_recipe"
+	var frost_belt := state.add_connection({"source_id": frost_source, "target_id": frost_target, "planet_id": "frost", "type": "conveyor_belt_mk1", "item_id": "iron_ore"})
+	state.set_active_planet("frost")
+	GameManager.replace_game_state(state)
+	var viewport := SubViewport.new()
+	viewport.size = Vector2i(1152, 648)
+	add_child(viewport)
+	var main: Node = load("res://scenes/main/Main.tscn").instantiate()
+	viewport.add_child(main)
+	await get_tree().process_frame
+	var card_renderer: Node = main.get_node("CardRenderer")
+	var connection_renderer: Node = main.get_node("ConnectionRenderer")
+	var input_handler: Node = main.get_node("InputHandler")
+	var mini_map: Node = main.get_node("FactoryWorkspaceUI/MiniMap")
+	var has_projection_api := card_renderer.has_method("get_visible_building_ids") and connection_renderer.has_method("get_visible_connection_ids")
+	_expect(has_projection_api, "renderers expose their active-planet projections")
+	if has_projection_api:
+		_expect(card_renderer.call("get_visible_building_ids") == [frost_source, frost_target], "cards project only the active planet")
+		_expect(connection_renderer.call("get_visible_connection_ids") == [frost_belt], "belts project only the active planet")
+	_expect(mini_map.call("get_visible_entity_ids") == [frost_source, frost_target], "mini-map markers project only the active planet")
+	_expect(String(input_handler.call("_get_building_at_position", Vector2(110, 110)).get("id", "")) == frost_source, "building hit testing ignores an overlapping inactive card")
+	_expect(input_handler.call("_get_connection_at_position", Vector2(416, 189)) == frost_belt, "connection hit testing ignores an overlapping inactive line")
+	var before := GameStateCodec.state_digest_payload(state)
+	input_handler.call("set_selected_entities", [home_source])
+	_expect(input_handler.call("get_selected_entity_ids").is_empty(), "direct selection rejects an inactive building ID")
+	input_handler.set("selected_building_id", home_source)
+	_expect(String(input_handler.get("selected_building_id")).is_empty() and input_handler.call("get_selected_entity_ids").is_empty(), "legacy primary selection rejects an inactive building ID")
+	input_handler.call("select_entities_in_rect", Vector2(50, 50), Vector2(750, 300), false)
+	_expect(input_handler.call("get_selected_entity_ids") == [frost_source, frost_target], "box selection includes only active-planet cards")
+	input_handler.call("set_selected_entities", [])
+	var delete_rejected := input_handler.has_method("request_delete") and not bool(input_handler.call("request_delete", home_source))
+	_expect(delete_rejected, "input rejects deleting an inactive building")
+	var move_rejected := input_handler.has_method("request_move_entities") and not bool(input_handler.call("request_move_entities", [{"id": home_source, "position": Vector2(900, 900)}]))
+	_expect(move_rejected and state.buildings[home_source].position == Vector2(100, 100), "input rejects dragging an inactive building")
+	input_handler.call("start_connection", home_source)
+	_expect(input_handler.call("get_mode_name") == "idle", "input rejects starting a connection from an inactive building")
+	input_handler.call("start_connection", frost_source)
+	var cross_active_rejected := not bool(input_handler.call("complete_connection", home_target))
+	_expect(cross_active_rejected and not state.connections.has("connection_from_inactive"), "input rejects completing a connection through an inactive target ID")
+	EventBus.delete_building_requested.emit(home_source)
+	await get_tree().process_frame
+	_expect(state.buildings.has(home_source), "Main rejects a stale inactive delete intent")
+	_expect(GameStateCodec.state_digest_payload(state) == before, "all inactive input attempts leave the persisted digest unchanged")
+	_expect(home_belt != frost_belt, "fixture owns distinct stable line IDs on both planets")
+	viewport.queue_free()
+	await get_tree().process_frame
 
 func _test_advanced_inspector_and_renderer_contract() -> void:
 	var state := GameState.new()
@@ -416,10 +479,11 @@ func _test_advanced_inspector_and_renderer_contract() -> void:
 	host.queue_free()
 	await get_tree().process_frame
 
-func _add_building(state: GameState, id: String, type: String, position: Vector2) -> String:
+func _add_building(state: GameState, id: String, type: String, position: Vector2, planet_id: String = "home") -> String:
 	state.buildings[id] = {
 		"id": id,
 		"type": type,
+		"planet_id": planet_id,
 		"position": position,
 		"status": "idle",
 		"recipe_id": "",

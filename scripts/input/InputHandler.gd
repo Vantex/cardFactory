@@ -33,14 +33,17 @@ var connecting_source_id := ""
 var selected_entity_ids: Array[String] = []
 var selected_building_id := "":
 	set(value):
-		selected_building_id = value
+		var accepted_value := value
+		if not accepted_value.is_empty() and not _is_active_entity(accepted_value):
+			accepted_value = ""
+		selected_building_id = accepted_value
 		if _syncing_selection:
 			return
-		if not value.is_empty() and selected_entity_ids.size() > 1 and selected_entity_ids.has(value):
+		if not accepted_value.is_empty() and selected_entity_ids.size() > 1 and selected_entity_ids.has(accepted_value):
 			return
 		selected_entity_ids.clear()
-		if not value.is_empty():
-			selected_entity_ids.append(value)
+		if not accepted_value.is_empty():
+			selected_entity_ids.append(accepted_value)
 		selection_changed.emit(selected_entity_ids.duplicate())
 		queue_redraw()
 var dragging_building_id := ""
@@ -83,27 +86,48 @@ func get_mode_name() -> String:
 func get_selected_entity_ids() -> Array[String]:
 	return selected_entity_ids.duplicate()
 
-func set_selected_entities(entity_ids: Array) -> void:
+func _is_active_entity(entity_id: String) -> bool:
+	var state := GameManager.get_game_state()
+	var entity: Dictionary = state.buildings.get(entity_id, {})
+	if entity.is_empty():
+		entity = state.connections.get(entity_id, {})
+	return not entity.is_empty() and String(entity.get("planet_id", "")) == state.active_planet_id
+
+func are_active_entities(entity_ids: Array) -> bool:
+	if entity_ids.is_empty():
+		return false
+	for id_value in entity_ids:
+		if not _is_active_entity(String(id_value)):
+			return false
+	return true
+
+func set_selected_entities(entity_ids: Array) -> bool:
 	var state := GameManager.get_game_state()
 	var normalized: Array[String] = []
+	var accepted_all := true
 	for id_value in entity_ids:
 		var entity_id := String(id_value)
 		if entity_id.is_empty() or normalized.has(entity_id):
 			continue
-		if state.buildings.has(entity_id) or state.connections.has(entity_id):
+		if _is_active_entity(entity_id) and (state.buildings.has(entity_id) or state.connections.has(entity_id)):
 			normalized.append(entity_id)
+		else:
+			accepted_all = false
 	selected_entity_ids = normalized
 	_sync_primary_building_selection()
 	selection_changed.emit(selected_entity_ids.duplicate())
 	queue_redraw()
+	return accepted_all
 
-func toggle_entity_selection(entity_id: String) -> void:
+func toggle_entity_selection(entity_id: String) -> bool:
+	if not _is_active_entity(entity_id):
+		return false
 	var next_selection := selected_entity_ids.duplicate()
 	if next_selection.has(entity_id):
 		next_selection.erase(entity_id)
 	else:
 		next_selection.append(entity_id)
-	set_selected_entities(next_selection)
+	return set_selected_entities(next_selection)
 
 func select_entities_in_rect(first_corner: Vector2, second_corner: Vector2, additive: bool = false) -> void:
 	var selection_rect := Rect2(first_corner, second_corner - first_corner).abs()
@@ -113,6 +137,8 @@ func select_entities_in_rect(first_corner: Vector2, second_corner: Vector2, addi
 	building_ids.sort()
 	for building_id_value in building_ids:
 		var building_id := String(building_id_value)
+		if not _is_active_entity(building_id):
+			continue
 		var building: Dictionary = state.buildings[building_id]
 		if selection_rect.intersects(Rect2(building.get("position", Vector2.ZERO), CARD_SIZE), true):
 			matches.append(building_id)
@@ -141,18 +167,23 @@ func start_placing_card(building_type: String) -> void:
 	current_mode = Mode.PLACING
 	queue_redraw()
 
-func start_connection(source_id: String) -> void:
-	if source_id.is_empty() or GameManager.get_game_state().get_building(source_id).is_empty():
-		return
+func start_connection(source_id: String) -> bool:
+	if source_id.is_empty() or not _is_active_entity(source_id):
+		return false
 	placing_building_type = ""
 	connecting_source_id = source_id
 	dragging_building_id = ""
 	press_candidate_building_id = ""
 	current_mode = Mode.CONNECTING
 	queue_redraw()
+	return true
 
 func complete_connection(target_id: String) -> bool:
 	if current_mode != Mode.CONNECTING or connecting_source_id.is_empty():
+		return false
+	if not _is_active_entity(connecting_source_id) or not _is_active_entity(target_id):
+		_publish_command_result({"ok": false, "message": "只能连接活动行星建筑"})
+		cancel_operation()
 		return false
 	var state := GameManager.get_game_state()
 	var engine := GameManager.get_simulation_engine()
@@ -244,7 +275,32 @@ func _handle_key_press(event: InputEventKey) -> void:
 			start_placing_card("matrix_lab")
 
 func request_blueprint_capture() -> void:
-	blueprint_capture_requested.emit(get_selected_entity_ids())
+	var selection := get_selected_entity_ids()
+	if not selection.is_empty() and are_active_entities(selection):
+		blueprint_capture_requested.emit(selection)
+
+func request_delete(entity_id: String) -> bool:
+	return request_delete_entities([entity_id])
+
+func request_delete_entities(entity_ids: Array) -> bool:
+	if not are_active_entities(entity_ids):
+		return false
+	for id_value in entity_ids:
+		if not GameManager.get_game_state().buildings.has(String(id_value)):
+			return false
+	delete_confirmation_requested.emit(entity_ids.duplicate())
+	return true
+
+func request_move_entities(positions: Array) -> bool:
+	if positions.is_empty():
+		return false
+	for value in positions:
+		if not value is Dictionary or not _is_active_entity(String(value.get("id", ""))):
+			return false
+	var result := GameManager.get_game_state().try_move_entities(positions)
+	if not result.get("ok", false):
+		_publish_command_result(result)
+	return result.get("ok", false)
 
 func request_blueprint_deployment_at_camera() -> void:
 	var camera := _get_camera()
@@ -360,9 +416,7 @@ func _update_drag(world_position: Vector2) -> void:
 	var positions: Array = []
 	for entity_id in drag_start_positions:
 		positions.append({"id": entity_id, "position": Vector2(drag_start_positions[entity_id]) + delta})
-	var result := GameManager.get_game_state().try_move_entities(positions)
-	if not result.get("ok", false):
-		_publish_command_result(result)
+	request_move_entities(positions)
 	queue_redraw()
 
 func _finish_drag() -> void:
@@ -410,32 +464,39 @@ func _publish_command_result(result: Dictionary) -> void:
 func _delete_selected() -> void:
 	var building_ids: Array[String] = []
 	for entity_id in selected_entity_ids:
-		if GameManager.get_game_state().buildings.has(entity_id):
+		if _is_active_entity(entity_id) and GameManager.get_game_state().buildings.has(entity_id):
 			building_ids.append(entity_id)
 	if not selected_entity_ids.is_empty() and building_ids.size() != selected_entity_ids.size():
 		EventBus.notice_requested.emit("混合选择没有共同的删除命令", "warning")
 		return
 	if building_ids.is_empty() and not selected_building_id.is_empty():
-		building_ids.append(selected_building_id)
+		if _is_active_entity(selected_building_id):
+			building_ids.append(selected_building_id)
 	if building_ids.is_empty():
 		return
-	delete_confirmation_requested.emit(building_ids)
-	EventBus.notice_requested.emit("请在检查器中确认删除 %d 个建筑" % building_ids.size(), "warning")
+	if request_delete_entities(building_ids):
+		EventBus.notice_requested.emit("请在检查器中确认删除 %d 个建筑" % building_ids.size(), "warning")
 
 func _get_building_at_position(world_position: Vector2) -> Dictionary:
 	for building in GameManager.get_game_state().buildings.values():
+		if not _is_active_entity(String(building.get("id", ""))):
+			continue
 		if Rect2(building.get("position", Vector2.ZERO), CARD_SIZE).has_point(world_position):
 			return building
 	return {}
 
 func _get_input_port_at_position(world_position: Vector2) -> String:
 	for building in GameManager.get_game_state().buildings.values():
+		if not _is_active_entity(String(building.get("id", ""))):
+			continue
 		if _get_input_port_rect(building.get("position", Vector2.ZERO)).has_point(world_position):
 			return building.get("id", "")
 	return ""
 
 func _get_output_port_at_position(world_position: Vector2) -> String:
 	for building in GameManager.get_game_state().buildings.values():
+		if not _is_active_entity(String(building.get("id", ""))):
+			continue
 		if _get_output_port_rect(building.get("position", Vector2.ZERO)).has_point(world_position):
 			return building.get("id", "")
 	return ""
@@ -492,6 +553,8 @@ func _zoom_at_pointer(screen_position: Vector2, factor: float) -> void:
 
 func _draw() -> void:
 	for entity_id in selected_entity_ids:
+		if not _is_active_entity(entity_id):
+			continue
 		var selected := GameManager.get_game_state().get_building(entity_id)
 		if not selected.is_empty():
 			draw_rect(Rect2(selected.get("position", Vector2.ZERO), CARD_SIZE), Color(1.0, 0.85, 0.2, 0.25))

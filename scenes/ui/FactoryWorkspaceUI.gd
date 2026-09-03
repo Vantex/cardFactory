@@ -104,7 +104,8 @@ func set_selected_building(building_id: String) -> void:
 	_selected_entity_ids.clear()
 	_selected_building_id = building_id
 	var building := _get_game_state().get_building(building_id)
-	if building.is_empty():
+	if building.is_empty() or String(building.get("planet_id", "")) != _get_game_state().active_planet_id:
+		building = {}
 		_selected_building_id = ""
 	_selected_building_type = building.get("type", "")
 	if not _selected_building_id.is_empty():
@@ -118,7 +119,8 @@ func set_selected_entities(entity_ids: Array) -> void:
 	var state := _get_game_state()
 	for id_value in entity_ids:
 		var entity_id := String(id_value)
-		if not _selected_entity_ids.has(entity_id) and (state.buildings.has(entity_id) or state.connections.has(entity_id)):
+		var entity: Dictionary = state.buildings.get(entity_id, state.connections.get(entity_id, {}))
+		if not _selected_entity_ids.has(entity_id) and not entity.is_empty() and String(entity.get("planet_id", "")) == state.active_planet_id:
 			_selected_entity_ids.append(entity_id)
 	_selected_building_id = ""
 	_selected_building_type = ""
@@ -278,7 +280,9 @@ func _on_delete_pressed() -> void:
 	if building_ids.size() != selected_ids.size():
 		show_notice("混合选择没有共同的删除命令", "warning")
 		return
-	_request_delete_confirmation(building_ids)
+	var input_handler := _get_input_handler()
+	if input_handler == null or not input_handler.has_method("request_delete_entities") or not input_handler.call("request_delete_entities", building_ids):
+		show_notice("只能删除活动行星建筑", "error")
 
 func _request_delete_confirmation(entity_ids: Array) -> void:
 	var building_ids: Array[String] = []
@@ -294,6 +298,11 @@ func _request_delete_confirmation(entity_ids: Array) -> void:
 
 func _on_delete_confirmed() -> void:
 	var entity_ids: Array = _delete_confirmation.get_meta("entity_ids", [])
+	var active_input_handler := _get_input_handler()
+	if active_input_handler == null or not active_input_handler.has_method("are_active_entities") or not active_input_handler.call("are_active_entities", entity_ids):
+		show_notice("删除目标已不在活动行星", "error")
+		refresh_now()
+		return
 	var result := _get_game_state().try_remove_entities(entity_ids)
 	show_notice(String(result.get("message", "拆除命令失败")), "success" if result.get("ok", false) else "error")
 	if result.get("ok", false):
@@ -304,6 +313,11 @@ func _on_delete_confirmed() -> void:
 		if input_handler != null and input_handler.has_method("set_selected_entities"):
 			input_handler.call("set_selected_entities", [])
 	refresh_now()
+
+func cancel_transient_operations() -> void:
+	if _delete_confirmation != null:
+		_delete_confirmation.hide()
+		_delete_confirmation.remove_meta("entity_ids")
 
 func _on_batch_lock_pressed(locked: bool) -> void:
 	var selected_ids := _current_selected_entity_ids()
@@ -611,19 +625,21 @@ func _refresh_top_bar(state: GameState) -> void:
 	var speed_text := "%d" % int(state.speed) if is_equal_approx(state.speed, roundf(state.speed)) else "%.1f" % state.speed
 	var total_seconds := int(state.elapsed_time)
 	var time_text := "%02d:%02d" % [total_seconds / 60, total_seconds % 60]
-	_top_status.text = "%s  %sx | GEN %.0f | USE %.0f | BAL %s | KITS %s | BUILDINGS %02d | LINKS %02d | %s" % ["PAUSED" if state.paused else "RUN", speed_text, generation, consumption, balance_text, _construction_stock_summary(state), state.buildings.size(), state.connections.size(), time_text]
+	_top_status.text = "%s  %sx | GEN %.0f | USE %.0f | BAL %s | KITS %s | BUILDINGS %02d | LINKS %02d | %s" % ["PAUSED" if state.paused else "RUN", speed_text, generation, consumption, balance_text, _construction_stock_summary(state), _active_building_count(state), _active_connection_count(state), time_text]
 	_pause_button.text = "继续" if state.paused else "暂停"
 	for index in range(_speed_buttons.size()):
 		_speed_buttons[index].button_pressed = is_equal_approx(state.speed, float(index + 1))
 
 func _refresh_resource_rail(state: GameState) -> void:
-	_resource_summary.text = "CONSTRUCTION\nKITS  %s\nBUILDINGS  %02d  LINKS  %02d" % [_construction_stock_summary(state), state.buildings.size(), state.connections.size()]
+	_resource_summary.text = "CONSTRUCTION\nKITS  %s\nBUILDINGS  %02d  LINKS  %02d" % [_construction_stock_summary(state), _active_building_count(state), _active_connection_count(state)]
 	_objective_label.text = _beginner_objective(state)
-	_stock_label.text = "行星托盘\n%s" % _format_buffer(state.planet_inventory)
+	_stock_label.text = "行星托盘\n%s" % _format_buffer(state.get_active_planet_inventory())
 	_cursor_label.text = "光标  %s" % _format_cursor_payload(state.cursor_payload)
 	_handcraft_label.text = "手工队列\n%s" % _format_handcraft_queue(state.handcraft_queue)
 	var counts := {"running": 0, "idle": 0, "blocked": 0, "no_power": 0, "error": 0}
 	for building in state.buildings.values():
+		if String(building.get("planet_id", "")) != state.active_planet_id:
+			continue
 		var status: String = building.get("status", "idle")
 		counts[status] = counts.get(status, 0) + 1
 	_production_label.text = "生产概况\n运行 %d  空闲 %d\n阻塞 %d  停电 %d\n异常 %d" % [counts.running, counts.idle, counts.blocked, counts.no_power, counts.error]
@@ -646,8 +662,8 @@ func _refresh_inspector(state: GameState) -> void:
 			_selected_building_id = ""
 			_selected_building_type = ""
 		_inspector_title.text = "工厂概览"
-		_inspector_details.text = "建筑 %d\n连接 %d\n施工件 %d" % [state.buildings.size(), state.connections.size(), _construction_item_total(state)]
-		_input_buffers.text = "行星托盘  %s" % _format_buffer(state.planet_inventory)
+		_inspector_details.text = "建筑 %d\n连接 %d\n施工件 %d" % [_active_building_count(state), _active_connection_count(state), _construction_item_total(state)]
+		_input_buffers.text = "行星托盘  %s" % _format_buffer(state.get_active_planet_inventory())
 		_output_buffers.text = "光标载荷  %s" % _format_cursor_payload(state.cursor_payload)
 		_start_connection_button.disabled = true
 		_delete_button.disabled = true
@@ -853,7 +869,7 @@ func _refresh_handcraft_controls(state: GameState) -> void:
 	_recipe_heading.text = "手工制造"
 	_handcraft_quantity.show()
 	var quantity := maxi(int(_handcraft_quantity.value), 1)
-	var signature := "handcraft|%s|%s|%s|%d" % [JSON.stringify(state.planet_inventory), JSON.stringify(state.construction_inventory), JSON.stringify(state.handcraft_queue), quantity]
+	var signature := "handcraft|%s|%s|%s|%d" % [JSON.stringify(state.get_active_planet_inventory()), JSON.stringify(state.construction_inventory), JSON.stringify(state.handcraft_queue), quantity]
 	if signature == _recipe_signature:
 		return
 	_recipe_signature = signature
@@ -974,7 +990,11 @@ func _current_selected_entity_ids() -> Array[String]:
 		var shared: Array = input_handler.call("get_selected_entity_ids")
 		var normalized: Array[String] = []
 		for id_value in shared:
-			normalized.append(String(id_value))
+			var entity_id := String(id_value)
+			var state := _get_game_state()
+			var entity: Dictionary = state.buildings.get(entity_id, state.connections.get(entity_id, {}))
+			if not entity.is_empty() and String(entity.get("planet_id", "")) == state.active_planet_id:
+				normalized.append(entity_id)
 		return normalized
 	if not _selected_entity_ids.is_empty():
 		var local_selection: Array[String] = []
@@ -1007,3 +1027,17 @@ func _get_input_handler() -> Node:
 
 func _get_game_state() -> GameState:
 	return GameManager.get_game_state()
+
+func _active_building_count(state: GameState) -> int:
+	var count := 0
+	for building in state.buildings.values():
+		if String(building.get("planet_id", "")) == state.active_planet_id:
+			count += 1
+	return count
+
+func _active_connection_count(state: GameState) -> int:
+	var count := 0
+	for connection in state.connections.values():
+		if String(connection.get("planet_id", "")) == state.active_planet_id:
+			count += 1
+	return count

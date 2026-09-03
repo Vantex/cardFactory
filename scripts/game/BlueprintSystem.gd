@@ -15,7 +15,12 @@ func capture_selection(selected_entity_ids: Array) -> Dictionary:
 	var building_ids: Array[String] = []
 	for id_value in selected_entity_ids:
 		var entity_id := String(id_value)
-		if game_state.buildings.has(entity_id) and not building_ids.has(entity_id):
+		var selected_entity: Dictionary = game_state.buildings.get(entity_id, game_state.connections.get(entity_id, {}))
+		if not selected_entity.is_empty() and String(selected_entity.get("planet_id", "")) != game_state.active_planet_id:
+			return _failure("inactive_entity", "蓝图只能捕获活动行星实体")
+		if not game_state.buildings.has(entity_id):
+			continue
+		if not building_ids.has(entity_id):
 			building_ids.append(entity_id)
 	if building_ids.is_empty():
 		return _failure("empty_selection", "请选择至少一个建筑")
@@ -53,6 +58,8 @@ func capture_selection(selected_entity_ids: Array) -> Dictionary:
 	connection_ids.sort()
 	for connection_id in connection_ids:
 		var connection: Dictionary = game_state.connections[connection_id]
+		if String(connection.get("planet_id", "")) != game_state.active_planet_id:
+			continue
 		var source_id := String(connection.get("source_id", ""))
 		var target_id := String(connection.get("target_id", ""))
 		if not local_refs.has(source_id) or not local_refs.has(target_id):
@@ -285,6 +292,8 @@ func _validate_space(plans: Array) -> Dictionary:
 	for index in range(plans.size()):
 		var target_rect := FactoryGeometryScript.card_rect(plans[index].position)
 		for existing in game_state.buildings.values():
+			if String(existing.get("planet_id", "")) != game_state.active_planet_id:
+				continue
 			if target_rect.intersects(FactoryGeometryScript.card_rect(existing.get("position", Vector2.ZERO)), false):
 				return _failure("overlap", "蓝图部署位置与现有建筑重叠")
 		for other_index in range(index):
@@ -317,7 +326,7 @@ func _plan_inventory_deduction(building_items: Array[String], connection_items: 
 
 func _make_building_data(building_type: String, position: Vector2, configuration: Dictionary) -> Dictionary:
 	var definition := DataManager.get_building(building_type)
-	var building := {"type": building_type, "position": position, "status": "idle", "recipe_id": String(configuration.get("recipe_id", "")), "progress": 0.0, "input_buffer": {}, "output_buffer": {}, "speed": definition.get("speed", 1.0)}
+	var building := {"type": building_type, "planet_id": game_state.active_planet_id, "position": position, "status": "idle", "recipe_id": String(configuration.get("recipe_id", "")), "progress": 0.0, "input_buffer": {}, "output_buffer": {}, "speed": definition.get("speed", 1.0)}
 	var output_item := String(configuration.get("output_item", ""))
 	if not output_item.is_empty():
 		building["output_item"] = output_item
@@ -331,7 +340,7 @@ func _make_building_data(building_type: String, position: Vector2, configuration
 
 func _make_connection_data(connection: Dictionary, ref_to_id: Dictionary) -> Dictionary:
 	var configuration: Dictionary = connection.configuration
-	var data := {"source_id": ref_to_id[connection.source], "target_id": ref_to_id[connection.target], "type": String(connection.type), "item_id": String(configuration.get("item_id", "")), "construction_accounted": true, "enabled": true, "active": false, "current_flow": 0.0}
+	var data := {"source_id": ref_to_id[connection.source], "target_id": ref_to_id[connection.target], "planet_id": game_state.active_planet_id, "type": String(connection.type), "item_id": String(configuration.get("item_id", "")), "construction_accounted": true, "enabled": true, "active": false, "current_flow": 0.0}
 	for key in ["parallel_count", "stack_size", "priority", "route_mode", "route_offset_y", "monitor_enabled", "enabled"]:
 		if configuration.has(key):
 			data[key] = configuration[key]

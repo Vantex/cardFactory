@@ -15,6 +15,7 @@ func _ready() -> void:
 	_test_exploration_update_advances_each_mission_once()
 	_test_objectives_read_only_the_active_planet_inventory()
 	_test_input_handler_routes_connection_through_active_planet_boundary()
+	await _test_main_travel_restores_camera_and_cleans_canvas_state()
 	if _failures > 0:
 		printerr("GALAXY LOGISTICS TESTS FAILED")
 		get_tree().quit(1)
@@ -296,6 +297,75 @@ func _test_input_handler_routes_connection_through_active_planet_boundary() -> v
 	_expect(not connected, "real input handler rejects same-planet endpoints outside the active planet")
 	_expect(state.connections.is_empty() and float(state.construction_inventory["conveyor_belt_mk1"]) == pieces_before and String(state.buildings[frost_target].get("recipe_id", "")).is_empty(), "input rejection preserves lines, construction pieces, and target recipe")
 	input_handler.queue_free()
+
+func _test_main_travel_restores_camera_and_cleans_canvas_state() -> void:
+	var state := GameState.new()
+	_prepare_frost(state)
+	state.planet_inventories["home"] = {"iron_ore": 1.0}
+	state.planet_inventory = state.planet_inventories["home"]
+	state.planet_inventories["frost"] = {"copper_ore": 99.0}
+	state.planet_viewports["home"] = {"position": Vector2.ZERO, "zoom": Vector2.ONE}
+	state.planet_viewports["frost"] = {"position": Vector2(820, 460), "zoom": Vector2(0.75, 0.75)}
+	state.cursor_payload = {"item_id": "iron_ore", "amount": 7.0}
+	var home_a := state.add_building({"type": "miner", "planet_id": "home", "position": Vector2(100, 100), "input_buffer": {}, "output_buffer": {}})
+	var home_b := state.add_building({"type": "smelter", "planet_id": "home", "position": Vector2(500, 100), "input_buffer": {}, "output_buffer": {}})
+	state.add_building({"type": "miner", "planet_id": "frost", "position": Vector2(100, 100), "input_buffer": {}, "output_buffer": {}})
+	GameManager.replace_game_state(state)
+	var viewport := SubViewport.new()
+	viewport.size = Vector2i(1152, 648)
+	add_child(viewport)
+	var main: Node = load("res://scenes/main/Main.tscn").instantiate()
+	viewport.add_child(main)
+	await get_tree().process_frame
+	var camera: Camera2D = main.get_node("WorldCamera")
+	var input_handler: Node = main.get_node("InputHandler")
+	var workspace: Node = main.get_node("FactoryWorkspaceUI")
+	camera.global_position = Vector2(320, 240)
+	camera.zoom = Vector2(1.25, 1.25)
+	input_handler.call("set_selected_entities", [home_a, home_b])
+	input_handler.call("start_placing_card", "miner")
+	input_handler.call("set_selected_entities", [home_a, home_b])
+	input_handler.set("connecting_source_id", home_a)
+	input_handler.set("dragging_building_id", home_a)
+	input_handler.set("press_candidate_building_id", home_b)
+	input_handler.set("drag_start_positions", {home_a: Vector2(100, 100)})
+	input_handler.set("selection_box_start", Vector2(20, 20))
+	input_handler.set("selection_box_end", Vector2(600, 300))
+	var travel_events: Array[String] = []
+	var has_travel_contract := main.has_method("try_travel_to_planet") and EventBus.has_signal("active_planet_changed")
+	_expect(has_travel_contract, "Main and EventBus expose the unique travel loop")
+	if not has_travel_contract:
+		viewport.queue_free()
+		await get_tree().process_frame
+		return
+	var observer := func(planet_id: String) -> void: travel_events.append(planet_id)
+	EventBus.active_planet_changed.connect(observer)
+	var cursor_before := state.cursor_payload.duplicate(true)
+	var frost_result: Dictionary = main.call("try_travel_to_planet", "frost")
+	_expect(frost_result.get("ok", false) and state.active_planet_id == "frost", "Main travels only through the planet domain boundary")
+	_expect(state.planet_viewports["home"] == {"position": Vector2(320, 240), "zoom": Vector2(1.25, 1.25)}, "successful travel saves the old planet camera first")
+	_expect(camera.global_position == Vector2(820, 460) and camera.zoom == Vector2(0.75, 0.75), "successful travel restores the target planet camera")
+	_expect(input_handler.call("get_mode_name") == "idle" and input_handler.call("get_selected_entity_ids").is_empty() and String(input_handler.get("connecting_source_id")).is_empty() and String(input_handler.get("dragging_building_id")).is_empty() and input_handler.get("drag_start_positions").is_empty() and input_handler.get("selection_box_start") == Vector2.ZERO and input_handler.get("selection_box_end") == Vector2.ZERO, "successful travel cancels placement, connection, drag, marquee, and selection state")
+	_expect(state.cursor_payload == cursor_before, "successful travel preserves the global cursor payload")
+	workspace.call("refresh_now")
+	var summary: Label = workspace.get_node("ResourceRail/Summary")
+	var stock: Label = workspace.get_node("ResourceRail/Stock")
+	_expect("BUILDINGS  01" in summary.text and "copper_ore 99.0" in stock.text and not "iron_ore 1.0" in stock.text, "workspace inventory and building counts project the active planet")
+	_expect(travel_events == ["frost"], "successful travel emits one active-planet change after projection refresh")
+	camera.global_position = Vector2(910, 510)
+	camera.zoom = Vector2(0.9, 0.9)
+	input_handler.call("start_placing_card", "smelter")
+	var failed_camera := {"position": camera.global_position, "zoom": camera.zoom}
+	var failed_digest := GameStateCodec.state_digest_payload(state)
+	var failed_result: Dictionary = main.call("try_travel_to_planet", "ashen")
+	_expect(not failed_result.get("ok", true) and failed_result.get("reason", "") == "not_colonized", "travel rejects an uncolonized target without implicit colonization")
+	_expect(input_handler.call("get_mode_name") == "placing" and camera.global_position == failed_camera.position and camera.zoom == failed_camera.zoom and GameStateCodec.state_digest_payload(state) == failed_digest and travel_events == ["frost"], "failed travel preserves the active operation, both cameras, state digest, and event stream")
+	input_handler.call("cancel_operation")
+	var home_result: Dictionary = main.call("try_travel_to_planet", "home")
+	_expect(home_result.get("ok", false) and camera.global_position == Vector2(320, 240) and camera.zoom == Vector2(1.25, 1.25), "return travel restores the saved home camera")
+	EventBus.active_planet_changed.disconnect(observer)
+	viewport.queue_free()
+	await get_tree().process_frame
 
 func _prepare_ashen(state: GameState) -> void:
 	state.colonized_planet_ids.append("ashen")

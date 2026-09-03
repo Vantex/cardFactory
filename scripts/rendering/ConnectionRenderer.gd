@@ -22,14 +22,28 @@ func is_connection_selected(connection_id: String) -> bool:
 	var input_handler := _get_input_handler()
 	return input_handler != null and input_handler.has_method("get_selected_entity_ids") and input_handler.call("get_selected_entity_ids").has(connection_id)
 
+func get_visible_connection_ids() -> Array[String]:
+	var result: Array[String] = []
+	var state := _get_game_state()
+	if state == null:
+		return result
+	for id_value in state.connections:
+		var connection_id := String(id_value)
+		var connection: Dictionary = state.connections[connection_id]
+		if String(connection.get("planet_id", "")) != state.active_planet_id:
+			continue
+		var source: Dictionary = state.get_building(connection.get("source_id", ""))
+		var target: Dictionary = state.get_building(connection.get("target_id", ""))
+		if String(source.get("planet_id", "")) == state.active_planet_id and String(target.get("planet_id", "")) == state.active_planet_id:
+			result.append(connection_id)
+	result.sort()
+	return result
+
 func get_connection_at_position(world_position: Vector2) -> String:
 	var state := _get_game_state()
 	if state == null:
 		return ""
-	var connection_ids: Array = state.connections.keys()
-	connection_ids.sort()
-	for connection_id_value in connection_ids:
-		var connection_id := String(connection_id_value)
+	for connection_id in get_visible_connection_ids():
 		var connection: Dictionary = state.connections[connection_id]
 		var source: Dictionary = state.get_building(connection.get("source_id", ""))
 		var target: Dictionary = state.get_building(connection.get("target_id", ""))
@@ -47,8 +61,8 @@ func _draw() -> void:
 	var game_state := _get_game_state()
 	if game_state == null:
 		return
-	for connection in game_state.connections.values():
-		_draw_connection(connection, game_state)
+	for connection_id in get_visible_connection_ids():
+		_draw_connection(game_state.connections[connection_id], game_state)
 	_draw_connection_draft(game_state)
 
 func _draw_connection(connection: Dictionary, game_state: GameState) -> void:
@@ -78,7 +92,7 @@ func _draw_connection_draft(game_state: GameState) -> void:
 		return
 	var source_id: String = input_handler.get("connecting_source_id")
 	var source: Dictionary = game_state.get_building(source_id)
-	if source.is_empty():
+	if source.is_empty() or String(source.get("planet_id", "")) != game_state.active_planet_id:
 		return
 	var start := CardRenderer.get_output_port_rect(source.get("position", Vector2.ZERO)).get_center()
 	draw_polyline(_curve_points(start, get_global_mouse_position()), Color(0.6, 0.84, 1.0, 0.7), 2.0, true)

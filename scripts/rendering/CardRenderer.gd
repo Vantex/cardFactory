@@ -36,6 +36,19 @@ func is_building_selected(building_id: String) -> bool:
 		return input_handler.call("get_selected_entity_ids").has(building_id)
 	return input_handler.get("selected_building_id") == building_id
 
+func get_visible_building_ids() -> Array[String]:
+	var result: Array[String] = []
+	var game_state := _get_game_state()
+	if game_state == null:
+		return result
+	for id_value in game_state.buildings:
+		var building_id := String(id_value)
+		var building: Dictionary = game_state.buildings[building_id]
+		if String(building.get("planet_id", "")) == game_state.active_planet_id:
+			result.append(building_id)
+	result.sort()
+	return result
+
 static func get_input_port_rect(card_position: Vector2) -> Rect2:
 	return Rect2(card_position + Vector2(0, (CARD_SIZE.y - PORT_SIZE.y) * 0.5), PORT_SIZE)
 
@@ -47,8 +60,8 @@ func _draw() -> void:
 	var game_state := _get_game_state()
 	if game_state == null:
 		return
-	for building in game_state.buildings.values():
-		_draw_building(building)
+	for building_id in get_visible_building_ids():
+		_draw_building(game_state.buildings[building_id])
 
 func _draw_grid() -> void:
 	var viewport := get_viewport()

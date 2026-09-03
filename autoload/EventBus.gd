@@ -22,6 +22,7 @@ signal pause_toggled_requested()
 signal speed_requested(speed: float)
 signal notice_requested(message: String, tone: String)
 signal progression_updated(result: Dictionary)
+signal active_planet_changed(planet_id: String)
 
 # 科技相关信号
 signal technology_research_started(tech_id: String)

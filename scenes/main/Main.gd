@@ -15,6 +15,7 @@ var _progression_system: ProgressionSystem
 var _last_blocked_reward_signature := ""
 var _progression_evaluation_queued := false
 var _technology_system: TechnologySystem
+var _planet_system: PlanetSystem
 
 func _ready() -> void:
 	GameManager.game_state_replaced.connect(_on_game_state_replaced)
@@ -34,6 +35,7 @@ func _ready() -> void:
 	codex_workspace.locate_requested.connect(_on_locate_requested)
 	_progression_system = ProgressionSystem.new(game_state)
 	_technology_system = TechnologySystem.new(game_state)
+	_planet_system = PlanetSystem.new(game_state)
 
 	EventBus.card_placed.connect(_on_card_placed)
 	EventBus.card_selected.connect(_on_card_selected)
@@ -61,6 +63,7 @@ func _ready() -> void:
 
 func _on_game_state_replaced(new_state: GameState) -> void:
 	_technology_system = TechnologySystem.new(new_state)
+	_planet_system = PlanetSystem.new(new_state)
 	card_renderer.set_game_state(new_state)
 	connection_renderer.set_game_state(new_state)
 	input_handler.cancel_operation()
@@ -71,6 +74,7 @@ func _on_game_state_replaced(new_state: GameState) -> void:
 	_synced_selected_building_id = ""
 	_progression_system = ProgressionSystem.new(new_state)
 	factory_workspace_ui.set_selected_building("")
+	_apply_planet_viewport(new_state.active_planet_id)
 	EventBus.simulation_updated.emit()
 	_evaluate_progression(true)
 
@@ -121,6 +125,9 @@ func _on_start_connection_requested(building_id: String) -> void:
 
 func _on_delete_building_requested(building_id: String) -> void:
 	var state := GameManager.get_game_state()
+	if not input_handler.call("_is_active_entity", building_id):
+		EventBus.notice_requested.emit("只能删除活动行星建筑", "error")
+		return
 	var result := state.remove_building(building_id)
 	EventBus.notice_requested.emit(String(result.get("message", "拆除命令失败")), "success" if result.get("ok", false) else "error")
 
@@ -192,8 +199,18 @@ func _flush_progression_evaluation() -> void:
 	_evaluate_progression(true)
 
 func _on_locate_requested(building_id: String, world_position: Vector2) -> void:
-	if not GameManager.get_game_state().buildings.has(building_id):
+	var state := GameManager.get_game_state()
+	if not state.buildings.has(building_id):
 		return
+	var target_planet_id := String(state.buildings[building_id].get("planet_id", ""))
+	if not state.colonized_planet_ids.has(target_planet_id):
+		EventBus.notice_requested.emit("诊断目标所在行星尚未殖民", "error")
+		return
+	if target_planet_id != state.active_planet_id:
+		var travel_result := try_travel_to_planet(target_planet_id)
+		if not travel_result.get("ok", false):
+			EventBus.notice_requested.emit(String(travel_result.get("message", "无法前往诊断目标")), "error")
+			return
 	$WorldCamera.global_position = world_position
 	$WorldCamera.force_update_scroll()
 	if input_handler.has_method("set_selected_entities"):
@@ -203,3 +220,51 @@ func _on_locate_requested(building_id: String, world_position: Vector2) -> void:
 	_synced_selected_building_id = building_id
 	factory_workspace_ui.set_selected_building(building_id)
 	EventBus.card_selected.emit(building_id)
+
+func try_travel_to_planet(planet_id: String) -> Dictionary:
+	var state := GameManager.get_game_state()
+	if _planet_system == null or _planet_system.game_state != state:
+		_planet_system = PlanetSystem.new(state)
+	var source_planet_id := state.active_planet_id
+	var had_source_viewport := state.planet_viewports.has(source_planet_id)
+	var source_viewport_before: Dictionary = state.planet_viewports.get(source_planet_id, {}).duplicate(true)
+	_save_planet_viewport(source_planet_id)
+	var result := _planet_system.try_set_active_planet(planet_id)
+	if not result.get("ok", false):
+		if had_source_viewport:
+			state.planet_viewports[source_planet_id] = source_viewport_before
+		else:
+			state.planet_viewports.erase(source_planet_id)
+		return result
+	input_handler.cancel_operation()
+	input_handler.set_selected_entities([])
+	_synced_selected_building_id = ""
+	if factory_workspace_ui.has_method("cancel_transient_operations"):
+		factory_workspace_ui.call("cancel_transient_operations")
+	_apply_planet_viewport(planet_id)
+	_refresh_active_planet_projection()
+	EventBus.active_planet_changed.emit(planet_id)
+	return result
+
+func _save_planet_viewport(planet_id: String) -> void:
+	GameManager.get_game_state().planet_viewports[planet_id] = {"position": $WorldCamera.global_position, "zoom": $WorldCamera.zoom}
+
+func _apply_planet_viewport(planet_id: String) -> void:
+	var viewport_data: Dictionary = GameManager.get_game_state().planet_viewports.get(planet_id, {})
+	if viewport_data.is_empty():
+		return
+	$WorldCamera.global_position = Vector2(viewport_data.get("position", Vector2.ZERO))
+	$WorldCamera.zoom = Vector2(viewport_data.get("zoom", Vector2.ONE))
+	$WorldCamera.force_update_scroll()
+
+func _refresh_active_planet_projection() -> void:
+	card_renderer.queue_redraw()
+	connection_renderer.queue_redraw()
+	input_handler.queue_redraw()
+	mini_map.queue_redraw()
+	factory_workspace_ui.set_selected_entities([])
+	factory_workspace_ui.refresh_now()
+	if campaign_workspace.has_method("refresh_now"):
+		campaign_workspace.call("refresh_now")
+	if codex_workspace.has_method("refresh_now"):
+		codex_workspace.call("refresh_now")

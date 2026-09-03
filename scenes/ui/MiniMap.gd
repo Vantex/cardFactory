@@ -50,6 +50,8 @@ func get_effective_world_rect() -> Rect2:
 		has_bounds = true
 	if state != null:
 		for building in state.buildings.values():
+			if String(building.get("planet_id", "")) != state.active_planet_id:
+				continue
 			var building_rect := FactoryGeometry.card_rect(building.get("position", Vector2.ZERO))
 			bounds = bounds.merge(building_rect) if has_bounds else building_rect
 			has_bounds = true
@@ -93,6 +95,9 @@ func get_visible_entity_ids() -> Array[String]:
 		return result
 	for id_value in _spatial_index.get_entities_in_rect(get_effective_world_rect()):
 		var entity_id := String(id_value)
+		var state := GameManager.get_game_state()
+		if state == null or not state.buildings.has(entity_id) or String(state.buildings[entity_id].get("planet_id", "")) != state.active_planet_id:
+			continue
 		if not result.has(entity_id):
 			result.append(entity_id)
 	result.sort()
