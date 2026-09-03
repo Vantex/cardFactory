@@ -20,23 +20,25 @@ func _init(state: GameState) -> void:
 func try_place_building(building_type: String, position: Vector2) -> Dictionary:
 	var building_definition := DataManager.get_building(building_type)
 	if building_definition.is_empty():
-		return _failure("未知建筑类型")
+		return _failure("unknown_building", "未知建筑类型")
 	if not LEGACY_COSTS.has(building_type):
-		return _failure("未配置施工件")
+		return _failure("unconfigured_construction_item", "未配置施工件")
 	var placement_rect := FactoryGeometry.card_rect(position)
 	for existing_building in game_state.buildings.values():
+		if String(existing_building.get("planet_id", game_state.active_planet_id)) != game_state.active_planet_id:
+			continue
 		var existing_rect := FactoryGeometry.card_rect(existing_building.get("position", Vector2.ZERO))
 		if placement_rect.intersects(existing_rect, false):
-			return _failure("建筑卡片重叠")
+			return _failure("overlap", "建筑卡片重叠")
 	if not _has_construction_item(building_type):
-		return _failure("缺少%s施工件" % building_definition.get("name", building_type))
+		return _failure("missing_construction_item", "缺少%s施工件" % building_definition.get("name", building_type))
 	var resource_site_id := ""
 	var extraction: Dictionary = building_definition.get("extraction", {})
 	if building_definition.get("kind", "") == "extractor":
 		var output_item := String(extraction.get("item_id", ""))
 		var nearest := PlanetSystem.new(game_state).find_nearest_resource_site(game_state.active_planet_id, output_item, position)
 		if nearest.is_empty():
-			return _failure("附近没有可用资源点")
+			return _failure("invalid_resource_site", "附近没有可用资源点")
 		resource_site_id = String(nearest.get("id", ""))
 
 	_consume_construction_item(building_type)
@@ -64,7 +66,7 @@ func try_place_building(building_type: String, position: Vector2) -> Dictionary:
 		building_data["fuel_item"] = fuel_item
 		building_data["fuel_remaining"] = startup_fuel * burn_duration
 	var building_id := game_state.add_building(building_data)
-	return {"ok": true, "message": "建筑已放置", "id": building_id}
+	return {"ok": true, "reason": "", "message": "建筑已放置", "details": {"id": building_id}, "id": building_id}
 
 func try_remove_building(building_id: String) -> Dictionary:
 	return game_state.try_remove_entities([building_id])
@@ -93,5 +95,5 @@ func _consume_construction_item(building_type: String) -> void:
 	else:
 		game_state.construction_inventory["legacy_credit"] = remaining_credit
 
-func _failure(message: String) -> Dictionary:
-	return {"ok": false, "message": message}
+func _failure(reason: String, message: String) -> Dictionary:
+	return {"ok": false, "reason": reason, "message": message, "details": {}}

@@ -76,21 +76,27 @@ func _update_extractor(building: Dictionary, building_definition: Dictionary, de
 	var output_buffer: Dictionary = building.get("output_buffer", {})
 	var current_amount := float(output_buffer.get(output_item, 0.0))
 	var capacity := _get_buffer_capacity(building, building_definition, "output")
-	var produced := minf(output_rate * delta * speed * power_efficiency * game_state.get_technology_effect_multiplier("production_speed"), capacity - current_amount)
+	var available_space := maxf(capacity - current_amount, 0.0)
+	if available_space <= PROGRESS_EPSILON:
+		building["status"] = "blocked"
+		return
+	var produced := minf(output_rate * delta * speed * power_efficiency * game_state.get_technology_effect_multiplier("production_speed"), available_space)
 	var resource_site_id := String(building.get("resource_site_id", ""))
-	if not resource_site_id.is_empty():
-		var site: Variant = game_state.resource_sites.get(resource_site_id)
-		if not site is Dictionary or String(site.get("planet_id", "")) != String(building.get("planet_id", "")) or String(site.get("item_id", "")) != output_item:
+	if resource_site_id.is_empty():
+		building["status"] = "invalid_resource_site"
+		return
+	var site: Variant = game_state.resource_sites.get(resource_site_id)
+	if not site is Dictionary or String(site.get("planet_id", "")) != String(building.get("planet_id", "")) or String(site.get("item_id", "")) != output_item:
+		building["status"] = "invalid_resource_site"
+		return
+	if not bool(site.get("infinite", false)):
+		var remaining := maxf(float(site.get("remaining", 0.0)), 0.0)
+		if remaining <= PROGRESS_EPSILON:
 			building["status"] = "resource_depleted"
 			return
-		if not bool(site.get("infinite", false)):
-			var remaining := maxf(float(site.get("remaining", 0.0)), 0.0)
-			if remaining <= PROGRESS_EPSILON:
-				building["status"] = "resource_depleted"
-				return
-			produced = minf(produced, remaining)
-			site["remaining"] = maxf(remaining - produced, 0.0)
-			game_state.resource_sites[resource_site_id] = site
+		produced = minf(produced, remaining)
+		site["remaining"] = maxf(remaining - produced, 0.0)
+		game_state.resource_sites[resource_site_id] = site
 	var next_amount := current_amount + produced
 	output_buffer[output_item] = next_amount
 	building["output_buffer"] = output_buffer

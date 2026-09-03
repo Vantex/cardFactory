@@ -15,6 +15,7 @@ func _ready() -> void:
 	_test_phase_order_and_tick_boundaries()
 	_test_research_requires_powered_matrix_lab()
 	_test_tier_technology_effects_change_real_production()
+	_test_extraction_boundaries()
 
 	if _failures > 0:
 		printerr("SIMULATION CORE TESTS FAILED")
@@ -219,6 +220,19 @@ func _test_tier_technology_effects_change_real_production() -> void:
 	var restored := GameStateCodec.from_persistent_dict(JSON.parse_string(JSON.stringify(GameStateCodec.to_persistent_dict(persisted))))
 	_expect(restored is GameState and _iron_output_from_state(restored, 0.49) == 1.0, "loaded infinite technology levels continue to affect real production")
 
+func _test_extraction_boundaries() -> void:
+	var state := GameState.new()
+	PlanetSystem.new(state).initialize_colonized_resource_sites()
+	_add_building(state, "solar", "solar_panel")
+	_add_building(state, "miner", "miner", {"output_item": "iron_ore", "output_buffer": {"iron_ore": 61.0}})
+	var site_before := float(state.resource_sites[state.buildings["miner"]["resource_site_id"]]["remaining"])
+	ProductionSystem.new(state).update(1.0)
+	_expect(state.buildings["miner"].get("status") == "blocked" and float(state.resource_sites[state.buildings["miner"]["resource_site_id"]]["remaining"]) == site_before, "over-capacity output blocks without negative production or reserve increase")
+	state.buildings["miner"].erase("resource_site_id")
+	state.buildings["miner"]["output_buffer"] = {}
+	ProductionSystem.new(state).update(1.0)
+	_expect(state.buildings["miner"].get("status") == "invalid_resource_site", "unbound extractors cannot produce for free")
+
 func _iron_output_after_seconds(completed: Array, levels: Dictionary, seconds: float) -> float:
 	var state := GameState.new()
 	state.completed_technologies = completed.duplicate()
@@ -255,6 +269,15 @@ func _add_building(state: GameState, id: String, type: String, overrides: Dictio
 		"speed": definition.get("speed", 1.0),
 	}
 	building.merge(overrides, true)
+	building["planet_id"] = String(building.get("planet_id", "home"))
+	if String(definition.get("kind", "")) == "extractor":
+		PlanetSystem.new(state).initialize_colonized_resource_sites()
+		var output_item := String(building.get("output_item", definition.get("extraction", {}).get("item_id", "")))
+		for site_id in state.resource_sites:
+			var site: Dictionary = state.resource_sites[site_id]
+			if String(site.get("planet_id", "")) == String(building["planet_id"]) and String(site.get("item_id", "")) == output_item:
+				building["resource_site_id"] = site_id
+				break
 	state.buildings[id] = building
 
 func _add_connection(state: GameState, id: String, source_id: String, target_id: String, flow_rate: float, item_id: String = "iron_ore") -> void:

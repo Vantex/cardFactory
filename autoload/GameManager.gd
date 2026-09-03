@@ -26,6 +26,7 @@ func _ready() -> void:
 func replace_game_state(new_state: GameState) -> void:
 	if new_state == null:
 		return
+	PlanetSystem.new(new_state).initialize_colonized_resource_sites()
 	game_state = new_state
 	simulation_engine = SimulationEngine.new(game_state)
 	game_state_replaced.emit(game_state)
@@ -45,6 +46,7 @@ func get_save_system() -> SaveSystem:
 
 func start_new_game(slot: int) -> Dictionary:
 	var new_state := GameState.new()
+	PlanetSystem.new(new_state).initialize_colonized_resource_sites()
 	var save_result := _save_system.save_slot(slot, new_state)
 	if not save_result.get("ok", false):
 		session_error.emit(save_result.get("error", {}))

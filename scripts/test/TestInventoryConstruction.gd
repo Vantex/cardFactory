@@ -18,6 +18,7 @@ func _ready() -> void:
 		_test_cursor_payload_preserves_ownership()
 		_test_construction_consumes_and_refunds_real_items()
 		_test_extractor_placement_binds_active_planet_site()
+		_test_extractor_placement_respects_planet_and_radius()
 		_test_handcraft_preview_queue_and_persistence()
 		_test_legacy_points_migrate_into_construction_inventory()
 		await _test_workspace_inventory_contract()
@@ -97,16 +98,17 @@ func _test_cursor_payload_preserves_ownership() -> void:
 
 func _test_construction_consumes_and_refunds_real_items() -> void:
 	var state := GameState.new()
+	PlanetSystem.new(state).initialize_colonized_resource_sites()
 	state.set("planet_inventory", {})
 	state.set("construction_inventory", {"miner": 1.0, "smelter": 1.0, "assembling_machine_mk1": 0.0, "power_generator": 0.0})
 	var construction: RefCounted = _construction_script.new(state)
-	var miner_result: Dictionary = construction.try_place_building("miner", Vector2(100, 100))
+	var miner_result: Dictionary = construction.try_place_building("miner", Vector2(-470, -250))
 	_expect(miner_result.get("ok", false) and state.get("construction_inventory").get("miner") == 0.0, "placing a building consumes one matching construction item")
 	var count_before_missing := state.buildings.size()
 	_expect(not construction.try_place_building("miner", Vector2(420, 100)).get("ok", false), "placement without the matching construction item is rejected")
 	_expect(state.buildings.size() == count_before_missing and state.get("construction_inventory").get("miner") == 0.0, "missing-item placement leaves buildings and inventory unchanged")
 	state.get("construction_inventory")["miner"] = 1.0
-	_expect(not construction.try_place_building("miner", Vector2(100, 100)).get("ok", false), "overlap is checked before construction inventory is consumed")
+	_expect(not construction.try_place_building("miner", Vector2(-470, -250)).get("ok", false), "overlap is checked before construction inventory is consumed")
 	_expect(state.get("construction_inventory").get("miner") == 1.0, "overlap rejection preserves the construction item")
 
 	var miner_id := String(miner_result.get("id", ""))
@@ -120,10 +122,11 @@ func _test_construction_consumes_and_refunds_real_items() -> void:
 	_expect(state.get("construction_inventory").get("miner") == 2.0 and state.get("planet_inventory").get("iron_ore") == 2.0, "removal refunds the construction item and buffered materials")
 
 	var capped_state := GameState.new()
+	PlanetSystem.new(capped_state).initialize_colonized_resource_sites()
 	capped_state.set("planet_inventory", {"iron_ore": 999.0})
 	capped_state.set("construction_inventory", {"miner": 1.0, "smelter": 0.0, "assembling_machine_mk1": 0.0, "power_generator": 0.0})
 	var capped_construction: RefCounted = _construction_script.new(capped_state)
-	var capped_miner: Dictionary = capped_construction.try_place_building("miner", Vector2.ZERO)
+	var capped_miner: Dictionary = capped_construction.try_place_building("miner", Vector2(-470, -250))
 	capped_state.get_building(String(capped_miner.get("id", "")))["output_buffer"] = {"iron_ore": 1.0}
 	var capped_before: Dictionary = GameStateCodec.state_digest_payload(capped_state)
 	_expect(not capped_construction.try_remove_building(String(capped_miner.get("id", ""))).get("ok", false), "removal is rejected when a buffered-material refund would overflow")
@@ -144,6 +147,7 @@ func _test_construction_consumes_and_refunds_real_items() -> void:
 
 func _test_extractor_placement_binds_active_planet_site() -> void:
 	var state := GameState.new()
+	PlanetSystem.new(state).initialize_colonized_resource_sites()
 	state.construction_inventory = {"miner": 1.0}
 	var construction: RefCounted = _construction_script.new(state)
 	var result: Dictionary = construction.try_place_building("miner", Vector2(-470, -250))
@@ -151,6 +155,23 @@ func _test_extractor_placement_binds_active_planet_site() -> void:
 	_expect(result.get("ok", false), "a miner can be placed on the active home planet")
 	_expect(building.get("planet_id", "") == "home", "construction records the active planet as building ownership")
 	_expect(building.get("resource_site_id", "") == "home_iron_1", "extractor placement chooses the nearest compatible resource site")
+
+func _test_extractor_placement_respects_planet_and_radius() -> void:
+	var state := GameState.new()
+	PlanetSystem.new(state).initialize_colonized_resource_sites()
+	state.colonized_planet_ids.append("frost")
+	state.planet_inventories["frost"] = {}
+	state.planet_viewports["frost"] = {"position": Vector2.ZERO, "zoom": Vector2.ONE}
+	state.resource_sites["frost_iron_1"] = GalaxySystem.new(state).build_resource_sites_for_planet("frost", state.galaxy_seed)["frost_iron_1"]
+	state.buildings["frost_existing"] = {"id": "frost_existing", "type": "miner", "planet_id": "frost", "position": Vector2(-470, -250), "input_buffer": {}, "output_buffer": {}}
+	state.construction_inventory = {"miner": 2.0}
+	var construction: RefCounted = _construction_script.new(state)
+	var same_position: Dictionary = construction.try_place_building("miner", Vector2(-470, -250))
+	_expect(same_position.get("ok", false), "same coordinates on another planet do not overlap")
+	var before := GameStateCodec.state_digest_payload(state)
+	var far: Dictionary = construction.try_place_building("miner", Vector2(1000, 1000))
+	_expect(far.get("reason", "") == "invalid_resource_site", "out-of-radius extractor placement has a stable reason")
+	_expect(GameStateCodec.state_digest_payload(state) == before, "out-of-radius placement consumes no item or ID")
 
 func _test_handcraft_preview_queue_and_persistence() -> void:
 	var state := GameState.new()

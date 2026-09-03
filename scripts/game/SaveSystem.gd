@@ -29,7 +29,7 @@ func save_slot(slot: int, game_state: GameState, metadata_overrides: Dictionary 
 	if not validation_errors.is_empty():
 		return _failure_from_validation(validation_errors)
 
-	var digest := _digest_payload(state_payload)
+	var digest := _digest_payload(_normalize_stored_digest_types(state_payload))
 	var metadata := {
 		"schema_version": GameState.SCHEMA_VERSION,
 		"saved_at": Time.get_unix_time_from_system(),
@@ -373,6 +373,15 @@ func _normalize_stored_digest_types(payload: Dictionary) -> Dictionary:
 			var fleet_amount: Variant = portable_fleet_value[fleet_item_id]
 			if _is_integral_number(fleet_amount):
 				portable_fleet_value[fleet_item_id] = int(fleet_amount)
+	var resource_sites_value: Variant = normalized.get("resource_sites")
+	if resource_sites_value is Dictionary:
+		for site_id in resource_sites_value:
+			var site: Variant = resource_sites_value[site_id]
+			if not site is Dictionary:
+				continue
+			for reserve_field in ["capacity", "remaining"]:
+				if _is_integral_number(site.get(reserve_field)):
+					site[reserve_field] = int(site[reserve_field])
 	return normalized
 
 func _is_number(value: Variant) -> bool:

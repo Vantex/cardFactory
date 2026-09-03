@@ -9,6 +9,7 @@ func _ready() -> void:
 	_test_v6_ownership_and_validator_boundaries()
 	_test_planet_commands_are_atomic()
 	_test_resource_sites_bind_and_deplete()
+	_test_planet_boundaries_preserve_state()
 	if _failures > 0:
 		printerr("GALAXY LOGISTICS TESTS FAILED")
 		get_tree().quit(1)
@@ -155,6 +156,7 @@ func _test_planet_commands_are_atomic() -> void:
 func _test_resource_sites_bind_and_deplete() -> void:
 	var state := GameState.new()
 	var planets := PlanetSystem.new(state)
+	planets.initialize_colonized_resource_sites()
 	state.explored_system_ids.append("borealis")
 	state.completed_technologies.append("interstellar_logistics")
 	state.planet_inventory = {"titanium_alloy": 2.0}
@@ -179,6 +181,26 @@ func _test_resource_sites_bind_and_deplete() -> void:
 	var water_before := float(state.resource_sites["home_water_1"]["remaining"])
 	production.update(60.0)
 	_expect(float(state.resource_sites["home_water_1"]["remaining"]) == water_before, "infinite water remains unchanged after production")
+
+func _test_planet_boundaries_preserve_state() -> void:
+	var state := GameState.new()
+	var before_sites := state.resource_sites.duplicate(true)
+	var planets := PlanetSystem.new(state)
+	_expect(state.resource_sites == before_sites, "constructing PlanetSystem is read-only")
+	state.explored_system_ids.append("borealis")
+	state.completed_technologies.append("interstellar_logistics")
+	state.planet_inventory = {"titanium_alloy": 2.0}
+	var inventories_before := state.planet_inventories.duplicate(true)
+	var active_before := state.planet_inventory.duplicate(true)
+	_expect(planets.try_colonize_planet("frost").get("reason") == "missing_vehicle", "missing vehicle still rejects colonization")
+	_expect(state.planet_inventories == inventories_before and state.planet_inventory == active_before, "failed colonization does not synchronize or mutate either tray view")
+	state.colonized_planet_ids.append("frost")
+	state.planet_inventories["frost"] = {}
+	state.planet_viewports["frost"] = {"position": Vector2.ZERO, "zoom": Vector2.ONE}
+	state.explored_system_ids.erase("borealis")
+	var active_digest := GameStateCodec.state_digest_payload(state)
+	_expect(planets.try_set_active_planet("frost").get("reason") == "system_locked", "active switching respects explored systems")
+	_expect(GameStateCodec.state_digest_payload(state) == active_digest, "locked active switching leaves state unchanged")
 
 func _prepare_ashen(state: GameState) -> void:
 	state.colonized_planet_ids.append("ashen")

@@ -2,6 +2,7 @@ class_name PlanetSystem
 extends RefCounted
 
 const AMOUNT_EPSILON := 0.0000001
+const RESOURCE_SITE_RADIUS := 180.0
 
 var game_state: GameState
 var galaxy_system: GalaxySystem
@@ -9,6 +10,8 @@ var galaxy_system: GalaxySystem
 func _init(state: GameState, galaxy: GalaxySystem = null) -> void:
 	game_state = state
 	galaxy_system = galaxy if galaxy != null else GalaxySystem.new(state)
+
+func initialize_colonized_resource_sites() -> void:
 	for planet_id_value in game_state.colonized_planet_ids:
 		var planet_id := String(planet_id_value)
 		var sites := galaxy_system.build_resource_sites_for_planet(planet_id, game_state.galaxy_seed)
@@ -104,9 +107,8 @@ func try_colonize_planet(planet_id: String) -> Dictionary:
 	var required_technology := String(planet.get("required_technology_id", ""))
 	if not required_technology.is_empty() and not game_state.completed_technologies.has(required_technology):
 		return _failure("technology_locked", "缺少殖民所需科技")
-	game_state.sync_active_planet_inventory()
 	var requirements := get_colonization_requirements(planet_id)
-	var source_inventory: Dictionary = game_state.get_active_planet_inventory().duplicate(true)
+	var source_inventory: Dictionary = game_state.planet_inventory.duplicate(true)
 	var fleet: Dictionary = game_state.portable_fleet.duplicate(true)
 	for vehicle_id_value in requirements["vehicles"]:
 		var vehicle_id := String(vehicle_id_value)
@@ -143,6 +145,8 @@ func try_set_active_planet(planet_id: String) -> Dictionary:
 		return _failure("unknown_planet", "目标行星不存在")
 	if not game_state.colonized_planet_ids.has(planet_id):
 		return _failure("not_colonized", "目标行星尚未殖民")
+	if not game_state.explored_system_ids.has(String(get_planet(planet_id).get("system_id", ""))):
+		return _failure("system_locked", "目标星系尚未探索")
 	if not game_state.set_active_planet(planet_id):
 		return _failure("not_colonized", "目标行星没有可用托盘")
 	return _success("已切换活动行星", {"planet_id": planet_id})
@@ -173,6 +177,8 @@ func find_nearest_resource_site(planet_id: String, item_id: String, position: Ve
 		if String(site.get("item_id", "")) != item_id or (not bool(site.get("infinite", false)) and float(site.get("remaining", 0.0)) <= AMOUNT_EPSILON):
 			continue
 		var distance := position.distance_squared_to(site.get("position", Vector2.ZERO))
+		if distance > RESOURCE_SITE_RADIUS * RESOURCE_SITE_RADIUS + AMOUNT_EPSILON:
+			continue
 		if distance < best_distance - AMOUNT_EPSILON or (is_equal_approx(distance, best_distance) and (best.is_empty() or String(site.get("id", "")) < String(best.get("id", "")))):
 			best = site
 			best_distance = distance
