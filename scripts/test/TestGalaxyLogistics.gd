@@ -6,6 +6,7 @@ func _ready() -> void:
 	_test_schema_v6_defaults()
 	_test_catalog_is_strict_and_deterministic()
 	_test_v5_migration_is_lossless()
+	_test_v6_ownership_and_validator_boundaries()
 	if _failures > 0:
 		printerr("GALAXY LOGISTICS TESTS FAILED")
 		get_tree().quit(1)
@@ -86,6 +87,47 @@ func _test_v5_migration_is_lossless() -> void:
 	_expect(encoded == data, "v6 migration survives decode and encode without loss")
 	_expect(not encoded.has("planet_inventory"), "round trip does not persist compatibility alias")
 
+func _test_v6_ownership_and_validator_boundaries() -> void:
+	var handcraft_state := GameState.new()
+	handcraft_state.planet_inventory = {"iron_ingot": 2.0, "gear": 1.0}
+	_prepare_ashen(handcraft_state)
+	var queued := HandcraftSystem.new(handcraft_state).queue_craft("handcraft_miner", 1)
+	_expect(queued.get("ok", false), "home handcraft fixture queues one job")
+	handcraft_state.set_active_planet("ashen")
+	_expect(handcraft_state.handcraft_queue[0].get("planet_id", "") == "home", "handcraft ownership is captured when queued")
+	_expect(GameStateCodec.to_persistent_dict(handcraft_state)["handcraft_queue"][0].get("planet_id", "") == "home", "saving does not rewrite a handcraft job to the active planet")
+
+	var connection_state := GameState.new()
+	_prepare_ashen(connection_state)
+	var source := connection_state.add_building({"type": "miner", "planet_id": "ashen", "position": Vector2.ZERO, "recipe_id": "", "input_buffer": {}, "output_buffer": {}, "output_item": "iron_ore"})
+	var target := connection_state.add_building({"type": "smelter", "planet_id": "ashen", "position": Vector2(20, 0), "recipe_id": "iron_ingot_recipe", "input_buffer": {}, "output_buffer": {}})
+	var connected := connection_state.try_add_connection(source, target)
+	_expect(connected.get("ok", false), "same non-active planet endpoints can be connected")
+	_expect(connection_state.connections.get(connected.get("id", ""), {}).get("planet_id", "") == "ashen", "new connection keeps its endpoints planet")
+
+	var resource_state := GameState.new()
+	resource_state.resource_sites = GalaxySystem.new(resource_state).build_resource_sites_for_planet("home", resource_state.galaxy_seed)
+	var forged_payload := GameStateCodec.to_persistent_dict(resource_state)
+	forged_payload["resource_sites"]["forged_iron"] = {"id": "forged_iron", "planet_id": "home", "item_id": "iron_ore", "position": {"x": 0.0, "y": 0.0}, "capacity": 1, "remaining": 1, "infinite": false}
+	_expect(_error_codes(GameStateValidator.validate_persistent_dict(forged_payload)).has("invalid_resource_site"), "validator rejects a forged catalog resource site")
+
+	var viewport_payload := GameStateCodec.to_persistent_dict(GameState.new())
+	viewport_payload["planet_viewports"]["home"]["zoom"]["x"] = 0.0
+	_expect(_error_codes(GameStateValidator.validate_persistent_dict(viewport_payload)).has("invalid_planet_viewport"), "validator rejects a zero viewport zoom")
+
+	var exploration_payload := GameStateCodec.to_persistent_dict(GameState.new())
+	exploration_payload["exploration_missions"] = [{"system_id": "helios", "progress": 1.0, "duration_seconds": 1.0}]
+	exploration_payload["survey_progress_by_system"] = {"unknown": 0.5}
+	var exploration_errors := _error_codes(GameStateValidator.validate_persistent_dict(exploration_payload))
+	_expect(exploration_errors.has("invalid_exploration_mission"), "validator rejects exploration missions for explored systems")
+	_expect(exploration_errors.has("invalid_survey_progress"), "validator rejects survey progress for unknown systems")
+
+func _prepare_ashen(state: GameState) -> void:
+	state.colonized_planet_ids.append("ashen")
+	state.planet_inventories["ashen"] = {}
+	state.planet_viewports["ashen"] = {"position": Vector2.ZERO, "zoom": Vector2.ONE}
+	state.planet_metrics["ashen"] = {}
+
 func _has_changed_finite_reserve(first: Dictionary, changed: Dictionary) -> bool:
 	for site_id in first:
 		if not bool(first[site_id].get("infinite", false)) and first[site_id].get("remaining") != changed.get(site_id, {}).get("remaining"):
@@ -97,6 +139,13 @@ func _catalog_has_error(errors: Array, expected_code: String) -> bool:
 		if error_value is Dictionary and error_value.get("code") == expected_code:
 			return true
 	return false
+
+func _error_codes(errors: Array) -> Array:
+	var codes: Array = []
+	for error_value in errors:
+		if error_value is Dictionary:
+			codes.append(String(error_value.get("code", "")))
+	return codes
 
 func _expect(condition: bool, description: String) -> void:
 	if condition:

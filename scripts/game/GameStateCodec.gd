@@ -50,7 +50,7 @@ static func to_persistent_dict(state: GameState) -> Dictionary:
 		"resource_sites": state.resource_sites,
 		"construction_inventory": state.construction_inventory,
 		"cursor_payload": state.cursor_payload,
-		"handcraft_queue": _encode_handcraft_queue(state.handcraft_queue, state.active_planet_id),
+		"handcraft_queue": _encode_handcraft_queue(state.handcraft_queue),
 		"completed_technologies": completed_technologies,
 		"research_current_id": state.research_current_id,
 		"research_queue": research_queue,
@@ -125,16 +125,13 @@ static func _encode_entity_collection(source: Dictionary, runtime_fields: Dictio
 			encoded[String(key_value)] = _encode_dictionary(entity, runtime_fields)
 	return encoded
 
-static func _encode_handcraft_queue(source: Array, fallback_planet_id: String) -> Array:
+static func _encode_handcraft_queue(source: Array) -> Array:
 	var encoded: Array = []
 	for value in source:
 		if not value is Dictionary:
 			encoded.append(value)
 			continue
-		var job: Dictionary = value.duplicate(true)
-		if String(job.get("planet_id", "")).is_empty():
-			job["planet_id"] = fallback_planet_id
-		encoded.append(job)
+		encoded.append(value.duplicate(true))
 	return encoded
 
 static func _encode_dictionary(source: Dictionary, excluded_fields: Dictionary = {}) -> Dictionary:

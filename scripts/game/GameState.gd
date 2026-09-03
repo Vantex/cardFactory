@@ -224,6 +224,7 @@ func try_add_connection(source_id: String, target_id: String, requested_output_i
     var connection_id := add_connection({
         "source_id": source_id,
         "target_id": target_id,
+		"planet_id": String(buildings[source_id].get("planet_id", active_planet_id)),
         "type": "conveyor_belt_mk1",
         "item_id": output_item,
         "construction_accounted": true,

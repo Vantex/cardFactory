@@ -104,6 +104,7 @@ func queue_craft(recipe_id: String, quantity: int) -> Dictionary:
 		return {"ok": false, "message": "手工制造材料预留失败"}
 	var job := {
 		"id": game_state.generate_id("craft"),
+		"planet_id": game_state.active_planet_id,
 		"recipe_id": recipe_id,
 		"quantity_total": quantity,
 		"quantity_remaining": quantity,

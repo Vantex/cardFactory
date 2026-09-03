@@ -623,6 +623,7 @@ func _make_fixture_state(reverse_insertion_order: bool = false) -> GameState:
 	state.cursor_payload = {"item_id": "coal", "amount": 3.0}
 	state.handcraft_queue = [{
 		"id": "craft_8",
+		"planet_id": "home",
 		"recipe_id": "handcraft_miner",
 		"quantity_total": 2,
 		"quantity_remaining": 1,

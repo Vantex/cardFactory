@@ -138,11 +138,10 @@ static func _validate_galaxy_state(errors: Array, data: Dictionary, galaxy: Gala
 			else:
 				_validate_root_inventory(errors, "planet_inventory", inventories_value[planet_id], InventorySystem.MAX_PLANET_STACK)
 	_validate_viewports(errors, data.get("planet_viewports"), colonized)
-	_validate_resource_sites(errors, data.get("resource_sites"), galaxy)
 	if not _is_integral_number(data.get("galaxy_seed")):
 		_add_error(errors, "invalid_galaxy_seed", "state", "", "星区种子必须是整数")
-	if not data.get("exploration_missions") is Array or not data.get("survey_progress_by_system") is Dictionary:
-		_add_error(errors, "invalid_exploration_state", "state", "", "勘探状态无效")
+	_validate_resource_sites(errors, data.get("resource_sites"), galaxy, int(data.get("galaxy_seed", 0)))
+	_validate_exploration_state(errors, data, galaxy)
 	if not data.get("planet_metrics") is Dictionary or not data.get("portable_fleet") is Dictionary:
 		_add_error(errors, "invalid_planet_metadata", "state", "", "行星元数据无效")
 
@@ -168,8 +167,12 @@ static func _validate_viewports(errors: Array, value: Variant, colonized: Array)
 		var viewport: Variant = value.get(planet_id)
 		if not viewport is Dictionary or not _is_vector2_dict(viewport.get("position")) or not _is_vector2_dict(viewport.get("zoom")):
 			_add_error(errors, "invalid_planet_viewport", "state", planet_id, "已殖民行星视口无效")
+			continue
+		var zoom: Dictionary = viewport["zoom"]
+		if float(zoom["x"]) <= 0.0 or float(zoom["y"]) <= 0.0:
+			_add_error(errors, "invalid_planet_viewport", "state", planet_id, "行星视口缩放必须为正数")
 
-static func _validate_resource_sites(errors: Array, value: Variant, galaxy: GalaxySystem) -> void:
+static func _validate_resource_sites(errors: Array, value: Variant, galaxy: GalaxySystem, galaxy_seed: int) -> void:
 	if not value is Dictionary:
 		_add_error(errors, "invalid_resource_sites", "state", "", "资源点必须是字典")
 		return
@@ -182,12 +185,47 @@ static func _validate_resource_sites(errors: Array, value: Variant, galaxy: Gala
 			_add_error(errors, "invalid_resource_site", "resource_site", site_id, "资源点 ID 无效")
 			continue
 		seen[declared_site_id] = true
-		if galaxy.get_planet(String(site.get("planet_id", ""))).is_empty() or DataManager.get_item(String(site.get("item_id", ""))).is_empty():
-			_add_error(errors, "invalid_resource_site", "resource_site", site_id, "资源点目录绑定无效")
+		var planet_id := String(site.get("planet_id", ""))
+		var expected_sites := galaxy.build_resource_sites_for_planet(planet_id, galaxy_seed)
+		var expected: Variant = expected_sites.get(site_id)
+		if not expected is Dictionary or String(site.get("item_id", "")) != String(expected.get("item_id", "")) or bool(site.get("infinite", false)) != bool(expected.get("infinite", false)) or not _matches_resource_position(site.get("position"), expected.get("position", Vector2.ZERO)):
+			_add_error(errors, "invalid_resource_site", "resource_site", site_id, "资源点必须匹配确定性星区目录")
+			continue
 		var capacity: Variant = site.get("capacity")
 		var remaining: Variant = site.get("remaining")
-		if not _is_finite_number(capacity) or not _is_finite_number(remaining) or float(capacity) < 0.0 or float(remaining) < 0.0 or (not bool(site.get("infinite", false)) and (float(capacity) <= 0.0 or float(remaining) > float(capacity))):
+		if not _is_finite_number(capacity) or not _is_finite_number(remaining) or float(capacity) != float(expected.get("capacity", -1.0)) or float(remaining) < 0.0 or (bool(expected.get("infinite", false)) and (float(capacity) != 0.0 or float(remaining) != 0.0)) or (not bool(expected.get("infinite", false)) and (float(capacity) <= 0.0 or float(remaining) > float(capacity))):
 			_add_error(errors, "invalid_resource_reserve", "resource_site", site_id, "资源储量必须有限且合法")
+
+static func _matches_resource_position(value: Variant, expected: Vector2) -> bool:
+	return value is Dictionary and _is_finite_number(value.get("x")) and _is_finite_number(value.get("y")) and is_equal_approx(float(value.get("x")), expected.x) and is_equal_approx(float(value.get("y")), expected.y)
+
+static func _validate_exploration_state(errors: Array, data: Dictionary, galaxy: GalaxySystem) -> void:
+	var explored: Array = data.get("explored_system_ids", []) if data.get("explored_system_ids") is Array else []
+	var missions_value: Variant = data.get("exploration_missions")
+	if not missions_value is Array:
+		_add_error(errors, "invalid_exploration_mission", "state", "", "勘探任务必须是数组")
+	else:
+		var seen_systems: Dictionary = {}
+		for mission_value in missions_value:
+			if not mission_value is Dictionary:
+				_add_error(errors, "invalid_exploration_mission", "state", "", "勘探任务必须是字典")
+				continue
+			var mission: Dictionary = mission_value
+			var system_id := String(mission.get("system_id", ""))
+			var progress: Variant = mission.get("progress")
+			var duration: Variant = mission.get("duration_seconds")
+			if system_id.is_empty() or seen_systems.has(system_id) or galaxy.get_star_system(system_id).is_empty() or explored.has(system_id) or not _is_finite_number(duration) or float(duration) <= 0.0 or not _is_finite_number(progress) or float(progress) < 0.0 or (_is_finite_number(duration) and float(progress) > float(duration)):
+				_add_error(errors, "invalid_exploration_mission", "exploration", system_id, "勘探任务状态无效")
+			seen_systems[system_id] = true
+	var survey_value: Variant = data.get("survey_progress_by_system")
+	if not survey_value is Dictionary:
+		_add_error(errors, "invalid_survey_progress", "state", "", "勘探进度必须是字典")
+		return
+	for system_id_value in survey_value:
+		var system_id := String(system_id_value)
+		var progress: Variant = survey_value[system_id_value]
+		if galaxy.get_star_system(system_id).is_empty() or not _is_finite_number(progress) or float(progress) < 0.0 or float(progress) > 1.0:
+			_add_error(errors, "invalid_survey_progress", "exploration", system_id, "勘探进度必须属于已知星系且在零到一之间")
 
 static func _is_vector2_dict(value: Variant) -> bool:
 	return value is Dictionary and _is_finite_number(value.get("x")) and _is_finite_number(value.get("y"))
