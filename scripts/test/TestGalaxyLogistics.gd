@@ -10,6 +10,7 @@ func _ready() -> void:
 	_test_planet_commands_are_atomic()
 	_test_resource_sites_bind_and_deplete()
 	_test_planet_boundaries_preserve_state()
+	_test_resource_site_ties_and_terminal_depletion()
 	if _failures > 0:
 		printerr("GALAXY LOGISTICS TESTS FAILED")
 		get_tree().quit(1)
@@ -201,6 +202,22 @@ func _test_planet_boundaries_preserve_state() -> void:
 	var active_digest := GameStateCodec.state_digest_payload(state)
 	_expect(planets.try_set_active_planet("frost").get("reason") == "system_locked", "active switching respects explored systems")
 	_expect(GameStateCodec.state_digest_payload(state) == active_digest, "locked active switching leaves state unchanged")
+
+func _test_resource_site_ties_and_terminal_depletion() -> void:
+	var state := GameState.new()
+	var planets := PlanetSystem.new(state)
+	state.resource_sites = {
+		"a_site": {"id": "a_site", "planet_id": "home", "item_id": "iron_ore", "position": Vector2(-100, 0), "capacity": 2, "remaining": 2, "infinite": false},
+		"b_site": {"id": "b_site", "planet_id": "home", "item_id": "iron_ore", "position": Vector2(100, 0), "capacity": 2, "remaining": 2, "infinite": false},
+	}
+	_expect(planets.find_nearest_resource_site("home", "iron_ore", Vector2.ZERO).get("id", "") == "a_site", "equal-distance compatible sites choose the smaller stable ID")
+	var miner := state.add_building({"type": "miner", "planet_id": "home", "position": Vector2.ZERO, "output_item": "iron_ore", "resource_site_id": "a_site", "input_buffer": {}, "output_buffer": {}})
+	state.resource_sites["a_site"]["remaining"] = 0.01
+	var production := ProductionSystem.new(state)
+	production.update(60.0)
+	var output_after_depletion := float(state.buildings[miner]["output_buffer"].get("iron_ore", 0.0))
+	production.update(60.0)
+	_expect(state.buildings[miner].get("status", "") == "resource_depleted" and float(state.resource_sites["a_site"]["remaining"]) == 0.0 and float(state.buildings[miner]["output_buffer"].get("iron_ore", 0.0)) == output_after_depletion, "a second depleted tick is stable and produces nothing")
 
 func _prepare_ashen(state: GameState) -> void:
 	state.colonized_planet_ids.append("ashen")

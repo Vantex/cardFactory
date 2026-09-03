@@ -62,25 +62,12 @@ func _update_building(building: Dictionary, delta: float) -> void:
 	building["progress"] = progress
 
 func _update_extractor(building: Dictionary, building_definition: Dictionary, delta: float) -> void:
-	var power_efficiency := clampf(float(building.get("power_efficiency", 1.0)), 0.0, 1.0)
-	if power_efficiency <= 0.0:
-		building["status"] = "no_power"
-		return
 	var extraction: Dictionary = building_definition.get("extraction", {})
 	var output_item := String(building.get("output_item", extraction.get("item_id", "")))
 	var output_rate := maxf(float(building.get("output_rate", extraction.get("rate_per_minute", 0.0))), 0.0) / 60.0
 	if output_item.is_empty() or output_rate <= 0.0:
 		building["status"] = "error"
 		return
-	var speed := maxf(float(building.get("speed", 1.0)), 0.0)
-	var output_buffer: Dictionary = building.get("output_buffer", {})
-	var current_amount := float(output_buffer.get(output_item, 0.0))
-	var capacity := _get_buffer_capacity(building, building_definition, "output")
-	var available_space := maxf(capacity - current_amount, 0.0)
-	if available_space <= PROGRESS_EPSILON:
-		building["status"] = "blocked"
-		return
-	var produced := minf(output_rate * delta * speed * power_efficiency * game_state.get_technology_effect_multiplier("production_speed"), available_space)
 	var resource_site_id := String(building.get("resource_site_id", ""))
 	if resource_site_id.is_empty():
 		building["status"] = "invalid_resource_site"
@@ -94,8 +81,22 @@ func _update_extractor(building: Dictionary, building_definition: Dictionary, de
 		if remaining <= PROGRESS_EPSILON:
 			building["status"] = "resource_depleted"
 			return
-		produced = minf(produced, remaining)
-		site["remaining"] = maxf(remaining - produced, 0.0)
+	var power_efficiency := clampf(float(building.get("power_efficiency", 1.0)), 0.0, 1.0)
+	if power_efficiency <= 0.0:
+		building["status"] = "no_power"
+		return
+	var speed := maxf(float(building.get("speed", 1.0)), 0.0)
+	var output_buffer: Dictionary = building.get("output_buffer", {})
+	var current_amount := float(output_buffer.get(output_item, 0.0))
+	var capacity := _get_buffer_capacity(building, building_definition, "output")
+	var available_space := maxf(capacity - current_amount, 0.0)
+	if available_space <= PROGRESS_EPSILON:
+		building["status"] = "blocked"
+		return
+	var produced := minf(output_rate * delta * speed * power_efficiency * game_state.get_technology_effect_multiplier("production_speed"), available_space)
+	if not bool(site.get("infinite", false)):
+		produced = minf(produced, float(site.get("remaining", 0.0)))
+		site["remaining"] = maxf(float(site.get("remaining", 0.0)) - produced, 0.0)
 		game_state.resource_sites[resource_site_id] = site
 	var next_amount := current_amount + produced
 	output_buffer[output_item] = next_amount

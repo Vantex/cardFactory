@@ -19,6 +19,7 @@ func _ready() -> void:
 		_test_construction_consumes_and_refunds_real_items()
 		_test_extractor_placement_binds_active_planet_site()
 		_test_extractor_placement_respects_planet_and_radius()
+		_test_construction_removal_result_contract()
 		_test_handcraft_preview_queue_and_persistence()
 		_test_legacy_points_migrate_into_construction_inventory()
 		await _test_workspace_inventory_contract()
@@ -172,6 +173,15 @@ func _test_extractor_placement_respects_planet_and_radius() -> void:
 	var far: Dictionary = construction.try_place_building("miner", Vector2(1000, 1000))
 	_expect(far.get("reason", "") == "invalid_resource_site", "out-of-radius extractor placement has a stable reason")
 	_expect(GameStateCodec.state_digest_payload(state) == before, "out-of-radius placement consumes no item or ID")
+
+func _test_construction_removal_result_contract() -> void:
+	var state := GameState.new()
+	var id := state.add_building({"type": "smelter", "position": Vector2.ZERO, "input_buffer": {}, "output_buffer": {}})
+	var construction: RefCounted = _construction_script.new(state)
+	var removed: Dictionary = construction.try_remove_building(id)
+	_expect(removed.get("ok", false) and removed.has("details") and removed.get("details", {}).get("building_id", "") == id, "construction removal returns stable success details while preserving removal result")
+	var missing: Dictionary = construction.try_remove_building("missing")
+	_expect(not missing.get("ok", true) and missing.has("reason") and missing.has("details"), "construction removal translates failures into the command result contract")
 
 func _test_handcraft_preview_queue_and_persistence() -> void:
 	var state := GameState.new()

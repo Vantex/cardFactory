@@ -69,7 +69,11 @@ func try_place_building(building_type: String, position: Vector2) -> Dictionary:
 	return {"ok": true, "reason": "", "message": "建筑已放置", "details": {"id": building_id}, "id": building_id}
 
 func try_remove_building(building_id: String) -> Dictionary:
-	return game_state.try_remove_entities([building_id])
+	var result := game_state.try_remove_entities([building_id])
+	var normalized := result.duplicate(true)
+	normalized["reason"] = String(result.get("reason", ""))
+	normalized["details"] = {"building_id": building_id, "result": result.duplicate(true)}
+	return normalized
 
 func get_owned_count(building_type: String) -> float:
 	return float(game_state.construction_inventory.get(building_type, 0.0))

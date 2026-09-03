@@ -232,6 +232,10 @@ func _test_extraction_boundaries() -> void:
 	state.buildings["miner"]["output_buffer"] = {}
 	ProductionSystem.new(state).update(1.0)
 	_expect(state.buildings["miner"].get("status") == "invalid_resource_site", "unbound extractors cannot produce for free")
+	state.buildings["miner"]["power_efficiency"] = 0.0
+	state.buildings["miner"]["output_buffer"] = {"iron_ore": 60.0}
+	ProductionSystem.new(state).update(1.0)
+	_expect(state.buildings["miner"].get("status") == "invalid_resource_site", "invalid binding has priority over no-power and full-buffer states")
 
 func _iron_output_after_seconds(completed: Array, levels: Dictionary, seconds: float) -> float:
 	var state := GameState.new()
