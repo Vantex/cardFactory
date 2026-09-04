@@ -163,7 +163,7 @@ func show_notice(message: String, tone: String = "info") -> void:
 		_toast_timer.start()
 
 func is_pointer_over_ui(viewport_position: Vector2) -> bool:
-	for node_name in ["TopBar", "ResourceRail", "InspectorPanel", "ConstructionDock", "BlueprintWorkspace", "CampaignWorkspace", "MiniMap", "TechnologyPanel", "CodexWorkspace"]:
+	for node_name in ["TopBar", "ResourceRail", "InspectorPanel", "ConstructionDock", "BlueprintWorkspace", "CampaignWorkspace", "MiniMap", "TechnologyPanel", "CodexWorkspace", "GalaxyMap"]:
 		var region := get_node_or_null(node_name) as Control
 		if region != null and region.visible and Rect2(Vector2.ZERO, region.size).has_point(region.get_global_transform_with_canvas().affine_inverse() * viewport_position):
 			return true
@@ -177,6 +177,9 @@ func refresh_now(_arg_1 = null, _arg_2 = null, _arg_3 = null) -> void:
 	_construction_mode.text = "当前：%s" % ("选择建筑" if _placement_building_type.is_empty() else "放置 %s" % _building_name(_placement_building_type))
 	_refresh_construction_dock(state)
 	_refresh_inspector(state)
+	var galaxy_map := get_node_or_null("GalaxyMap")
+	if galaxy_map != null and galaxy_map.has_method("refresh_now"):
+		galaxy_map.call("refresh_now")
 
 func _on_building_pressed(building_type: String) -> void:
 	_selected_building_id = ""
@@ -381,8 +384,16 @@ func _toggle_codex_workspace() -> void:
 		else:
 			show_exclusive_workspace("CodexWorkspace")
 
+func _toggle_galaxy_workspace() -> void:
+	var galaxy_map := get_node_or_null("GalaxyMap") as Control
+	if galaxy_map != null:
+		if galaxy_map.visible:
+			galaxy_map.hide()
+		else:
+			show_exclusive_workspace("GalaxyMap")
+
 func show_exclusive_workspace(workspace_name: String) -> void:
-	for candidate_name in ["TechnologyPanel", "CampaignWorkspace", "BlueprintWorkspace", "CodexWorkspace"]:
+	for candidate_name in ["TechnologyPanel", "CampaignWorkspace", "BlueprintWorkspace", "CodexWorkspace", "GalaxyMap"]:
 		var workspace := get_node_or_null(candidate_name) as Control
 		if workspace != null:
 			workspace.visible = candidate_name == workspace_name
@@ -446,8 +457,15 @@ func _create_top_bar() -> void:
 	analysis_button.size = Vector2(58, 34)
 	analysis_button.pressed.connect(_toggle_codex_workspace)
 	top_bar.add_child(analysis_button)
-	_top_status.position = Vector2(474, 16)
-	_top_status.size = Vector2(664, 24)
+	var galaxy_button := Button.new()
+	galaxy_button.name = "GalaxyButton"
+	galaxy_button.text = "星图"
+	galaxy_button.position = Vector2(472, 9)
+	galaxy_button.size = Vector2(58, 34)
+	galaxy_button.pressed.connect(_toggle_galaxy_workspace)
+	top_bar.add_child(galaxy_button)
+	_top_status.position = Vector2(538, 16)
+	_top_status.size = Vector2(600, 24)
 	_top_status.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	top_bar.add_child(_top_status)
 

@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://main004"]
+[gd_scene load_steps=12 format=3 uid="uid://main004"]
 
 [ext_resource type="Script" path="res://scenes/main/Main.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/rendering/CardRenderer.gd" id="2_card"]
@@ -10,6 +10,7 @@
 [ext_resource type="Script" path="res://scenes/ui/MiniMap.gd" id="8_minimap"]
 [ext_resource type="Script" path="res://scenes/ui/CampaignWorkspace.gd" id="9_campaign"]
 [ext_resource type="Script" path="res://scenes/ui/TutorialOverlay.gd" id="10_tutorial"]
+[ext_resource type="Script" path="res://scenes/ui/GalaxyMap.gd" id="11_galaxy"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_main")
@@ -44,6 +45,19 @@ script = ExtResource("8_minimap")
 
 [node name="CampaignWorkspace" type="Control" parent="FactoryWorkspaceUI"]
 script = ExtResource("9_campaign")
+
+[node name="GalaxyMap" type="Control" parent="FactoryWorkspaceUI"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 226.0
+offset_top = 60.0
+offset_right = -296.0
+offset_bottom = -100.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("11_galaxy")
 
 [node name="TutorialOverlay" type="Control" parent="FactoryWorkspaceUI"]
 script = ExtResource("10_tutorial")

@@ -13,6 +13,8 @@ func _ready() -> void:
 	_test_resource_site_ties_and_terminal_depletion()
 	_test_power_and_belt_boundaries_are_planet_local()
 	_test_exploration_update_advances_each_mission_once()
+	_test_exploration_transactions_are_atomic_and_fixed_time()
+	_test_galaxy_search_and_summaries_are_read_only()
 	_test_objectives_read_only_the_active_planet_inventory()
 	_test_input_handler_routes_connection_through_active_planet_boundary()
 	await _test_main_travel_restores_camera_and_cleans_canvas_state()
@@ -274,6 +276,91 @@ func _test_exploration_update_advances_each_mission_once() -> void:
 	galaxy.call("update_exploration", 0.25)
 	_expect(state.exploration_missions.is_empty() and state.explored_system_ids.has("borealis") and float(state.survey_progress_by_system["borealis"]) == 1.0, "galaxy phase completes and removes a finished mission")
 
+func _test_exploration_transactions_are_atomic_and_fixed_time() -> void:
+	var contract_probe := GalaxySystem.new(GameState.new())
+	var has_contract := contract_probe.has_method("get_exploration_requirements") and contract_probe.has_method("try_explore_system") and contract_probe.has_method("get_exploration_duration")
+	_expect(has_contract, "galaxy exposes the exploration transaction contract")
+	if not has_contract:
+		return
+	var unknown_state := _exploration_ready_state()
+	_expect_exploration_failure_unchanged(unknown_state, "missing", "unknown_system")
+
+	var technology_state := GameState.new()
+	technology_state.planet_inventory["space_warper"] = 2.0
+	technology_state.sync_active_planet_inventory()
+	_expect_exploration_failure_unchanged(technology_state, "borealis", "technology_locked")
+
+	var prerequisite_state := _exploration_ready_state()
+	_expect_exploration_failure_unchanged(prerequisite_state, "neutron", "prerequisite_locked")
+
+	var material_state := GameState.new()
+	material_state.completed_technologies.append("interstellar_logistics")
+	_expect_exploration_failure_unchanged(material_state, "borealis", "missing_materials")
+
+	var running_state := _exploration_ready_state()
+	running_state.exploration_missions = [{"system_id": "borealis", "progress": 1.0, "duration_seconds": 24.0}]
+	running_state.survey_progress_by_system["borealis"] = 1.0 / 24.0
+	_expect_exploration_failure_unchanged(running_state, "borealis", "mission_running")
+
+	var explored_state := _exploration_ready_state()
+	_expect_exploration_failure_unchanged(explored_state, "helios", "already_explored")
+
+	var sixty_hz_state := _exploration_ready_state()
+	var sixty_hz_galaxy := GalaxySystem.new(sixty_hz_state)
+	var inventory_before := sixty_hz_state.planet_inventory.duplicate(true)
+	var started: Dictionary = sixty_hz_galaxy.call("try_explore_system", "borealis")
+	_expect(started.get("ok", false), "ready system starts surveying")
+	_expect(sixty_hz_state.exploration_missions.size() == 1, "one background mission is created")
+	_expect(float(sixty_hz_state.planet_inventory.get("space_warper", 0.0)) == float(inventory_before.get("space_warper", 0.0)) - 2.0, "survey charges the active planet tray exactly once")
+	_expect(sixty_hz_state.planet_inventories["home"] == sixty_hz_state.planet_inventory, "survey cost keeps the active tray compatibility view synchronized")
+	var repeat_digest := GameStateCodec.state_digest_payload(sixty_hz_state)
+	var repeated: Dictionary = sixty_hz_galaxy.call("try_explore_system", "borealis")
+	_expect(not repeated.get("ok", true) and repeated.get("reason", "") == "mission_running" and GameStateCodec.state_digest_payload(sixty_hz_state) == repeat_digest, "repeated survey requests neither charge again nor create another mission")
+	var duration := float(sixty_hz_galaxy.call("get_exploration_duration", "borealis"))
+	var coarse_state := _exploration_ready_state()
+	var coarse_galaxy := GalaxySystem.new(coarse_state)
+	coarse_galaxy.call("try_explore_system", "borealis")
+	var sixty_hz_engine := SimulationEngine.new(sixty_hz_state)
+	var coarse_engine := SimulationEngine.new(coarse_state)
+	_run_fixed_seconds(sixty_hz_engine, duration / 2.0, 1.0 / 60.0)
+	_run_fixed_seconds(coarse_engine, duration / 2.0, 5.0 / 60.0)
+	_expect(is_equal_approx(float(sixty_hz_state.survey_progress_by_system["borealis"]), 0.5) and sixty_hz_state.survey_progress_by_system == coarse_state.survey_progress_by_system and sixty_hz_state.exploration_missions == coarse_state.exploration_missions, "survey progress is identical midway across different frame partitions")
+	_run_fixed_seconds(sixty_hz_engine, duration / 2.0, 1.0 / 60.0)
+	_run_fixed_seconds(coarse_engine, duration / 2.0, 5.0 / 60.0)
+	_expect(sixty_hz_state.survey_progress_by_system == coarse_state.survey_progress_by_system and sixty_hz_state.exploration_missions == coarse_state.exploration_missions, "survey completion is identical across different frame partitions")
+	_expect(sixty_hz_state.explored_system_ids.has("borealis"), "survey completes on simulation time")
+	_expect(sixty_hz_state.colonized_planet_ids.has("frost"), "first planet becomes a pioneer landing")
+	_expect(sixty_hz_state.planet_inventories.has("frost") and sixty_hz_state.planet_viewports.has("frost") and sixty_hz_state.planet_metrics.has("frost"), "pioneer landing creates the planet runtime records")
+	_expect(sixty_hz_state.resource_sites.has("frost_iron_1"), "pioneer landing initializes catalog resource sites")
+
+func _test_galaxy_search_and_summaries_are_read_only() -> void:
+	var state := _exploration_ready_state()
+	state.buildings["frost_factory"] = {"id": "frost_factory", "type": "smelter", "planet_id": "frost", "position": Vector2.ZERO}
+	var galaxy := GalaxySystem.new(state)
+	var has_contract := galaxy.has_method("search") and galaxy.has_method("get_system_summary") and galaxy.has_method("get_planet_summary") and _method_argument_count(galaxy, "get_system_distance") == 2
+	_expect(has_contract, "galaxy exposes search, summary, and pairwise distance queries")
+	if not has_contract:
+		return
+	var digest_before := GameStateCodec.state_digest_payload(state)
+	var code_results: Dictionary = galaxy.call("search", "冰晶恒星系")
+	var id_results: Dictionary = galaxy.call("search", "BOREALIS")
+	var resource_results: Dictionary = galaxy.call("search", "IRON_ORE")
+	var environment_results: Dictionary = galaxy.call("search", "永冻")
+	_expect(code_results.get("system_ids", []) == ["borealis"] and id_results.get("system_ids", []) == ["borealis"], "search is case insensitive across system code and id")
+	_expect(resource_results.get("planet_ids", []) == ["ashen", "frost", "home", "magnetar"], "resource search returns planets in stable catalog id order")
+	_expect(environment_results.get("planet_ids", []) == ["frost"], "environment search matches planet type")
+	var system_summary: Dictionary = galaxy.call("get_system_summary", "borealis")
+	var planet_summary: Dictionary = galaxy.call("get_planet_summary", "frost")
+	_expect(system_summary.get("planet_ids", []) == ["frost", "boreal_giant"] and system_summary.has("exploration"), "system summary combines catalog and exploration facts")
+	_expect(planet_summary.get("resource_item_ids", []) == ["copper_ore", "iron_ore", "stone", "water"] and planet_summary.has("colonization") and planet_summary.get("industry", {}).get("building_count") == 1, "planet summary exposes resource, colonization, and industrial facts")
+	if not system_summary.is_empty():
+		system_summary["planet_ids"].append("mutated")
+	if not planet_summary.is_empty():
+		planet_summary["industry"]["inventory"]["forged"] = 1.0
+	_expect(GameStateCodec.state_digest_payload(state) == digest_before, "search and summary queries do not advance missions or mutate domain state")
+	_expect(not galaxy.call("get_system_summary", "borealis").get("planet_ids", []).has("mutated") and not galaxy.call("get_planet_summary", "frost").get("industry", {}).get("inventory", {}).has("forged"), "summary results are deep copies")
+	_expect(is_equal_approx(float(galaxy.call("get_system_distance", "helios", "borealis")), 4.2), "system distance measures catalog positions")
+
 func _test_objectives_read_only_the_active_planet_inventory() -> void:
 	var state := GameState.new()
 	_prepare_frost(state)
@@ -379,6 +466,25 @@ func _prepare_frost(state: GameState) -> void:
 	state.planet_inventories["frost"] = {}
 	state.planet_viewports["frost"] = {"position": Vector2.ZERO, "zoom": Vector2.ONE}
 	state.planet_metrics["frost"] = {}
+
+func _exploration_ready_state() -> GameState:
+	var state := GameState.new()
+	state.completed_technologies.append("interstellar_logistics")
+	state.planet_inventory["space_warper"] = 7.0
+	state.sync_active_planet_inventory()
+	return state
+
+func _expect_exploration_failure_unchanged(state: GameState, system_id: String, reason: String) -> void:
+	var galaxy := GalaxySystem.new(state)
+	var digest_before := GameStateCodec.state_digest_payload(state)
+	var result: Dictionary = galaxy.call("try_explore_system", system_id)
+	_expect(not result.get("ok", true) and result.get("reason", "") == reason, "exploration rejects %s with a stable reason" % reason)
+	_expect(GameStateCodec.state_digest_payload(state) == digest_before, "exploration failure %s preserves the complete digest" % reason)
+
+func _run_fixed_seconds(engine: SimulationEngine, seconds: float, frame_delta: float) -> void:
+	var frame_count := roundi(seconds / frame_delta)
+	for _frame in range(frame_count):
+		engine.update(frame_delta)
 
 func _has_changed_finite_reserve(first: Dictionary, changed: Dictionary) -> bool:
 	for site_id in first:

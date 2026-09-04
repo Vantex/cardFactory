@@ -24,8 +24,9 @@ func _ready() -> void:
 	_test_existing_recipe_connection_rules()
 	_test_rectangle_overlap_contract()
 	_test_connection_activity_contract()
-	_test_renderer_geometry_contract()
+	await _test_renderer_geometry_contract()
 	await _test_workspace_chrome_contract()
+	await _test_formal_galaxy_workspace_contract()
 	await _test_workspace_live_content_and_actions()
 	await _test_selection_and_placement_mode_alignment()
 	await _test_main_scene_integration_contract()
@@ -33,7 +34,7 @@ func _ready() -> void:
 	await _test_canvas_input_contract()
 	_test_real_production_loop()
 
-	var state := GameState.new()
+	var state := _new_factory_state()
 	_expect(state.construction_inventory.get("miner") == 1.0 and state.construction_inventory.get("smelter") == 1.0, "new workspaces start with a real construction kit")
 
 	var miner: Dictionary = state.try_place_building("miner", Vector2(100, 100))
@@ -78,7 +79,7 @@ func _ready() -> void:
 	get_tree().quit(0)
 
 func _test_workspace_chrome_contract() -> void:
-	GameManager.replace_game_state(GameState.new())
+	GameManager.replace_game_state(_new_factory_state())
 	var workspace_script := load("res://scenes/ui/FactoryWorkspaceUI.gd") as Script
 	_expect(workspace_script != null, "workspace UI script is available")
 	if workspace_script == null:
@@ -132,8 +133,142 @@ func _test_workspace_chrome_contract() -> void:
 	workspace.queue_free()
 	await get_tree().process_frame
 
+func _test_formal_galaxy_workspace_contract() -> void:
+	var state := _new_factory_state()
+	state.completed_technologies.append("interstellar_logistics")
+	state.planet_inventory["space_warper"] = 4.0
+	state.planet_inventory["titanium_alloy"] = 20.0
+	state.portable_fleet["logistics_vessel"] = 2.0
+	state.sync_active_planet_inventory()
+	GameManager.game_state = state
+	GameManager.simulation_engine = SimulationEngine.new(state)
+	var viewport := SubViewport.new()
+	viewport.size = Vector2i(1152, 648)
+	add_child(viewport)
+	var main: Node = load("res://scenes/main/Main.tscn").instantiate()
+	viewport.add_child(main)
+	await get_tree().process_frame
+	var workspace: FactoryWorkspaceUI = main.get_node("FactoryWorkspaceUI")
+	var galaxy_map := workspace.get_node_or_null("GalaxyMap") as Control
+	_expect(galaxy_map != null and not galaxy_map.visible, "formal galaxy map is mounted in Main and starts hidden")
+	_expect(workspace.get_node_or_null("TopBar/GalaxyButton") is Button, "top bar exposes the galaxy workspace entry")
+	if galaxy_map == null:
+		viewport.queue_free()
+		await get_tree().process_frame
+		return
+	var required_controls := {
+		"Margin": MarginContainer,
+		"Margin/Columns": HBoxContainer,
+		"Margin/Columns/SystemPane": VBoxContainer,
+		"Margin/Columns/SystemPane/Search": LineEdit,
+		"Margin/Columns/SystemPane/SystemScroll": ScrollContainer,
+		"Margin/Columns/SystemPane/SystemScroll/SystemList": VBoxContainer,
+		"Margin/Columns/PlanetPane/PlanetScroll": ScrollContainer,
+		"Margin/Columns/PlanetPane/PlanetScroll/PlanetList": VBoxContainer,
+		"Margin/Columns/DetailsPane/DetailsScroll": ScrollContainer,
+		"Margin/Columns/DetailsPane/DetailsScroll/Details/ResourceSummary": Label,
+		"Margin/Columns/DetailsPane/DetailsScroll/Details/ColonizationSummary": Label,
+		"Margin/Columns/DetailsPane/DetailsScroll/Details/IndustrySummary": Label,
+		"Margin/Columns/DetailsPane/Actions/ExploreButton": Button,
+		"Margin/Columns/DetailsPane/Actions/ColonizeButton": Button,
+		"Margin/Columns/DetailsPane/Actions/TravelButton": Button,
+	}
+	var has_real_controls := true
+	for path_value in required_controls:
+		var control := galaxy_map.get_node_or_null(String(path_value))
+		if control == null or not is_instance_of(control, required_controls[path_value]):
+			has_real_controls = false
+	_expect(has_real_controls, "galaxy workspace uses real search, list, scroll, summary, and action controls")
+	var has_passive_contract := galaxy_map.has_signal("explore_requested") and galaxy_map.has_signal("colonize_requested") and galaxy_map.has_signal("travel_requested") and galaxy_map.has_method("configure") and galaxy_map.has_method("refresh_now") and galaxy_map.has_method("get_selected_system_id") and galaxy_map.has_method("get_selected_planet_id")
+	_expect(has_passive_contract, "galaxy workspace exposes only the three intent signals and query configuration contract")
+	var injected_galaxy: GalaxySystem = main.get("_galaxy_system")
+	var injected_planets: PlanetSystem = main.get("_planet_system")
+	_expect(galaxy_map.get("game_state") == state and galaxy_map.get("galaxy_system") == injected_galaxy and galaxy_map.get("planet_system") == injected_planets and injected_planets.galaxy_system == injected_galaxy, "Main injects one shared galaxy service and one planet service into the passive workspace")
+	if not has_real_controls or not has_passive_contract:
+		viewport.queue_free()
+		await get_tree().process_frame
+		return
+
+	workspace.show_exclusive_workspace("GalaxyMap")
+	await get_tree().process_frame
+	_expect(galaxy_map.visible and workspace.is_pointer_over_ui(galaxy_map.get_global_rect().get_center()), "visible galaxy map participates in workspace hit testing")
+	for other_name in ["TechnologyPanel", "CampaignWorkspace", "BlueprintWorkspace", "CodexWorkspace"]:
+		workspace.show_exclusive_workspace(other_name)
+		var visible_count := 0
+		for candidate_name in ["GalaxyMap", "TechnologyPanel", "CampaignWorkspace", "BlueprintWorkspace", "CodexWorkspace"]:
+			var candidate := workspace.get_node_or_null(candidate_name) as Control
+			if candidate != null and candidate.visible:
+				visible_count += 1
+		_expect(visible_count <= 1, "opening %s keeps workspaces mutually exclusive" % other_name)
+
+	galaxy_map.call("_on_system_selected", "borealis")
+	galaxy_map.call("_on_planet_selected", "frost")
+	var search: LineEdit = galaxy_map.get_node("Margin/Columns/SystemPane/Search")
+	var system_scroll: ScrollContainer = galaxy_map.get_node("Margin/Columns/SystemPane/SystemScroll")
+	var planet_scroll: ScrollContainer = galaxy_map.get_node("Margin/Columns/PlanetPane/PlanetScroll")
+	var detail_scroll: ScrollContainer = galaxy_map.get_node("Margin/Columns/DetailsPane/DetailsScroll")
+	search.text = "BOREALIS"
+	system_scroll.scroll_vertical = 3
+	planet_scroll.scroll_vertical = 4
+	detail_scroll.scroll_vertical = 5
+	var original_system_list := galaxy_map.get_node("Margin/Columns/SystemPane/SystemScroll/SystemList")
+	galaxy_map.call("refresh_now")
+	_expect(galaxy_map.call("get_selected_system_id") == "borealis" and galaxy_map.call("get_selected_planet_id") == "frost" and search.text == "BOREALIS", "refresh preserves system, planet, and search selections")
+	_expect(galaxy_map.get_node("Margin/Columns/SystemPane/SystemScroll/SystemList") == original_system_list and system_scroll.scroll_vertical == 3 and planet_scroll.scroll_vertical == 4 and detail_scroll.scroll_vertical == 5, "refresh reuses controls and preserves all scroll positions")
+	var colonize_button: Button = galaxy_map.get_node("Margin/Columns/DetailsPane/Actions/ColonizeButton")
+	var travel_button: Button = galaxy_map.get_node("Margin/Columns/DetailsPane/Actions/TravelButton")
+	var colonize_result := injected_planets.try_colonize_planet("frost")
+	var travel_result := injected_planets.try_set_active_planet("frost")
+	_expect(colonize_button.disabled and colonize_button.tooltip_text == colonize_result.get("message", "") and travel_button.disabled and travel_button.tooltip_text == travel_result.get("message", ""), "disabled colonize and travel reasons match their domain command results")
+
+	var passive_state := _new_factory_state()
+	passive_state.completed_technologies.append("interstellar_logistics")
+	passive_state.planet_inventory["space_warper"] = 4.0
+	passive_state.sync_active_planet_inventory()
+	var passive_galaxy := GalaxySystem.new(passive_state)
+	var passive_planets := PlanetSystem.new(passive_state, passive_galaxy)
+	var passive_map := load("res://scenes/ui/GalaxyMap.gd").new() as Control
+	viewport.add_child(passive_map)
+	await get_tree().process_frame
+	passive_map.call("configure", passive_state, passive_galaxy, passive_planets)
+	passive_map.call("_on_system_selected", "borealis")
+	passive_map.call("_on_planet_selected", "frost")
+	var intents: Array[String] = []
+	passive_map.explore_requested.connect(func(system_id: String) -> void: intents.append("explore:%s" % system_id))
+	passive_map.colonize_requested.connect(func(planet_id: String) -> void: intents.append("colonize:%s" % planet_id))
+	passive_map.travel_requested.connect(func(planet_id: String) -> void: intents.append("travel:%s" % planet_id))
+	var digest_before := GameStateCodec.state_digest_payload(passive_state)
+	passive_map.call("_on_explore_pressed")
+	passive_map.call("_on_colonize_pressed")
+	passive_map.call("_on_travel_pressed")
+	_expect(intents == ["explore:borealis", "colonize:frost", "travel:frost"], "galaxy action buttons emit only their selected domain intents")
+	_expect(GameStateCodec.state_digest_payload(passive_state) == digest_before, "unconnected passive galaxy button handlers cannot mutate the domain digest")
+	passive_map.queue_free()
+
+	var notices: Array[Dictionary] = []
+	var notice_listener := func(message: String, tone: String) -> void: notices.append({"message": message, "tone": tone})
+	EventBus.notice_requested.connect(notice_listener)
+	galaxy_map.explore_requested.emit("borealis")
+	galaxy_map.colonize_requested.emit("ashen")
+	galaxy_map.travel_requested.emit("ashen")
+	_expect(state.exploration_missions.size() == 1 and state.colonized_planet_ids.has("ashen") and state.active_planet_id == "ashen", "Main routes galaxy intents through the authoritative exploration, colonization, and travel commands")
+	_expect(notices.size() == 3 and notices[0].tone == "success" and notices[1].tone == "success" and notices[2].tone == "success", "Main publishes one result notice for each galaxy intent")
+	galaxy_map.call("_on_system_selected", "borealis")
+	var explore_button: Button = galaxy_map.get_node("Margin/Columns/DetailsPane/Actions/ExploreButton")
+	var exploration_requirements := injected_galaxy.get_exploration_requirements("borealis")
+	_expect(explore_button.disabled and explore_button.tooltip_text == exploration_requirements.get("message", ""), "disabled exploration reason matches the galaxy domain result")
+	var camera: Camera2D = main.get_node("WorldCamera")
+	var camera_before_close := {"position": camera.global_position, "zoom": camera.zoom}
+	workspace.show_exclusive_workspace("GalaxyMap")
+	var map_center := galaxy_map.get_global_rect().get_center()
+	workspace.call("_toggle_galaxy_workspace")
+	_expect(not galaxy_map.visible and not workspace.is_pointer_over_ui(map_center) and camera.global_position == camera_before_close.position and camera.zoom == camera_before_close.zoom, "closing the galaxy workspace restores world hit testing without changing the active planet camera")
+	EventBus.notice_requested.disconnect(notice_listener)
+	viewport.queue_free()
+	await get_tree().process_frame
+
 func _test_workspace_live_content_and_actions() -> void:
-	GameManager.game_state = GameState.new()
+	GameManager.game_state = _new_factory_state()
 	GameManager.simulation_engine = SimulationEngine.new(GameManager.game_state)
 	var main_scene := load("res://scenes/main/Main.tscn") as PackedScene
 	var test_viewport := SubViewport.new()
@@ -263,7 +398,7 @@ func _test_workspace_live_content_and_actions() -> void:
 	await get_tree().process_frame
 
 func _test_main_scene_integration_contract() -> void:
-	GameManager.game_state = GameState.new()
+	GameManager.game_state = _new_factory_state()
 	var main_scene := load("res://scenes/main/Main.tscn") as PackedScene
 	_expect(main_scene != null, "main scene is available for workspace integration")
 	if main_scene == null:
@@ -389,7 +524,7 @@ func _test_main_scene_integration_contract() -> void:
 	await get_tree().process_frame
 
 func _test_selection_and_placement_mode_alignment() -> void:
-	GameManager.game_state = GameState.new()
+	GameManager.game_state = _new_factory_state()
 	GameManager.simulation_engine = SimulationEngine.new(GameManager.game_state)
 	var main_scene := load("res://scenes/main/Main.tscn") as PackedScene
 	var test_viewport := SubViewport.new()
@@ -423,6 +558,7 @@ func _test_selection_and_placement_mode_alignment() -> void:
 	var mode_label := workspace.get_node("ConstructionDock/Mode") as Label
 	_expect(input_handler.call("get_mode_name") == "idle" and (not workspace.has_method("get_placement_building_type") or workspace.call("get_placement_building_type") == "") and "选择建筑" in mode_label.text, "Escape clears the real placement mode and its visible dock state")
 	_expect(app_shell.call("get_screen_name") == "game" and GameManager.is_session_active(), "Escape consumed by an active canvas operation does not also leave the game session")
+	state.resource_sites = GalaxySystem.new(state).build_resource_sites_for_planet("home", state.galaxy_seed)
 	test_viewport.push_input(escape_event, true)
 	await get_tree().process_frame
 	var returned_save: Dictionary = GameManager.get_save_system().load_slot(9)
@@ -434,7 +570,7 @@ func _test_selection_and_placement_mode_alignment() -> void:
 	await get_tree().process_frame
 
 func _test_transformed_coordinate_connection_gestures() -> void:
-	GameManager.game_state = GameState.new()
+	GameManager.game_state = _new_factory_state()
 	GameManager.simulation_engine = SimulationEngine.new(GameManager.game_state)
 	var main_scene := load("res://scenes/main/Main.tscn") as PackedScene
 	_expect(main_scene != null, "main scene is available for transformed coordinate gestures")
@@ -504,7 +640,9 @@ func _test_transformed_coordinate_connection_gestures() -> void:
 	await get_tree().process_frame
 
 func _test_real_production_loop() -> void:
-	var state := GameState.new()
+	var state := _new_factory_state()
+	state.planet_inventory["coal"] = 10.0
+	state.sync_active_planet_inventory()
 	var miner: Dictionary = state.try_place_building("miner", Vector2(100, 100))
 	var smelter: Dictionary = state.try_place_building("smelter", Vector2(420, 100))
 	var generator: Dictionary = state.try_place_building("power_generator", Vector2(740, 100))
@@ -525,17 +663,17 @@ func _test_real_production_loop() -> void:
 
 func _test_explicit_building_costs() -> void:
 	for building_type in ["miner", "smelter", "assembling_machine_mk1", "power_generator"]:
-		var state := GameState.new()
+		var state := _new_factory_state()
 		var result: Dictionary = state.try_place_building(building_type, Vector2(100, 100))
 		_expect(result.ok and state.construction_inventory.get(building_type) == 0.0, "%s consumes exactly one matching construction item" % building_type)
 
-	var unconfigured_state := GameState.new()
+	var unconfigured_state := _new_factory_state()
 	var inventory_before := unconfigured_state.construction_inventory.duplicate(true)
 	var unconfigured_result: Dictionary = unconfigured_state.try_place_building("solar_panel", Vector2(100, 100))
 	_expect(not unconfigured_result.ok and unconfigured_state.construction_inventory == inventory_before and unconfigured_state.buildings.is_empty(), "buildings without configured construction items are rejected without state changes")
 
 func _test_existing_recipe_connection_rules() -> void:
-	var compatible_state := GameState.new()
+	var compatible_state := _new_factory_state()
 	var compatible_miner: Dictionary = compatible_state.try_place_building("miner", Vector2(100, 100))
 	var compatible_smelter: Dictionary = compatible_state.try_place_building("smelter", Vector2(420, 100))
 	compatible_state.set_entity_recipe(compatible_smelter.id, "iron_ingot_recipe")
@@ -543,7 +681,7 @@ func _test_existing_recipe_connection_rules() -> void:
 	var compatible_connection: Dictionary = compatible_state.try_add_connection(compatible_miner.id, compatible_smelter.id)
 	_expect(compatible_connection.ok and compatible_state.get_building(compatible_smelter.id).recipe_id == "iron_ingot_recipe" and compatible_state.get_building(compatible_smelter.id).progress == 0.5, "compatible existing recipes are accepted without being rewritten")
 
-	var incompatible_state := GameState.new()
+	var incompatible_state := _new_factory_state()
 	var incompatible_miner: Dictionary = incompatible_state.try_place_building("miner", Vector2(100, 100))
 	var incompatible_smelter: Dictionary = incompatible_state.try_place_building("smelter", Vector2(420, 100))
 	incompatible_state.set_entity_recipe(incompatible_smelter.id, "copper_ingot_recipe")
@@ -552,20 +690,20 @@ func _test_existing_recipe_connection_rules() -> void:
 	_expect(not incompatible_connection.ok and incompatible_state.connections.is_empty() and incompatible_state.get_building(incompatible_smelter.id).recipe_id == "copper_ingot_recipe" and incompatible_state.get_building(incompatible_smelter.id).progress == 0.5, "incompatible existing recipes reject connections without state changes")
 
 func _test_rectangle_overlap_contract() -> void:
-	var partial_state := GameState.new()
+	var partial_state := _new_factory_state()
 	_expect(partial_state.try_place_building("miner", Vector2(100, 100)).ok, "overlap fixture places its first card")
 	_expect(not partial_state.try_place_building("miner", Vector2(300, 180)).ok, "partial 232 by 144 card overlap is rejected")
 
-	var containment_state := GameState.new()
+	var containment_state := _new_factory_state()
 	_expect(containment_state.try_place_building("miner", Vector2(100, 100)).ok, "containment fixture places its first card")
 	_expect(not containment_state.try_place_building("miner", Vector2(120, 120)).ok, "contained card rectangle is rejected")
 
-	var adjacent_state := GameState.new()
+	var adjacent_state := _new_factory_state()
 	adjacent_state.construction_inventory["miner"] = 2.0
 	_expect(adjacent_state.try_place_building("miner", Vector2(100, 100)).ok, "adjacency fixture places its first card")
 	_expect(adjacent_state.try_place_building("miner", Vector2(332, 100)).ok, "cards sharing an exact edge are legal")
 
-	var zoom_independent_state := GameState.new()
+	var zoom_independent_state := _new_factory_state()
 	_expect(zoom_independent_state.try_place_building("miner", Vector2(100, 100)).ok, "zoom fixture places its first world-space card")
 	var camera_zoom := Vector2(0.45, 0.45)
 	var second_world_position := Vector2(300, 180)
@@ -573,7 +711,7 @@ func _test_rectangle_overlap_contract() -> void:
 	_expect(displayed_position == Vector2(135, 81) and not zoom_independent_state.try_place_building("miner", second_world_position).ok, "overlap validation uses world positions independently of camera zoom")
 
 func _test_connection_activity_contract() -> void:
-	var state := GameState.new()
+	var state := _new_factory_state()
 	GameManager.game_state = state
 	var source: Dictionary = state.try_place_building("miner", Vector2(100, 100))
 	var target: Dictionary = state.try_place_building("smelter", Vector2(420, 100))
@@ -605,7 +743,7 @@ func _test_connection_activity_contract() -> void:
 	var statistics := StatisticsSystem.new(state)
 	_expect(is_equal_approx(statistics.get_logistics_efficiency(), 1.0 / 3.0), "statistics follows current-frame connection activity")
 
-	var disabled_state := GameState.new()
+	var disabled_state := _new_factory_state()
 	var disabled_source: Dictionary = disabled_state.try_place_building("miner", Vector2(100, 100))
 	var disabled_target: Dictionary = disabled_state.try_place_building("smelter", Vector2(420, 100))
 	var disabled_result: Dictionary = disabled_state.try_add_connection(disabled_source.id, disabled_target.id)
@@ -615,7 +753,7 @@ func _test_connection_activity_contract() -> void:
 	BeltSystem.new(disabled_state).update(1.0)
 	_expect(is_equal_approx(disabled_state.get_building(disabled_source.id).output_buffer.iron_ore, 5.0) and disabled_state.get_building(disabled_target.id).input_buffer.is_empty() and not disabled_flow.get("active", true), "disabled connections transport no cargo and report no current flow")
 
-	var idle_state := GameState.new()
+	var idle_state := _new_factory_state()
 	var idle_source: Dictionary = idle_state.try_place_building("miner", Vector2(100, 100))
 	var idle_target: Dictionary = idle_state.try_place_building("smelter", Vector2(420, 100))
 	var idle_result: Dictionary = idle_state.try_add_connection(idle_source.id, idle_target.id)
@@ -643,25 +781,31 @@ func _test_renderer_geometry_contract() -> void:
 	_expect(CardRenderer.CARD_SIZE == Vector2(232, 144), "card geometry is stable")
 	_expect(CardRenderer.get_input_port_rect(Vector2.ZERO).has_point(Vector2(0, 72)), "input port hit area matches drawing")
 	_expect(CardRenderer.get_output_port_rect(Vector2.ZERO).has_point(Vector2(232, 72)), "output port hit area matches drawing")
-	_test_renderer_selection_contract()
+	await _test_renderer_selection_contract()
 
 func _test_renderer_selection_contract() -> void:
+	var state := _new_factory_state()
+	var selected_id := state.add_building({"type": "smelter", "planet_id": "home", "position": Vector2.ZERO, "input_buffer": {}, "output_buffer": {}})
+	GameManager.replace_game_state(state)
 	var main_scene := load("res://scenes/main/Main.tscn") as PackedScene
 	_expect(main_scene != null, "main scene is available for renderer selection")
 	if main_scene == null:
 		return
 	var main := main_scene.instantiate()
+	add_child(main)
+	await get_tree().process_frame
 	var card_renderer := main.get_node_or_null("CardRenderer")
 	var input_handler := main.get_node_or_null("InputHandler")
 	_expect(card_renderer != null and input_handler != null, "main wires card rendering and input together")
 	if card_renderer == null or input_handler == null:
 		main.queue_free()
 		return
-	input_handler.set("selected_building_id", "selected_card")
+	input_handler.set("selected_building_id", selected_id)
 	_expect(card_renderer.has_method("is_building_selected"), "card renderer exposes selection state")
 	if card_renderer.has_method("is_building_selected"):
-		_expect(card_renderer.call("is_building_selected", "selected_card"), "input selection drives the card outline state")
+		_expect(card_renderer.call("is_building_selected", selected_id), "input selection drives the card outline state")
 	main.queue_free()
+	await get_tree().process_frame
 
 func _test_canvas_input_contract() -> void:
 	var input_script := load("res://scripts/input/InputHandler.gd") as Script
@@ -682,7 +826,7 @@ func _test_canvas_input_contract() -> void:
 	input_handler.call("cancel_operation")
 	_expect(input_handler.call("get_mode_name") == "idle", "escape contract cancels")
 
-	GameManager.game_state = GameState.new()
+	GameManager.game_state = _new_factory_state()
 	var source: Dictionary = GameManager.get_game_state().try_place_building("miner", Vector2(100, 100))
 	var target: Dictionary = GameManager.get_game_state().try_place_building("smelter", Vector2(420, 100))
 	_expect(input_handler.call("_get_output_port_at_position", Vector2(332, 172)) == source.id, "visible card output port is clickable through input handling")
@@ -726,7 +870,7 @@ func _test_canvas_input_contract() -> void:
 	input_handler.queue_free()
 	await get_tree().process_frame
 
-	GameManager.game_state = GameState.new()
+	GameManager.game_state = _new_factory_state()
 	GameManager.simulation_engine = SimulationEngine.new(GameManager.game_state)
 	var gesture_handler: Node = input_script.new()
 	add_child(gesture_handler)
@@ -812,3 +956,9 @@ func _expect(condition: bool, description: String) -> void:
 
 	_failures += 1
 	printerr("FAIL: %s" % description)
+
+func _new_factory_state() -> GameState:
+	var state := GameState.new()
+	PlanetSystem.new(state).initialize_colonized_resource_sites()
+	state.resource_sites["home_iron_1"]["position"] = Vector2(216, 200)
+	return state

@@ -9,6 +9,7 @@ extends Node2D
 @onready var mini_map: Control = $FactoryWorkspaceUI/MiniMap
 @onready var campaign_workspace: Control = $FactoryWorkspaceUI/CampaignWorkspace
 @onready var codex_workspace: Control = $FactoryWorkspaceUI/CodexWorkspace
+@onready var galaxy_map: Control = $FactoryWorkspaceUI/GalaxyMap
 
 var _synced_selected_building_id := ""
 var _progression_system: ProgressionSystem
@@ -16,6 +17,7 @@ var _last_blocked_reward_signature := ""
 var _progression_evaluation_queued := false
 var _technology_system: TechnologySystem
 var _planet_system: PlanetSystem
+var _galaxy_system: GalaxySystem
 
 func _ready() -> void:
 	GameManager.game_state_replaced.connect(_on_game_state_replaced)
@@ -35,7 +37,12 @@ func _ready() -> void:
 	codex_workspace.locate_requested.connect(_on_locate_requested)
 	_progression_system = ProgressionSystem.new(game_state)
 	_technology_system = TechnologySystem.new(game_state)
-	_planet_system = PlanetSystem.new(game_state)
+	_galaxy_system = GalaxySystem.new(game_state)
+	_planet_system = PlanetSystem.new(game_state, _galaxy_system)
+	galaxy_map.configure(game_state, _galaxy_system, _planet_system)
+	galaxy_map.explore_requested.connect(_on_galaxy_explore_requested)
+	galaxy_map.colonize_requested.connect(_on_galaxy_colonize_requested)
+	galaxy_map.travel_requested.connect(_on_galaxy_travel_requested)
 
 	EventBus.card_placed.connect(_on_card_placed)
 	EventBus.card_selected.connect(_on_card_selected)
@@ -63,7 +70,9 @@ func _ready() -> void:
 
 func _on_game_state_replaced(new_state: GameState) -> void:
 	_technology_system = TechnologySystem.new(new_state)
-	_planet_system = PlanetSystem.new(new_state)
+	_galaxy_system = GalaxySystem.new(new_state)
+	_planet_system = PlanetSystem.new(new_state, _galaxy_system)
+	galaxy_map.configure(new_state, _galaxy_system, _planet_system)
 	card_renderer.set_game_state(new_state)
 	connection_renderer.set_game_state(new_state)
 	input_handler.cancel_operation()
@@ -165,6 +174,23 @@ func _on_blueprint_deployment_intent(position: Vector2, rotation_quarters: int, 
 	var result := GameManager.get_game_state().try_deploy_blueprint(blueprint_workspace.get_draft(), position, rotation_quarters, mirrored)
 	blueprint_workspace.accept_deployment_result(result)
 
+func _on_galaxy_explore_requested(system_id: String) -> void:
+	var result := _galaxy_system.try_explore_system(system_id)
+	EventBus.notice_requested.emit(String(result.get("message", "勘探命令失败")), "success" if result.get("ok", false) else "error")
+	galaxy_map.refresh_now()
+	factory_workspace_ui.refresh_now()
+
+func _on_galaxy_colonize_requested(planet_id: String) -> void:
+	var result := _planet_system.try_colonize_planet(planet_id)
+	EventBus.notice_requested.emit(String(result.get("message", "殖民命令失败")), "success" if result.get("ok", false) else "error")
+	galaxy_map.refresh_now()
+	factory_workspace_ui.refresh_now()
+
+func _on_galaxy_travel_requested(planet_id: String) -> void:
+	var result := try_travel_to_planet(planet_id)
+	EventBus.notice_requested.emit(String(result.get("message", "旅行命令失败")), "success" if result.get("ok", false) else "error")
+	galaxy_map.refresh_now()
+
 func _evaluate_progression(publish_snapshot: bool = false) -> void:
 	if _progression_system == null or _progression_system.game_state != GameManager.get_game_state():
 		_progression_system = ProgressionSystem.new(GameManager.get_game_state())
@@ -224,7 +250,9 @@ func _on_locate_requested(building_id: String, world_position: Vector2) -> void:
 func try_travel_to_planet(planet_id: String) -> Dictionary:
 	var state := GameManager.get_game_state()
 	if _planet_system == null or _planet_system.game_state != state:
-		_planet_system = PlanetSystem.new(state)
+		_galaxy_system = GalaxySystem.new(state)
+		_planet_system = PlanetSystem.new(state, _galaxy_system)
+		galaxy_map.configure(state, _galaxy_system, _planet_system)
 	var source_planet_id := state.active_planet_id
 	var had_source_viewport := state.planet_viewports.has(source_planet_id)
 	var source_viewport_before: Dictionary = state.planet_viewports.get(source_planet_id, {}).duplicate(true)
@@ -268,3 +296,4 @@ func _refresh_active_planet_projection() -> void:
 		campaign_workspace.call("refresh_now")
 	if codex_workspace.has_method("refresh_now"):
 		codex_workspace.call("refresh_now")
+	galaxy_map.refresh_now()
