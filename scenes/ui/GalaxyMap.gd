@@ -60,7 +60,7 @@ func refresh_now() -> void:
 		if not parent_id.is_empty() and not system_ids.has(parent_id):
 			system_ids.append(parent_id)
 	system_ids.sort()
-	if _selected_system_id.is_empty() or not galaxy_system.system_exists(_selected_system_id):
+	if not system_ids.has(_selected_system_id):
 		_selected_system_id = String(system_ids[0]) if not system_ids.is_empty() else ""
 	_refresh_system_buttons(system_ids)
 	var planet_ids: Array = galaxy_system.get_system_planets(_selected_system_id)
@@ -71,7 +71,7 @@ func refresh_now() -> void:
 			if matching_planets.has(planet_id_value) or results.get("system_ids", []).has(_selected_system_id):
 				filtered.append(planet_id_value)
 		planet_ids = filtered
-	if _selected_planet_id.is_empty() or not galaxy_system.get_system_planets(_selected_system_id).has(_selected_planet_id):
+	if not planet_ids.has(_selected_planet_id):
 		_selected_planet_id = String(planet_ids[0]) if not planet_ids.is_empty() else ""
 	_refresh_planet_buttons(planet_ids)
 	_refresh_details()
