@@ -252,6 +252,9 @@ func _test_workspace_inventory_contract() -> void:
 	if not _has_property(state, "planet_inventory"):
 		return
 	state.set("planet_inventory", {"gear": 2.0, "iron_ingot": 7.0})
+	_expect(state.get_active_planet_inventory() != state.planet_inventory, "fixture detects an unsynchronized active planet tray")
+	state.sync_active_planet_inventory()
+	_expect(state.get_active_planet_inventory() == state.planet_inventory, "fixture synchronizes the active planet tray")
 	state.set("cursor_payload", {"item_id": "gear", "amount": 2.0})
 	state.set("construction_inventory", {"miner": 1.0, "smelter": 0.0, "assembling_machine_mk1": 0.0, "power_generator": 0.0, "matrix_lab": 1.0})
 	GameManager.replace_game_state(state)

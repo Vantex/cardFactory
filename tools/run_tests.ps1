@@ -69,6 +69,13 @@ $testCases = @(
         SuccessMarker = "STATISTICS CODEX TESTS PASSED"
         FailureMarker = "STATISTICS CODEX TESTS FAILED"
     }
+    @{
+        Name = "Galaxy logistics"
+        ScenePath = Join-Path $repoRoot "scenes\test\TestGalaxyLogistics.tscn"
+        ResourcePath = "res://scenes/test/TestGalaxyLogistics.tscn"
+        SuccessMarker = "GALAXY LOGISTICS TESTS PASSED"
+        FailureMarker = "GALAXY LOGISTICS TESTS FAILED"
+    }
 )
 
 if (-not (Test-Path -LiteralPath $GodotPath -PathType Leaf)) {

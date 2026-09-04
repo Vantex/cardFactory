@@ -559,32 +559,34 @@ git commit -m "docs: complete statistics diagnostics task"
 - 修改：`scenes/main/Main.gd`
 - 修改：`tools/run_tests.ps1`
 
-- [ ] **步骤 1：写行星隔离失败测试**
+- [x] **步骤 1：写行星隔离失败测试**
 
 在两颗行星放置相同 ID 前缀的建筑和库存，切换活动行星后证明画布、库存、连接和相机状态互不混合。
 
-- [ ] **步骤 2：定义星区与行星状态**
+- [x] **步骤 2：定义星区与行星状态**
 
 每局保存星区种子或固定原创目录、活动行星、已探索/殖民集合、每行星工厂和资源储量。内部 ID 不依赖显示名称。
 
-- [ ] **步骤 3：实现矿产与殖民**
+- [x] **步骤 3：实现矿产与殖民**
 
 矿机只能绑定合法资源点；殖民先原子验证材料、科技和载具，再创建目标行星初始状态。
 
-- [ ] **步骤 4：实现星图工作区**
+- [x] **步骤 4：实现星图工作区**
 
 提供恒星系→行星导航、资源、距离、殖民成本、工业摘要、搜索和返回恢复。
 
-- [ ] **步骤 5：迁移当前单工厂档**
+- [x] **步骤 5：迁移当前单工厂档**
 
 旧档的建筑、连接、库存和进度完整迁入母星；迁移前后摘要除新容器结构外保持等价。
 
-- [ ] **步骤 6：提交**
+- [x] **步骤 6：提交**
 
 ```powershell
 git add scripts/game/PlanetSystem.gd scripts/game/GalaxySystem.gd data/galaxy.json scenes/ui/GalaxyMap.gd scripts/game/GameState.gd scenes/main/Main.gd scripts/test/TestGalaxyLogistics.gd scenes/test/TestGalaxyLogistics.tscn tools/run_tests.ps1
 git commit -m "feat: add isolated planetary factories"
 ```
+
+**完成记录（2026-09-04）：** 任务 12 已交付 schema v6：固定原创星图目录包含 3 个恒星系和 6 颗行星，活动行星是唯一权威值，每颗已殖民行星独立持有库存、建筑、线路、资源储量和相机；有限资源点会在采集时耗尽，非活动行星工厂继续由固定 tick 后台模拟。正式 `GalaxyMap` 已进入 Main，支持搜索、恒星系/行星摘要、勘探、殖民和行星切换；旧 v5 单工厂存档无损迁入母星。`TestGalaxyLogistics` 成为第十个严格 runner 场景，门禁验证每个成功标记恰好一次、失败标记、Godot 退出码、脚本/解析错误及 ObjectDB/资源泄漏。任务 13 的行星与星际物流尚未实现；账号、云存档、排行榜、在线社交和服务器运维继续排除。
 
 ### 任务 13：行星与星际物流站
 
