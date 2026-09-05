@@ -135,9 +135,10 @@ func _test_stopped_building_location() -> void:
 
 func _test_disabled_connections_do_not_advance_objectives() -> void:
 	var state := GameState.new()
+	PlanetSystem.new(state).initialize_colonized_resource_sites()
 	_add_building(state, "power_generator", Vector2.ZERO)
-	var miner_id := _add_building(state, "miner", Vector2(100, 0))
-	var smelter_id := _add_building(state, "smelter", Vector2(300, 0))
+	var miner_id := _add_building(state, "miner", Vector2(-470, -250))
+	var smelter_id := _add_building(state, "smelter", Vector2(-170, -250))
 	state.set_entity_extraction_item(miner_id, "iron_ore")
 	var connection_result := state.try_add_connection(miner_id, smelter_id)
 	var connection_id := String(connection_result.get("id", ""))
@@ -178,9 +179,10 @@ func _test_formal_campaign_ui() -> void:
 		_expect(geometry_clear and tutorial.mouse_filter == Control.MOUSE_FILTER_IGNORE, "campaign and tutorial UI preserve protected workspace geometry and world input")
 
 	var progressing_state := GameState.new()
+	PlanetSystem.new(progressing_state).initialize_colonized_resource_sites()
 	_add_building(progressing_state, "power_generator", Vector2.ZERO)
-	var progress_miner_id := _add_building(progressing_state, "miner", Vector2(100, 0))
-	var progress_smelter_id := _add_building(progressing_state, "smelter", Vector2(300, 0))
+	var progress_miner_id := _add_building(progressing_state, "miner", Vector2(-470, -250))
+	var progress_smelter_id := _add_building(progressing_state, "smelter", Vector2(-170, -250))
 	progressing_state.set_entity_extraction_item(progress_miner_id, "iron_ore")
 	var progressing_connection := progressing_state.try_add_connection(progress_miner_id, progress_smelter_id)
 	progressing_state.try_configure_belt(String(progressing_connection.get("id", "")), {"enabled": false})

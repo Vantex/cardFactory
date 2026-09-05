@@ -140,6 +140,26 @@ func try_colonize_planet(planet_id: String) -> Dictionary:
 		game_state.resource_sites[site_id] = sites[site_id]
 	return _success("行星殖民完成", {"planet_id": planet_id})
 
+func try_transfer_to_portable_fleet(item_id: String, amount: int) -> Dictionary:
+	if not game_state.portable_fleet.has(item_id):
+		return _failure("invalid_vehicle", "物品不是可携带物流载具")
+	if amount <= 0:
+		return _failure("invalid_amount", "载具转入数量必须是正整数")
+	var source_inventory := game_state.planet_inventory.duplicate(true)
+	if float(source_inventory.get(item_id, 0.0)) + AMOUNT_EPSILON < float(amount):
+		return _failure("missing_vehicle_item", "活动行星托盘中的载具不足", {"item_id": item_id, "required": amount})
+	var next_fleet := game_state.portable_fleet.duplicate(true)
+	var remaining := float(source_inventory.get(item_id, 0.0)) - float(amount)
+	if remaining <= AMOUNT_EPSILON:
+		source_inventory.erase(item_id)
+	else:
+		source_inventory[item_id] = remaining
+	next_fleet[item_id] = int(next_fleet.get(item_id, 0)) + amount
+	game_state.planet_inventories[game_state.active_planet_id] = source_inventory
+	game_state.planet_inventory = game_state.planet_inventories[game_state.active_planet_id]
+	game_state.portable_fleet = next_fleet
+	return _success("物流载具已转入随身编队", {"item_id": item_id, "amount": amount})
+
 func try_set_active_planet(planet_id: String) -> Dictionary:
 	if get_planet(planet_id).is_empty():
 		return _failure("unknown_planet", "目标行星不存在")

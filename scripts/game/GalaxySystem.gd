@@ -158,6 +158,7 @@ func get_system_summary(system_id: String) -> Dictionary:
 	var requirements := get_exploration_requirements(system_id)
 	var mission := _get_exploration_mission(system_id)
 	var status := "explored" if game_state.explored_system_ids.has(system_id) else ("surveying" if not mission.is_empty() else "locked")
+	system["distance"] = float(system.get("distance_ly", 0.0))
 	system["exploration"] = {
 		"status": status,
 		"progress": float(game_state.survey_progress_by_system.get(system_id, 0.0)),
@@ -178,6 +179,17 @@ func get_planet_summary(planet_id: String) -> Dictionary:
 				resource_item_ids.append(item_id)
 	resource_item_ids.sort()
 	planet["resource_item_ids"] = resource_item_ids
+	var resource_sites: Array = []
+	var live_sites := PlanetSystem.new(game_state, self).get_planet_resource_sites(planet_id)
+	if live_sites.is_empty():
+		var projected_sites := build_resource_sites_for_planet(planet_id, game_state.galaxy_seed)
+		var projected_ids := projected_sites.keys()
+		projected_ids.sort()
+		for site_id in projected_ids:
+			resource_sites.append(projected_sites[site_id].duplicate(true))
+	else:
+		resource_sites = live_sites
+	planet["resource_sites"] = resource_sites
 	planet["colonization"] = {
 		"colonized": game_state.colonized_planet_ids.has(planet_id),
 		"active": game_state.active_planet_id == planet_id,
@@ -403,9 +415,21 @@ func _get_colonization_requirements(planet: Dictionary) -> Dictionary:
 
 func _get_planet_industry_summary(planet_id: String) -> Dictionary:
 	var building_count := 0
+	var running_count := 0
+	var blocked_count := 0
+	var generation := 0.0
+	var demand := 0.0
 	for building_value in game_state.buildings.values():
 		if building_value is Dictionary and String(building_value.get("planet_id", "")) == planet_id:
 			building_count += 1
+			var status := String(building_value.get("status", "idle"))
+			if status == "running":
+				running_count += 1
+			elif status in ["blocked", "no_power", "no_fuel", "resource_depleted", "invalid_resource_site", "error"]:
+				blocked_count += 1
+			generation += maxf(float(building_value.get("power_output", 0.0)), 0.0)
+			var definition := DataManager.get_building(String(building_value.get("type", "")))
+			demand += maxf(float(definition.get("power_demand", 0.0)), 0.0)
 	var connection_count := 0
 	for connection_value in game_state.connections.values():
 		if connection_value is Dictionary and String(connection_value.get("planet_id", "")) == planet_id:
@@ -419,6 +443,10 @@ func _get_planet_industry_summary(planet_id: String) -> Dictionary:
 		"building_count": building_count,
 		"connection_count": connection_count,
 		"resource_site_count": resource_site_count,
+		"running_count": running_count,
+		"blocked_count": blocked_count,
+		"generation": generation,
+		"demand": demand,
 		"inventory": game_state.get_planet_inventory(planet_id).duplicate(true),
 	}
 

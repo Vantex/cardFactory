@@ -63,6 +63,7 @@ func _test_capture_and_schema(blueprint_script: Script) -> void:
 func _test_transform_and_offset(blueprint_script: Script) -> void:
 	var state := GameState.new()
 	state.construction_inventory = {"miner": 4.0, "smelter": 4.0, "conveyor_belt_mk1": 4.0}
+	_add_resource_site(state, "transform_iron", "iron_ore", Vector2(1000, 800))
 	var blueprint := {
 		"version": 1,
 		"entities": [
@@ -81,9 +82,11 @@ func _test_transform_and_offset(blueprint_script: Script) -> void:
 	_expect(state.connections.size() == 1 and state.construction_inventory == {"miner": 3.0, "smelter": 3.0, "conveyor_belt_mk1": 3.0}, "successful deployment recreates the line and deducts the complete construction cost once")
 	var clockwise_state := GameState.new()
 	clockwise_state.construction_inventory = {"miner": 1.0, "smelter": 1.0, "conveyor_belt_mk1": 1.0}
+	_add_resource_site(clockwise_state, "clockwise_iron", "iron_ore", Vector2(1000, 800))
 	var clockwise: Dictionary = blueprint_script.new(clockwise_state).deploy(blueprint, Vector2(1000, 800), 1, false)
 	var counter_state := GameState.new()
 	counter_state.construction_inventory = {"miner": 1.0, "smelter": 1.0, "conveyor_belt_mk1": 1.0}
+	_add_resource_site(counter_state, "counter_iron", "iron_ore", Vector2(1000, 800))
 	var counter: Dictionary = blueprint_script.new(counter_state).deploy(blueprint, Vector2(1000, 800), -1, false)
 	_expect(clockwise.get("ok", false) and clockwise_state.buildings[clockwise.entity_ids[1]].position == Vector2(800, 1200), "clockwise rotation follows Godot's y-down coordinate system")
 	_expect(counter.get("ok", false) and counter_state.buildings[counter.entity_ids[1]].position == Vector2(1200, 400), "counterclockwise rotation is the inverse quarter turn")
@@ -128,6 +131,7 @@ func _test_atomic_deployment_failures(blueprint_script: Script) -> void:
 
 	var commit_state := GameState.new()
 	commit_state.construction_inventory = {"miner": 1.0}
+	_add_resource_site(commit_state, "commit_iron", "iron_ore", Vector2.ZERO)
 	var commit_before := commit_state.copy_state()
 	var reject_after_first_stage := func(stage: String, index: int) -> bool:
 		return not (stage == "entity" and index == 0)
@@ -137,6 +141,8 @@ func _test_atomic_deployment_failures(blueprint_script: Script) -> void:
 func _test_repeated_paste(blueprint_script: Script) -> void:
 	var state := GameState.new()
 	state.construction_inventory = {"miner": 2.0}
+	_add_resource_site(state, "paste_iron_1", "iron_ore", Vector2.ZERO)
+	_add_resource_site(state, "paste_iron_2", "iron_ore", Vector2(400, 0))
 	var blueprint := {"version": 1, "entities": [{"ref": "entity_0", "type": "miner", "position": Vector2.ZERO, "configuration": {}}], "connections": []}
 	var system = blueprint_script.new(state)
 	var first: Dictionary = system.deploy(blueprint, Vector2.ZERO)
@@ -190,6 +196,7 @@ func _test_line_configuration_round_trip(blueprint_script: Script, codec_script:
 	_expect(decoded.get("ok", false) and decoded.blueprint.connections[0].configuration == configuration, "restricted JSON round-trips the complete persistent line configuration")
 	var target_state := GameState.new()
 	target_state.construction_inventory = {"miner": 1.0, "smelter": 1.0, "conveyor_belt_mk2": 2.0}
+	_add_resource_site(target_state, "line_iron", "iron_ore", Vector2.ZERO)
 	var deployed: Dictionary = blueprint_script.new(target_state).deploy(decoded.blueprint, Vector2.ZERO)
 	var deployed_line: Dictionary = target_state.connections[deployed.connection_ids[0]] if deployed.get("ok", false) else {}
 	_expect(deployed.get("ok", false) and deployed_line.route_offset_y == 33.0 and deployed_line.monitor_enabled and not deployed_line.enabled and deployed_line.current_flow == 0.0 and not deployed_line.active and deployed_line.get("in_transit", []).is_empty(), "deployment restores persistent line configuration with fresh runtime state")
@@ -201,6 +208,7 @@ func _test_active_planet_capture_and_deployment(blueprint_script: Script) -> voi
 	state.planet_inventories["frost"] = {}
 	state.planet_viewports["frost"] = {"position": Vector2.ZERO, "zoom": Vector2.ONE}
 	state.planet_metrics["frost"] = {}
+	_add_resource_site(state, "frost_deploy_iron", "iron_ore", Vector2(900, 100), "frost")
 	var home_source := _add_building(state, "miner", Vector2(100, 100), {"planet_id": "home", "output_item": "iron_ore"})
 	var home_target := _add_building(state, "smelter", Vector2(500, 100), {"planet_id": "home", "recipe_id": "iron_ingot_recipe"})
 	var frost_source := _add_building(state, "miner", Vector2(100, 100), {"planet_id": "frost", "output_item": "iron_ore"})
@@ -263,6 +271,7 @@ func _test_workspace_intents_and_import(codec_script: Script) -> void:
 		return
 	var state := GameState.new()
 	state.construction_inventory = {"miner": 1.0, "smelter": 1.0}
+	_add_resource_site(state, "formal_iron", "iron_ore", Vector2(1000, 500))
 	var selected_id := _add_building(state, "miner", Vector2(100, 100))
 	var selected_second_id := _add_building(state, "smelter", Vector2(500, 100))
 	GameManager.replace_game_state(state)
@@ -466,6 +475,9 @@ func _add_building(state: GameState, building_type: String, position: Vector2, e
 	}
 	data.merge(extra, true)
 	return state.add_building(data)
+
+func _add_resource_site(state: GameState, site_id: String, item_id: String, position: Vector2, planet_id: String = "home") -> void:
+	state.resource_sites[site_id] = {"id": site_id, "planet_id": planet_id, "item_id": item_id, "position": position, "capacity": 100.0, "remaining": 100.0, "infinite": false}
 
 func _same_authoritative_state(left: GameState, right: GameState) -> bool:
 	return left.buildings == right.buildings and left.connections == right.connections and left.construction_inventory == right.construction_inventory and left.planet_inventory == right.planet_inventory and left._next_id == right._next_id

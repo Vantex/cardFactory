@@ -4,6 +4,7 @@ extends Control
 signal explore_requested(system_id: String)
 signal colonize_requested(planet_id: String)
 signal travel_requested(planet_id: String)
+signal fleet_transfer_requested(item_id: String, amount: int)
 
 const PANEL_DARK := Color("#101715")
 const ACCENT_CYAN := Color("#62b5ae")
@@ -34,6 +35,7 @@ var _industry_summary: Label
 var _explore_button: Button
 var _colonize_button: Button
 var _travel_button: Button
+var _fleet_button: Button
 
 func _ready() -> void:
 	_build_ui()
@@ -171,9 +173,11 @@ func _build_ui() -> void:
 	actions.add_theme_constant_override("separation", 6)
 	details_pane.add_child(actions)
 	_explore_button = _make_action_button("ExploreButton", "勘探", _on_explore_pressed)
+	_fleet_button = _make_action_button("FleetButton", "载具入队", _on_fleet_pressed)
 	_colonize_button = _make_action_button("ColonizeButton", "殖民", _on_colonize_pressed)
 	_travel_button = _make_action_button("TravelButton", "前往", _on_travel_pressed)
 	actions.add_child(_explore_button)
+	actions.add_child(_fleet_button)
 	actions.add_child(_colonize_button)
 	actions.add_child(_travel_button)
 
@@ -251,18 +255,21 @@ func _refresh_details() -> void:
 	var planet := galaxy_system.get_planet_summary(_selected_planet_id)
 	_system_heading.text = "%s · %s" % [system.get("name", "选择星系"), system.get("star_type", "")]
 	_planet_heading.text = "%s · %s" % [planet.get("name", "选择行星"), planet.get("planet_type", "")]
-	_description.text = String(system.get("description", ""))
-	_resource_summary.text = "资源\n%s" % _resource_names(planet.get("resource_item_ids", []))
+	var exploration: Dictionary = system.get("exploration", {})
+	_description.text = "%s\n距离 %.1f 光年 · 勘探 %.0f%%\n环境倍率：太阳能 %.2f×" % [String(system.get("description", "")), float(system.get("distance", 0.0)), float(exploration.get("progress", 0.0)) * 100.0, float(planet.get("solar_multiplier", 1.0))]
+	_resource_summary.text = "资源\n%s" % _resource_site_text(planet.get("resource_sites", []))
 	var colonization: Dictionary = planet.get("colonization", {})
 	_colonization_summary.text = "殖民\n状态：%s\n成本：%s" % ["活动" if colonization.get("active", false) else ("已殖民" if colonization.get("colonized", false) else "未殖民"), _cost_text(colonization.get("requirements", {}))]
 	var industry: Dictionary = planet.get("industry", {})
-	_industry_summary.text = "工业\n建筑 %d · 线路 %d · 资源点 %d\n托盘：%s" % [int(industry.get("building_count", 0)), int(industry.get("connection_count", 0)), int(industry.get("resource_site_count", 0)), _inventory_text(industry.get("inventory", {}))]
+	_industry_summary.text = "工业\n建筑 %d · 运行 %d · 阻塞 %d · 线路 %d · 资源点 %d\n发电 %.1f · 需求 %.1f\n托盘：%s" % [int(industry.get("building_count", 0)), int(industry.get("running_count", 0)), int(industry.get("blocked_count", 0)), int(industry.get("connection_count", 0)), int(industry.get("resource_site_count", 0)), float(industry.get("generation", 0.0)), float(industry.get("demand", 0.0)), _inventory_text(industry.get("inventory", {}))]
 	_refresh_action_states(system, planet)
 
 func _refresh_action_states(system: Dictionary, planet: Dictionary) -> void:
 	var requirements: Dictionary = system.get("exploration", {}).get("requirements", {})
 	_set_button_availability(_explore_button, not requirements.is_empty() and requirements.get("available", false), String(requirements.get("message", "请选择星系")))
 	var colonize_availability := _colonization_availability(planet)
+	var fleet_availability := _fleet_availability(planet)
+	_set_button_availability(_fleet_button, fleet_availability.get("ok", false), String(fleet_availability.get("message", "请选择需要载具的行星")))
 	_set_button_availability(_colonize_button, colonize_availability.get("ok", false), String(colonize_availability.get("message", "请选择行星")))
 	var travel_availability := _travel_availability(planet)
 	_set_button_availability(_travel_button, travel_availability.get("ok", false), String(travel_availability.get("message", "请选择行星")))
@@ -301,6 +308,23 @@ func _travel_availability(planet: Dictionary) -> Dictionary:
 		return {"ok": false, "message": "目标行星没有可用托盘"}
 	return {"ok": true, "message": "可以前往"}
 
+func _fleet_availability(planet: Dictionary) -> Dictionary:
+	if planet.is_empty():
+		return {"ok": false, "message": "目标行星不存在"}
+	var requirements: Dictionary = planet.get("colonization", {}).get("requirements", {})
+	var vehicle_ids: Array = requirements.get("vehicles", {}).keys()
+	vehicle_ids.sort()
+	for item_id_value in vehicle_ids:
+		var item_id := String(item_id_value)
+		var required := int(requirements["vehicles"][item_id])
+		var missing := maxi(required - int(game_state.portable_fleet.get(item_id, 0)), 0)
+		if missing <= 0:
+			continue
+		if float(game_state.planet_inventory.get(item_id, 0.0)) + 0.0000001 < float(missing):
+			return {"ok": false, "message": "活动行星托盘中的%s不足" % DataManager.get_item(item_id).get("name", item_id), "item_id": item_id, "amount": missing}
+		return {"ok": true, "message": "转入殖民所需载具", "item_id": item_id, "amount": missing}
+	return {"ok": false, "message": "目标不需要更多物流载具"}
+
 func _set_button_availability(button: Button, available: bool, reason: String) -> void:
 	button.disabled = not available
 	button.tooltip_text = "" if available else reason
@@ -311,6 +335,17 @@ func _resource_names(item_ids: Array) -> String:
 		var item_id := String(item_id_value)
 		names.append(String(DataManager.get_item(item_id).get("name", item_id)))
 	return "、".join(names) if not names.is_empty() else "无目录资源"
+
+func _resource_site_text(sites: Array) -> String:
+	var entries: Array[String] = []
+	for site_value in sites:
+		if not site_value is Dictionary:
+			continue
+		var site: Dictionary = site_value
+		var item_id := String(site.get("item_id", ""))
+		var reserve := "无限" if bool(site.get("infinite", false)) else "剩余 %.0f / %.0f" % [float(site.get("remaining", 0.0)), float(site.get("capacity", 0.0))]
+		entries.append("%s [%s] %s" % [DataManager.get_item(item_id).get("name", item_id), String(site.get("id", "")), reserve])
+	return "\n".join(entries) if not entries.is_empty() else "无目录资源"
 
 func _cost_text(requirements: Dictionary) -> String:
 	var costs: Array[String] = []
@@ -364,6 +399,12 @@ func _on_explore_pressed() -> void:
 
 func _on_colonize_pressed() -> void:
 	colonize_requested.emit(_selected_planet_id)
+
+func _on_fleet_pressed() -> void:
+	var planet := galaxy_system.get_planet_summary(_selected_planet_id)
+	var availability := _fleet_availability(planet)
+	if availability.get("ok", false):
+		fleet_transfer_requested.emit(String(availability.get("item_id", "")), int(availability.get("amount", 0)))
 
 func _on_travel_pressed() -> void:
 	travel_requested.emit(_selected_planet_id)

@@ -99,7 +99,7 @@ func deploy(blueprint: Dictionary, offset: Vector2, rotation_quarters: int = 0, 
 		var target_position := offset + _transform_position(entity.position, rotation_quarters, mirrored)
 		if not is_finite(target_position.x) or not is_finite(target_position.y) or absf(target_position.x) > BlueprintCodecScript.MAX_COORDINATE or absf(target_position.y) > BlueprintCodecScript.MAX_COORDINATE:
 			return _failure("coordinate_limit", "部署位置超过坐标限制")
-		var plan := {"ref": String(entity.ref), "type": building_type, "position": target_position, "configuration": entity.configuration.duplicate(true)}
+		var plan := {"ref": String(entity.ref), "type": building_type, "position": target_position, "configuration": entity.configuration.duplicate(true), "resource_site_id": ""}
 		plans.append(plan)
 		local_refs[entity.ref] = plan
 		cost[building_type] = float(cost.get(building_type, 0.0)) + 1.0
@@ -136,6 +136,16 @@ func deploy(blueprint: Dictionary, offset: Vector2, rotation_quarters: int = 0, 
 	var deduction_result := _plan_inventory_deduction(building_items, connection_items)
 	if not deduction_result.get("ok", false):
 		return deduction_result
+	for plan in plans:
+		var definition := DataManager.get_building(String(plan.type))
+		if String(definition.get("kind", "")) != "extractor":
+			continue
+		var extraction: Dictionary = definition.get("extraction", {})
+		var output_item := String(plan.configuration.get("output_item", extraction.get("item_id", "")))
+		var site := PlanetSystem.new(game_state).find_nearest_resource_site(game_state.active_planet_id, output_item, Vector2(plan.position))
+		if site.is_empty():
+			return _failure("invalid_resource_site", "蓝图采集器附近没有可用资源点")
+		plan["resource_site_id"] = String(site.get("id", ""))
 
 	var ref_to_id: Dictionary = {}
 	var entity_ids: Array[String] = []
@@ -148,7 +158,7 @@ func deploy(blueprint: Dictionary, offset: Vector2, rotation_quarters: int = 0, 
 		var entity_id := game_state.generate_id("building")
 		ref_to_id[plan.ref] = entity_id
 		entity_ids.append(entity_id)
-		var building_data := _make_building_data(plan.type, plan.position, plan.configuration)
+		var building_data := _make_building_data(plan.type, plan.position, plan.configuration, String(plan.resource_site_id))
 		building_data["id"] = entity_id
 		game_state.buildings[entity_id] = building_data
 		if commit_guard.is_valid() and not bool(commit_guard.call("entity", plan_index)):
@@ -326,7 +336,7 @@ func _plan_inventory_deduction(building_items: Array[String], connection_items: 
 		inventory[connection_type] = maxf(owned - 1.0, 0.0)
 	return {"ok": true, "inventory": inventory}
 
-func _make_building_data(building_type: String, position: Vector2, configuration: Dictionary) -> Dictionary:
+func _make_building_data(building_type: String, position: Vector2, configuration: Dictionary, resource_site_id: String = "") -> Dictionary:
 	var definition := DataManager.get_building(building_type)
 	var building := {"type": building_type, "planet_id": game_state.active_planet_id, "position": position, "status": "idle", "recipe_id": String(configuration.get("recipe_id", "")), "progress": 0.0, "input_buffer": {}, "output_buffer": {}, "speed": definition.get("speed", 1.0)}
 	var output_item := String(configuration.get("output_item", ""))
@@ -334,6 +344,8 @@ func _make_building_data(building_type: String, position: Vector2, configuration
 		building["output_item"] = output_item
 	elif definition.get("kind", "") == "extractor":
 		building["output_item"] = String(definition.get("extraction", {}).get("item_id", ""))
+	if definition.get("kind", "") == "extractor" and not resource_site_id.is_empty():
+		building["resource_site_id"] = resource_site_id
 	var fuel: Dictionary = definition.get("fuel", {})
 	if not fuel.is_empty():
 		building["fuel_item"] = String(fuel.get("item_id", ""))

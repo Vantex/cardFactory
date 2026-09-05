@@ -3,6 +3,7 @@ extends RefCounted
 
 var game_state: GameState
 var statistics_system: StatisticsSystem
+var galaxy_system: GalaxySystem
 var total_generation := 0.0
 var total_consumption := 0.0
 var power_balance := 0.0
@@ -12,6 +13,7 @@ var _power_by_planet: Dictionary = {}
 func _init(state: GameState, statistics: StatisticsSystem = null) -> void:
 	game_state = state
 	statistics_system = statistics
+	galaxy_system = GalaxySystem.new(state)
 
 func update(delta: float) -> void:
 	_calculate_power(delta)
@@ -58,7 +60,11 @@ func _building_generation(building: Dictionary, building_definition: Dictionary,
 	var fuel_rule: Dictionary = building_definition.get("fuel", {})
 	if not fuel_rule.is_empty():
 		return base_generation * generation_factor * _consume_fuel_time(building, fuel_rule, delta)
-	return base_generation * generation_factor
+	var environment_multiplier := 1.0
+	if String(building.get("type", "")) == "solar_panel":
+		var planet := galaxy_system.get_planet(String(building.get("planet_id", game_state.active_planet_id)))
+		environment_multiplier = maxf(float(planet.get("solar_multiplier", 1.0)), 0.0)
+	return base_generation * generation_factor * environment_multiplier
 
 func _consume_fuel_time(building: Dictionary, rule: Dictionary, delta: float) -> float:
 	var remaining := maxf(float(building.get("fuel_remaining", 0.0)), 0.0)

@@ -3,6 +3,10 @@ extends Node
 var _failures := 0
 
 func _ready() -> void:
+	var final_review_tests := preload("res://scripts/test/FinalReviewRegression.gd").new()
+	add_child(final_review_tests)
+	_failures += await final_review_tests.run()
+	final_review_tests.queue_free()
 	_test_schema_v6_defaults()
 	_test_catalog_is_strict_and_deterministic()
 	_test_v5_migration_is_lossless()

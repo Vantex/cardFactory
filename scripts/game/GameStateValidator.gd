@@ -109,6 +109,7 @@ static func _validate_galaxy_state(errors: Array, data: Dictionary, galaxy: Gala
 	if galaxy.get_planet(active_planet_id).is_empty():
 		_add_error(errors, "unknown_active_planet", "state", active_planet_id, "活动行星不存在于星区目录")
 	var colonized_value: Variant = data.get("colonized_planet_ids")
+	_validate_stable_id_array(errors, "colonized_planet_ids", colonized_value)
 	if not colonized_value is Array:
 		_add_error(errors, "invalid_colonized_planet_ids", "state", "", "已殖民行星必须是数组")
 		return
@@ -120,13 +121,24 @@ static func _validate_galaxy_state(errors: Array, data: Dictionary, galaxy: Gala
 		if galaxy.get_planet(planet_id).is_empty():
 			_add_error(errors, "unknown_colonized_planet", "state", planet_id, "已殖民行星不存在于星区目录")
 	var explored_value: Variant = data.get("explored_system_ids")
+	_validate_stable_id_array(errors, "explored_system_ids", explored_value)
 	if not explored_value is Array:
 		_add_error(errors, "invalid_explored_system_ids", "state", "", "已探索星系必须是数组")
 	else:
 		for system_id_value in explored_value:
 			var system_id := String(system_id_value)
-			if galaxy.get_star_system(system_id).is_empty():
+			var system := galaxy.get_star_system(system_id)
+			if system.is_empty():
 				_add_error(errors, "unknown_explored_system", "state", system_id, "已探索星系不存在于星区目录")
+				continue
+			var prerequisite_id := String(system.get("prerequisite_system_id", ""))
+			if not prerequisite_id.is_empty() and not explored_value.has(prerequisite_id):
+				_add_error(errors, "invalid_system_prerequisite", "state", system_id, "已探索星系缺少目录前置星系")
+	for planet_id_value in colonized:
+		var planet_id := String(planet_id_value)
+		var planet := galaxy.get_planet(planet_id)
+		if not planet.is_empty() and (not explored_value is Array or not explored_value.has(String(planet.get("system_id", "")))):
+			_add_error(errors, "colonized_system_unexplored", "state", planet_id, "已殖民行星所属星系必须已探索")
 	var inventories_value: Variant = data.get("planet_inventories")
 	if not inventories_value is Dictionary:
 		_add_error(errors, "invalid_planet_inventories", "state", "", "行星托盘必须是字典")
@@ -142,8 +154,24 @@ static func _validate_galaxy_state(errors: Array, data: Dictionary, galaxy: Gala
 		_add_error(errors, "invalid_galaxy_seed", "state", "", "星区种子必须是整数")
 	_validate_resource_sites(errors, data.get("resource_sites"), galaxy, int(data.get("galaxy_seed", 0)))
 	_validate_exploration_state(errors, data, galaxy)
-	if not data.get("planet_metrics") is Dictionary or not data.get("portable_fleet") is Dictionary:
+	if not data.get("planet_metrics") is Dictionary:
 		_add_error(errors, "invalid_planet_metadata", "state", "", "行星元数据无效")
+	_validate_portable_fleet(errors, data.get("portable_fleet"))
+
+static func _validate_portable_fleet(errors: Array, value: Variant) -> void:
+	const VEHICLE_IDS := ["logistics_drone", "logistics_vessel"]
+	if not value is Dictionary:
+		_add_error(errors, "invalid_portable_fleet", "state", "", "随身物流载具必须是字典")
+		return
+	var fleet: Dictionary = value
+	var keys := fleet.keys()
+	keys.sort()
+	if keys != VEHICLE_IDS:
+		_add_error(errors, "invalid_portable_fleet", "state", "", "随身物流载具键必须精确匹配目录")
+		return
+	for item_id in VEHICLE_IDS:
+		if not _is_integral_number(fleet.get(item_id)) or int(fleet.get(item_id, -1)) < 0:
+			_add_error(errors, "invalid_portable_fleet", "state", item_id, "随身物流载具数量必须是非负整数")
 
 static func _validate_entity_planet(errors: Array, source: String, entity_id: String, entity: Dictionary, colonized: Variant, galaxy: GalaxySystem) -> void:
 	var planet_id := String(entity.get("planet_id", ""))
@@ -201,7 +229,9 @@ static func _matches_resource_position(value: Variant, expected: Vector2) -> boo
 
 static func _validate_exploration_state(errors: Array, data: Dictionary, galaxy: GalaxySystem) -> void:
 	var explored: Array = data.get("explored_system_ids", []) if data.get("explored_system_ids") is Array else []
+	var completed: Array = data.get("completed_technologies", []) if data.get("completed_technologies") is Array else []
 	var missions_value: Variant = data.get("exploration_missions")
+	var mission_by_system: Dictionary = {}
 	if not missions_value is Array:
 		_add_error(errors, "invalid_exploration_mission", "state", "", "勘探任务必须是数组")
 	else:
@@ -214,9 +244,13 @@ static func _validate_exploration_state(errors: Array, data: Dictionary, galaxy:
 			var system_id := String(mission.get("system_id", ""))
 			var progress: Variant = mission.get("progress")
 			var duration: Variant = mission.get("duration_seconds")
-			if system_id.is_empty() or seen_systems.has(system_id) or galaxy.get_star_system(system_id).is_empty() or explored.has(system_id) or not _is_finite_number(duration) or float(duration) <= 0.0 or not _is_finite_number(progress) or float(progress) < 0.0 or (_is_finite_number(duration) and float(progress) > float(duration)):
+			var system := galaxy.get_star_system(system_id)
+			var required_technology_id := String(system.get("required_technology_id", ""))
+			var prerequisite_id := String(system.get("prerequisite_system_id", ""))
+			if system_id.is_empty() or seen_systems.has(system_id) or system.is_empty() or explored.has(system_id) or not _is_finite_number(duration) or float(duration) <= 0.0 or not is_equal_approx(float(duration), galaxy.get_exploration_duration(system_id)) or not _is_finite_number(progress) or float(progress) < 0.0 or (_is_finite_number(duration) and float(progress) >= float(duration)) or (not required_technology_id.is_empty() and not completed.has(required_technology_id)) or (not prerequisite_id.is_empty() and not explored.has(prerequisite_id)):
 				_add_error(errors, "invalid_exploration_mission", "exploration", system_id, "勘探任务状态无效")
 			seen_systems[system_id] = true
+			mission_by_system[system_id] = mission
 	var survey_value: Variant = data.get("survey_progress_by_system")
 	if not survey_value is Dictionary:
 		_add_error(errors, "invalid_survey_progress", "state", "", "勘探进度必须是字典")
@@ -226,6 +260,21 @@ static func _validate_exploration_state(errors: Array, data: Dictionary, galaxy:
 		var progress: Variant = survey_value[system_id_value]
 		if galaxy.get_star_system(system_id).is_empty() or not _is_finite_number(progress) or float(progress) < 0.0 or float(progress) > 1.0:
 			_add_error(errors, "invalid_survey_progress", "exploration", system_id, "勘探进度必须属于已知星系且在零到一之间")
+			continue
+		if explored.has(system_id):
+			if not is_equal_approx(float(progress), 1.0):
+				_add_error(errors, "invalid_survey_progress", "exploration", system_id, "已探索星系进度必须完成")
+			continue
+		if mission_by_system.has(system_id):
+			var mission: Dictionary = mission_by_system[system_id]
+			var expected_progress := float(mission.get("progress", 0.0)) / maxf(float(mission.get("duration_seconds", 0.0)), 0.0000001)
+			if not is_equal_approx(float(progress), expected_progress):
+				_add_error(errors, "invalid_survey_progress", "exploration", system_id, "勘探进度必须与进行中的任务一致")
+		elif not is_zero_approx(float(progress)):
+			_add_error(errors, "invalid_survey_progress", "exploration", system_id, "未运行勘探任务的星系进度必须为零")
+	for system_id in mission_by_system:
+		if not survey_value.has(system_id):
+			_add_error(errors, "invalid_survey_progress", "exploration", String(system_id), "进行中的勘探任务缺少进度记录")
 
 static func _is_vector2_dict(value: Variant) -> bool:
 	return value is Dictionary and _is_finite_number(value.get("x")) and _is_finite_number(value.get("y"))

@@ -43,6 +43,9 @@ func _ready() -> void:
 	galaxy_map.explore_requested.connect(_on_galaxy_explore_requested)
 	galaxy_map.colonize_requested.connect(_on_galaxy_colonize_requested)
 	galaxy_map.travel_requested.connect(_on_galaxy_travel_requested)
+	galaxy_map.fleet_transfer_requested.connect(_on_galaxy_fleet_transfer_requested)
+	if not GameManager.save_requested.is_connected(_on_save_requested):
+		GameManager.save_requested.connect(_on_save_requested)
 
 	EventBus.card_placed.connect(_on_card_placed)
 	EventBus.card_selected.connect(_on_card_selected)
@@ -185,6 +188,16 @@ func _on_galaxy_colonize_requested(planet_id: String) -> void:
 	EventBus.notice_requested.emit(String(result.get("message", "殖民命令失败")), "success" if result.get("ok", false) else "error")
 	galaxy_map.refresh_now()
 	factory_workspace_ui.refresh_now()
+
+func _on_galaxy_fleet_transfer_requested(item_id: String, amount: int) -> void:
+	var result := _planet_system.try_transfer_to_portable_fleet(item_id, amount)
+	EventBus.notice_requested.emit(String(result.get("message", "载具入队命令失败")), "success" if result.get("ok", false) else "error")
+	galaxy_map.refresh_now()
+	factory_workspace_ui.refresh_now()
+
+func _on_save_requested(_reason: String) -> void:
+	var state := GameManager.get_game_state()
+	_save_planet_viewport(state.active_planet_id)
 
 func _on_galaxy_travel_requested(planet_id: String) -> void:
 	var result := try_travel_to_planet(planet_id)

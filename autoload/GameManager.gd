@@ -4,6 +4,7 @@ signal game_state_replaced(game_state: GameState)
 signal session_started(slot: int, is_new_game: bool)
 signal session_ended
 signal save_completed(slot: int, reason: String, metadata: Dictionary)
+signal save_requested(reason: String)
 signal session_error(error: Dictionary)
 
 const DEFAULT_AUTOSAVE_INTERVAL := 120.0
@@ -46,6 +47,7 @@ func get_save_system() -> SaveSystem:
 
 func start_new_game(slot: int) -> Dictionary:
 	var new_state := GameState.new()
+	new_state.initialize_new_game_home_inventory()
 	PlanetSystem.new(new_state).initialize_colonized_resource_sites()
 	var save_result := _save_system.save_slot(slot, new_state)
 	if not save_result.get("ok", false):
@@ -81,6 +83,7 @@ func save_current_game(reason: String = "manual") -> Dictionary:
 	if _save_in_progress:
 		return _failure("save_in_progress", "已有存档写入正在进行")
 	_save_in_progress = true
+	save_requested.emit(reason)
 	var result := _save_system.save_slot(_current_slot, game_state)
 	_save_in_progress = false
 	if result.get("ok", false):

@@ -290,7 +290,7 @@ func _test_workspace_inventory_contract() -> void:
 		_expect(false, "handcraft batch controls include a miner construction recipe")
 	var miner_id := state.add_building({
 		"type": "miner",
-		"position": Vector2.ZERO,
+		"position": Vector2(470, -250),
 		"status": "idle",
 		"recipe_id": "",
 		"progress": 0.0,

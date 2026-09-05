@@ -4,6 +4,13 @@ extends RefCounted
 
 const SCHEMA_VERSION: int = 6
 const HOME_PLANET_ID := "home"
+const NEW_GAME_HOME_INVENTORY := {
+    "coal": 10.0,
+    "copper_ingot": 4.0,
+    "gear": 4.0,
+    "iron_ingot": 12.0,
+    "stone": 4.0,
+}
 
 # 游戏状态
 var paused: bool = false
@@ -136,6 +143,11 @@ func set_active_planet(planet_id: String) -> bool:
 func sync_active_planet_inventory() -> void:
     planet_inventories[active_planet_id] = planet_inventory.duplicate(true)
     planet_inventory = planet_inventories[active_planet_id]
+
+func initialize_new_game_home_inventory() -> void:
+    planet_inventories[HOME_PLANET_ID] = NEW_GAME_HOME_INVENTORY.duplicate(true)
+    if active_planet_id == HOME_PLANET_ID:
+        planet_inventory = planet_inventories[HOME_PLANET_ID]
 
 func generate_id(prefix: String) -> String:
     var id = prefix + "_" + str(_next_id)
@@ -448,7 +460,14 @@ func set_entity_extraction_item(entity_id: String, item_id: String) -> bool:
     var allowed_items: Array = extraction.get("items", [extraction.get("item_id", "")])
     if definition.get("kind", "") != "extractor" or not allowed_items.has(item_id):
         return false
+    var planet_id := String(building.get("planet_id", ""))
+    var position := Vector2(building.get("position", Vector2.ZERO))
+    var site := PlanetSystem.new(self).find_nearest_resource_site(planet_id, item_id, position)
+    if site.is_empty():
+        return false
     building["output_item"] = item_id
+    building["resource_site_id"] = String(site.get("id", ""))
+    buildings[entity_id] = building
     return true
 
 func set_entity_output_item(entity_id: String, item_id: String) -> bool:

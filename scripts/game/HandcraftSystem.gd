@@ -46,6 +46,20 @@ const RECIPES := {
 		"output_target": "construction",
 		"duration": 3.0,
 	},
+	"handcraft_logistics_drone": {
+		"name": "物流运输机",
+		"inputs": {"gear": 2.0, "processor": 1.0, "titanium_alloy": 2.0},
+		"outputs": {"logistics_drone": 1.0},
+		"output_target": "planet",
+		"duration": 2.0,
+	},
+	"handcraft_logistics_vessel": {
+		"name": "物流飞船",
+		"inputs": {"gear": 4.0, "processor": 2.0, "titanium_alloy": 4.0},
+		"outputs": {"logistics_vessel": 1.0},
+		"output_target": "planet",
+		"duration": 4.0,
+	},
 }
 
 var game_state: GameState
