@@ -1,7 +1,16 @@
 {
   "line_id": "progression",
   "name": "基础研究进程",
+  "endgame": {
+    "id": "stellar_ascension", "name": "星际文明计划", "technology": "dyson_engineering",
+    "cost": {"universe_matrix": 30, "dyson_sphere_component": 20},
+    "power_kw": 3000, "duration_ticks": 3600, "reward": {"universe_matrix": 10}
+  },
   "items": {
+    "universe_matrix": {
+      "id": "universe_matrix", "name": "白矩阵", "symbol": "◇∞", "color": "#eeeeee",
+      "description": "单机终局使用的研究载体，当前采用阶段装配配方"
+    },
     "matrix_science_1": {
       "id": "matrix_science_1",
       "name": "基础研究矩阵",
@@ -11,6 +20,11 @@
     }
   },
   "recipes": {
+    "universe_matrix_bootstrap": {
+      "id": "universe_matrix_bootstrap", "name": "白矩阵阶段编码", "building_id": "matrix_lab",
+      "inputs": [{"item_id": "matrix_science_1", "amount": 2}, {"item_id": "processor", "amount": 1}, {"item_id": "titanium_alloy", "amount": 1}],
+      "outputs": [{"item_id": "universe_matrix", "amount": 1}], "duration": 6.0
+    },
     "magnet_recipe": {
       "id": "magnet_recipe",
       "name": "磁体烧结",

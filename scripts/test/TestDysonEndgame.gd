@@ -8,6 +8,11 @@ func _ready() -> void:
 	_test_power_isolation()
 	_test_real_engine_and_production()
 	await _test_ui()
+	_test_endgame_commands()
+	_test_endgame_persistence_and_reward()
+	_test_white_matrix_production()
+	_test_endgame_planet_ownership()
+	await _test_endgame_ui()
 	if failures > 0:
 		printerr("DYSON ENDGAME TESTS FAILED")
 		get_tree().quit(1)
@@ -245,3 +250,170 @@ func _test_ui() -> void:
 	_expect(not panel.visible, "save replacement closes stale Dyson workspace")
 	viewport.queue_free()
 	await get_tree().process_frame
+func _endgame_state() -> GameState:
+	var state := _state()
+	var dyson := DysonSphereSystem.new(state)
+	var orbit: String = dyson.create_orbit("helios").id
+	state.dyson_systems.helios.orbits[orbit].cohorts = [{"count": 100, "expires_tick": 36000}]
+	state.dyson_systems.helios.sails_launched = 100
+	state.planet_inventory["universe_matrix"] = 30.0
+	state.planet_inventory["dyson_sphere_component"] = 20.0
+	state.sync_active_planet_inventory()
+	return state
+
+func _test_endgame_commands() -> void:
+	var state := _endgame_state()
+	var model := EndgameSystem.new(state)
+	var before := GameStateCodec.to_persistent_dict(state)
+	_expect(model.get_snapshot().can_start, "actual matrices, components and Dyson power qualify for endgame")
+	_expect(not model.try_start("home").ok and not model.try_start("frost", true).ok and GameStateCodec.to_persistent_dict(state) == before, "missing confirmation and stale planet reject atomically")
+	for item in ["universe_matrix", "dyson_sphere_component"]:
+		state.planet_inventory[item] -= 1
+		before = GameStateCodec.to_persistent_dict(state)
+		_expect(not model.try_start("home", true).ok and GameStateCodec.to_persistent_dict(state) == before, "missing endgame material rejects: " + item)
+		state.planet_inventory[item] += 1
+	state.completed_technologies.erase("dyson_engineering")
+	_expect(not model.try_start("home", true).ok, "endgame requires Dyson technology")
+	state.completed_technologies.append("dyson_engineering")
+	var saved_dyson := state.dyson_systems.duplicate(true)
+	state.dyson_systems.clear()
+	_expect(not model.try_start("home", true).ok, "endgame cannot use imaginary Dyson power")
+	state.dyson_systems = saved_dyson.duplicate(true)
+	_expect(model.try_start("home", true).ok and state.planet_inventory.get("universe_matrix", 0) == 0 and state.planet_inventory.get("dyson_sphere_component", 0) == 0, "confirmed start debits all material once")
+	before = GameStateCodec.to_persistent_dict(state)
+	_expect(not model.try_start("home", true).ok and GameStateCodec.to_persistent_dict(state) == before, "duplicate start cannot consume material or reset progress")
+	state.dyson_systems.clear()
+	model.update_tick()
+	_expect(state.endgame.progress_ticks == 0 and not model.get_snapshot().reason.is_empty(), "lost power pauses endgame without losing investment")
+	state.dyson_systems = saved_dyson.duplicate(true)
+	var engine := SimulationEngine.new(state)
+	state.paused = true
+	engine.update(1)
+	_expect(state.endgame.progress_ticks == 0, "simulation pause freezes endgame")
+	state.paused = false
+	engine.update(1.0 / 60)
+	_expect(state.endgame.progress_ticks == 1, "restored power resumes endgame")
+	var copy := state.copy_state()
+	copy.endgame.invested.universe_matrix = 999.0
+	_expect(state.endgame.invested.universe_matrix == 30.0, "state copies own endgame investment")
+	var expiry := _endgame_state()
+	EndgameSystem.new(expiry).try_start("home", true)
+	expiry.dyson_systems.helios.orbits.values()[0].cohorts[0].expires_tick = 1
+	SimulationEngine.new(expiry).update(1.0 / 60)
+	_expect(expiry.endgame.progress_ticks == 0, "expired sails cannot advance endgame on expiry tick")
+
+func _test_endgame_persistence_and_reward() -> void:
+	var state := _endgame_state()
+	EndgameSystem.new(state).try_start("home", true)
+	var engine := SimulationEngine.new(state)
+	for i in range(500): engine.update(1.0 / 60)
+	var save := SaveSystem.new("res://.godot/task15-saves")
+	state.endgame.invested = {"universe_matrix": 30, "dyson_sphere_component": 20}
+	_expect(save.save_slot(1, state).ok, "running endgame writes real save with integral investment values")
+	var loaded := save.load_slot(1)
+	_expect(loaded.ok, "running endgame loads with valid digest")
+	if not loaded.ok: return
+	var restored: GameState = loaded.state
+	var resumed := SimulationEngine.new(restored)
+	state.planet_inventory.universe_matrix = 999.0
+	restored.planet_inventory.universe_matrix = 999.0
+	for i in range(3100): engine.update(1.0 / 60)
+	for i in range(310): resumed.update(1.0 / 6)
+	var original_payload := GameStateCodec.to_persistent_dict(state)
+	var restored_payload := GameStateCodec.to_persistent_dict(restored)
+	for key in original_payload:
+		if original_payload[key] != restored_payload[key]: print("ENDGAME DIFF ", key, ": ", original_payload[key], " vs ", restored_payload[key])
+	_expect(original_payload == restored_payload, "loaded endgame continues identically across frame sizes")
+	_expect(state.endgame.phase == "won" and not state.endgame.reward_claimed and state.planet_inventory.universe_matrix == 999, "victory retains overflowing one-time reward")
+	var model := EndgameSystem.new(state)
+	_expect(not model.claim_reward().ok, "full inventory cannot lose or duplicate victory reward")
+	_expect(save.save_slot(3, state).ok, "pending reward is saved without losing victory")
+	var pending := save.load_slot(3)
+	_expect(pending.ok and pending.state.endgame.phase == "won" and not pending.state.endgame.reward_claimed, "pending reward survives loading")
+	state.planet_inventory.universe_matrix = 989.0
+	_expect(model.claim_reward().ok and state.planet_inventory.universe_matrix == 999 and state.endgame.reward_claimed, "claim delivers exact reward once")
+	var before := GameStateCodec.to_persistent_dict(state)
+	_expect(not model.claim_reward().ok and GameStateCodec.to_persistent_dict(state) == before, "repeated reward claim is atomic")
+	_expect(save.save_slot(2, state).ok and save.load_slot(2).ok, "victory and reward flag survive real file save")
+	var won: GameState = save.load_slot(2).state
+	var elapsed := won.elapsed_time
+	SimulationEngine.new(won).update(0.1)
+	_expect(won.elapsed_time > elapsed and won.endgame.phase == "won" and won.planet_inventory.universe_matrix == 999, "victory keeps simulation running without replaying reward")
+	var payload := GameStateCodec.to_persistent_dict(state)
+	for corruption in [{"phase": "unknown"}, {"phase": "running"}, {"progress_ticks": -1}, {"progress_ticks": 0.5}, {"progress_ticks": "3600"}, {"planet_id": "unknown"}, {"invested": {}}, {"reward_claimed": 1}]:
+		var bad := payload.duplicate(true)
+		bad.endgame.merge(corruption, true)
+		_expect(GameStateCodec.from_persistent_dict(bad) == null, "invalid endgame save rejected: " + str(corruption))
+	var legacy := payload.duplicate(true)
+	legacy.schema_version = 8
+	legacy.erase("endgame")
+	var migrated := GameStateCodec.from_persistent_dict(legacy)
+	_expect(migrated != null and migrated.endgame == EndgameSystem.initial_state(), "v8 migration grants no free victory or rewards")
+
+func _test_white_matrix_production() -> void:
+	var state := _state()
+	var lab := _place(state, "matrix_lab", Vector2.ZERO)
+	_expect(state.set_entity_recipe(lab, "universe_matrix_bootstrap"), "formal lab accepts white matrix recipe")
+	state.planet_inventory = {"matrix_science_1": 2.0, "processor": 1.0, "titanium_alloy": 1.0}
+	state.sync_active_planet_inventory()
+	_expect(InventorySystem.new(state).try_supply_recipe(lab).ok, "white matrix reserves real input materials")
+	ProductionSystem.new(state).update(6)
+	_expect(state.buildings[lab].output_buffer.get("universe_matrix", 0) == 1 and state.buildings[lab].input_buffer.matrix_science_1 == 0, "real white matrix production conserves inputs")
+	_expect(EndgameSystem.new(state).find_producer("universe_matrix").building_id == lab, "endgame production lookup finds configured lab")
+
+func _test_endgame_ui() -> void:
+	var state := _endgame_state()
+	var lab := _place(state, "matrix_lab", Vector2(300, 0))
+	state.set_entity_recipe(lab, "universe_matrix_bootstrap")
+	GameManager.replace_game_state(state)
+	state.paused = true
+	var viewport := SubViewport.new()
+	viewport.size = Vector2i(1152, 648)
+	add_child(viewport)
+	var main: Node = load("res://scenes/main/Main.tscn").instantiate()
+	viewport.add_child(main)
+	await get_tree().process_frame
+	var workspace: Node = main.get_node("FactoryWorkspaceUI")
+	workspace.get_node("TopBar/EndgameButton").pressed.emit()
+	var panel: Control = workspace.get_node("EndgameWorkspace")
+	await get_tree().process_frame
+	_expect(panel.visible and workspace.is_pointer_over_ui(panel.get_global_rect().get_center()), "formal endgame button opens input-blocking workspace")
+	panel.start_button.pressed.emit()
+	_expect(panel.confirmation.visible and state.endgame.phase == "preparing", "start button opens confirmation without consuming material")
+	panel.confirmation.hide()
+	_expect(state.planet_inventory.universe_matrix == 30, "canceling confirmation preserves resources")
+	panel.start_button.pressed.emit()
+	state.planet_inventory.universe_matrix = 29
+	panel.confirmation.confirmed.emit()
+	_expect(state.endgame.phase == "preparing" and state.planet_inventory.universe_matrix == 29, "confirmation revalidates changing inventory")
+	state.planet_inventory.universe_matrix = 30
+	panel.start_button.pressed.emit()
+	panel.confirmation.confirmed.emit()
+	_expect(state.endgame.phase == "running" and state.planet_inventory.get("universe_matrix", 0) == 0, "confirmed formal UI starts real endgame")
+	panel.locate_producer("universe_matrix")
+	_expect(not panel.visible and main.get_node("InputHandler").selected_building_id == lab, "production location uses real Main selection")
+	workspace.show_exclusive_workspace("EndgameWorkspace")
+	workspace.show_exclusive_workspace("DysonPanel")
+	_expect(not panel.visible, "endgame workspace is exclusive with Dyson planning")
+	workspace.show_exclusive_workspace("EndgameWorkspace")
+	GameManager.replace_game_state(GameState.new())
+	_expect(not panel.visible and not panel.confirmation.visible, "state replacement cancels stale endgame UI")
+	viewport.queue_free()
+	await get_tree().process_frame
+func _test_endgame_planet_ownership() -> void:
+	var state := _endgame_state()
+	state.explored_system_ids.append("borealis")
+	state.survey_progress_by_system.borealis = 1.0
+	state.colonized_planet_ids.append("frost")
+	state.planet_inventories.frost = {"universe_matrix": 30.0, "dyson_sphere_component": 20.0}
+	state.planet_viewports.frost = {"position": Vector2.ZERO, "zoom": Vector2.ONE}
+	var model := EndgameSystem.new(state)
+	state.set_active_planet("frost")
+	_expect(not model.try_start("frost", true).ok, "remote planet cannot borrow another systems Dyson power")
+	state.set_active_planet("home")
+	_expect(model.try_start("home", true).ok, "source planet owns paid endgame")
+	state.set_active_planet("frost")
+	var remote_before := state.planet_inventory.duplicate(true)
+	for i in range(3600): model.update_tick()
+	_expect(state.endgame.phase == "won" and state.endgame.planet_id == "home" and state.get_planet_inventory("home").get("universe_matrix") == 10 and state.planet_inventory == remote_before, "view switching cannot redirect progress, investment or reward")
+	_expect(GameStateValidator.validate_persistent_dict(GameStateCodec.to_persistent_dict(state)).is_empty(), "cross-planet completed endgame validates")

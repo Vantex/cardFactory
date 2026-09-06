@@ -81,6 +81,17 @@ func _ready() -> void:
 	dyson_panel.z_index = 4
 	dyson_panel.hide()
 	add_child(dyson_panel)
+	var endgame_panel := preload("res://scenes/ui/EndgameWorkspace.gd").new()
+	endgame_panel.name = "EndgameWorkspace"
+	endgame_panel.anchor_right = 1.0
+	endgame_panel.anchor_bottom = 1.0
+	endgame_panel.offset_left = RESOURCE_RAIL_WIDTH + 10.0
+	endgame_panel.offset_top = TOP_BAR_HEIGHT + 8.0
+	endgame_panel.offset_right = -INSPECTOR_WIDTH - 10.0
+	endgame_panel.offset_bottom = -CONSTRUCTION_DOCK_HEIGHT - 8.0
+	endgame_panel.z_index = 4
+	endgame_panel.hide()
+	add_child(endgame_panel)
 	var technology_panel := TECHNOLOGY_PANEL_SCRIPT.new()
 	technology_panel.name = "TechnologyPanel"
 	technology_panel.anchor_right = 1.0
@@ -185,7 +196,7 @@ func show_notice(message: String, tone: String = "info") -> void:
 		_toast_timer.start()
 
 func is_pointer_over_ui(viewport_position: Vector2) -> bool:
-	for node_name in ["TopBar", "ResourceRail", "InspectorPanel", "ConstructionDock", "BlueprintWorkspace", "CampaignWorkspace", "MiniMap", "TechnologyPanel", "CodexWorkspace", "GalaxyMap", "StationPanel", "DysonPanel"]:
+	for node_name in ["TopBar", "ResourceRail", "InspectorPanel", "ConstructionDock", "BlueprintWorkspace", "CampaignWorkspace", "MiniMap", "TechnologyPanel", "CodexWorkspace", "GalaxyMap", "StationPanel", "DysonPanel", "EndgameWorkspace"]:
 		var region := get_node_or_null(node_name) as Control
 		if region != null and region.visible and Rect2(Vector2.ZERO, region.size).has_point(region.get_global_transform_with_canvas().affine_inverse() * viewport_position):
 			return true
@@ -415,7 +426,7 @@ func _toggle_galaxy_workspace() -> void:
 			show_exclusive_workspace("GalaxyMap")
 
 func show_exclusive_workspace(workspace_name: String) -> void:
-	for candidate_name in ["TechnologyPanel", "CampaignWorkspace", "BlueprintWorkspace", "CodexWorkspace", "GalaxyMap", "StationPanel", "DysonPanel"]:
+	for candidate_name in ["TechnologyPanel", "CampaignWorkspace", "BlueprintWorkspace", "CodexWorkspace", "GalaxyMap", "StationPanel", "DysonPanel", "EndgameWorkspace"]:
 		var workspace := get_node_or_null(candidate_name) as Control
 		if workspace != null:
 			workspace.visible = candidate_name == workspace_name
@@ -495,8 +506,17 @@ func _create_top_bar() -> void:
 		if get_node("DysonPanel").visible: get_node("DysonPanel").hide()
 		else: show_exclusive_workspace("DysonPanel"))
 	top_bar.add_child(dyson_button)
-	_top_status.position = Vector2(600, 16)
-	_top_status.size = Vector2(538, 24)
+	var endgame_button := Button.new()
+	endgame_button.name = "EndgameButton"
+	endgame_button.text = "终局"
+	endgame_button.position = Vector2(600, 9)
+	endgame_button.size = Vector2(58, 34)
+	endgame_button.pressed.connect(func():
+		if get_node("EndgameWorkspace").visible: get_node("EndgameWorkspace").hide()
+		else: show_exclusive_workspace("EndgameWorkspace"))
+	top_bar.add_child(endgame_button)
+	_top_status.position = Vector2(664, 16)
+	_top_status.size = Vector2(474, 24)
 	_top_status.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	top_bar.add_child(_top_status)
 

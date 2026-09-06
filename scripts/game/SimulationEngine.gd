@@ -4,7 +4,7 @@ extends RefCounted
 const FIXED_DELTA := 1.0 / 60.0
 const MAX_STEPS_PER_FRAME := 10
 const STEP_EPSILON := 0.0000001
-const PHASE_ORDER := ["dyson_decay", "power", "production", "handcraft", "belt", "logistics", "dyson_launch", "galaxy", "research", "statistics"]
+const PHASE_ORDER := ["dyson_decay", "power", "production", "handcraft", "belt", "logistics", "dyson_launch", "galaxy", "research", "endgame", "statistics"]
 
 var game_state: GameState
 var production_system: ProductionSystem
@@ -16,6 +16,7 @@ var technology_system: TechnologySystem
 var galaxy_system: GalaxySystem
 var logistics_system: LogisticsSystem
 var dyson_system: DysonSphereSystem
+var endgame_system: EndgameSystem
 
 var _accumulator := 0.0
 var _last_step_count := 0
@@ -31,6 +32,7 @@ func _init(state: GameState) -> void:
 	galaxy_system = GalaxySystem.new(state)
 	logistics_system = LogisticsSystem.new(state, statistics_system)
 	dyson_system = DysonSphereSystem.new(state, statistics_system)
+	endgame_system = EndgameSystem.new(state)
 
 func update(delta: float) -> void:
 	_last_step_count = 0
@@ -59,6 +61,7 @@ func _run_fixed_tick() -> void:
 	dyson_system.update_launches(FIXED_DELTA)
 	galaxy_system.update_exploration(FIXED_DELTA)
 	_update_research(FIXED_DELTA)
+	endgame_system.update_tick()
 	statistics_system.update(FIXED_DELTA)
 
 func _update_research(delta: float) -> void:

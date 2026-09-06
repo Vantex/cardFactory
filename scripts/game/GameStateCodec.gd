@@ -33,6 +33,8 @@ static func to_persistent_dict(state: GameState) -> Dictionary:
 	var research_queue: Array = state.research_queue.duplicate(true)
 	var research_progress := state.research_progress.duplicate(true)
 	var research_invested_costs := state.research_invested_costs.duplicate(true)
+	var endgame_payload := {"endgame": state.endgame.duplicate(true)}
+	EndgameStateValidator.normalize_integer_fields(endgame_payload)
 	var payload := {
 		"schema_version": GameState.SCHEMA_VERSION,
 		"next_id": state._next_id,
@@ -51,6 +53,7 @@ static func to_persistent_dict(state: GameState) -> Dictionary:
 		"logistics_routes": state.logistics_routes,
 		"dyson_systems": state.dyson_systems,
 		"dyson_tick": state.dyson_tick,
+		"endgame": endgame_payload.endgame,
 		"interplanetary_delivered": state.interplanetary_delivered,
 		"construction_inventory": state.construction_inventory,
 		"cursor_payload": state.cursor_payload,
@@ -93,6 +96,7 @@ static func from_persistent_dict(payload: Variant) -> GameState:
 	state.resource_sites = _decode_resource_sites(data["resource_sites"])
 	state.dyson_systems = data["dyson_systems"].duplicate(true)
 	state.dyson_tick = int(data["dyson_tick"])
+	state.endgame = data["endgame"].duplicate(true)
 	state.logistics_routes = data["logistics_routes"].duplicate(true)
 	for route in state.logistics_routes.values():
 		route.source_slot = int(route.source_slot)

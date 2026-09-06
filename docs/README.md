@@ -34,3 +34,5 @@
 - 不在仓库根目录散放新的开发记录；当前文档进入 `docs/current/`，完成的批次进入带日期的历史目录。
 
 任务 14：[实现计划](current/TASK14_PLAN.md) · [验收边界](current/TASK14_ACCEPTANCE.md)。
+
+任务 15：[实现计划](current/TASK15_PLAN.md) · [验收边界](current/TASK15_ACCEPTANCE.md)。

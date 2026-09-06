@@ -35,6 +35,7 @@ func _ready() -> void:
 	mini_map.set_camera($WorldCamera)
 	campaign_workspace.locate_requested.connect(_on_locate_requested)
 	codex_workspace.locate_requested.connect(_on_locate_requested)
+	factory_workspace_ui.get_node("EndgameWorkspace").locate_requested.connect(_on_locate_requested)
 	_progression_system = ProgressionSystem.new(game_state)
 	_technology_system = TechnologySystem.new(game_state)
 	_galaxy_system = GalaxySystem.new(game_state)

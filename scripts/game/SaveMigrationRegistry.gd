@@ -55,6 +55,10 @@ static func migrate_to_current(payload: Variant) -> Dictionary:
 				migrated["dyson_systems"] = {}
 				migrated["dyson_tick"] = 0
 				version = 8
+			8:
+				migrated["schema_version"] = 9
+				migrated["endgame"] = EndgameSystem.initial_state()
+				version = 9
 			_:
 				return _failure("missing_migration", "缺少从版本 %d 开始的迁移" % version)
 
@@ -86,6 +90,7 @@ static func migrate_to_current(payload: Variant) -> Dictionary:
 
 	LogisticsStateValidator.normalize_integer_fields(migrated)
 	DysonStateValidator.normalize_integer_fields(migrated)
+	EndgameStateValidator.normalize_integer_fields(migrated)
 	var validation_errors := GameStateValidator.validate_persistent_dict(migrated)
 	if not validation_errors.is_empty():
 		return {"ok": false, "data": {}, "errors": validation_errors}

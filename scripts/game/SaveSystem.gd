@@ -350,6 +350,7 @@ func _normalize_stored_digest_types(payload: Dictionary) -> Dictionary:
 	var normalized := payload.duplicate(true)
 	LogisticsStateValidator.normalize_integer_fields(normalized)
 	DysonStateValidator.normalize_integer_fields(normalized)
+	EndgameStateValidator.normalize_integer_fields(normalized)
 	for integer_field in ["schema_version", "next_id", "construction_points", "galaxy_seed"]:
 		var field_value: Variant = normalized.get(integer_field)
 		if _is_integral_number(field_value):

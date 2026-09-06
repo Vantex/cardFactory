@@ -678,19 +678,19 @@ git commit -m "feat: add deterministic dyson engineering"
 - 修改：`scripts/game/GameState.gd`
 - 修改：`scripts/test/TestDysonEndgame.gd`
 
-- [ ] **步骤 1：写终局状态机失败测试**
+- [x] **步骤 1：写终局状态机失败测试**
 
 覆盖白矩阵、戴森功率、巨构材料、启动确认、进度、完成一次性奖励、胜利后继续游玩和保存加载。
 
-- [ ] **步骤 2：定义明确单机胜利条件**
+- [x] **步骤 2：定义明确单机胜利条件**
 
 胜利必须由可验证领域事实构成，不依赖联网排名或全服进度。终局前提供清晰缺口列表和生产定位。
 
-- [ ] **步骤 3：实现终局工作区**
+- [x] **步骤 3：实现终局工作区**
 
 显示阶段、材料、功率、速率、预计时间和阻塞原因；危险销毁/时间扭曲操作使用明确确认。
 
-- [ ] **步骤 4：提交**
+- [x] **步骤 4：提交**
 
 ```powershell
 git add scripts/game/EndgameSystem.gd scenes/ui/EndgameWorkspace.gd data/progression.json scripts/game/GameState.gd scripts/test/TestDysonEndgame.gd

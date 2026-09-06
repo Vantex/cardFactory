@@ -2,7 +2,7 @@
 class_name GameState
 extends RefCounted
 
-const SCHEMA_VERSION: int = 8
+const SCHEMA_VERSION: int = 9
 const HOME_PLANET_ID := "home"
 const NEW_GAME_HOME_INVENTORY := {
     "coal": 10.0,
@@ -51,6 +51,7 @@ var connections: Dictionary = {}
 var logistics_routes: Dictionary = {}
 var dyson_systems: Dictionary = {}
 var dyson_tick := 0
+var endgame: Dictionary = EndgameSystem.initial_state()
 var interplanetary_delivered := 0.0
 
 # 科技系统
@@ -1046,6 +1047,7 @@ func install_state(source: GameState) -> void:
     logistics_routes = source.logistics_routes.duplicate(true)
     dyson_systems = source.dyson_systems.duplicate(true)
     dyson_tick = source.dyson_tick
+    endgame = source.endgame.duplicate(true)
     interplanetary_delivered = source.interplanetary_delivered
     elapsed_time = source.elapsed_time
     paused = source.paused

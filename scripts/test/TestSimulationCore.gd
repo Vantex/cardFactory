@@ -186,7 +186,7 @@ func _test_phase_order_and_tick_boundaries() -> void:
 	_add_building(state, "smelter", "smelter", {"recipe_id": "iron_ingot_recipe"})
 	_add_connection(state, "belt", "miner", "smelter", 60.0)
 	var engine := SimulationEngine.new(state)
-	_expect(engine.has_method("get_phase_order") and engine.get_phase_order() == ["dyson_decay", "power", "production", "handcraft", "belt", "logistics", "dyson_launch", "galaxy", "research", "statistics"], "fixed ticks publish the authoritative phase order")
+	_expect(engine.has_method("get_phase_order") and engine.get_phase_order() == ["dyson_decay", "power", "production", "handcraft", "belt", "logistics", "dyson_launch", "galaxy", "research", "endgame", "statistics"], "fixed ticks publish the authoritative phase order")
 	engine.update(FIXED_DELTA)
 	_expect(is_equal_approx(state.buildings["smelter"]["input_buffer"].get("iron_ore", 0.0), 1.0), "production runs before belts, so a miner's tick output can enter logistics")
 	_expect(state.buildings["smelter"].get("progress", 0.0) == 0.0, "material delivered by belts is not consumed earlier in the same tick")

@@ -30,9 +30,9 @@ func _test_canonical_snapshot_and_round_trip() -> void:
 	state.buildings["building_10"]["power_output"] = 500.0
 	var payload := GameStateCodec.to_persistent_dict(state)
 
-	_expect(state.get_state_version() == 8, "GameState exposes the current integer schema version")
-	_expect(payload.keys() == ["active_planet_id", "buildings", "claimed_progression_reward_ids", "colonized_planet_ids", "completed_achievement_ids", "completed_objective_ids", "completed_technologies", "connections", "construction_inventory", "cursor_payload", "dyson_systems", "dyson_tick", "elapsed_time", "exploration_missions", "explored_system_ids", "galaxy_seed", "handcraft_queue", "interplanetary_delivered", "logistics_routes", "next_id", "planet_inventories", "planet_metrics", "planet_viewports", "portable_fleet", "research_current_id", "research_invested_costs", "research_paused", "research_progress", "research_queue", "research_queue_wait_reason", "resource_sites", "schema_version", "survey_progress_by_system", "technology_levels", "unlocked_progression_ids"], "persistent root keys use canonical order")
-	_expect(payload.get("schema_version") == 8, "persistent payload contains schema version 8")
+	_expect(state.get_state_version() == 9, "GameState exposes the current integer schema version")
+	_expect(payload.keys() == ["active_planet_id", "buildings", "claimed_progression_reward_ids", "colonized_planet_ids", "completed_achievement_ids", "completed_objective_ids", "completed_technologies", "connections", "construction_inventory", "cursor_payload", "dyson_systems", "dyson_tick", "elapsed_time", "endgame", "exploration_missions", "explored_system_ids", "galaxy_seed", "handcraft_queue", "interplanetary_delivered", "logistics_routes", "next_id", "planet_inventories", "planet_metrics", "planet_viewports", "portable_fleet", "research_current_id", "research_invested_costs", "research_paused", "research_progress", "research_queue", "research_queue_wait_reason", "resource_sites", "schema_version", "survey_progress_by_system", "technology_levels", "unlocked_progression_ids"], "persistent root keys use canonical order")
+	_expect(payload.get("schema_version") == 9, "persistent payload contains schema version 9")
 	_expect(payload.get("next_id") == 11, "persistent payload preserves the next stable ID")
 	_expect(payload.get("planet_inventories", {}).get("home") == {"gear": 2.0, "iron_ingot": 7.0}, "persistent payload preserves the planet tray")
 	_expect(payload.get("construction_inventory").get("miner") == 2.0, "persistent payload preserves construction items")
@@ -281,7 +281,7 @@ func _test_migrations_and_version_boundaries() -> void:
 	}
 	var migration_result := SaveMigrationRegistry.migrate_to_current(legacy_payload)
 	_expect(migration_result.get("ok") == true, "migration registry upgrades a known version-zero payload")
-	_expect(migration_result.get("data", {}).get("schema_version") == 8, "version-zero migration advances through every registered step to schema version 8")
+	_expect(migration_result.get("data", {}).get("schema_version") == 9, "version-zero migration advances through every registered step to schema version 9")
 	_expect(migration_result.get("data", {}).get("construction_inventory", {}).get("legacy_credit") == 9.0, "legacy construction points become migration-only credit")
 	_expect(GameStateCodec.from_persistent_dict(legacy_payload) is GameState, "codec accepts a valid migrated legacy payload")
 
