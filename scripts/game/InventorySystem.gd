@@ -103,6 +103,51 @@ func try_remove_batch(items: Dictionary, planet_id: String = "") -> Dictionary:
 		_remove_without_validation(String(item_key), float(items[item_key]), planet_id)
 	return _success("批量物资已从行星托盘取出")
 
+func try_supply_recipe(building_id: String, batches: int = 1) -> Dictionary:
+	var building: Dictionary = game_state.buildings.get(building_id, {})
+	if building.is_empty() or String(building.get("planet_id", "")) != game_state.active_planet_id or batches <= 0:
+		return _failure("只能向当前行星建筑投料")
+	var recipe := DataManager.get_recipe(String(building.get("recipe_id", "")))
+	if recipe.is_empty() or not DataManager.is_recipe_supported_by_building(recipe, String(building.get("type", ""))):
+		return _failure("请先选择有效配方")
+	var required: Dictionary = {}
+	for ingredient in recipe.get("inputs", []):
+		var item_id := String(ingredient.item_id)
+		required[item_id] = float(required.get(item_id, 0.0)) + float(ingredient.amount) * batches
+	var buffer: Dictionary = building.get("input_buffer", {}).duplicate(true)
+	var definition := DataManager.get_building(String(building.get("type", "")))
+	var capacity := float(building.get("input_buffer_capacity", definition.get("input_buffer_capacity", 60.0)))
+	for item_id in required:
+		if float(buffer.get(item_id, 0.0)) + float(required[item_id]) > capacity + AMOUNT_EPSILON:
+			return _failure("建筑输入容量不足")
+	if not try_remove_batch(required).get("ok", false):
+		return _failure("行星托盘材料不足")
+	for item_id in required:
+		buffer[item_id] = float(buffer.get(item_id, 0.0)) + float(required[item_id])
+	building["input_buffer"] = buffer
+	return _success("已投入配方材料")
+
+func try_collect_output(building_id: String, item_id: String = "", amount: float = 0.0) -> Dictionary:
+	var building: Dictionary = game_state.buildings.get(building_id, {})
+	if building.is_empty() or String(building.get("planet_id", "")) != game_state.active_planet_id:
+		return _failure("只能收取当前行星建筑产物")
+	var buffer: Dictionary = building.get("output_buffer", {}).duplicate(true)
+	var items := buffer.duplicate(true)
+	if not item_id.is_empty():
+		if not _validate_item_amount(item_id, amount).is_empty() or float(buffer.get(item_id, 0.0)) + AMOUNT_EPSILON < amount:
+			return _failure("建筑产物不足")
+		items = {item_id: amount}
+	if not try_add_batch(items).get("ok", false):
+		return _failure("没有可收取产物或托盘容量不足")
+	for key in items:
+		var remaining := float(buffer[key]) - float(items[key])
+		if remaining <= AMOUNT_EPSILON:
+			buffer.erase(key)
+		else:
+			buffer[key] = remaining
+	building["output_buffer"] = buffer
+	return _success("产物已收进行星托盘")
+
 func _remove_without_validation(item_id: String, amount: float, planet_id: String = "") -> void:
 	var inventory := get_planet_inventory(planet_id)
 	var remaining := maxf(float(inventory.get(item_id, 0.0)) - amount, 0.0)

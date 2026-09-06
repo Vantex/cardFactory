@@ -170,7 +170,8 @@ static func _validate_portable_fleet(errors: Array, value: Variant) -> void:
 		_add_error(errors, "invalid_portable_fleet", "state", "", "随身物流载具键必须精确匹配目录")
 		return
 	for item_id in VEHICLE_IDS:
-		if not _is_integral_number(fleet.get(item_id)) or int(fleet.get(item_id, -1)) < 0:
+		var amount: Variant = fleet.get(item_id)
+		if not _is_finite_number(amount) or float(amount) != floor(float(amount)) or float(amount) < 0.0:
 			_add_error(errors, "invalid_portable_fleet", "state", item_id, "随身物流载具数量必须是非负整数")
 
 static func _validate_entity_planet(errors: Array, source: String, entity_id: String, entity: Dictionary, colonized: Variant, galaxy: GalaxySystem) -> void:
@@ -275,6 +276,11 @@ static func _validate_exploration_state(errors: Array, data: Dictionary, galaxy:
 	for system_id in mission_by_system:
 		if not survey_value.has(system_id):
 			_add_error(errors, "invalid_survey_progress", "exploration", String(system_id), "进行中的勘探任务缺少进度记录")
+	for system_id_value in explored:
+		var system_id := String(system_id_value)
+		var progress: Variant = survey_value.get(system_id)
+		if not survey_value.has(system_id) or not _is_finite_number(progress) or not is_equal_approx(float(progress), 1.0):
+			_add_error(errors, "invalid_survey_progress", "exploration", system_id, "已探索星系必须保留完成的勘探进度")
 
 static func _is_vector2_dict(value: Variant) -> bool:
 	return value is Dictionary and _is_finite_number(value.get("x")) and _is_finite_number(value.get("y"))

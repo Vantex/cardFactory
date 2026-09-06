@@ -106,8 +106,16 @@ func _test_validator() -> void:
 		["exploration_missions", [{"system_id": "borealis", "duration_seconds": 1.0, "progress": 0.25}], "invalid_exploration_mission"],
 		["survey_progress_by_system", {"helios": 1.0, "borealis": 0.75}, "invalid_survey_progress"],
 		["survey_progress_by_system", {"helios": 0.5, "borealis": 0.25}, "invalid_survey_progress"],
+		["survey_progress_by_system", {"borealis": 0.25}, "invalid_survey_progress"],
 	]
-	for fleet in [{"unknown": 1}, {"logistics_drone": -1}, {"logistics_drone": 0.5}, {"logistics_drone": INF}, {"logistics_drone": NAN}, {"logistics_drone": "5"}]:
+	for fleet in [
+		{"logistics_drone": 0, "logistics_vessel": 0, "unknown": 1},
+		{"logistics_drone": -1, "logistics_vessel": 0},
+		{"logistics_drone": 0.5, "logistics_vessel": 0},
+		{"logistics_drone": INF, "logistics_vessel": 0},
+		{"logistics_drone": NAN, "logistics_vessel": 0},
+		{"logistics_drone": "5", "logistics_vessel": 0},
+	]:
 		cases.append(["portable_fleet", fleet, "invalid_portable_fleet"])
 	for case in cases:
 		var payload := valid.duplicate(true)
@@ -164,11 +172,51 @@ func _test_formal_entry_points() -> void:
 		_expect(result.get("ok", false) and GameManager.continue_game(0).get("ok", false) and camera.position == wanted.position and camera.zoom == wanted.zoom, "no-travel %s save restores camera" % reason)
 	state = GameManager.get_game_state()
 	state.completed_technologies.append("interstellar_logistics")
-	InventorySystem.new(state).try_add_batch({"gear": 10.0, "processor": 10.0, "titanium_alloy": 20.0})
+	var smelter := ConstructionSystem.new(state).try_place_building("smelter", Vector2(900, 200))
+	_expect(smelter.get("ok", false), "formal new game can place its starter smelter")
+	if not smelter.get("ok", false):
+		viewport.queue_free()
+		await get_tree().process_frame
+		GameManager.end_session()
+		GameManager.set_process(true)
+		GameManager.configure_save_system(old_save)
+		return
+	var smelter_id := String(smelter.id)
+	var production := ProductionSystem.new(state)
+	# Obtain every additional alloy precursor from the starter miner and the shipped base smelting recipes.
+	production.update(36.0)
+	_expect(_collect_building_output(state, miner_id, "copper_ore", 6.0), "starter miner yields copper precursor without inventory injection")
+	_expect(_run_recipe_from_inventory(state, production, smelter_id, "copper_ingot_recipe", {"copper_ore": 6.0}, "copper_ingot", 6.0, 6.0), "base smelting produces the missing copper ingots")
+	state.buildings[miner_id]["position"] = Vector2(-470, -250)
+	state.buildings[miner_id]["output_item"] = "iron_ore"
+	_expect(PlanetSystem.new(state).try_bind_extractor(miner_id, "home_iron_1").get("ok", false), "starter miner rebinds to the iron reserve")
+	production.update(54.0)
+	_expect(_collect_building_output(state, miner_id, "iron_ore", 9.0), "starter miner yields iron precursor without inventory injection")
+	_expect(_run_recipe_from_inventory(state, production, smelter_id, "iron_ingot_recipe", {"iron_ore": 9.0}, "iron_ingot", 9.0, 9.0), "base smelting produces the missing iron ingots")
+
+	var alloy_recipe := DataManager.get_recipe("titanium_alloy_recipe")
+	_expect(not alloy_recipe.is_empty() and DataManager.is_recipe_supported_by_building(alloy_recipe, "smelter"), "shipped catalog exposes titanium alloy as a smelter recipe")
+	workspace.call("set_selected_building", smelter_id)
+	_expect(_press_recipe(workspace, "titanium_alloy_recipe"), "Inspector exposes and selects the titanium alloy recipe")
+	var material_actions: Node = workspace.get_node("InspectorPanel/MaterialActions")
+	_expect(material_actions.visible and material_actions.has_node("SupplyRecipe") and material_actions.has_node("CollectOutput"), "Inspector exposes production material actions")
+	var inventory := InventorySystem.new(state)
+	var rejected_before := GameStateCodec.state_digest_payload(state)
+	_expect(not inventory.try_supply_recipe(smelter_id, 1000).get("ok", true) and rejected_before == GameStateCodec.state_digest_payload(state), "oversized supply preserves inventory and buffers")
+	_expect(not inventory.try_collect_output(smelter_id, "titanium_alloy", 1000).get("ok", true) and rejected_before == GameStateCodec.state_digest_payload(state), "unavailable collection preserves inventory and buffers")
+	_expect(_run_selected_recipe_from_inventory(state, production, smelter_id, {"iron_ingot": 5.0, "copper_ingot": 5.0}, "titanium_alloy", 20.0, 15.0), "formal smelter production creates all twenty titanium alloy")
 	var craft := HandcraftSystem.new(state)
+	material_actions.get_node("CollectOutput").pressed.emit()
+	_expect(float(state.planet_inventory.get("titanium_alloy", 0)) == 20.0, "repeated UI collection cannot duplicate alloy")
+	_expect(craft.queue_craft("handcraft_gear", 6).get("ok", false), "formal handcraft reserves the remaining gears")
+	craft.update(3.0)
+	_expect(craft.queue_craft("handcraft_processor", 5).get("ok", false), "formal handcraft reserves the fleet processors")
+	craft.update(10.0)
+	_expect(float(state.planet_inventory.get("gear", 0)) == 10.0 and float(state.planet_inventory.get("processor", 0)) == 5.0 and float(state.planet_inventory.get("titanium_alloy", 0)) == 20.0, "reachable precursor chain leaves the exact fleet and colony inputs")
 	var queued := craft.queue_craft("handcraft_logistics_drone", 5)
-	_expect(queued.get("ok", false), "existing materials can craft fleet vehicles")
+	_expect(queued.get("ok", false), "reachable materials can craft fleet vehicles")
 	craft.update(60.0)
+	_expect(float(state.planet_inventory.get("titanium_alloy", 0)) == 10.0 and float(state.planet_inventory.get("logistics_drone", 0)) == 5.0, "fleet crafting reserves alloy exactly once and leaves the colony allocation")
 	var map: Node = main.get_node("FactoryWorkspaceUI/GalaxyMap")
 	map.call("_on_system_selected", "helios")
 	map.call("_on_planet_selected", "giant")
@@ -177,14 +225,14 @@ func _test_formal_entry_points() -> void:
 	if fleet_button != null:
 		_expect(not fleet_button.disabled, "crafted vehicles enable enlistment")
 		fleet_button.pressed.emit()
-		_expect(state.portable_fleet.logistics_drone == 5 and float(state.planet_inventory.get("logistics_drone", 0)) == 0, "formal enlistment transfers vehicles exactly once")
+		_expect(state.portable_fleet.logistics_drone == 5 and float(state.planet_inventory.get("logistics_drone", 0)) == 0 and float(state.planet_inventory.get("titanium_alloy", 0)) == 10.0, "formal enlistment transfers vehicles exactly once without spending colony materials")
 		var enlisted := GameStateCodec.state_digest_payload(state)
 		fleet_button.pressed.emit()
 		_expect(enlisted == GameStateCodec.state_digest_payload(state), "repeated empty enlistment is atomic")
 		var colony_button: Button = map.get("_colonize_button")
 		_expect(not colony_button.disabled, "enlisted fleet enables giant colonization")
 		colony_button.pressed.emit()
-		_expect(state.colonized_planet_ids.has("giant") and state.portable_fleet.logistics_drone == 0 and state.planet_inventories.giant.is_empty(), "formal giant colonization consumes five vehicles and creates empty colony")
+		_expect(state.colonized_planet_ids.has("giant") and state.portable_fleet.logistics_drone == 0 and not state.planet_inventory.has("titanium_alloy") and state.planet_inventories.giant.is_empty(), "formal giant colonization consumes five vehicles and ten alloy exactly once")
 		var colonized := GameStateCodec.state_digest_payload(state)
 		colony_button.pressed.emit()
 		_expect(colonized == GameStateCodec.state_digest_payload(state), "repeated colony intent never spends twice")
@@ -201,3 +249,31 @@ func _press_item(workspace: Node, item_id: String) -> void:
 			button.pressed.emit()
 			return
 	_expect(false, "Inspector has target " + item_id)
+
+func _press_recipe(workspace: Node, recipe_id: String) -> bool:
+	var wanted_name := String(DataManager.get_recipe(recipe_id).get("name", recipe_id))
+	var list: Node = workspace.get("_recipe_list")
+	for button in list.get_children():
+		if button is Button and wanted_name in button.text:
+			button.pressed.emit()
+			return String(GameManager.get_game_state().buildings.get(workspace.get("_selected_building_id"), {}).get("recipe_id", "")) == recipe_id
+	return false
+
+func _collect_building_output(state: GameState, building_id: String, item_id: String, amount: float) -> bool:
+	return InventorySystem.new(state).try_collect_output(building_id, item_id, amount).get("ok", false)
+
+func _run_recipe_from_inventory(state: GameState, production: ProductionSystem, building_id: String, recipe_id: String, inputs: Dictionary, output_item: String, output_amount: float, seconds: float) -> bool:
+	if not state.set_entity_recipe(building_id, recipe_id):
+		return false
+	return _run_selected_recipe_from_inventory(state, production, building_id, inputs, output_item, output_amount, seconds)
+
+func _run_selected_recipe_from_inventory(state: GameState, production: ProductionSystem, building_id: String, inputs: Dictionary, output_item: String, output_amount: float, seconds: float) -> bool:
+	var recipe := DataManager.get_recipe(String(state.buildings[building_id].get("recipe_id", "")))
+	if recipe.is_empty():
+		return false
+	var first: Dictionary = recipe.inputs[0]
+	var batches := int(float(inputs.get(first.item_id, 0.0)) / float(first.amount))
+	if not InventorySystem.new(state).try_supply_recipe(building_id, batches).get("ok", false):
+		return false
+	production.update(seconds)
+	return _collect_building_output(state, building_id, output_item, output_amount)

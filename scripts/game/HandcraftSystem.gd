@@ -46,6 +46,13 @@ const RECIPES := {
 		"output_target": "construction",
 		"duration": 3.0,
 	},
+	"handcraft_processor": {
+		"name": "基础处理器",
+		"inputs": {"copper_ingot": 1.0, "iron_ingot": 2.0},
+		"outputs": {"processor": 1.0},
+		"output_target": "planet",
+		"duration": 2.0,
+	},
 	"handcraft_logistics_drone": {
 		"name": "物流运输机",
 		"inputs": {"gear": 2.0, "processor": 1.0, "titanium_alloy": 2.0},

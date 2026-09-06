@@ -124,6 +124,14 @@
     }
   },
   "recipes": {
+    "titanium_alloy_recipe": {
+      "id": "titanium_alloy_recipe",
+      "name": "钛合金冶炼",
+      "building_id": "smelter",
+      "inputs": [{"item_id": "iron_ingot", "amount": 1}, {"item_id": "copper_ingot", "amount": 1}],
+      "outputs": [{"item_id": "titanium_alloy", "amount": 4}],
+      "duration": 3.0
+    },
     "graphene_recipe": {
       "id": "graphene_recipe",
       "name": "石墨烯生产",

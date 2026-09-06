@@ -556,6 +556,17 @@ func _create_inspector_panel() -> void:
 	_recipe_list.add_theme_constant_override("h_separation", 4)
 	_recipe_list.add_theme_constant_override("v_separation", 4)
 	inspector.add_child(_recipe_list)
+	var material_actions := HBoxContainer.new()
+	material_actions.name = "MaterialActions"
+	material_actions.position = Vector2(18, 360)
+	inspector.add_child(material_actions)
+	for action in ["SupplyRecipe", "CollectOutput"]:
+		var button := Button.new()
+		button.name = action
+		button.text = "投料一批" if action == "SupplyRecipe" else "收取产物"
+		button.custom_minimum_size = Vector2(120, 34)
+		button.pressed.connect(_on_material_action.bind(action))
+		material_actions.add_child(button)
 	_start_connection_button = Button.new()
 	_start_connection_button.name = "StartConnectionButton"
 	_start_connection_button.text = "开始连接"
@@ -663,6 +674,7 @@ func _refresh_resource_rail(state: GameState) -> void:
 	_production_label.text = "生产概况\n运行 %d  空闲 %d\n阻塞 %d  停电 %d\n异常 %d" % [counts.running, counts.idle, counts.blocked, counts.no_power, counts.error]
 
 func _refresh_inspector(state: GameState) -> void:
+	get_node("InspectorPanel/MaterialActions").visible = not _selected_building_id.is_empty() and state.buildings.has(_selected_building_id)
 	var selected_ids := _current_selected_entity_ids()
 	if selected_ids.size() > 1:
 		_refresh_multi_inspector(state, selected_ids)
@@ -883,9 +895,16 @@ func _refresh_extraction_controls(building: Dictionary, definition: Dictionary) 
 		button.pressed.connect(_on_extraction_pressed.bind(item_id))
 		_recipe_list.add_child(button)
 
+func _on_material_action(action: String) -> void:
+	var inventory := InventorySystem.new(_get_game_state())
+	var result := inventory.try_supply_recipe(_selected_building_id) if action == "SupplyRecipe" else inventory.try_collect_output(_selected_building_id)
+	show_notice(String(result.get("message", "")), "success" if result.get("ok", false) else "error")
+	refresh_now()
+
 func _refresh_handcraft_controls(state: GameState) -> void:
 	_recipe_heading.text = "手工制造"
 	_handcraft_quantity.show()
+	_recipe_list.columns = 3
 	var quantity := maxi(int(_handcraft_quantity.value), 1)
 	var signature := "handcraft|%s|%s|%s|%d" % [JSON.stringify(state.get_active_planet_inventory()), JSON.stringify(state.construction_inventory), JSON.stringify(state.handcraft_queue), quantity]
 	if signature == _recipe_signature:
@@ -901,9 +920,10 @@ func _refresh_handcraft_controls(state: GameState) -> void:
 		var preview := handcraft.preview_craft(recipe_id, quantity)
 		var button := Button.new()
 		button.text = "%s ×%d" % [recipe.get("name", recipe_id), quantity]
-		button.custom_minimum_size = Vector2(120, 34)
+		button.custom_minimum_size = Vector2(80, 34)
+		button.clip_text = true
 		button.disabled = not preview.get("can_queue", false)
-		button.tooltip_text = _format_handcraft_preview(preview)
+		button.tooltip_text = "%s\n%s" % [recipe.get("name", recipe_id), _format_handcraft_preview(preview)]
 		button.pressed.connect(_on_handcraft_pressed.bind(recipe_id))
 		_recipe_list.add_child(button)
 
