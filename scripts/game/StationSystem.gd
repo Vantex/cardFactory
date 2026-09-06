@@ -1,337 +1,132 @@
-# scripts/game/StationSystem.gd
 class_name StationSystem
 extends RefCounted
 
+const TYPES := ["planetary_logistics_station", "interstellar_logistics_station"]
+const FLEET_ITEMS := ["logistics_drone", "logistics_vessel", "space_warper"]
 var game_state: GameState
 
-# 物流站配置
-var station_slots: Dictionary = {}
+func _init(state: GameState) -> void:
+	game_state = state
 
-func _init(state: GameState):
-    game_state = state
+static func empty_station() -> Dictionary:
+	var slots: Array = []
+	for i in range(4):
+		slots.append({"item_id": "", "mode": "storage", "capacity": 100.0, "min_load": 0.1, "priority": 0, "amount": 0.0, "cursor": 0})
+	return {"enabled": true, "slots": slots, "fleet": {"logistics_drone": 0, "logistics_vessel": 0, "space_warper": 0}}
 
-# === 物流站系统功能（30个） ===
+func get_station_info(id: String) -> Dictionary:
+	return game_state.buildings.get(id, {}).get("station", {}).duplicate(true)
 
-# 1. 创建物流站
-func create_station(station_id: String, station_type: String) -> bool:
-    if not game_state.buildings.has(station_id):
-        print("ERROR: Station not found: ", station_id)
-        return false
-    
-    var station_data = {
-        "id": station_id,
-        "type": station_type,
-        "slots": [],
-        "drones": 0,
-        "vessels": 0,
-        "warpers": 0
-    }
-    
-    # 根据类型设置默认值
-    if station_type == "planetary_logistics_station":
-        station_data["drones"] = 10
-        station_data["slot_count"] = 4
-    elif station_type == "interstellar_logistics_station":
-        station_data["drones"] = 10
-        station_data["vessels"] = 10
-        station_data["slot_count"] = 4
-    
-    # 初始化槽位
-    for i in range(station_data["slot_count"]):
-        station_data["slots"].append({
-            "item_id": "",
-            "mode": "storage",
-            "min_load": 0.1,
-            "max_load": 1.0,
-            "priority": 0
-        })
-    
-    station_slots[station_id] = station_data
-    print("Created station: ", station_id, " type: ", station_type)
-    return true
+func has_route(id: String) -> bool:
+	for route in game_state.logistics_routes.values():
+		if route.source_id == id or route.target_id == id:
+			return true
+	return false
 
-# 2. 设置槽位物品
-func set_station_slot_item(station_id: String, slot_index: int, item_id: String) -> bool:
-    if not station_slots.has(station_id):
-        print("ERROR: Station not found: ", station_id)
-        return false
-    
-    var station = station_slots[station_id]
-    if slot_index < 0 or slot_index >= station["slots"].size():
-        print("ERROR: Invalid slot index: ", slot_index)
-        return false
-    
-    station["slots"][slot_index]["item_id"] = item_id
-    print("Set station ", station_id, " slot ", slot_index, " to ", item_id)
-    return true
+func configure_slots(ids: Array, index: int, item: String, mode: String, capacity: float, min_load: float, priority: int) -> Dictionary:
+	if ids.is_empty() or index < 0 or index >= 4 or (item != "" and DataManager.get_item(item).is_empty()) or mode not in ["supply", "demand", "storage"]:
+		return result(false, "槽位、物品或模式无效")
+	if not is_finite(capacity) or capacity < 1 or capacity > 999 or not is_finite(min_load) or min_load < 0.01 or min_load > 1 or priority < 0 or priority > 2:
+		return result(false, "容量、最低装载或优先级无效")
+	var seen := {}
+	for id in ids:
+		if seen.has(id) or not _editable(id):
+			return result(false, "只能配置当前行星未锁定的物流站")
+		seen[id] = true
+		var slot: Dictionary = game_state.buildings[id].station.slots[index]
+		if has_route(id):
+			return result(false, "请等待关联航线返航后再配置")
+		if slot.amount > capacity or (slot.item_id != item and slot.amount > 0):
+			return result(false, "请先取空槽位物资")
+		for other_index in range(4):
+			if other_index != index and item != "" and game_state.buildings[id].station.slots[other_index].item_id == item:
+				return result(false, "同站物品不能重复配置")
+		if slot.item_id != item:
+			var building: Dictionary = game_state.buildings[id]
+			if float(building.input_buffer.get(slot.item_id, 0)) > 0 or float(building.output_buffer.get(slot.item_id, 0)) > 0:
+				return result(false, "请先清空该物品的输入和输出缓存")
+			for connection in game_state.get_connections_for_building(id):
+				if connection.item_id == slot.item_id:
+					return result(false, "请先拆除该物品线路")
+	for id in ids:
+		var slot: Dictionary = game_state.buildings[id].station.slots[index]
+		slot.merge({"item_id": item, "mode": mode, "capacity": capacity, "min_load": min_load, "priority": priority}, true)
+	return result(true, "物流槽位已配置")
 
-# 3. 设置槽位模式
-func set_station_slot_mode(station_id: String, slot_index: int, mode: String) -> bool:
-    if not station_slots.has(station_id):
-        print("ERROR: Station not found: ", station_id)
-        return false
-    
-    var station = station_slots[station_id]
-    if slot_index < 0 or slot_index >= station["slots"].size():
-        print("ERROR: Invalid slot index: ", slot_index)
-        return false
-    
-    var valid_modes = ["supply", "demand", "storage"]
-    if mode not in valid_modes:
-        print("ERROR: Invalid mode: ", mode)
-        return false
-    
-    station["slots"][slot_index]["mode"] = mode
-    print("Set station ", station_id, " slot ", slot_index, " mode to ", mode)
-    return true
+func transfer_cargo(id: String, index: int, amount: float, deposit: bool) -> Dictionary:
+	if not _editable(id) or index < 0 or index >= 4 or not is_finite(amount) or amount <= 0:
+		return result(false, "物流转移参数无效")
+	var slot: Dictionary = game_state.buildings[id].station.slots[index]
+	var inventory := InventorySystem.new(game_state)
+	if slot.item_id == "":
+		return result(false, "请先配置物品")
+	if deposit:
+		if float(slot.amount) + amount + reserved(id, index) > float(slot.capacity):
+			return result(false, "槽位容量不足（含在途预留）")
+		var removed := inventory.try_remove(slot.item_id, amount)
+		if not removed.ok:
+			return removed
+		slot.amount += amount
+	else:
+		if float(slot.amount) < amount:
+			return result(false, "槽位库存不足")
+		var added := inventory.try_add(slot.item_id, amount)
+		if not added.ok:
+			return added
+		slot.amount -= amount
+	return result(true, "货物已转移")
 
-# 4. 设置最小负载
-func set_station_slot_min_load(station_id: String, slot_index: int, min_load: float) -> bool:
-    if not station_slots.has(station_id):
-        print("ERROR: Station not found: ", station_id)
-        return false
-    
-    var station = station_slots[station_id]
-    if slot_index < 0 or slot_index >= station["slots"].size():
-        print("ERROR: Invalid slot index: ", slot_index)
-        return false
-    
-    var clamped_load = clamp(min_load, 0.0, 1.0)
-    station["slots"][slot_index]["min_load"] = clamped_load
-    print("Set station ", station_id, " slot ", slot_index, " min load to ", clamped_load)
-    return true
+func transfer_fleet(id: String, item: String, count: int, deposit: bool) -> Dictionary:
+	if not _editable(id) or item not in FLEET_ITEMS or count <= 0:
+		return result(false, "载具转移参数无效")
+	var building: Dictionary = game_state.buildings[id]
+	if building.type == TYPES[0] and item != "logistics_drone":
+		return result(false, "行星站仅支持运输机")
+	var fleet: Dictionary = building.station.fleet
+	var inventory := InventorySystem.new(game_state)
+	if deposit:
+		var occupied := int(fleet[item])
+		for route in game_state.logistics_routes.values():
+			if route.source_id == id and route.vehicle == item:
+				occupied += 1
+		if occupied + count > 999:
+			return result(false, "机库容量不足")
+		var removed := inventory.try_remove(item, count)
+		if not removed.ok:
+			return removed
+		fleet[item] += count
+	else:
+		if int(fleet[item]) < count:
+			return result(false, "停泊载具或翘曲器不足")
+		var added := inventory.try_add(item, count)
+		if not added.ok:
+			return added
+		fleet[item] -= count
+	return result(true, "载具/翘曲器已转移")
 
-# 5. 设置最大负载
-func set_station_slot_max_load(station_id: String, slot_index: int, max_load: float) -> bool:
-    if not station_slots.has(station_id):
-        print("ERROR: Station not found: ", station_id)
-        return false
-    
-    var station = station_slots[station_id]
-    if slot_index < 0 or slot_index >= station["slots"].size():
-        print("ERROR: Invalid slot index: ", slot_index)
-        return false
-    
-    var clamped_load = clamp(max_load, 0.0, 1.0)
-    station["slots"][slot_index]["max_load"] = clamped_load
-    print("Set station ", station_id, " slot ", slot_index, " max load to ", clamped_load)
-    return true
+func reserved(id: String, index: int) -> float:
+	var amount := 0.0
+	for route in game_state.logistics_routes.values():
+		if route.target_id == id and int(route.target_slot) == index:
+			amount += float(route.amount)
+	return amount
 
-# 6. 设置优先级
-func set_station_slot_priority(station_id: String, slot_index: int, priority: int) -> bool:
-    if not station_slots.has(station_id):
-        print("ERROR: Station not found: ", station_id)
-        return false
-    
-    var station = station_slots[station_id]
-    if slot_index < 0 or slot_index >= station["slots"].size():
-        print("ERROR: Invalid slot index: ", slot_index)
-        return false
-    
-    var clamped_priority = clamp(priority, 0, 2)
-    station["slots"][slot_index]["priority"] = clamped_priority
-    print("Set station ", station_id, " slot ", slot_index, " priority to ", clamped_priority)
-    return true
+func _editable(id: String) -> bool:
+	var b: Dictionary = game_state.buildings.get(id, {})
+	return b.has("station") and b.get("planet_id", "") == game_state.active_planet_id and not b.get("interaction_locked", false)
 
-# 7. 获取物流站信息
-func get_station_info(station_id: String) -> Dictionary:
-    return station_slots.get(station_id, {})
+static func result(ok: bool, message: String) -> Dictionary:
+	return {"ok": ok, "message": message}
 
-# 8. 获取物流站槽位
-func get_station_slots(station_id: String) -> Array:
-    var station = station_slots.get(station_id, {})
-    return station.get("slots", [])
 
-# 9. 更新物流站
-func update_stations(delta: float):
-    for station_id in station_slots:
-        _update_station(station_id, delta)
 
-# 10. 更新单个物流站
-func _update_station(station_id: String, delta: float):
-    var station = station_slots.get(station_id, {})
-    if station.is_empty():
-        return
-    
-    # 这里可以添加物流站的更新逻辑
 
-# 11. 获取物流站类型
-func get_station_type(station_id: String) -> String:
-    var station = station_slots.get(station_id, {})
-    return station.get("type", "")
-
-# 12. 获取无人机数量
-func get_drone_count(station_id: String) -> int:
-    var station = station_slots.get(station_id, {})
-    return station.get("drones", 0)
-
-# 13. 获取飞船数量
-func get_vessel_count(station_id: String) -> int:
-    var station = station_slots.get(station_id, {})
-    return station.get("vessels", 0)
-
-# 14. 获取翘曲器数量
-func get_warper_count(station_id: String) -> int:
-    var station = station_slots.get(station_id, {})
-    return station.get("warpers", 0)
-
-# 15. 设置无人机数量
-func set_drone_count(station_id: String, count: int) -> bool:
-    if not station_slots.has(station_id):
-        return false
-    station_slots[station_id]["drones"] = count
-    return true
-
-# 16. 设置飞船数量
-func set_vessel_count(station_id: String, count: int) -> bool:
-    if not station_slots.has(station_id):
-        return false
-    station_slots[station_id]["vessels"] = count
-    return true
-
-# 17. 设置翘曲器数量
-func set_warper_count(station_id: String, count: int) -> bool:
-    if not station_slots.has(station_id):
-        return false
-    station_slots[station_id]["warpers"] = count
-    return true
-
-# 18. 获取槽位数量
-func get_slot_count(station_id: String) -> int:
-    var station = station_slots.get(station_id, {})
-    return station.get("slot_count", 0)
-
-# 19. 清空槽位
-func clear_station_slot(station_id: String, slot_index: int) -> bool:
-    if not station_slots.has(station_id):
-        return false
-    
-    var station = station_slots[station_id]
-    if slot_index < 0 or slot_index >= station["slots"].size():
-        return false
-    
-    station["slots"][slot_index] = {
-        "item_id": "",
-        "mode": "storage",
-        "min_load": 0.1,
-        "max_load": 1.0,
-        "priority": 0
-    }
-    return true
-
-# 20. 清空所有槽位
-func clear_all_slots(station_id: String) -> bool:
-    if not station_slots.has(station_id):
-        return false
-    
-    var station = station_slots[station_id]
-    for i in range(station["slots"].size()):
-        clear_station_slot(station_id, i)
-    return true
-
-# 21. 获取供应槽位
-func get_supply_slots(station_id: String) -> Array:
-    var slots = get_station_slots(station_id)
-    var supply_slots = []
-    for slot in slots:
-        if slot.get("mode") == "supply":
-            supply_slots.append(slot)
-    return supply_slots
-
-# 22. 获取需求槽位
-func get_demand_slots(station_id: String) -> Array:
-    var slots = get_station_slots(station_id)
-    var demand_slots = []
-    for slot in slots:
-        if slot.get("mode") == "demand":
-            demand_slots.append(slot)
-    return demand_slots
-
-# 23. 获取存储槽位
-func get_storage_slots(station_id: String) -> Array:
-    var slots = get_station_slots(station_id)
-    var storage_slots = []
-    for slot in slots:
-        if slot.get("mode") == "storage":
-            storage_slots.append(slot)
-    return storage_slots
-
-# 24. 检查槽位是否为空
-func is_slot_empty(station_id: String, slot_index: int) -> bool:
-    var station = station_slots.get(station_id, {})
-    if station.is_empty():
-        return true
-    
-    var slots = station.get("slots", [])
-    if slot_index < 0 or slot_index >= slots.size():
-        return true
-    
-    return slots[slot_index].get("item_id", "").is_empty()
-
-# 25. 获取槽位物品
-func get_slot_item(station_id: String, slot_index: int) -> String:
-    var station = station_slots.get(station_id, {})
-    if station.is_empty():
-        return ""
-    
-    var slots = station.get("slots", [])
-    if slot_index < 0 or slot_index >= slots.size():
-        return ""
-    
-    return slots[slot_index].get("item_id", "")
-
-# 26. 获取槽位模式
-func get_slot_mode(station_id: String, slot_index: int) -> String:
-    var station = station_slots.get(station_id, {})
-    if station.is_empty():
-        return ""
-    
-    var slots = station.get("slots", [])
-    if slot_index < 0 or slot_index >= slots.size():
-        return ""
-    
-    return slots[slot_index].get("mode", "storage")
-
-# 27. 获取槽位最小负载
-func get_slot_min_load(station_id: String, slot_index: int) -> float:
-    var station = station_slots.get(station_id, {})
-    if station.is_empty():
-        return 0.0
-    
-    var slots = station.get("slots", [])
-    if slot_index < 0 or slot_index >= slots.size():
-        return 0.0
-    
-    return slots[slot_index].get("min_load", 0.1)
-
-# 28. 获取槽位最大负载
-func get_slot_max_load(station_id: String, slot_index: int) -> float:
-    var station = station_slots.get(station_id, {})
-    if station.is_empty():
-        return 0.0
-    
-    var slots = station.get("slots", [])
-    if slot_index < 0 or slot_index >= slots.size():
-        return 0.0
-    
-    return slots[slot_index].get("max_load", 1.0)
-
-# 29. 获取槽位优先级
-func get_slot_priority(station_id: String, slot_index: int) -> int:
-    var station = station_slots.get(station_id, {})
-    if station.is_empty():
-        return 0
-    
-    var slots = station.get("slots", [])
-    if slot_index < 0 or slot_index >= slots.size():
-        return 0
-    
-    return slots[slot_index].get("priority", 0)
-
-# 30. 删除物流站
-func remove_station(station_id: String) -> bool:
-    if station_slots.has(station_id):
-        station_slots.erase(station_id)
-        print("Removed station: ", station_id)
-        return true
-    return false
+func set_enabled(ids: Array, enabled: bool) -> Dictionary:
+	if ids.is_empty():
+		return result(false, "请选择物流站")
+	for id in ids:
+		if not _editable(id):
+			return result(false, "只能控制当前行星未锁定的物流站")
+	for id in ids:
+		game_state.buildings[id].station.enabled = enabled
+	return result(true, "已启用调度" if enabled else "已停发，现有航线继续送达和返航")

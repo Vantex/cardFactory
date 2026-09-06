@@ -4,6 +4,18 @@ extends RefCounted
 const AMOUNT_EPSILON := 0.0000001
 const MAX_CONSTRUCTION_STACK := 99.0
 const RECIPES := {
+	"handcraft_space_warper": {
+		"name": "空间翘曲器", "inputs": {"matrix_science_1": 2.0, "processor": 2.0, "titanium_alloy": 2.0},
+		"outputs": {"space_warper": 1.0}, "output_target": "planet", "duration": 10.0,
+	},
+	"handcraft_planetary_station": {
+		"name": "行星物流站施工件", "inputs": {"iron_ingot": 8.0, "processor": 2.0, "gear": 4.0},
+		"outputs": {"planetary_logistics_station": 1.0}, "output_target": "construction", "duration": 4.0,
+	},
+	"handcraft_interstellar_station": {
+		"name": "星际物流站施工件", "inputs": {"titanium_alloy": 8.0, "processor": 4.0, "gear": 4.0},
+		"outputs": {"interstellar_logistics_station": 1.0}, "output_target": "construction", "duration": 6.0,
+	},
 	"handcraft_gear": {
 		"name": "齿轮",
 		"inputs": {"iron_ingot": 1.0},

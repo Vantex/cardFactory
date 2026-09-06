@@ -59,6 +59,17 @@ var _recipe_signature := ""
 
 func _ready() -> void:
 	_create_workspace()
+	var station_panel := preload("res://scenes/ui/StationPanel.gd").new()
+	station_panel.name = "StationPanel"
+	station_panel.anchor_right = 1.0
+	station_panel.anchor_bottom = 1.0
+	station_panel.offset_left = RESOURCE_RAIL_WIDTH + 10.0
+	station_panel.offset_top = TOP_BAR_HEIGHT + 8.0
+	station_panel.offset_right = -INSPECTOR_WIDTH - 10.0
+	station_panel.offset_bottom = -CONSTRUCTION_DOCK_HEIGHT - 8.0
+	station_panel.z_index = 4
+	station_panel.hide()
+	add_child(station_panel)
 	var technology_panel := TECHNOLOGY_PANEL_SCRIPT.new()
 	technology_panel.name = "TechnologyPanel"
 	technology_panel.anchor_right = 1.0
@@ -163,7 +174,7 @@ func show_notice(message: String, tone: String = "info") -> void:
 		_toast_timer.start()
 
 func is_pointer_over_ui(viewport_position: Vector2) -> bool:
-	for node_name in ["TopBar", "ResourceRail", "InspectorPanel", "ConstructionDock", "BlueprintWorkspace", "CampaignWorkspace", "MiniMap", "TechnologyPanel", "CodexWorkspace", "GalaxyMap"]:
+	for node_name in ["TopBar", "ResourceRail", "InspectorPanel", "ConstructionDock", "BlueprintWorkspace", "CampaignWorkspace", "MiniMap", "TechnologyPanel", "CodexWorkspace", "GalaxyMap", "StationPanel"]:
 		var region := get_node_or_null(node_name) as Control
 		if region != null and region.visible and Rect2(Vector2.ZERO, region.size).has_point(region.get_global_transform_with_canvas().affine_inverse() * viewport_position):
 			return true
@@ -393,7 +404,7 @@ func _toggle_galaxy_workspace() -> void:
 			show_exclusive_workspace("GalaxyMap")
 
 func show_exclusive_workspace(workspace_name: String) -> void:
-	for candidate_name in ["TechnologyPanel", "CampaignWorkspace", "BlueprintWorkspace", "CodexWorkspace", "GalaxyMap"]:
+	for candidate_name in ["TechnologyPanel", "CampaignWorkspace", "BlueprintWorkspace", "CodexWorkspace", "GalaxyMap", "StationPanel"]:
 		var workspace := get_node_or_null(candidate_name) as Control
 		if workspace != null:
 			workspace.visible = candidate_name == workspace_name
@@ -555,7 +566,15 @@ func _create_inspector_panel() -> void:
 	_recipe_list.size = Vector2(INSPECTOR_WIDTH - 36.0, 126.0)
 	_recipe_list.add_theme_constant_override("h_separation", 4)
 	_recipe_list.add_theme_constant_override("v_separation", 4)
-	inspector.add_child(_recipe_list)
+	var recipe_scroll := ScrollContainer.new()
+	recipe_scroll.name = "RecipeScroll"
+	recipe_scroll.position = _recipe_list.position
+	recipe_scroll.size = Vector2(INSPECTOR_WIDTH - 28.0, 118.0)
+	recipe_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_recipe_list.position = Vector2.ZERO
+	_recipe_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	inspector.add_child(recipe_scroll)
+	recipe_scroll.add_child(_recipe_list)
 	var material_actions := HBoxContainer.new()
 	material_actions.name = "MaterialActions"
 	material_actions.position = Vector2(18, 360)
@@ -802,6 +821,15 @@ func _refresh_multi_building_controls(selected_ids: Array[String]) -> void:
 	for child in _recipe_list.get_children():
 		_recipe_list.remove_child(child)
 		child.queue_free()
+	var all_stations := true
+	for id in selected_ids:
+		if not _get_game_state().buildings[id].has("station"):
+			all_stations = false
+	if all_stations:
+		var configure := Button.new()
+		configure.text = "批量配置物流站"
+		configure.pressed.connect(_open_station_panel)
+		_recipe_list.add_child(configure)
 	for action in [[true, "锁定"], [false, "解锁"]]:
 		var button := Button.new()
 		button.text = action[1]
@@ -832,6 +860,26 @@ func _refresh_multi_belt_controls(state: GameState, selected_ids: Array[String])
 func _refresh_recipe_controls(_state: GameState, building: Dictionary) -> void:
 	_recipe_list.show()
 	_recipe_list.columns = 2
+	if building.has("station"):
+		_handcraft_quantity.hide()
+		_recipe_heading.text = "物流站"
+		var signature := "station|" + _selected_building_id + str(building.station.slots.map(func(slot): return slot.item_id))
+		if signature == _recipe_signature:
+			return
+		_recipe_signature = signature
+		for child in _recipe_list.get_children():
+			_recipe_list.remove_child(child)
+			child.queue_free()
+		var configure := Button.new()
+		configure.text = "配置物流站"
+		configure.pressed.connect(_open_station_panel)
+		_recipe_list.add_child(configure)
+		for item in _state.get_building_output_items(_selected_building_id):
+			var output := Button.new()
+			output.text = "输出：" + DataManager.get_item(item).get("name", item)
+			output.pressed.connect(_on_output_item_pressed.bind(item))
+			_recipe_list.add_child(output)
+		return
 	if building.is_empty():
 		_refresh_handcraft_controls(_state)
 		return
@@ -914,6 +962,13 @@ func _refresh_handcraft_controls(state: GameState) -> void:
 		_recipe_list.remove_child(child)
 		child.queue_free()
 	var handcraft := HandcraftSystem.new(state)
+	for type in StationSystem.TYPES:
+		var build_button := Button.new()
+		build_button.text = "建造" + _building_name(type)
+		build_button.tooltip_text = "已有 %d / 需要 1" % int(state.construction_inventory.get(type, 0))
+		build_button.disabled = float(state.construction_inventory.get(type, 0)) < 1
+		build_button.pressed.connect(_on_building_pressed.bind(type))
+		_recipe_list.add_child(build_button)
 	for recipe_id_value in handcraft.get_recipe_ids():
 		var recipe_id := String(recipe_id_value)
 		var recipe := handcraft.get_recipe(recipe_id)
@@ -1079,3 +1134,16 @@ func _active_connection_count(state: GameState) -> int:
 		if String(connection.get("planet_id", "")) == state.active_planet_id:
 			count += 1
 	return count
+
+func _open_station_panel() -> void:
+	var ids: Array = []
+	var state := _get_game_state()
+	for id in _current_selected_building_ids():
+		if not state.buildings[id].has("station"):
+			show_notice("请选择物流站", "error")
+			return
+		ids.append(id)
+	if ids.is_empty():
+		return
+	show_exclusive_workspace("StationPanel")
+	get_node("StationPanel").open_stations(ids)

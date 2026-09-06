@@ -39,7 +39,7 @@
     {"id": "logistics", "title": "第三章：行星物流", "objective_ids": ["first_logistics"]},
     {"id": "rare_resources", "title": "第四章：稀有资源", "objective_ids": ["rare_material"]},
     {"id": "blueprints", "title": "支线：蓝图生产", "objective_ids": ["blueprint_factory"]},
-    {"id": "interstellar", "title": "第五章：星际运输", "objective_ids": ["first_interstellar"]},
+    {"id": "interstellar", "title": "第五章：星际运输", "objective_ids": ["first_interstellar", "first_interplanetary_delivery"]},
     {"id": "dyson", "title": "终章：戴森工程", "objective_ids": ["first_dyson"]}
   ],
   "objectives": [
@@ -142,6 +142,14 @@
       "prerequisites": ["blueprint_factory"],
       "condition": {"fact": "building_count", "building_type": "interstellar_logistics_station", "at_least": 1},
       "reward": {"unlocks": ["chapter:dyson"]}
+    },
+    {
+      "id": "first_interplanetary_delivery",
+      "chapter_id": "interstellar",
+      "title": "完成跨行星材料运输",
+      "prerequisites": [],
+      "condition": {"fact": "interplanetary_delivered", "at_least": 20},
+      "reward": {"unlocks": ["logistics:delivery_verified"]}
     },
     {
       "id": "first_dyson",

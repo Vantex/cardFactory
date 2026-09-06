@@ -55,6 +55,7 @@ func _ready() -> void:
 	EventBus.delete_building_requested.connect(_on_delete_building_requested)
 	EventBus.pause_toggled_requested.connect(_on_pause_toggled_requested)
 	EventBus.speed_requested.connect(_on_speed_requested)
+	EventBus.logistics_delivered.connect(_on_progression_fact_changed)
 	EventBus.card_placed.connect(_on_progression_fact_changed)
 	EventBus.card_removed.connect(_on_progression_fact_changed)
 	EventBus.connection_created.connect(_on_progression_fact_changed)
@@ -72,6 +73,7 @@ func _ready() -> void:
 	_evaluate_progression(true)
 
 func _on_game_state_replaced(new_state: GameState) -> void:
+	factory_workspace_ui.get_node("StationPanel").hide()
 	_technology_system = TechnologySystem.new(new_state)
 	_galaxy_system = GalaxySystem.new(new_state)
 	_planet_system = PlanetSystem.new(new_state, _galaxy_system)

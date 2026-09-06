@@ -41,6 +41,8 @@ func get_condition_progress(state: GameState, condition: Dictionary) -> Dictiona
 	var required := float(condition.get("at_least", 1.0))
 	var current := 0.0
 	match fact:
+		"interplanetary_delivered":
+			current = state.interplanetary_delivered
 		"building_count":
 			var building_types: Array = condition.get("building_types", [condition.get("building_type", "")])
 			for building_value in state.buildings.values():

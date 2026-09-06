@@ -350,6 +350,8 @@ func _make_building_data(building_type: String, position: Vector2, configuration
 	if not fuel.is_empty():
 		building["fuel_item"] = String(fuel.get("item_id", ""))
 		building["fuel_remaining"] = 0.0
+	if building_type in StationSystem.TYPES:
+		building["station"] = StationSystem.empty_station()
 	return building
 
 func _make_connection_data(connection: Dictionary, ref_to_id: Dictionary) -> Dictionary:

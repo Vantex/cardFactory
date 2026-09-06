@@ -2,7 +2,7 @@
 class_name GameState
 extends RefCounted
 
-const SCHEMA_VERSION: int = 6
+const SCHEMA_VERSION: int = 7
 const HOME_PLANET_ID := "home"
 const NEW_GAME_HOME_INVENTORY := {
     "coal": 10.0,
@@ -48,6 +48,8 @@ var _spatial_index := SpatialIndex.new()
 
 # 所有连接
 var connections: Dictionary = {}
+var logistics_routes: Dictionary = {}
+var interplanetary_delivered := 0.0
 
 # 科技系统
 var completed_technologies: Array = []
@@ -209,7 +211,14 @@ func try_add_connection(source_id: String, target_id: String, requested_output_i
 
     var target_building: Dictionary = buildings[target_id]
     var existing_recipe_id: String = target_building.get("recipe_id", "")
-    if not existing_recipe_id.is_empty():
+    if target_building.has("station"):
+        var accepts := false
+        for slot in target_building.station.slots:
+            if slot.item_id == output_item:
+                accepts = true
+        if not accepts:
+            return {"ok": false, "message": "目标物流站没有配置该物品槽"}
+    elif not existing_recipe_id.is_empty():
         var existing_recipe := DataManager.get_recipe(existing_recipe_id)
         var existing_recipe_accepts_output := false
         for input in existing_recipe.get("inputs", []):
@@ -264,6 +273,10 @@ func get_building_output_item(building_id: String) -> String:
     var building := get_building(building_id)
     if building.is_empty():
         return ""
+    if building.has("station"):
+        var station_items := get_building_output_items(building_id)
+        var selected := String(building.get("output_item", ""))
+        return selected if station_items.has(selected) else (String(station_items[0]) if not station_items.is_empty() else "")
 
     var output_item: String = building.get("output_item", "")
     if not output_item.is_empty():
@@ -279,6 +292,12 @@ func get_building_output_items(building_id: String) -> Array:
     var building := get_building(building_id)
     if building.is_empty():
         return []
+    if building.has("station"):
+        var items: Array = []
+        for slot in building.station.slots:
+            if slot.item_id != "":
+                items.append(slot.item_id)
+        return items
     var definition := DataManager.get_building(String(building.get("type", "")))
     var extraction: Dictionary = definition.get("extraction", {})
     if definition.get("kind", "") == "extractor":
@@ -387,6 +406,15 @@ func try_remove_entities(entity_ids: Array) -> Dictionary:
         normalized.append(entity_id)
         var building: Dictionary = buildings[entity_id]
         var building_type := String(building.get("type", ""))
+        if building.has("station"):
+            if building.get("planet_id", "") != active_planet_id or building.get("interaction_locked", false) or StationSystem.new(self).has_route(entity_id):
+                return _batch_failure("物流站不在当前行星、已锁定或仍有关联航线", "station_busy")
+            for slot in building.station.slots:
+                if float(slot.amount) > 0:
+                    material_refund[slot.item_id] = float(material_refund.get(slot.item_id, 0)) + float(slot.amount)
+            for item in building.station.fleet:
+                if int(building.station.fleet[item]) > 0:
+                    material_refund[item] = float(material_refund.get(item, 0)) + float(building.station.fleet[item])
         if not ConstructionSystem.LEGACY_COSTS.has(building_type):
             return _batch_failure("建筑没有可返还的施工件", "invalid_construction_item")
         construction_refund[building_type] = float(construction_refund.get(building_type, 0.0)) + 1.0
@@ -1010,6 +1038,8 @@ func install_state(source: GameState) -> void:
         return
     buildings = source.buildings.duplicate(true)
     connections = source.connections.duplicate(true)
+    logistics_routes = source.logistics_routes.duplicate(true)
+    interplanetary_delivered = source.interplanetary_delivered
     elapsed_time = source.elapsed_time
     paused = source.paused
     speed = source.speed

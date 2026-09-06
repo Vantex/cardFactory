@@ -3,6 +3,10 @@ extends Node
 var _failures := 0
 
 func _ready() -> void:
+	var station_tests := preload("res://scripts/test/StationLogisticsRegression.gd").new()
+	add_child(station_tests)
+	_failures += await station_tests.run()
+	station_tests.queue_free()
 	var final_review_tests := preload("res://scripts/test/FinalReviewRegression.gd").new()
 	add_child(final_review_tests)
 	_failures += await final_review_tests.run()
@@ -31,7 +35,7 @@ func _ready() -> void:
 
 func _test_schema_v6_defaults() -> void:
 	var state := GameState.new()
-	_expect(GameState.SCHEMA_VERSION == 6, "planet saves use schema v6")
+	_expect(GameState.SCHEMA_VERSION == 7, "planet saves use schema v7")
 	_expect(state.active_planet_id == "home", "home starts active")
 	_expect(state.explored_system_ids == ["helios"], "helios starts explored")
 	_expect(state.colonized_planet_ids == ["home"], "home starts colonized")

@@ -117,7 +117,7 @@ func _test_workspace_chrome_contract() -> void:
 	_expect(dock_points.position == Vector2(14, 12) and dock_buttons.get_rect() == Rect2(126, 13, 510, 64), "construction-dock labels and buttons keep separate authored regions")
 	_expect(_controls_do_not_overlap(workspace.get_node("TopBar"), ["Brand", "PauseButton", "SpeedButtons", "Status"]), "all top-bar regions remain non-overlapping")
 	_expect(_controls_do_not_overlap(workspace.get_node("ResourceRail"), ["Summary", "Objective", "Stock", "Cursor", "Handcraft", "Production", "Tips"]), "all resource-rail regions remain non-overlapping")
-	_expect(_controls_do_not_overlap(workspace.get_node("InspectorPanel"), ["Title", "Details", "InputBuffers", "OutputBuffers", "RecipeHeading", "RecipeList", "StartConnectionButton", "DeleteButton"]), "all inspector regions remain non-overlapping")
+	_expect(_controls_do_not_overlap(workspace.get_node("InspectorPanel"), ["Title", "Details", "InputBuffers", "OutputBuffers", "RecipeHeading", "RecipeScroll", "StartConnectionButton", "DeleteButton"]), "all inspector regions remain non-overlapping")
 	_expect(_controls_do_not_overlap(workspace.get_node("ConstructionDock"), ["Points", "Mode", "BuildingButtons"]), "all construction-dock regions remain non-overlapping")
 	workspace.call("_on_building_pressed", "miner")
 	_expect(workspace.call("get_selected_building_type") == "" and workspace.call("get_placement_building_type") == "miner", "dock enters placement mode without conflating selection")
@@ -368,7 +368,7 @@ func _test_workspace_live_content_and_actions() -> void:
 	var output_buffers := workspace.get_node_or_null("InspectorPanel/OutputBuffers") as Label
 	_expect(inspector_title.text == "熔炉" and details != null and "smelter" in details.text and "idle" in details.text and "0%" in details.text and "50" in details.text, "inspector displays selected identity, type, status, progress, and power")
 	_expect(input_buffers != null and "iron_ore" in input_buffers.text and "2" in input_buffers.text and output_buffers != null, "inspector displays input and output buffers")
-	var recipe_list := workspace.get_node("InspectorPanel/RecipeList") as GridContainer
+	var recipe_list := workspace.get_node("InspectorPanel/RecipeScroll/RecipeList") as GridContainer
 	_expect(recipe_list.get_child_count() > 0, "smelter inspector exposes real recipe controls")
 	if recipe_list.get_child_count() > 0:
 		var first_recipe_control := recipe_list.get_child(0)

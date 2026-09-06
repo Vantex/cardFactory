@@ -14,7 +14,7 @@
 
 交接记录负责工作区快照，项目状态负责已交付事实，路线图负责目标与顺序；出现冲突时核对当前用户要求及代码/测试证据，不用旧状态文档否定新的已批准范围。
 
-任务 12 的手动检查见 [验收补充](current/TASK12_ACCEPTANCE.md)。`docs/superpowers/plans/` 和 `specs/` 中任务 11、12 的文件保留为已交付批次的设计追溯，不是另一份活跃路线图。
+任务 13 的手动检查见 [物流验收](current/TASK13_ACCEPTANCE.md)。任务 12 的手动检查见 [验收补充](current/TASK12_ACCEPTANCE.md)。`docs/superpowers/plans/` 和 `specs/` 中任务 11、12 的文件保留为已交付批次的设计追溯，不是另一份活跃路线图。
 
 ## 历史文档
 

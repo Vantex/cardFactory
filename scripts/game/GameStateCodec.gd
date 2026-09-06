@@ -48,6 +48,8 @@ static func to_persistent_dict(state: GameState) -> Dictionary:
 		"planet_metrics": state.planet_metrics,
 		"portable_fleet": state.portable_fleet,
 		"resource_sites": state.resource_sites,
+		"logistics_routes": state.logistics_routes,
+		"interplanetary_delivered": state.interplanetary_delivered,
 		"construction_inventory": state.construction_inventory,
 		"cursor_payload": state.cursor_payload,
 		"handcraft_queue": _encode_handcraft_queue(state.handcraft_queue),
@@ -87,6 +89,11 @@ static func from_persistent_dict(payload: Variant) -> GameState:
 	state.planet_metrics = data["planet_metrics"].duplicate(true)
 	state.portable_fleet = data["portable_fleet"].duplicate(true)
 	state.resource_sites = _decode_resource_sites(data["resource_sites"])
+	state.logistics_routes = data["logistics_routes"].duplicate(true)
+	for route in state.logistics_routes.values():
+		route.source_slot = int(route.source_slot)
+		route.target_slot = int(route.target_slot)
+	state.interplanetary_delivered = float(data["interplanetary_delivered"])
 	state.construction_inventory = data["construction_inventory"].duplicate(true)
 	state.cursor_payload = data["cursor_payload"].duplicate(true)
 	state.handcraft_queue = data["handcraft_queue"].duplicate(true)
@@ -176,6 +183,12 @@ static func _decode_buildings(encoded_buildings: Dictionary) -> Dictionary:
 		var position: Dictionary = building.get("position", {})
 		building["position"] = Vector2(float(position.get("x", 0.0)), float(position.get("y", 0.0)))
 		building["status"] = "idle"
+		if building.has("station"):
+			for item in building.station.fleet:
+				building.station.fleet[item] = int(building.station.fleet[item])
+			for slot in building.station.slots:
+				slot.cursor = int(slot.cursor)
+				slot.priority = int(slot.priority)
 		buildings[String(building_id)] = building
 	return buildings
 

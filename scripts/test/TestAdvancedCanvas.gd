@@ -284,7 +284,7 @@ func _test_legacy_v2_defaults_and_persistence() -> void:
 	_expect(not payload.has("selected_entity_ids"), "workspace selection remains absent from schema-v2 persistence")
 	var restored := GameStateCodec.from_persistent_dict(payload)
 	var restored_config: Dictionary = restored.call("get_belt_configuration", belt_id) if restored != null else {}
-	_expect(restored != null and restored.get_state_version() == 6 and restored_config.get("tier") == "conveyor_belt_mk2" and restored_config.get("parallel_count") == 2 and restored_config.get("stack_size") == 2 and restored_config.get("route_mode") == "manual" and restored_config.get("route_offset_y") == 24.0 and restored_config.get("enabled") == false, "new line fields round-trip through the current schema version")
+	_expect(restored != null and restored.get_state_version() == 7 and restored_config.get("tier") == "conveyor_belt_mk2" and restored_config.get("parallel_count") == 2 and restored_config.get("stack_size") == 2 and restored_config.get("route_mode") == "manual" and restored_config.get("route_offset_y") == 24.0 and restored_config.get("enabled") == false, "new line fields round-trip through the current schema version")
 	var legacy_state := GameState.new()
 	var legacy_source_id := _add_building(legacy_state, "legacy_source", "miner", Vector2.ZERO)
 	var legacy_target_id := _add_building(legacy_state, "legacy_target", "smelter", Vector2(400, 0))
@@ -417,7 +417,7 @@ func _test_advanced_inspector_and_renderer_contract() -> void:
 	var title := workspace.get_node_or_null("InspectorPanel/Title") as Label
 	var details := workspace.get_node_or_null("InspectorPanel/Details") as Label
 	_expect(title != null and details != null and "线路" in title.text and "Mk.I" in details.text and "10" in details.text and "并联 2" in details.text and "堆叠 4" in details.text and "偏移 42" in details.text and "禁用" in details.text, "manual single-line inspector displays its complete effective configuration including route offset")
-	var belt_controls := workspace.get_node_or_null("InspectorPanel/RecipeList") as GridContainer
+	var belt_controls := workspace.get_node_or_null("InspectorPanel/RecipeScroll/RecipeList") as GridContainer
 	var enabled_button: Button
 	if belt_controls != null:
 		for child in belt_controls.get_children():
@@ -439,7 +439,7 @@ func _test_advanced_inspector_and_renderer_contract() -> void:
 	if input_handler.has_method("set_selected_entities"):
 		input_handler.call("set_selected_entities", [source_id, target_id])
 	workspace.refresh_now()
-	var multi_controls := workspace.get_node_or_null("InspectorPanel/RecipeList") as GridContainer
+	var multi_controls := workspace.get_node_or_null("InspectorPanel/RecipeScroll/RecipeList") as GridContainer
 	var lock_button: Button
 	var unlock_button: Button
 	if multi_controls != null:
@@ -473,7 +473,7 @@ func _test_advanced_inspector_and_renderer_contract() -> void:
 	if input_handler.has_method("set_selected_entities"):
 		input_handler.call("set_selected_entities", [source_id, target_id, belt_id])
 	workspace.refresh_now()
-	var recipe_list := workspace.get_node_or_null("InspectorPanel/RecipeList") as Control
+	var recipe_list := workspace.get_node_or_null("InspectorPanel/RecipeScroll/RecipeList") as Control
 	_expect(title != null and "已选择 3 项" in title.text and details != null and "建筑 2" in details.text and "线路 1" in details.text and "可移动 2" in details.text, "multi-selection inspector shows a summary preview")
 	_expect(recipe_list != null and not recipe_list.visible, "multi-selection hides commands that are not shared by every selected entity")
 	var panel := workspace.get_node_or_null("InspectorPanel") as Control

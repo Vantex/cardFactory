@@ -10,6 +10,8 @@ const LEGACY_COSTS := {
 	"assembling_machine_mk1": 3.0,
 	"power_generator": 2.0,
 	"matrix_lab": 4.0,
+	"planetary_logistics_station": INF,
+	"interstellar_logistics_station": INF,
 }
 
 var game_state: GameState
@@ -23,6 +25,8 @@ func try_place_building(building_type: String, position: Vector2) -> Dictionary:
 		return _failure("unknown_building", "未知建筑类型")
 	if not LEGACY_COSTS.has(building_type):
 		return _failure("unconfigured_construction_item", "未配置施工件")
+	if building_type == "interstellar_logistics_station" and not game_state.completed_technologies.has("interstellar_logistics"):
+		return _failure("technology_locked", "需要星际物流科技")
 	var placement_rect := FactoryGeometry.card_rect(position)
 	for existing_building in game_state.buildings.values():
 		if String(existing_building.get("planet_id", game_state.active_planet_id)) != game_state.active_planet_id:
@@ -65,6 +69,8 @@ func try_place_building(building_type: String, position: Vector2) -> Dictionary:
 			InventorySystem.new(game_state).try_remove(fuel_item, startup_fuel)
 		building_data["fuel_item"] = fuel_item
 		building_data["fuel_remaining"] = startup_fuel * burn_duration
+	if building_type in StationSystem.TYPES:
+		building_data["station"] = StationSystem.empty_station()
 	var building_id := game_state.add_building(building_data)
 	return {"ok": true, "reason": "", "message": "建筑已放置", "details": {"id": building_id}, "id": building_id}
 

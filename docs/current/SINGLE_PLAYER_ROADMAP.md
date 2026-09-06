@@ -599,27 +599,27 @@ git commit -m "feat: add isolated planetary factories"
 - 修改：`scripts/game/GameState.gd`
 - 修改：`scripts/test/TestGalaxyLogistics.gd`
 
-- [ ] **步骤 1：写货物所有权失败测试**
+- [x] **步骤 1：写货物所有权失败测试**
 
 覆盖供应/需求槽、载具占用、派遣、在途、送达、返航、断电、目标满、缺翘曲器和保存加载。任何时刻总货物保持守恒。
 
-- [ ] **步骤 2：实现行星内调度**
+- [x] **步骤 2：实现行星内调度**
 
 物流站槽位支持物品、供需模式、容量、最低装载和优先级；多供应源使用稳定公平游标。
 
-- [ ] **步骤 3：实现星际调度**
+- [x] **步骤 3：实现星际调度**
 
 距离决定航程；跨星系需要科技、运输船和翘曲器。每条路线持久化唯一载具所有者和在途货物。
 
-- [ ] **步骤 4：实现诊断和配置 UI**
+- [x] **步骤 4：实现诊断和配置 UI**
 
 明确区分库存不足、无载具、断电、无翘曲器、容量不足和无合法 peer；批量配置复用单站校验。
 
-- [ ] **步骤 5：加入长期性能夹具**
+- [x] **步骤 5：加入长期性能夹具**
 
 建立 10/50/100 站状态摘要基准；任何索引优化前后摘要完全一致。
 
-- [ ] **步骤 6：提交**
+- [x] **步骤 6：提交**
 
 ```powershell
 git add scripts/game/StationSystem.gd scripts/game/LogisticsSystem.gd scenes/ui/StationPanel.gd scripts/game/SimulationEngine.gd scripts/game/GameState.gd scripts/test/TestGalaxyLogistics.gd

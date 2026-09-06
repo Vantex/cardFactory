@@ -37,6 +37,19 @@ static func migrate_to_current(payload: Variant) -> Dictionary:
 			5:
 				migrated = _migrate_v5_to_v6(migrated)
 				version = 6
+			6:
+				migrated["schema_version"] = 7
+				migrated["logistics_routes"] = {}
+				migrated["interplanetary_delivered"] = 0.0
+				if migrated.get("buildings") is Dictionary:
+					for building in migrated.buildings.values():
+						if building is Dictionary and building.get("type", "") in StationSystem.TYPES:
+							building["station"] = StationSystem.empty_station()
+							if not building.has("input_buffer"):
+								building["input_buffer"] = {}
+							if not building.has("output_buffer"):
+								building["output_buffer"] = {}
+				version = 7
 			_:
 				return _failure("missing_migration", "缺少从版本 %d 开始的迁移" % version)
 
@@ -66,6 +79,7 @@ static func migrate_to_current(payload: Variant) -> Dictionary:
 			if _is_integral_number(fleet_amount):
 				portable_fleet_value[fleet_item_id] = int(fleet_amount)
 
+	LogisticsStateValidator.normalize_integer_fields(migrated)
 	var validation_errors := GameStateValidator.validate_persistent_dict(migrated)
 	if not validation_errors.is_empty():
 		return {"ok": false, "data": {}, "errors": validation_errors}

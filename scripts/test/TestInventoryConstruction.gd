@@ -268,7 +268,7 @@ func _test_workspace_inventory_contract() -> void:
 	var miner_button := workspace.get_node_or_null("ConstructionDock/BuildingButtons/MinerButton") as Button
 	var matrix_lab_button := workspace.get_node_or_null("ConstructionDock/BuildingButtons/MatrixLabButton") as Button
 	var handcraft_quantity := workspace.get_node_or_null("InspectorPanel/HandcraftQuantity") as SpinBox
-	var recipe_list := workspace.get_node_or_null("InspectorPanel/RecipeList") as GridContainer
+	var recipe_list := workspace.get_node_or_null("InspectorPanel/RecipeScroll/RecipeList") as GridContainer
 	_expect(stock != null and "行星托盘" in stock.text and "iron_ingot 7.0" in stock.text, "resource rail displays the authoritative planet tray")
 	_expect(cursor != null and "gear 2.0" in cursor.text, "resource rail displays the cursor payload")
 	_expect(queue != null and "手工队列" in queue.text, "resource rail displays persistent handcraft queue status")

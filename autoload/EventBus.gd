@@ -41,5 +41,6 @@ signal technology_cancel_requested()
 signal technology_remove_queue_requested(tech_id: String)
 
 # 模拟相关信号
+signal logistics_delivered()
 signal simulation_updated()
 signal production_completed(card_id: String, item_id: String, amount: int)
