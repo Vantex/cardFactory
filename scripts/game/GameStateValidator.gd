@@ -43,6 +43,7 @@ static func validate_persistent_dict(payload: Variant) -> Array:
 	var buildings: Dictionary = buildings_value
 	var connections: Dictionary = connections_value
 	errors.append_array(LogisticsStateValidator.validate(data))
+	errors.append_array(DysonStateValidator.validate(data))
 	var highest_id := 0
 	for building_key in buildings:
 		var building_id := String(building_key)

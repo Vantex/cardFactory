@@ -9,6 +9,7 @@ var total_consumption := 0.0
 var power_balance := 0.0
 var power_ratio := 1.0
 var _power_by_planet: Dictionary = {}
+var _dyson_receiver_outputs: Dictionary = {}
 
 func _init(state: GameState, statistics: StatisticsSystem = null) -> void:
 	game_state = state
@@ -20,6 +21,7 @@ func update(delta: float) -> void:
 	_apply_power_effects()
 
 func _calculate_power(delta: float) -> void:
+	_dyson_receiver_outputs = DysonSphereSystem.new(game_state).receiver_outputs()
 	total_generation = 0.0
 	total_consumption = 0.0
 	_power_by_planet = {}
@@ -56,6 +58,8 @@ func _calculate_power(delta: float) -> void:
 	power_ratio = 1.0 if total_consumption <= 0.0 else clampf(total_generation / total_consumption, 0.0, 1.0)
 
 func _building_generation(building: Dictionary, building_definition: Dictionary, base_generation: float, delta: float) -> float:
+	if String(building.get("type", "")) == "ray_receiver":
+		return float(_dyson_receiver_outputs.get(building.get("id", ""), 0))
 	var generation_factor := clampf(float(building.get("generation_factor", 1.0)), 0.0, 1.0)
 	var fuel_rule: Dictionary = building_definition.get("fuel", {})
 	if not fuel_rule.is_empty():

@@ -10,6 +10,9 @@ const LEGACY_COSTS := {
 	"assembling_machine_mk1": 3.0,
 	"power_generator": 2.0,
 	"matrix_lab": 4.0,
+	"solar_sail_ejector": INF,
+	"dyson_sphere_launcher": INF,
+	"ray_receiver": INF,
 	"planetary_logistics_station": INF,
 	"interstellar_logistics_station": INF,
 }
@@ -27,6 +30,8 @@ func try_place_building(building_type: String, position: Vector2) -> Dictionary:
 		return _failure("unconfigured_construction_item", "未配置施工件")
 	if building_type == "interstellar_logistics_station" and not game_state.completed_technologies.has("interstellar_logistics"):
 		return _failure("technology_locked", "需要星际物流科技")
+	if building_type in DysonSphereSystem.BUILDINGS and not game_state.completed_technologies.has("dyson_engineering"):
+		return _failure("technology_locked", "需要戴森工程科技")
 	var placement_rect := FactoryGeometry.card_rect(position)
 	for existing_building in game_state.buildings.values():
 		if String(existing_building.get("planet_id", game_state.active_planet_id)) != game_state.active_planet_id:

@@ -35,7 +35,7 @@ func _ready() -> void:
 
 func _test_schema_v6_defaults() -> void:
 	var state := GameState.new()
-	_expect(GameState.SCHEMA_VERSION == 7, "planet saves use schema v7")
+	_expect(GameState.SCHEMA_VERSION == 8, "planet saves use schema v8")
 	_expect(state.active_planet_id == "home", "home starts active")
 	_expect(state.explored_system_ids == ["helios"], "helios starts explored")
 	_expect(state.colonized_planet_ids == ["home"], "home starts colonized")

@@ -4,6 +4,9 @@ extends RefCounted
 const AMOUNT_EPSILON := 0.0000001
 const MAX_CONSTRUCTION_STACK := 99.0
 const RECIPES := {
+	"handcraft_sail_ejector": {"name": "太阳帆弹射器施工件", "inputs": {"iron_ingot": 8.0, "processor": 2.0, "gear": 4.0}, "outputs": {"solar_sail_ejector": 1.0}, "output_target": "construction", "duration": 4.0},
+	"handcraft_dyson_launcher": {"name": "戴森发射井施工件", "inputs": {"titanium_alloy": 8.0, "processor": 4.0, "gear": 4.0}, "outputs": {"dyson_sphere_launcher": 1.0}, "output_target": "construction", "duration": 6.0},
+	"handcraft_ray_receiver": {"name": "射线接收站施工件", "inputs": {"titanium_alloy": 4.0, "processor": 4.0, "copper_ingot": 4.0}, "outputs": {"ray_receiver": 1.0}, "output_target": "construction", "duration": 4.0},
 	"handcraft_space_warper": {
 		"name": "空间翘曲器", "inputs": {"matrix_science_1": 2.0, "processor": 2.0, "titanium_alloy": 2.0},
 		"outputs": {"space_warper": 1.0}, "output_target": "planet", "duration": 10.0,

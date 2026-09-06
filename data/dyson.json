@@ -1,0 +1,41 @@
+{
+  "line_id": "dyson_engineering",
+  "name": "戴森工程",
+  "dyson_rules": {
+    "sail_lifetime_ticks": 36000,
+    "node_structure_points": 2,
+    "sails_per_node": 20,
+    "absorption_interval_ticks": 60,
+    "sail_power_kw": 30.0,
+    "structure_power_kw": 100.0,
+    "shell_sail_power_kw": 40.0,
+    "max_orbits": 8,
+    "max_layers": 8,
+    "max_nodes": 16,
+    "launch_seconds": {"solar_sail_ejector": 1.0, "dyson_sphere_launcher": 3.0}
+  },
+  "buildings": {
+    "solar_sail_ejector": {
+      "id": "solar_sail_ejector", "name": "太阳帆弹射器", "symbol": "↗", "kind": "special",
+      "description": "向本恒星系目标轨道发射太阳帆", "size": {"width": 2, "height": 2},
+      "power_demand": 300, "speed": 1.0, "input_slots": 1, "output_slots": 0
+    }
+  },
+  "recipes": {
+    "dyson_sail_bootstrap": {
+      "id": "dyson_sail_bootstrap", "name": "太阳帆基础装配", "building_id": "assembling_machine_mk1",
+      "inputs": [{"item_id": "copper_ingot", "amount": 1}, {"item_id": "titanium_alloy", "amount": 1}],
+      "outputs": [{"item_id": "solar_sail", "amount": 2}], "duration": 2.0
+    },
+    "dyson_component_bootstrap": {
+      "id": "dyson_component_bootstrap", "name": "球组件基础装配", "building_id": "assembling_machine_mk1",
+      "inputs": [{"item_id": "titanium_alloy", "amount": 2}, {"item_id": "processor", "amount": 1}],
+      "outputs": [{"item_id": "dyson_sphere_component", "amount": 1}], "duration": 3.0
+    },
+    "dyson_rocket_bootstrap": {
+      "id": "dyson_rocket_bootstrap", "name": "运载火箭基础装配", "building_id": "assembling_machine_mk1",
+      "inputs": [{"item_id": "dyson_sphere_component", "amount": 1}, {"item_id": "gear", "amount": 1}],
+      "outputs": [{"item_id": "small_carrier_rocket", "amount": 1}], "duration": 3.0
+    }
+  }
+}

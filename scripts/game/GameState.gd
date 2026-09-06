@@ -2,7 +2,7 @@
 class_name GameState
 extends RefCounted
 
-const SCHEMA_VERSION: int = 7
+const SCHEMA_VERSION: int = 8
 const HOME_PLANET_ID := "home"
 const NEW_GAME_HOME_INVENTORY := {
     "coal": 10.0,
@@ -49,6 +49,8 @@ var _spatial_index := SpatialIndex.new()
 # 所有连接
 var connections: Dictionary = {}
 var logistics_routes: Dictionary = {}
+var dyson_systems: Dictionary = {}
+var dyson_tick := 0
 var interplanetary_delivered := 0.0
 
 # 科技系统
@@ -211,7 +213,10 @@ func try_add_connection(source_id: String, target_id: String, requested_output_i
 
     var target_building: Dictionary = buildings[target_id]
     var existing_recipe_id: String = target_building.get("recipe_id", "")
-    if target_building.has("station"):
+    if target_building.get("type", "") in DysonSphereSystem.AMMO:
+        if output_item != DysonSphereSystem.AMMO[target_building.type]:
+            return {"ok": false, "message": "发射设备只接收对应耗材"}
+    elif target_building.has("station"):
         var accepts := false
         for slot in target_building.station.slots:
             if slot.item_id == output_item:
@@ -1039,6 +1044,8 @@ func install_state(source: GameState) -> void:
     buildings = source.buildings.duplicate(true)
     connections = source.connections.duplicate(true)
     logistics_routes = source.logistics_routes.duplicate(true)
+    dyson_systems = source.dyson_systems.duplicate(true)
+    dyson_tick = source.dyson_tick
     interplanetary_delivered = source.interplanetary_delivered
     elapsed_time = source.elapsed_time
     paused = source.paused

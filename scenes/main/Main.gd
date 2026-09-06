@@ -74,6 +74,7 @@ func _ready() -> void:
 
 func _on_game_state_replaced(new_state: GameState) -> void:
 	factory_workspace_ui.get_node("StationPanel").hide()
+	factory_workspace_ui.get_node("DysonPanel").hide()
 	_technology_system = TechnologySystem.new(new_state)
 	_galaxy_system = GalaxySystem.new(new_state)
 	_planet_system = PlanetSystem.new(new_state, _galaxy_system)

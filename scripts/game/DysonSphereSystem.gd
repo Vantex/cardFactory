@@ -1,283 +1,279 @@
-# scripts/game/DysonSphereSystem.gd
 class_name DysonSphereSystem
 extends RefCounted
 
+const AMMO := {"solar_sail_ejector": "solar_sail", "dyson_sphere_launcher": "small_carrier_rocket"}
+const BUILDINGS := ["solar_sail_ejector", "dyson_sphere_launcher", "ray_receiver"]
+static var _rules_cache: Dictionary = {}
 var game_state: GameState
+var galaxy: GalaxySystem
+var rules: Dictionary
+var statistics: StatisticsSystem
+var diagnostics: Dictionary = {}
 
-# 戴森球定义
-var dyson_layers: Dictionary = {}
-var dyson_nodes: Dictionary = {}
-var dyson_shells: Dictionary = {}
+func _init(state: GameState, stats: StatisticsSystem = null) -> void:
+	game_state = state
+	galaxy = GalaxySystem.new(state)
+	rules = get_rules()
+	statistics = stats
 
-func _init(state: GameState):
-    game_state = state
+static func get_rules() -> Dictionary:
+	if _rules_cache.is_empty():
+		var file := FileAccess.open("res://data/dyson.json", FileAccess.READ)
+		if file != null:
+			var parsed: Variant = JSON.parse_string(file.get_as_text())
+			if parsed is Dictionary:
+				_rules_cache = parsed.get("dyson_rules", {})
+	return _rules_cache.duplicate(true)
 
-# === 戴森球系统功能（25个） ===
+static func empty_system() -> Dictionary:
+	return {"orbits": {}, "layers": {}, "sails_launched": 0, "sails_expired": 0, "rockets_launched": 0}
 
-# 1. 创建戴森层
-func create_dyson_layer(system_id: String) -> bool:
-    var layer_id = "layer_" + str(dyson_layers.size() + 1)
-    dyson_layers[layer_id] = {
-        "id": layer_id,
-        "system_id": system_id,
-        "orbit": {"radius": 100.0, "inclination": 0.0, "longitude": 0.0},
-        "nodes": [],
-        "frames": [],
-        "shells": []
-    }
-    print("Created dyson layer: ", layer_id)
-    return true
+func get_system(id: String) -> Dictionary:
+	return game_state.dyson_systems.get(id, {}).duplicate(true)
 
-# 2. 添加戴森节点
-func add_dyson_node(layer_id: String, angle: float) -> bool:
-    if not dyson_layers.has(layer_id):
-        return false
-    
-    var node_id = "node_" + str(dyson_nodes.size() + 1)
-    dyson_nodes[node_id] = {
-        "id": node_id,
-        "layer_id": layer_id,
-        "angle": angle,
-        "position": Vector2(cos(angle), sin(angle)) * 100
-    }
-    
-    dyson_layers[layer_id]["nodes"].append(node_id)
-    print("Added dyson node: ", node_id)
-    return true
+func _system(id: String) -> Dictionary:
+	if not game_state.dyson_systems.has(id):
+		game_state.dyson_systems[id] = empty_system()
+	return game_state.dyson_systems[id]
 
-# 3. 连接戴森节点
-func connect_dyson_nodes(source_id: String, target_id: String) -> bool:
-    if not dyson_nodes.has(source_id) or not dyson_nodes.has(target_id):
-        return false
-    
-    var frame_id = "frame_" + str(dyson_layers.size() + 1)
-    dyson_layers[source_id]["frames"].append({
-        "id": frame_id,
-        "source": source_id,
-        "target": target_id
-    })
-    
-    print("Connected dyson nodes: ", source_id, " -> ", target_id)
-    return true
+func _allowed(system_id: String) -> bool:
+	return game_state.completed_technologies.has("dyson_engineering") and game_state.explored_system_ids.has(system_id) and not galaxy.get_star_system(system_id).is_empty()
 
-# 4. 规划戴森壳
-func plan_dyson_shell(layer_id: String) -> bool:
-    if not dyson_layers.has(layer_id):
-        return false
-    
-    var layer = dyson_layers[layer_id]
-    if layer["nodes"].size() < 3:
-        print("Need at least 3 nodes to create a shell")
-        return false
-    
-    var shell_id = "shell_" + str(dyson_shells.size() + 1)
-    dyson_shells[shell_id] = {
-        "id": shell_id,
-        "layer_id": layer_id,
-        "nodes": layer["nodes"].duplicate(),
-        "capacity": layer["nodes"].size() * 1000
-    }
-    
-    layer["shells"].append(shell_id)
-    print("Planned dyson shell: ", shell_id)
-    return true
+func _geometry(radius: float, inclination: float, longitude: float) -> bool:
+	return is_finite(radius) and radius >= 5000 and radius <= 50000 and is_finite(inclination) and absf(inclination) <= 90 and is_finite(longitude) and longitude >= 0 and longitude < 360
 
-# 5. 获取戴森层信息
-func get_dyson_layer(layer_id: String) -> Dictionary:
-    return dyson_layers.get(layer_id, {})
+func create_orbit(system_id: String, radius: float = 10000, inclination: float = 0, longitude: float = 0) -> Dictionary:
+	if not _allowed(system_id) or not _geometry(radius, inclination, longitude):
+		return _result(false, "需要戴森工程科技、已探索星系和合法轨道参数")
+	if game_state.dyson_systems.get(system_id, {}).get("orbits", {}).size() >= int(rules.max_orbits):
+		return _result(false, "太阳帆轨道数量已达上限")
+	var id := game_state.generate_id("orbit")
+	_system(system_id).orbits[id] = {"id": id, "radius": radius, "inclination": inclination, "longitude": longitude, "cohorts": []}
+	return _result(true, "太阳帆轨道已规划", id)
 
-# 6. 获取戴森节点信息
-func get_dyson_node(node_id: String) -> Dictionary:
-    return dyson_nodes.get(node_id, {})
+func create_layer(system_id: String, orbit_id: String, radius: float = 15000, inclination: float = 0, longitude: float = 0) -> Dictionary:
+	var system: Dictionary = game_state.dyson_systems.get(system_id, {})
+	if not _allowed(system_id) or not system.get("orbits", {}).has(orbit_id) or not _geometry(radius, inclination, longitude):
+		return _result(false, "层必须关联本星系合法太阳帆轨道")
+	if system.layers.size() >= int(rules.max_layers):
+		return _result(false, "戴森层数量已达上限")
+	var id := game_state.generate_id("layer")
+	system.layers[id] = {"id": id, "orbit_id": orbit_id, "radius": radius, "inclination": inclination, "longitude": longitude, "nodes": {}, "shell": {}, "absorption_ticks": 0}
+	return _result(true, "戴森层已规划", id)
 
-# 7. 获取戴森壳信息
-func get_dyson_shell(shell_id: String) -> Dictionary:
-    return dyson_shells.get(shell_id, {})
+func add_node(system_id: String, layer_id: String, angle: float) -> Dictionary:
+	var layer: Dictionary = game_state.dyson_systems.get(system_id, {}).get("layers", {}).get(layer_id, {})
+	if not _allowed(system_id) or layer.is_empty() or not is_finite(angle) or angle < 0 or angle >= 360:
+		return _result(false, "节点参数无效或科技未解锁")
+	if not layer.shell.is_empty() or layer.nodes.size() >= int(rules.max_nodes):
+		return _result(false, "壳面已规划或节点数量已达上限")
+	for node in layer.nodes.values():
+		if absf(float(node.angle) - angle) < 1.0 or absf(float(node.angle) - angle) > 359.0:
+			return _result(false, "节点角度过近")
+	var id := game_state.generate_id("node")
+	layer.nodes[id] = {"id": id, "angle": angle, "points": 0}
+	return _result(true, "节点已规划，等待火箭提供结构点", id)
 
-# 8. 获取系统中的戴森层
-func get_layers_in_system(system_id: String) -> Array:
-    var result = []
-    for layer_id in dyson_layers:
-        if dyson_layers[layer_id]["system_id"] == system_id:
-            result.append(layer_id)
-    return result
+func plan_shell(system_id: String, layer_id: String) -> Dictionary:
+	var layer: Dictionary = game_state.dyson_systems.get(system_id, {}).get("layers", {}).get(layer_id, {})
+	if not _allowed(system_id) or layer.is_empty() or layer.nodes.size() < 3 or not layer.shell.is_empty():
+		return _result(false, "壳面需要至少三个节点，且不能重复规划")
+	layer.shell = {"sails": 0}
+	return _result(true, "壳面已规划；结构完成后从关联轨道吸附太阳帆")
 
-# 9. 获取层中的节点
-func get_nodes_in_layer(layer_id: String) -> Array:
-    var layer = get_dyson_layer(layer_id)
-    return layer.get("nodes", [])
+func remove_plan(system_id: String, id: String, kind: String) -> Dictionary:
+	var system: Dictionary = game_state.dyson_systems.get(system_id, {})
+	if not _allowed(system_id) or kind not in ["orbits", "layers"] or not system.get(kind, {}).has(id):
+		return _result(false, "规划不存在")
+	for building in game_state.buildings.values():
+		if building.get("dyson", {}).get("target_id", "") == id:
+			return _result(false, "请先解除发射设备的目标")
+	if kind == "orbits":
+		if not system.orbits[id].cohorts.is_empty():
+			return _result(false, "轨道仍有太阳帆")
+		for layer in system.layers.values():
+			if layer.orbit_id == id:
+				return _result(false, "轨道仍被戴森层引用")
+	else:
+		for node in system.layers[id].nodes.values():
+			if int(node.points) > 0:
+				return _result(false, "已投入结构材料的层不能直接删除")
+	system[kind].erase(id)
+	return _result(true, "空规划已删除")
 
-# 10. 获取层中的壳
-func get_shells_in_layer(layer_id: String) -> Array:
-    var layer = get_dyson_layer(layer_id)
-    return layer.get("shells", [])
+func configure_launcher(id: String, target_id: String, enabled: bool = true) -> Dictionary:
+	var building: Dictionary = game_state.buildings.get(id, {})
+	if building.get("type", "") not in AMMO or building.get("planet_id", "") != game_state.active_planet_id or building.get("interaction_locked", false):
+		return _result(false, "请选择当前行星未锁定的发射设备")
+	var system_id := String(galaxy.get_planet(building.planet_id).get("system_id", ""))
+	var kind := "orbits" if building.type == "solar_sail_ejector" else "layers"
+	if not _allowed(system_id) or (target_id != "" and not game_state.dyson_systems.get(system_id, {}).get(kind, {}).has(target_id)):
+		return _result(false, "发射目标必须属于设备所在恒星系")
+	building["dyson"] = {"target_id": target_id, "enabled": enabled, "progress": float(building.get("dyson", {}).get("progress", 0))}
+	return _result(true, "发射目标已配置")
 
-# 11. 计算戴森球容量
-func calculate_dyson_capacity(system_id: String) -> float:
-    var layers = get_layers_in_system(system_id)
-    var total_capacity = 0.0
-    
-    for layer_id in layers:
-        var shells = get_shells_in_layer(layer_id)
-        for shell_id in shells:
-            var shell = get_dyson_shell(shell_id)
-            total_capacity += shell.get("capacity", 0.0)
-    
-    return total_capacity
+func load_ammo(id: String, count: int) -> Dictionary:
+	var building: Dictionary = game_state.buildings.get(id, {})
+	if building.get("type", "") not in AMMO or building.get("planet_id", "") != game_state.active_planet_id or building.get("interaction_locked", false) or count <= 0:
+		return _result(false, "只能向当前行星发射设备装载正整数耗材")
+	var item: String = AMMO[building.type]
+	var buffer: Dictionary = building.get("input_buffer", {})
+	if float(buffer.get(item, 0)) + count > 60:
+		return _result(false, "发射设备输入容量不足")
+	var paid := InventorySystem.new(game_state).try_remove(item, count)
+	if not paid.ok:
+		return paid
+	buffer[item] = float(buffer.get(item, 0)) + count
+	building.input_buffer = buffer
+	return _result(true, "发射耗材已装入")
 
-# 12. 计算戴森球发电量
-func calculate_dyson_power(system_id: String) -> float:
-    var capacity = calculate_dyson_capacity(system_id)
-    return capacity * 1000.0  # 每容量单位1000kW
+func begin_tick() -> void:
+	game_state.dyson_tick += 1
+	for system in game_state.dyson_systems.values():
+		for orbit in system.orbits.values():
+			var remaining: Array = []
+			for cohort in orbit.cohorts:
+				if int(cohort.expires_tick) <= game_state.dyson_tick:
+					system.sails_expired += int(cohort.count)
+				else:
+					remaining.append(cohort)
+			orbit.cohorts = remaining
 
-# 13. 获取戴森球状态
-func get_dyson_status(system_id: String) -> Dictionary:
-    var layers = get_layers_in_system(system_id)
-    var total_nodes = 0
-    var total_shells = 0
-    
-    for layer_id in layers:
-        var nodes = get_nodes_in_layer(layer_id)
-        var shells = get_shells_in_layer(layer_id)
-        total_nodes += nodes.size()
-        total_shells += shells.size()
-    
-    return {
-        "system_id": system_id,
-        "layer_count": layers.size(),
-        "node_count": total_nodes,
-        "shell_count": total_shells,
-        "capacity": calculate_dyson_capacity(system_id),
-        "power_kw": calculate_dyson_power(system_id)
-    }
+func update_launches(delta: float) -> void:
+	diagnostics.clear()
+	var ids := game_state.buildings.keys()
+	ids.sort()
+	for id in ids:
+		var building: Dictionary = game_state.buildings[id]
+		if building.get("type", "") in AMMO:
+			diagnostics[id] = _launch(building, delta)
+	var system_ids := game_state.dyson_systems.keys()
+	system_ids.sort()
+	for system_id in system_ids:
+		var system: Dictionary = game_state.dyson_systems[system_id]
+		var layers: Array = system.layers.keys()
+		layers.sort()
+		for layer_id in layers:
+			_absorb(system, system.layers[layer_id])
 
-# 14. 删除戴森层
-func remove_dyson_layer(layer_id: String) -> bool:
-    if not dyson_layers.has(layer_id):
-        return false
-    
-    # 删除层中的所有节点和壳
-    var layer = dyson_layers[layer_id]
-    for node_id in layer["nodes"]:
-        dyson_nodes.erase(node_id)
-    for shell_id in layer["shells"]:
-        dyson_shells.erase(shell_id)
-    
-    dyson_layers.erase(layer_id)
-    print("Removed dyson layer: ", layer_id)
-    return true
+func _launch(building: Dictionary, delta: float) -> String:
+	var system_id := String(galaxy.get_planet(building.planet_id).get("system_id", ""))
+	if not _allowed(system_id):
+		return "戴森工程科技未解锁"
+	var config: Dictionary = building.get("dyson", {})
+	if not config.get("enabled", false):
+		return "发射已停止"
+	var kind := "orbits" if building.type == "solar_sail_ejector" else "layers"
+	var system: Dictionary = game_state.dyson_systems.get(system_id, {})
+	var target: Dictionary = system.get(kind, {}).get(config.get("target_id", ""), {})
+	if target.is_empty():
+		return "没有本星系合法发射目标"
+	if float(building.get("power_efficiency", 0)) <= 0:
+		return "设备断电"
+	var node := {}
+	if kind == "layers":
+		var nodes: Array = target.nodes.keys()
+		nodes.sort()
+		for id in nodes:
+			if int(target.nodes[id].points) < int(rules.node_structure_points):
+				node = target.nodes[id]
+				break
+		if node.is_empty():
+			return "没有待建结构节点"
+	var item: String = AMMO[building.type]
+	if float(building.input_buffer.get(item, 0)) < 1:
+		return "缺少" + DataManager.get_item(item).get("name", item)
+	var duration := float(rules.launch_seconds[building.type])
+	config.progress = minf(duration, float(config.get("progress", 0)) + delta * clampf(float(building.power_efficiency), 0, 1))
+	if float(config.progress) + 0.0000001 < duration:
+		return "正在发射"
+	building.input_buffer[item] -= 1.0
+	config.progress = 0.0
+	if kind == "orbits":
+		var expires := game_state.dyson_tick + int(rules.sail_lifetime_ticks)
+		if not target.cohorts.is_empty() and int(target.cohorts.back().expires_tick) == expires:
+			target.cohorts.back().count += 1
+		else:
+			target.cohorts.append({"expires_tick": expires, "count": 1})
+		system.sails_launched += 1
+	else:
+		node.points += 1
+		system.rockets_launched += 1
+	if statistics != null:
+		statistics.record_consumed(item, 1.0, building.id, building.planet_id)
+	return "已发射"
 
-# 15. 删除戴森节点
-func remove_dyson_node(node_id: String) -> bool:
-    if not dyson_nodes.has(node_id):
-        return false
-    
-    var node = dyson_nodes[node_id]
-    var layer_id = node["layer_id"]
-    
-    # 从层中移除节点
-    if dyson_layers.has(layer_id):
-        dyson_layers[layer_id]["nodes"].erase(node_id)
-    
-    dyson_nodes.erase(node_id)
-    print("Removed dyson node: ", node_id)
-    return true
+func _absorb(system: Dictionary, layer: Dictionary) -> void:
+	if layer.shell.is_empty() or int(layer.shell.sails) >= layer.nodes.size() * int(rules.sails_per_node):
+		return
+	for node in layer.nodes.values():
+		if int(node.points) < int(rules.node_structure_points):
+			return
+	var orbit: Dictionary = system.orbits[layer.orbit_id]
+	if orbit.cohorts.is_empty():
+		return
+	layer.absorption_ticks += 1
+	if int(layer.absorption_ticks) < int(rules.absorption_interval_ticks):
+		return
+	layer.absorption_ticks = 0
+	orbit.cohorts[0].count -= 1
+	if int(orbit.cohorts[0].count) == 0:
+		orbit.cohorts.pop_front()
+	layer.shell.sails += 1
 
-# 16. 清除戴森壳
-func clear_dyson_shells(layer_id: String) -> bool:
-    if not dyson_layers.has(layer_id):
-        return false
-    
-    var layer = dyson_layers[layer_id]
-    for shell_id in layer["shells"]:
-        dyson_shells.erase(shell_id)
-    layer["shells"].clear()
-    
-    print("Cleared dyson shells in layer: ", layer_id)
-    return true
+func get_summary(system_id: String) -> Dictionary:
+	var system: Dictionary = game_state.dyson_systems.get(system_id, empty_system())
+	var live := 0
+	var absorbed := 0
+	var points := 0
+	var required_points := 0
+	var required_sails := 0
+	var orbit_deficits := {}
+	for orbit in system.orbits.values():
+		for cohort in orbit.cohorts:
+			live += int(cohort.count)
+	for layer in system.layers.values():
+		for node in layer.nodes.values():
+			points += int(node.points)
+			required_points += int(rules.node_structure_points)
+		if not layer.shell.is_empty():
+			absorbed += int(layer.shell.sails)
+			required_sails += layer.nodes.size() * int(rules.sails_per_node)
+			orbit_deficits[layer.orbit_id] = int(orbit_deficits.get(layer.orbit_id, 0)) + layer.nodes.size() * int(rules.sails_per_node) - int(layer.shell.sails)
+	var missing_sails := 0
+	for orbit_id in orbit_deficits:
+		var available := 0
+		for cohort in system.orbits[orbit_id].cohorts:
+			available += int(cohort.count)
+		missing_sails += maxi(0, int(orbit_deficits[orbit_id]) - available)
+	var power := live * float(rules.sail_power_kw) + points * float(rules.structure_power_kw) + absorbed * float(rules.shell_sail_power_kw)
+	return {"live_sails": live, "absorbed_sails": absorbed, "expired_sails": int(system.sails_expired), "launched_sails": int(system.sails_launched), "structure_points": points, "rockets_launched": int(system.rockets_launched), "missing_rockets": required_points - points, "missing_sails": missing_sails, "power_kw": power, "planned_power_kw": required_points * float(rules.structure_power_kw) + required_sails * float(rules.shell_sail_power_kw)}
 
-# 17. 获取戴森球统计
-func get_dyson_statistics() -> Dictionary:
-    return {
-        "total_layers": dyson_layers.size(),
-        "total_nodes": dyson_nodes.size(),
-        "total_shells": dyson_shells.size()
-    }
+func receiver_outputs() -> Dictionary:
+	var result := {}
+	if not game_state.completed_technologies.has("dyson_engineering"):
+		return result
+	var grouped := {}
+	var ids := game_state.buildings.keys()
+	ids.sort()
+	for id in ids:
+		var building: Dictionary = game_state.buildings[id]
+		if building.get("type", "") != "ray_receiver":
+			continue
+		var system_id := String(galaxy.get_planet(building.planet_id).get("system_id", ""))
+		if not grouped.has(system_id):
+			grouped[system_id] = []
+		grouped[system_id].append(id)
+	for system_id in grouped:
+		var capacity := float(DataManager.get_building("ray_receiver").get("power_generation", 0))
+		var total_capacity := 0.0
+		for id in grouped[system_id]:
+			total_capacity += capacity * clampf(float(game_state.buildings[id].get("generation_factor", 1)), 0, 1)
+		var power := float(get_summary(system_id).power_kw)
+		for id in grouped[system_id]:
+			var requested := capacity * clampf(float(game_state.buildings[id].get("generation_factor", 1)), 0, 1)
+			result[id] = requested * minf(1, power / total_capacity) if total_capacity > 0 else 0.0
+	return result
 
-# 18. 检查是否有戴森球
-func has_dyson_sphere(system_id: String) -> bool:
-    return get_layers_in_system(system_id).size() > 0
-
-# 19. 获取戴森球信息格式化
-func get_dyson_info_formatted(system_id: String) -> String:
-    var status = get_dyson_status(system_id)
-    var info = ""
-    info += "星系: %s\n" % system_id
-    info += "层数: %d\n" % status.layer_count
-    info += "节点数: %d\n" % status.node_count
-    info += "壳数: %d\n" % status.shell_count
-    info += "容量: %.0f\n" % status.capacity
-    info += "发电量: %.0f kW" % status.power_kw
-    return info
-
-# 20. 获取戴森球列表格式化
-func get_dyson_list_formatted() -> String:
-    var list = ""
-    for layer_id in dyson_layers:
-        var layer = dyson_layers[layer_id]
-        list += "层 %s - 系统: %s, 节点: %d\n" % [layer_id, layer["system_id"], layer["nodes"].size()]
-    return list
-
-# 21. 检查戴森球是否完整
-func is_dyson_complete(system_id: String) -> bool:
-    var layers = get_layers_in_system(system_id)
-    if layers.is_empty():
-        return false
-    
-    for layer_id in layers:
-        var shells = get_shells_in_layer(layer_id)
-        if shells.is_empty():
-            return false
-    
-    return true
-
-# 22. 获取戴森球完成度
-func get_dyson_completion(system_id: String) -> float:
-    var layers = get_layers_in_system(system_id)
-    if layers.is_empty():
-        return 0.0
-    
-    var total_shells = 0
-    var max_shells = 0
-    
-    for layer_id in layers:
-        var shells = get_shells_in_layer(layer_id)
-        var nodes = get_nodes_in_layer(layer_id)
-        total_shells += shells.size()
-        max_shells += max(0, nodes.size() - 2)
-    
-    if max_shells == 0:
-        return 0.0
-    
-    return float(total_shells) / float(max_shells)
-
-# 23. 获取戴森球效率
-func get_dyson_efficiency(system_id: String) -> float:
-    var completion = get_dyson_completion(system_id)
-    return completion * 100.0
-
-# 24. 获取戴森球建造成本
-func get_dyson_build_cost(system_id: String) -> Dictionary:
-    var status = get_dyson_status(system_id)
-    return {
-        "frame_material": status.node_count * 10,
-        "solar_sail": status.shell_count * 100,
-        "dyson_sphere_component": status.shell_count * 10
-    }
-
-# 25. 重置戴森球系统
-func reset():
-    dyson_layers.clear()
-    dyson_nodes.clear()
-    dyson_shells.clear()
-    print("Dyson sphere system reset")
+static func _result(ok: bool, message: String, id: String = "") -> Dictionary:
+	return {"ok": ok, "message": message, "id": id}

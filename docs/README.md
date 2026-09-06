@@ -32,3 +32,5 @@
 - `docs/history/` 中的复选框、状态和命令保持历史语境，不重新解释为当前待办。
 - 测试方法以根 README 和 `tools/run_tests.ps1` 为准；历史测试手册不属于门禁。
 - 不在仓库根目录散放新的开发记录；当前文档进入 `docs/current/`，完成的批次进入带日期的历史目录。
+
+任务 14：[实现计划](current/TASK14_PLAN.md) · [验收边界](current/TASK14_ACCEPTANCE.md)。

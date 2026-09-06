@@ -49,6 +49,8 @@ static func to_persistent_dict(state: GameState) -> Dictionary:
 		"portable_fleet": state.portable_fleet,
 		"resource_sites": state.resource_sites,
 		"logistics_routes": state.logistics_routes,
+		"dyson_systems": state.dyson_systems,
+		"dyson_tick": state.dyson_tick,
 		"interplanetary_delivered": state.interplanetary_delivered,
 		"construction_inventory": state.construction_inventory,
 		"cursor_payload": state.cursor_payload,
@@ -89,6 +91,8 @@ static func from_persistent_dict(payload: Variant) -> GameState:
 	state.planet_metrics = data["planet_metrics"].duplicate(true)
 	state.portable_fleet = data["portable_fleet"].duplicate(true)
 	state.resource_sites = _decode_resource_sites(data["resource_sites"])
+	state.dyson_systems = data["dyson_systems"].duplicate(true)
+	state.dyson_tick = int(data["dyson_tick"])
 	state.logistics_routes = data["logistics_routes"].duplicate(true)
 	for route in state.logistics_routes.values():
 		route.source_slot = int(route.source_slot)

@@ -70,6 +70,17 @@ func _ready() -> void:
 	station_panel.z_index = 4
 	station_panel.hide()
 	add_child(station_panel)
+	var dyson_panel := preload("res://scenes/ui/DysonUI.gd").new()
+	dyson_panel.name = "DysonPanel"
+	dyson_panel.anchor_right = 1.0
+	dyson_panel.anchor_bottom = 1.0
+	dyson_panel.offset_left = RESOURCE_RAIL_WIDTH + 10.0
+	dyson_panel.offset_top = TOP_BAR_HEIGHT + 8.0
+	dyson_panel.offset_right = -INSPECTOR_WIDTH - 10.0
+	dyson_panel.offset_bottom = -CONSTRUCTION_DOCK_HEIGHT - 8.0
+	dyson_panel.z_index = 4
+	dyson_panel.hide()
+	add_child(dyson_panel)
 	var technology_panel := TECHNOLOGY_PANEL_SCRIPT.new()
 	technology_panel.name = "TechnologyPanel"
 	technology_panel.anchor_right = 1.0
@@ -174,7 +185,7 @@ func show_notice(message: String, tone: String = "info") -> void:
 		_toast_timer.start()
 
 func is_pointer_over_ui(viewport_position: Vector2) -> bool:
-	for node_name in ["TopBar", "ResourceRail", "InspectorPanel", "ConstructionDock", "BlueprintWorkspace", "CampaignWorkspace", "MiniMap", "TechnologyPanel", "CodexWorkspace", "GalaxyMap", "StationPanel"]:
+	for node_name in ["TopBar", "ResourceRail", "InspectorPanel", "ConstructionDock", "BlueprintWorkspace", "CampaignWorkspace", "MiniMap", "TechnologyPanel", "CodexWorkspace", "GalaxyMap", "StationPanel", "DysonPanel"]:
 		var region := get_node_or_null(node_name) as Control
 		if region != null and region.visible and Rect2(Vector2.ZERO, region.size).has_point(region.get_global_transform_with_canvas().affine_inverse() * viewport_position):
 			return true
@@ -404,7 +415,7 @@ func _toggle_galaxy_workspace() -> void:
 			show_exclusive_workspace("GalaxyMap")
 
 func show_exclusive_workspace(workspace_name: String) -> void:
-	for candidate_name in ["TechnologyPanel", "CampaignWorkspace", "BlueprintWorkspace", "CodexWorkspace", "GalaxyMap", "StationPanel"]:
+	for candidate_name in ["TechnologyPanel", "CampaignWorkspace", "BlueprintWorkspace", "CodexWorkspace", "GalaxyMap", "StationPanel", "DysonPanel"]:
 		var workspace := get_node_or_null(candidate_name) as Control
 		if workspace != null:
 			workspace.visible = candidate_name == workspace_name
@@ -475,8 +486,17 @@ func _create_top_bar() -> void:
 	galaxy_button.size = Vector2(58, 34)
 	galaxy_button.pressed.connect(_toggle_galaxy_workspace)
 	top_bar.add_child(galaxy_button)
-	_top_status.position = Vector2(538, 16)
-	_top_status.size = Vector2(600, 24)
+	var dyson_button := Button.new()
+	dyson_button.name = "DysonButton"
+	dyson_button.text = "戴森"
+	dyson_button.position = Vector2(536, 9)
+	dyson_button.size = Vector2(58, 34)
+	dyson_button.pressed.connect(func():
+		if get_node("DysonPanel").visible: get_node("DysonPanel").hide()
+		else: show_exclusive_workspace("DysonPanel"))
+	top_bar.add_child(dyson_button)
+	_top_status.position = Vector2(600, 16)
+	_top_status.size = Vector2(538, 24)
 	_top_status.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	top_bar.add_child(_top_status)
 
@@ -962,7 +982,7 @@ func _refresh_handcraft_controls(state: GameState) -> void:
 		_recipe_list.remove_child(child)
 		child.queue_free()
 	var handcraft := HandcraftSystem.new(state)
-	for type in StationSystem.TYPES:
+	for type in StationSystem.TYPES + DysonSphereSystem.BUILDINGS:
 		var build_button := Button.new()
 		build_button.text = "建造" + _building_name(type)
 		build_button.tooltip_text = "已有 %d / 需要 1" % int(state.construction_inventory.get(type, 0))

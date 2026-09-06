@@ -75,6 +75,13 @@ $testCases = @(
         ResourcePath = "res://scenes/test/TestGalaxyLogistics.tscn"
         SuccessMarker = "GALAXY LOGISTICS TESTS PASSED"
         FailureMarker = "GALAXY LOGISTICS TESTS FAILED"
+    },
+    @{
+        Name = "Dyson engineering"
+        ScenePath = Join-Path $repoRoot "scenes\test\TestDysonEndgame.tscn"
+        ResourcePath = "res://scenes/test/TestDysonEndgame.tscn"
+        SuccessMarker = "DYSON ENDGAME TESTS PASSED"
+        FailureMarker = "DYSON ENDGAME TESTS FAILED"
     }
 )
 

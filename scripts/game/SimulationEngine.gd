@@ -4,7 +4,7 @@ extends RefCounted
 const FIXED_DELTA := 1.0 / 60.0
 const MAX_STEPS_PER_FRAME := 10
 const STEP_EPSILON := 0.0000001
-const PHASE_ORDER := ["power", "production", "handcraft", "belt", "logistics", "galaxy", "research", "statistics"]
+const PHASE_ORDER := ["dyson_decay", "power", "production", "handcraft", "belt", "logistics", "dyson_launch", "galaxy", "research", "statistics"]
 
 var game_state: GameState
 var production_system: ProductionSystem
@@ -15,6 +15,7 @@ var handcraft_system: HandcraftSystem
 var technology_system: TechnologySystem
 var galaxy_system: GalaxySystem
 var logistics_system: LogisticsSystem
+var dyson_system: DysonSphereSystem
 
 var _accumulator := 0.0
 var _last_step_count := 0
@@ -29,6 +30,7 @@ func _init(state: GameState) -> void:
 	technology_system = TechnologySystem.new(state)
 	galaxy_system = GalaxySystem.new(state)
 	logistics_system = LogisticsSystem.new(state, statistics_system)
+	dyson_system = DysonSphereSystem.new(state, statistics_system)
 
 func update(delta: float) -> void:
 	_last_step_count = 0
@@ -48,11 +50,13 @@ func update(delta: float) -> void:
 
 func _run_fixed_tick() -> void:
 	game_state.elapsed_time += FIXED_DELTA
+	dyson_system.begin_tick()
 	power_system.update(FIXED_DELTA)
 	production_system.update(FIXED_DELTA)
 	handcraft_system.update(FIXED_DELTA)
 	belt_system.update(FIXED_DELTA)
 	logistics_system.update(FIXED_DELTA)
+	dyson_system.update_launches(FIXED_DELTA)
 	galaxy_system.update_exploration(FIXED_DELTA)
 	_update_research(FIXED_DELTA)
 	statistics_system.update(FIXED_DELTA)

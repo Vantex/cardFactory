@@ -645,23 +645,23 @@ git commit -m "feat: add conserved interplanetary logistics"
 - 修改：`scripts/game/PowerSystem.gd`
 - 修改：`tools/run_tests.ps1`
 
-- [ ] **步骤 1：写轨道和材料守恒失败测试**
+- [x] **步骤 1：写轨道和材料守恒失败测试**
 
 覆盖太阳帆发射、寿命衰减、轨道选择、火箭、结构点、壳面吸附、射线接收和保存加载。
 
-- [ ] **步骤 2：实现每恒星系独立戴森状态**
+- [x] **步骤 2：实现每恒星系独立戴森状态**
 
 太阳帆、火箭、壳面和发电都归属具体恒星系；切换视图不改变模拟归属。
 
-- [ ] **步骤 3：接入生产和电力**
+- [x] **步骤 3：接入生产和电力**
 
 弹射器、发射井和接收站遵循配方、电力、科技和目标轨道；戴森功率进入所在恒星系电网。
 
-- [ ] **步骤 4：实现戴森规划工作区**
+- [x] **步骤 4：实现戴森规划工作区**
 
 支持轨道、层、节点/壳面计划、材料缺口、功率预估和合法失败反馈。
 
-- [ ] **步骤 5：提交**
+- [x] **步骤 5：提交**
 
 ```powershell
 git add scripts/game/DysonSphereSystem.gd scenes/ui/DysonUI.gd data/dyson.json scripts/game/SimulationEngine.gd scripts/game/PowerSystem.gd scripts/test/TestDysonEndgame.gd scenes/test/TestDysonEndgame.tscn tools/run_tests.ps1
