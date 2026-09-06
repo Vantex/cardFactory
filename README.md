@@ -1,5 +1,7 @@
 # CardFactory
 
+其他对话接手请先读 [当前工作交接](docs/current/HANDOFF.md)，了解分支、未提交改动、验证边界和下一步。
+
 CardFactory 是一个使用卡牌式二维界面表达工厂生产链的 Godot 原型。当前可信基线要求 **Godot 4.7.2**；其他 Godot 版本尚未验证。
 
 ## 启动与测试
