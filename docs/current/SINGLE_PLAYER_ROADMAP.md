@@ -710,23 +710,23 @@ git commit -m "feat: add single player endgame victory"
 - 修改：`autoload/GameManager.gd`
 - 修改：`tools/run_tests.ps1`
 
-- [ ] **步骤 1：写重复结算失败测试**
+- [x] **步骤 1：写重复结算失败测试**
 
 覆盖短离线、长离线、设备阻塞、科技完成边界、戴森衰减、在途物流、系统时间回拨、崩溃中断和同一时间段只结算一次。
 
-- [ ] **步骤 2：先实现分段精确结算**
+- [x] **步骤 2：先实现分段精确结算**
 
 复用固定步长模拟，按关键边界分段。第一版设置保守离线上限，不在没有等价性证明时引入近似算法。
 
-- [ ] **步骤 3：加入结算 journal**
+- [x] **步骤 3：加入结算 journal**
 
 结算前保存起点、目标时间和状态摘要；完成后原子提交新档。中断后回到已验证边界，不重复发放。
 
-- [ ] **步骤 4：实现离线报告**
+- [x] **步骤 4：实现离线报告**
 
 显示真实离线时长、模拟时长、主要产出、科技/任务完成、阻塞和被限制原因；允许玩家放弃未提交的长结算。
 
-- [ ] **步骤 5：提交**
+- [x] **步骤 5：提交**
 
 ```powershell
 git add scripts/game/OfflineSettlementSystem.gd scripts/game/OfflineSettlementJournal.gd scenes/ui/OfflineReportWorkspace.gd scripts/game/SaveSystem.gd autoload/GameManager.gd scripts/test/TestOfflineSettlement.gd scenes/test/TestOfflineSettlement.tscn tools/run_tests.ps1

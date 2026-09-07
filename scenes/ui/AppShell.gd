@@ -6,6 +6,7 @@ var _slots_panel: SaveSlotsPanel
 var _workspace_ui: CanvasLayer
 var _input_handler: Node
 var _screen_name := "start"
+var _offline_report: Control
 
 func _ready() -> void:
 	layer = 30
@@ -25,6 +26,12 @@ func _ready() -> void:
 	_slots_panel.continue_requested.connect(_continue_game)
 	_slots_panel.delete_requested.connect(_delete_slot)
 	_slots_panel.back_requested.connect(_show_start)
+	_offline_report = preload("res://scenes/ui/OfflineReportWorkspace.gd").new()
+	_offline_report.name = "OfflineReportWorkspace"
+	add_child(_offline_report)
+	_offline_report.dismissed.connect(func(): _on_session_started(GameManager.get_current_slot(), false))
+	_offline_report.return_requested.connect(func(): GameManager.end_session())
+	GameManager.offline_updated.connect(_on_offline_updated)
 	GameManager.session_started.connect(_on_session_started)
 	GameManager.session_ended.connect(_show_start)
 	if GameManager.is_session_active():
@@ -53,6 +60,8 @@ func return_to_menu() -> Dictionary:
 	return result
 
 func _unhandled_input(event: InputEvent) -> void:
+	if _screen_name in ["offline", "offline_report"]:
+		return
 	if not event.is_action_pressed("ui_cancel"):
 		return
 	if GameManager.is_session_active():
@@ -65,6 +74,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	get_viewport().set_input_as_handled()
 
 func _show_start() -> void:
+	if _offline_report != null: _offline_report.hide()
 	_screen_name = "start"
 	_set_gameplay_visible(false)
 	_slots_panel.hide()
@@ -134,3 +144,10 @@ func _error_message(result: Dictionary) -> String:
 			return "存档正在写入，请稍后再试。"
 		_:
 			return String(error.get("message", "操作失败，请选择其他槽位后重试。"))
+
+func _on_offline_updated(snapshot: Dictionary) -> void:
+	_screen_name = "offline_report" if snapshot.get("phase") == "complete" else "offline"
+	_start_menu.hide()
+	_slots_panel.hide()
+	_set_gameplay_visible(false)
+	_offline_report.display(snapshot)

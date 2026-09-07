@@ -32,11 +32,16 @@ func save_slot(slot: int, game_state: GameState, metadata_overrides: Dictionary 
 	var digest := _digest_payload(_normalize_stored_digest_types(state_payload))
 	var metadata := {
 		"schema_version": GameState.SCHEMA_VERSION,
-		"saved_at": Time.get_unix_time_from_system(),
+		"saved_at": maxf(wall_time(), float(metadata_overrides.get("offline_processed_until", 0.0))),
 		"elapsed_time": game_state.elapsed_time,
 		"active_planet": game_state.active_planet_id,
 		"digest": digest,
 	}
+	var previous := _read_slot_file(_get_slot_path(slot))
+	if previous.get("ok", false):
+		metadata.saved_at = maxf(float(metadata.saved_at), float(previous.metadata.saved_at))
+	if metadata_overrides.has("offline_receipt"):
+		metadata["offline_receipt"] = String(metadata_overrides.offline_receipt)
 	var envelope := {
 		"format": SAVE_FORMAT,
 		"metadata": metadata,
@@ -47,7 +52,7 @@ func save_slot(slot: int, game_state: GameState, metadata_overrides: Dictionary 
 	var primary_path := _get_slot_path(slot)
 	var backup_path := _get_slot_path(slot, ".bak")
 	_remove_if_exists(temporary_path)
-	var write_error := _write_text(temporary_path, JSON.stringify(envelope, "\t"))
+	var write_error := _write_text(temporary_path, JSON.stringify(envelope, "\t", true, true))
 	if write_error != OK:
 		return _failure("write_failed", "无法写入临时存档")
 
@@ -113,7 +118,7 @@ func delete_slot(slot: int) -> Dictionary:
 		return _failure("storage_unavailable", "本地存档目录不可用")
 
 	var found := false
-	for suffix in ["", ".bak", ".tmp"]:
+	for suffix in ["", ".bak", ".tmp", ".offline", ".offline.bak", ".offline.tmp"]:
 		var path := _get_slot_path(slot, suffix)
 		if not FileAccess.file_exists(path):
 			continue
@@ -409,3 +414,9 @@ func _failure_from_validation(errors: Array) -> Dictionary:
 		return _failure("invalid_state", "存档状态校验失败")
 	var first_error: Dictionary = errors[0]
 	return _failure(String(first_error.get("code", "invalid_state")), String(first_error.get("message", "存档状态校验失败")), first_error)
+
+func wall_time() -> float:
+	return Time.get_unix_time_from_system()
+
+func settlement_path(slot: int) -> String:
+	return _get_slot_path(slot, ".offline") if _validate_slot(slot).is_empty() else ""

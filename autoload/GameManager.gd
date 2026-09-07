@@ -6,6 +6,7 @@ signal session_ended
 signal save_completed(slot: int, reason: String, metadata: Dictionary)
 signal save_requested(reason: String)
 signal session_error(error: Dictionary)
+signal offline_updated(snapshot: Dictionary)
 
 const DEFAULT_AUTOSAVE_INTERVAL := 120.0
 
@@ -17,6 +18,7 @@ var _session_active := false
 var _save_in_progress := false
 var _autosave_interval := DEFAULT_AUTOSAVE_INTERVAL
 var _autosave_elapsed := 0.0
+var _offline_job: OfflineSettlementSystem
 
 func _ready() -> void:
 	get_tree().auto_accept_quit = false
@@ -41,6 +43,7 @@ func get_simulation_engine() -> SimulationEngine:
 func configure_save_system(save_system: SaveSystem) -> void:
 	if save_system != null:
 		_save_system = save_system
+		_offline_job = null
 
 func get_save_system() -> SaveSystem:
 	return _save_system
@@ -53,30 +56,65 @@ func start_new_game(slot: int) -> Dictionary:
 	if not save_result.get("ok", false):
 		session_error.emit(save_result.get("error", {}))
 		return save_result
+	var cleared := OfflineSettlementJournal.new(_save_system, slot).clear()
+	if not cleared.ok: return cleared
 	_current_slot = slot
 	_session_active = true
 	_autosave_elapsed = 0.0
+	_offline_job = null
 	replace_game_state(new_state)
 	session_started.emit(slot, true)
 	return save_result
 
 func continue_game(slot: int) -> Dictionary:
-	var load_result := _save_system.load_slot(slot)
-	if not load_result.get("ok", false):
-		session_error.emit(load_result.get("error", {}))
-		return load_result
-	var loaded_state: GameState = load_result.get("state")
-	if loaded_state == null:
-		var decode_failure := _failure("decode_failed", "存档未能创建完整游戏状态")
-		session_error.emit(decode_failure["error"])
-		return decode_failure
+	if _offline_job != null and _offline_job.phase in ["simulating", "ready"]:
+		return _failure("offline_busy", "请先完成或放弃当前离线结算")
+	var candidate := OfflineSettlementSystem.new()
+	var result := candidate.begin(_save_system, slot, _save_system.wall_time())
+	if not result.ok:
+		session_error.emit(result.get("error", {}))
+		return result
+	_offline_job = candidate
 	_current_slot = slot
+	if candidate.phase == "complete":
+		_activate_offline_result()
+	else:
+		_session_active = false
+		offline_updated.emit(candidate.get_snapshot())
+	var response := candidate.load_info.duplicate(true)
+	response["state"] = candidate.state
+	response["pending"] = candidate.phase != "complete"
+	return response
+
+func _activate_offline_result() -> void:
 	_session_active = true
 	_autosave_elapsed = 0.0
-	replace_game_state(loaded_state)
-	session_started.emit(slot, false)
-	return load_result
+	replace_game_state(_offline_job.state)
+	session_started.emit(_current_slot, false)
+	if not _offline_job.report.is_empty(): offline_updated.emit(_offline_job.get_snapshot())
 
+func get_offline_snapshot() -> Dictionary:
+	return _offline_job.get_snapshot() if _offline_job != null else {}
+
+func discard_offline_settlement() -> Dictionary:
+	if _offline_job == null: return _failure("no_offline_session", "没有待结算时间段")
+	var result := _offline_job.discard()
+	offline_updated.emit(_offline_job.get_snapshot())
+	return result
+
+func retry_offline_settlement() -> Dictionary:
+	return continue_game(_current_slot)
+
+func advance_offline_settlement() -> void:
+	if _offline_job == null or _offline_job.phase in ["complete", "error"]: return
+	_offline_job.advance()
+	if _offline_job.phase == "ready":
+		var result := _offline_job.commit()
+		if result.ok:
+			_activate_offline_result()
+			return
+		session_error.emit(result.get("error", {}))
+	offline_updated.emit(_offline_job.get_snapshot())
 func save_current_game(reason: String = "manual") -> Dictionary:
 	if not _session_active or _current_slot < 0:
 		return _failure("no_active_session", "当前没有可保存的游戏会话")
@@ -107,6 +145,7 @@ func prepare_to_quit() -> Dictionary:
 	return save_current_game("exit")
 
 func end_session() -> void:
+	_offline_job = null
 	_current_slot = -1
 	_session_active = false
 	_autosave_elapsed = 0.0
@@ -132,6 +171,9 @@ func get_active_planet() -> String:
 	return game_state.active_planet_id
 
 func _process(delta: float) -> void:
+	if _offline_job != null and _offline_job.phase in ["simulating", "ready"]:
+		advance_offline_settlement()
+		return
 	if not _session_active:
 		return
 	simulation_engine.update(delta)

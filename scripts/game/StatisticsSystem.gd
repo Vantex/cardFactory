@@ -327,3 +327,10 @@ func _empty_totals() -> Dictionary:
 
 func _empty_item_rates() -> Dictionary:
 	return {"produced_per_minute": 0.0, "consumed_per_minute": 0.0, "net_per_minute": 0.0, "transferred_per_minute": 0.0}
+
+func get_recent_amounts() -> Dictionary:
+	var totals := {"produced": {}, "consumed": {}, "transferred": {}}
+	for sample in _history + [_current_sample]:
+		for category in totals:
+			_merge_amounts(totals[category], sample[category], 1.0)
+	return totals
