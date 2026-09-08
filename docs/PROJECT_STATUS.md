@@ -4,16 +4,17 @@
 
 接手前先读 [当前工作交接](current/HANDOFF.md)。任务 12 第二轮代码已合并，自动门禁通过；第二轮手动验收及独立复审的实际边界见交接记录。
 
-## Stage 5 任务 16 已交付
+## Stage 5 任务 17 已交付
 
 Stage 0 的可信门禁、版本化权威状态和可靠本地存档入口已经完成；Stage 1 已交付固定步长、真实电力、守恒库存、基础手工制造和从原矿到基础研究矩阵的完整科学链；Stage 2 已交付高级画布/线路编辑、蓝图与实时小地图。Stage 3 的任务 9 已交付正式教程、战役骨架和本地成就，任务 10 已交付数据驱动科技推进，任务 11 已交付固定采样统计、稳定生产诊断、生产资料库和正式分析工作区。
 
 ## 活跃运行树与数据流
 
-`project.godot` 注册 `EventBus`、`GameManager` 和 `DataManager` 三个 autoload，并以 `scenes/main/Main.tscn` 为主场景。
+`project.godot` 注册 `LocalSettings`、`EventBus`、`GameManager` 和 `DataManager` 四个 autoload，并以 `scenes/main/Main.tscn` 为主场景。
 
 ```text
 project.godot
+├─ LocalSettings → 独立设备设置（主题、字号、密度和输入偏好）
 ├─ DataManager → 按文件名排序加载 data/*.json → 内容引用/数值/科技循环/强制物品校验
 ├─ GameManager → SaveSystem → GameState → SimulationEngine
 │                              ├─ PowerSystem
@@ -26,7 +27,7 @@ project.godot
 │                              ├─ DysonSphereSystem → 轨道 / 结构 / 壳面
 │                              ├─ EndgameSystem → 准备 / 运行 / 胜利
 │                              └─ StatisticsSystem
-└─ Main.tscn → AppShell → StartMenu + SaveSlotsPanel
+└─ Main.tscn → AppShell → StartMenu + SaveSlotsPanel + SettingsWorkspace
                + WorldCamera + CardRenderer + ConnectionRenderer
                + InputHandler + FactoryWorkspaceUI
                               ├─ BlueprintWorkspace
@@ -47,7 +48,7 @@ project.godot
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1
 ```
 
-它先自动执行一次无窗口编辑器导入，再顺序运行十二个场景：`TestBaseline`、`TestFactoryWorkspace`、`TestStatePersistence`、`TestSimulationCore`、`TestInventoryConstruction`、`TestAdvancedCanvas`、`TestBlueprints`、`TestProgression`、`TestStatisticsCodex`、`TestGalaxyLogistics`、`TestDysonEndgame` 与 `TestOfflineSettlement`，要求各自唯一的成功标记。门禁会在 Godot 非零退出、`SCRIPT ERROR`、`Parse Error`、失败标记、成功标记缺失/重复、ObjectDB 泄漏或资源仍被占用时失败。全新检出不再需要人工预热全局脚本类缓存。
+它先自动执行一次无窗口编辑器导入，再顺序运行十三个场景：`TestBaseline`、`TestFactoryWorkspace`、`TestStatePersistence`、`TestSimulationCore`、`TestInventoryConstruction`、`TestAdvancedCanvas`、`TestBlueprints`、`TestProgression`、`TestStatisticsCodex`、`TestGalaxyLogistics`、`TestDysonEndgame`、`TestOfflineSettlement` 与 `TestProductShell`，要求各自唯一的成功标记。门禁会在 Godot 非零退出、`SCRIPT ERROR`、`Parse Error`、失败标记、成功标记缺失/重复、ObjectDB 泄漏或资源仍被占用时失败。全新检出不再需要人工预热全局脚本类缓存。
 
 工作区测试覆盖：
 
@@ -113,7 +114,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1
 
 ## 下一阶段建议
 
-用户已批准继续对齐 DSPONLINE 的完整单机玩法，并明确排除账号、云存档、排行榜、在线社交和服务器运维。版本化状态、可靠本地存档、固定步长、真实电力、守恒施工库存、第一条科学链、多选批量编辑、线路配置、蓝图、实时小地图、正式教程/战役/成就、数据驱动科技推进、统计诊断资料库、多行星工厂和正式星图已经完成；任务 13～16 的物流、戴森工程、单机胜利和离线结算也已交付；下一项按[单机实施路线图](current/SINGLE_PLAYER_ROADMAP.md)推进任务 17 的设置、国际化、主题和输入适配。
+用户已批准继续对齐 DSPONLINE 的完整单机玩法，并明确排除账号、云存档、排行榜、在线社交和服务器运维。版本化状态、可靠本地存档、固定步长、真实电力、守恒施工库存、第一条科学链、多选批量编辑、线路配置、蓝图、实时小地图、正式教程/战役/成就、数据驱动科技推进、统计诊断资料库、多行星工厂和正式星图已经完成；任务 13～16 的物流、戴森工程、单机胜利和离线结算也已交付；下一项按[单机实施路线图](current/SINGLE_PLAYER_ROADMAP.md)推进任务 18 的大型工厂性能与稳定性预算。
 
 `DSPONLINE` 只在其非商业许可范围内作为行为和架构参考；不复制其源码或素材，也不把账号、云档、多核 Worker、排行榜等高级能力作为 CardFactory 当前开发的前置条件。
 
@@ -143,4 +144,14 @@ schema v9 持久化阶段、来源、已投入材料、整数进度和领奖标�
 
 每槽离线事务文件记录起点、目标、摘要及唯一完成标记；结果先持久化，再通过临时档验证与备份轮换提交主档。中断后从原始起点重放或复用已准备结果，重复继续/提交不会再次应用同一时段。回拨不会降低已处理时间边界，超过上限或主动放弃的时间不会在下次继续时补领；旧裸档无可信时间戳时仅建立时间边界。
 
-正式离线工作区显示进度，可放弃尚未进入提交阶段的收益；完成后显示真实离线、实际重放、跳过时间、产出、科技/目标变化与阻塞，写入失败可重试。报告中的产出来自模拟期间的真实统计，不直接添加估算收益。存档和事务文件用完整浮点精度写入，避免长时间累计数值的 JSON 截断导致摘要失败；GameState 保持 schema v9。详见 [任务 16 验收](current/TASK16_ACCEPTANCE.md)。下一项是任务 17 的设置、国际化、主题和输入适配。
+正式离线工作区显示进度，可放弃尚未进入提交阶段的收益；完成后显示真实离线、实际重放、跳过时间、产出、科技/目标变化与阻塞，写入失败可重试。报告中的产出来自模拟期间的真实统计，不直接添加估算收益。存档和事务文件用完整浮点精度写入，避免长时间累计数值的 JSON 截断导致摘要失败；GameState 保持 schema v9。详见 [任务 16 验收](current/TASK16_ACCEPTANCE.md)。下一项是任务 18 的大型工厂性能与稳定性预算。
+
+## 任务 17：本机设置与桌面操作
+
+开始菜单和工厂顶栏提供“设置”。主题、80%～200% 字号、紧凑/舒适密度、滚轮缩放方向及手柄光标速度保存到 `user://device_settings.cfg`，不进入存档；切换槽位不影响本机偏好。保存失败保留当前值。保留中文，国际化与手机适配已按用户要求取消。
+
+桌面窗口最小 1000×600，保留顶栏、左右侧栏和建造坞；大字号采用滚动布局，焦点边框随亮/暗主题保持可见。Tab / 方向键导航界面，Enter / 手柄 A 确认，Escape / B 返回。F6 / Y 在界面和画布之间切换；画布方向键 / 左摇杆移动光标，Enter / A 选择或放置，M / 左摇杆按下移动，C / 右摇杆按下连线，Delete / X 请求删除，减号/等号或 LB/RB 缩放，右摇杆平移。鼠标和原有建造快捷键继续可用，删除不会绕过确认。
+
+验收范围见 [任务 17 验收](current/TASK17_ACCEPTANCE.md)。测试入口为每个进程指定独立的 `--device-settings` 文件，避免读写玩家本机偏好。下一项为任务 18 的大型工厂性能与稳定性预算。
+
+分辨率适配使用当前 Viewport 的可用尺寸，窗口缩放时自动重算，兼容 Godot 已有的窗口拉伸与高 DPI 坐标，不叠加读取主屏幕物理像素而重复缩放。以 1152×648 为参考，按宽高可容纳比例计算自动 UI 比例（85%～400%），再叠加用户字号；侧栏宽度有窗口占比上限，为画布保留空间。顶栏、建造坞、小地图、滚动条和画布命中区域同步更新，自动调整不写回字号偏好，也不改变 GameState。设置页显示当前可用尺寸和自动比例。

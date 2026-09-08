@@ -20,6 +20,9 @@ var _planet_system: PlanetSystem
 var _galaxy_system: GalaxySystem
 
 func _ready() -> void:
+	var device_ui := preload("res://scenes/ui/DeviceUI.gd").new()
+	device_ui.name = "DeviceUI"
+	add_child(device_ui)
 	GameManager.game_state_replaced.connect(_on_game_state_replaced)
 	var game_state := GameManager.get_game_state()
 	card_renderer.set_game_state(game_state)

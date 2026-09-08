@@ -38,3 +38,5 @@
 任务 15：[实现计划](current/TASK15_PLAN.md) · [验收边界](current/TASK15_ACCEPTANCE.md)。
 
 任务 16：[实现计划](current/TASK16_PLAN.md) · [验收边界](current/TASK16_ACCEPTANCE.md)。
+
+任务 17：[桌面实施计划](current/TASK17_PLAN.md) · [验收边界](current/TASK17_ACCEPTANCE.md)。

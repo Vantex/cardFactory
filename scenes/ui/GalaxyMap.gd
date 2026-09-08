@@ -1,5 +1,5 @@
 class_name GalaxyMap
-extends Control
+extends ScrollContainer
 
 signal explore_requested(system_id: String)
 signal colonize_requested(planet_id: String)
@@ -91,12 +91,6 @@ func _build_ui() -> void:
 	if get_node_or_null("Margin") != null:
 		return
 	mouse_filter = Control.MOUSE_FILTER_STOP
-	var background := ColorRect.new()
-	background.name = "Background"
-	background.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	background.color = PANEL_DARK
-	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(background)
 	var margin := MarginContainer.new()
 	margin.name = "Margin"
 	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)

@@ -49,7 +49,8 @@ func _create_ui() -> void:
 	backdrop.mouse_filter = Control.MOUSE_FILTER_STOP
 	add_child(backdrop)
 
-	var layout := CenterContainer.new()
+	var layout := ScrollContainer.new()
+	layout.follow_focus = true
 	layout.name = "Layout"
 	layout.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(layout)

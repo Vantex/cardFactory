@@ -4,6 +4,7 @@ extends Control
 signal new_game_requested
 signal continue_requested(slot: int)
 signal slots_requested
+signal settings_requested
 
 const BACKGROUND := Color("#0b1110")
 const PANEL := Color("#131c19")
@@ -61,7 +62,8 @@ func _create_ui() -> void:
 	backdrop.mouse_filter = Control.MOUSE_FILTER_STOP
 	add_child(backdrop)
 
-	var layout := CenterContainer.new()
+	var layout := ScrollContainer.new()
+	layout.follow_focus = true
 	layout.name = "Layout"
 	layout.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(layout)
@@ -115,6 +117,9 @@ func _create_ui() -> void:
 	var slots_button := _button("SlotsButton", "管理存档槽位", false)
 	slots_button.pressed.connect(func() -> void: slots_requested.emit())
 	actions.add_child(slots_button)
+	var settings_button := _button("SettingsButton", "本机设置", false)
+	settings_button.pressed.connect(func(): settings_requested.emit())
+	actions.add_child(settings_button)
 
 	_error_label = _label("ErrorLabel", "", 14, ERROR)
 	_error_label.visible = false

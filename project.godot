@@ -17,6 +17,7 @@ config/icon="res://icon.svg"
 
 [autoload]
 
+LocalSettings="*res://scripts/game/SettingsSystem.gd"
 EventBus="*res://autoload/EventBus.gd"
 GameManager="*res://autoload/GameManager.gd"
 DataManager="*res://autoload/DataManager.gd"
@@ -25,6 +26,8 @@ DataManager="*res://autoload/DataManager.gd"
 
 window/size/viewport_width=1152
 window/size/viewport_height=648
+window/size/min_width=1000
+window/size/min_height=600
 window/size/window_width_override=1152
 window/size/window_height_override=648
 window/stretch/mode="canvas_items"

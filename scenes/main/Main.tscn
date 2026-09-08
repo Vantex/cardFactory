@@ -46,7 +46,7 @@ script = ExtResource("8_minimap")
 [node name="CampaignWorkspace" type="Control" parent="FactoryWorkspaceUI"]
 script = ExtResource("9_campaign")
 
-[node name="GalaxyMap" type="Control" parent="FactoryWorkspaceUI"]
+[node name="GalaxyMap" type="ScrollContainer" parent="FactoryWorkspaceUI"]
 visible = false
 anchors_preset = 15
 anchor_right = 1.0

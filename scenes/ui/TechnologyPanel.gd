@@ -1,5 +1,5 @@
 class_name TechnologyPanel
-extends PanelContainer
+extends ScrollContainer
 
 const TIER_OPTIONS := [
 	["全部层级", "all"],

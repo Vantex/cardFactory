@@ -7,6 +7,8 @@ var _workspace_ui: CanvasLayer
 var _input_handler: Node
 var _screen_name := "start"
 var _offline_report: Control
+var _settings: Control
+var _settings_return := "start"
 
 func _ready() -> void:
 	layer = 30
@@ -22,6 +24,11 @@ func _ready() -> void:
 	_start_menu.new_game_requested.connect(_show_slots)
 	_start_menu.continue_requested.connect(_continue_game)
 	_start_menu.slots_requested.connect(_show_slots)
+	_start_menu.settings_requested.connect(open_settings)
+	_settings = preload("res://scenes/ui/SettingsWorkspace.gd").new()
+	_settings.name = "SettingsWorkspace"
+	add_child(_settings)
+	_settings.dismissed.connect(close_settings)
 	_slots_panel.new_game_requested.connect(_start_new_game)
 	_slots_panel.continue_requested.connect(_continue_game)
 	_slots_panel.delete_requested.connect(_delete_slot)
@@ -60,11 +67,19 @@ func return_to_menu() -> Dictionary:
 	return result
 
 func _unhandled_input(event: InputEvent) -> void:
+	if _screen_name == "settings":
+		if event.is_action_pressed("ui_cancel"):
+			close_settings()
+			get_viewport().set_input_as_handled()
+		return
 	if _screen_name in ["offline", "offline_report"]:
 		return
 	if not event.is_action_pressed("ui_cancel"):
 		return
 	if GameManager.is_session_active():
+		if _workspace_ui != null and _workspace_ui.close_active_workspace():
+			get_viewport().set_input_as_handled()
+			return
 		if _input_handler != null and _input_handler.call("get_mode_name") != "idle":
 			_input_handler.call("cancel_operation")
 		else:
@@ -74,6 +89,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	get_viewport().set_input_as_handled()
 
 func _show_start() -> void:
+	if _settings != null: _settings.hide()
 	if _offline_report != null: _offline_report.hide()
 	_screen_name = "start"
 	_set_gameplay_visible(false)
@@ -81,6 +97,7 @@ func _show_start() -> void:
 	_start_menu.show()
 	_start_menu.clear_error()
 	_start_menu.refresh_saves(GameManager.get_save_system().get_all_saves())
+	_focus_first.call_deferred(_start_menu)
 
 func _show_slots() -> void:
 	_screen_name = "slots"
@@ -89,6 +106,7 @@ func _show_slots() -> void:
 	_slots_panel.show_error("")
 	_slots_panel.refresh_slots(GameManager.get_save_system().get_all_saves())
 	_slots_panel.show()
+	_focus_first.call_deferred(_slots_panel)
 
 func _start_new_game(slot: int) -> void:
 	var result := GameManager.start_new_game(slot)
@@ -121,6 +139,7 @@ func _set_gameplay_visible(is_visible: bool) -> void:
 	if _workspace_ui != null:
 		_workspace_ui.visible = is_visible
 	if _input_handler != null:
+		if not is_visible: _input_handler.reset_device_input()
 		_input_handler.set_process_input(is_visible)
 		_input_handler.set_process_unhandled_input(is_visible)
 	for sibling_name in ["CardRenderer", "ConnectionRenderer"]:
@@ -151,3 +170,29 @@ func _on_offline_updated(snapshot: Dictionary) -> void:
 	_slots_panel.hide()
 	_set_gameplay_visible(false)
 	_offline_report.display(snapshot)
+	if snapshot.get("phase") in ["complete", "error"]: _focus_first.call_deferred(_offline_report)
+
+func open_settings() -> void:
+	if _screen_name in ["offline", "offline_report", "settings"]: return
+	_settings_return = _screen_name
+	_screen_name = "settings"
+	_start_menu.hide()
+	_slots_panel.hide()
+	_set_gameplay_visible(false)
+	if _input_handler != null: _input_handler.cancel_operation()
+	_settings.open()
+
+func close_settings() -> void:
+	_settings.hide()
+	if _settings_return == "game" and GameManager.is_session_active():
+		_on_session_started(GameManager.get_current_slot(), false)
+		_focus_first.call_deferred(_workspace_ui)
+	elif _settings_return == "slots": _show_slots()
+	else: _show_start()
+
+func _focus_first(root: Node) -> void:
+	if not is_instance_valid(root): return
+	for node in root.find_children("*", "BaseButton", true, false):
+		if node.is_visible_in_tree() and not node.disabled:
+			node.grab_focus()
+			return

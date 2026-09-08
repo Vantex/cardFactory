@@ -739,44 +739,41 @@ git commit -m "feat: add recoverable offline settlement"
 
 ## 阶段 6：产品化与大型工厂
 
-### 任务 17：设置、国际化、主题和输入适配
+### 任务 17：设置、主题和桌面输入
+
+**范围修订：** 用户明确取消国际化和手机适配；保留中文，操作逻辑按电脑游戏。窗口缩放和大字号使用桌面布局，不增加触摸抽屉、底部导航或手势。
 
 **文件：**
 
 - 创建：`scripts/game/SettingsSystem.gd`
-- 创建：`scenes/ui/SettingsWorkspace.gd`
-- 创建：`data/i18n/zh_CN.json`
-- 创建：`data/i18n/en.json`
-- 创建：`scripts/test/TestProductShell.gd`
-- 创建：`scenes/test/TestProductShell.tscn`
-- 修改：`project.godot`
-- 修改：所有活跃 `scenes/ui/*.gd`
+- 创建：`scenes/ui/SettingsWorkspace.gd`、`DeviceUI.gd`、`AdaptivePanel.gd`、`DesktopLayout.gd`
+- 创建：`scripts/test/TestProductShell.gd`、`scenes/test/TestProductShell.tscn`
+- 修改：`project.godot`、正式 Main、AppShell、工作区与 `scripts/input/InputHandler.gd`
 - 修改：`tools/run_tests.ps1`
 
-- [ ] **步骤 1：写偏好隔离失败测试**
+- [x] **步骤 1：设备偏好隔离**
 
-语言、主题、字号、UI 密度和输入偏好只保存在设备设置，不进入 GameState；切换存档不改变偏好。
+主题、字号、UI 密度、滚轮方向和手柄光标速度仅存设备文件，不进入 GameState；切换存档不改变偏好，保存失败保留当前值。
 
-- [ ] **步骤 2：抽取玩家可见文本**
+- [x] **步骤 2：国际化已按用户要求取消**
 
-正式路径不再硬编码中文；缺失翻译在测试中失败，不静默显示 key。
+继续使用现有中文，不添加语言设置或翻译目录。
 
-- [ ] **步骤 3：实现亮/暗主题和字号范围**
+- [x] **步骤 3：亮/暗主题与 80%～200% 字号**
 
-所有工作区在 80%～200% 字号下可滚动、无核心控件重叠；颜色不是唯一状态信号。
+共用主题覆盖动态控件；桌面侧栏和工作区可滚动，焦点有明确边框。最小桌面窗口 1000×600；按当前可用分辨率实时调整比例和布局，覆盖 1080p、1440p、4K、宽屏与窗口尺寸往返变化。
 
-- [ ] **步骤 4：实现键盘和手柄导航**
+- [x] **步骤 4：键盘和手柄桌面操作**
 
-菜单、工作区、对话框和画布命令都有焦点顺序、返回路径和可见焦点；破坏性操作需要确认。
+保留鼠标与既有快捷键；F6 / 手柄 Y 切换画布焦点，光标支持选择、放置、移动、连线及缩放。菜单、工作区有返回路径，删除仍需确认。
 
-- [ ] **步骤 5：实现移动/触摸布局**
+- [x] **步骤 5：手机/触摸适配已按用户要求取消**
 
-窄屏使用顶部状态、底部导航和可折叠抽屉；触摸放置、拖动、连续拉线、缩放和平移与桌面共享领域命令。
+保留电脑端顶栏、左右侧栏与建造坞，不实现移动布局或触摸手势。
 
-- [ ] **步骤 6：提交**
+- [x] **步骤 6：提交本地 main**
 
 ```powershell
-git add scripts/game/SettingsSystem.gd scenes/ui/SettingsWorkspace.gd data/i18n project.godot scenes/ui scripts/test/TestProductShell.gd scenes/test/TestProductShell.tscn tools/run_tests.ps1
 git commit -m "feat: add accessible local game settings"
 ```
 

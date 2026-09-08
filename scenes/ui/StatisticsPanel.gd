@@ -1,5 +1,5 @@
 class_name StatisticsPanel
-extends Control
+extends AdaptivePanel
 
 const SUPPORTED_WINDOWS := [60, 300, 600]
 
@@ -13,6 +13,8 @@ var _results: VBoxContainer
 var _scroll: ScrollContainer
 
 func _ready() -> void:
+	super._ready()
+	reflow = true
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	_build_ui()
 	visibility_changed.connect(_on_visibility_changed)

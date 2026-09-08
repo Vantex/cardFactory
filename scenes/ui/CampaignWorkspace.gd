@@ -49,7 +49,8 @@ func request_locate_stopped_building() -> Dictionary:
 	return {"ok": true, "building_id": location.get("building_id", ""), "position": location.get("position", Vector2.ZERO)}
 
 func _build_controls() -> void:
-	var panel := Panel.new()
+	var panel := AdaptivePanel.new()
+	panel.reflow = true
 	panel.name = "Panel"
 	panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(panel)
@@ -88,6 +89,7 @@ func _install_toggle() -> void:
 	var title := inspector.get_node_or_null("Title") as Control
 	if title != null:
 		title.size.x = minf(title.size.x, 112.0)
+		title.set_meta("authored_size", title.size)
 	_toggle_button = Button.new()
 	_toggle_button.name = "CampaignToggle"
 	_toggle_button.text = "任务"

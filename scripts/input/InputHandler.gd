@@ -58,6 +58,10 @@ var pan_last_screen_position := Vector2.ZERO
 var _ui_hit_test := Callable()
 var _syncing_selection := false
 var _blueprint_workspace: Control
+var canvas_focused := false
+var cursor_screen := Vector2.ZERO
+var _stick := Vector2.ZERO
+var _pan_stick := Vector2.ZERO
 
 func set_ui_hit_test(hit_test: Callable) -> void:
 	_ui_hit_test = hit_test
@@ -208,6 +212,9 @@ func cancel_operation() -> void:
 	queue_redraw()
 
 func _input(event: InputEvent) -> void:
+	if _accessible_input(event):
+		get_viewport().set_input_as_handled()
+		return
 	if not (event is InputEventMouseButton) or event.pressed or not _has_pending_pointer_release(event.button_index):
 		return
 	_handle_mouse_button(event, _get_event_screen_position(event))
@@ -523,6 +530,9 @@ func _is_pointer_over_ui(screen_position: Vector2) -> bool:
 	return _ui_hit_test.is_valid() and _ui_hit_test.call(screen_position)
 
 func _is_inside_world_canvas(screen_position: Vector2) -> bool:
+	var workspace := get_parent().get_node_or_null("FactoryWorkspaceUI")
+	if workspace != null and workspace.has_method("get_canvas_rect"):
+		return workspace.get_canvas_rect().has_point(screen_position)
 	var viewport_size := get_viewport().get_visible_rect().size
 	var canvas_size := viewport_size - Vector2(CANVAS_MARGIN_LEFT + CANVAS_MARGIN_RIGHT, CANVAS_MARGIN_TOP + CANVAS_MARGIN_BOTTOM)
 	return Rect2(Vector2(CANVAS_MARGIN_LEFT, CANVAS_MARGIN_TOP), canvas_size.max(Vector2.ZERO)).has_point(screen_position)
@@ -553,6 +563,12 @@ func _zoom_at_pointer(screen_position: Vector2, factor: float) -> void:
 	camera.force_update_scroll()
 
 func _draw() -> void:
+	if canvas_focused:
+		var point := _screen_to_world(cursor_screen)
+		draw_circle(point, 12, Color.BLACK, false, 5)
+		draw_circle(point, 12, Color.WHITE, false, 2)
+		draw_line(point - Vector2(20, 0), point + Vector2(20, 0), Color.WHITE, 2)
+		draw_line(point - Vector2(0, 20), point + Vector2(0, 20), Color.WHITE, 2)
 	for entity_id in selected_entity_ids:
 		if not _is_active_entity(entity_id):
 			continue
@@ -562,3 +578,123 @@ func _draw() -> void:
 	if current_mode == Mode.BOX_SELECTING:
 		draw_rect(Rect2(selection_box_start, selection_box_end - selection_box_start).abs(), Color(0.38, 0.71, 0.68, 0.18), true)
 		draw_rect(Rect2(selection_box_start, selection_box_end - selection_box_start).abs(), Color("62b5ae"), false, 1.5, true)
+
+func focus_canvas() -> void:
+	_stick = Vector2.ZERO
+	_pan_stick = Vector2.ZERO
+	var workspace := get_parent().get_node_or_null("FactoryWorkspaceUI")
+	if workspace != null:
+		while workspace.close_active_workspace(): pass
+		cursor_screen = workspace.get_canvas_rect().get_center()
+	else: cursor_screen = get_viewport().get_visible_rect().size * 0.5
+	var owner := get_viewport().gui_get_focus_owner()
+	if owner != null: owner.release_focus()
+	canvas_focused = true
+	queue_redraw()
+
+func focus_interface() -> void:
+	canvas_focused = false
+	_stick = Vector2.ZERO
+	_pan_stick = Vector2.ZERO
+	cancel_operation()
+	var shell := get_parent().get_node_or_null("AppShell")
+	if shell != null: shell._focus_first(get_parent().get_node("FactoryWorkspaceUI"))
+	queue_redraw()
+
+func _process(delta: float) -> void:
+	if not canvas_focused or not is_processing_input(): return
+	_move_cursor(_stick * delta * 360 * float(LocalSettings.values.cursor_speed))
+	var camera := _get_camera()
+	if camera != null and _pan_stick.length() > 0:
+		camera.position += _pan_stick * delta * 400 / camera.zoom
+		camera.force_update_scroll()
+	queue_redraw()
+
+func _move_cursor(offset: Vector2) -> void:
+	var workspace := get_parent().get_node_or_null("FactoryWorkspaceUI")
+	var rect: Rect2 = workspace.get_canvas_rect() if workspace != null else get_viewport().get_visible_rect()
+	cursor_screen = (cursor_screen + offset).clamp(rect.position + Vector2.ONE, rect.end - Vector2.ONE)
+	if current_mode == Mode.DRAGGING: _update_drag(_screen_to_world(cursor_screen))
+
+func _activate_cursor() -> void:
+	if current_mode == Mode.DRAGGING:
+		_finish_drag()
+	elif current_mode == Mode.CONNECTING:
+		var target := _get_building_at_position(_screen_to_world(cursor_screen))
+		if not target.is_empty(): complete_connection(String(target.id))
+	else:
+		_handle_left_press(cursor_screen)
+		_handle_left_release(cursor_screen)
+
+func _accessible_input(event: InputEvent) -> bool:
+	for dialog in get_parent().find_children("*", "Window", true, false):
+		if dialog.visible: return false
+	if event is InputEventMouseButton and event.pressed:
+		canvas_focused = false
+		if LocalSettings.values.invert_zoom and event.button_index in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN] and not _is_pointer_over_ui(event.position) and _is_inside_world_canvas(event.position):
+			_zoom_at_pointer(event.position, 1.0 / ZOOM_STEP if event.button_index == MOUSE_BUTTON_WHEEL_UP else ZOOM_STEP)
+			return true
+	var toggle: bool = (event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_F6) or (event is InputEventJoypadButton and event.pressed and event.button_index == JOY_BUTTON_Y)
+	if toggle:
+		if canvas_focused: focus_interface()
+		else: focus_canvas()
+		return true
+	if not canvas_focused: return false
+	if event is InputEventJoypadMotion:
+		var value: float = event.axis_value if absf(event.axis_value) > 0.2 else 0.0
+		match event.axis:
+			JOY_AXIS_LEFT_X: _stick.x = value
+			JOY_AXIS_LEFT_Y: _stick.y = value
+			JOY_AXIS_RIGHT_X: _pan_stick.x = value
+			JOY_AXIS_RIGHT_Y: _pan_stick.y = value
+		return true
+	if event is InputEventJoypadButton and event.pressed:
+		match event.button_index:
+			JOY_BUTTON_A: _activate_cursor()
+			JOY_BUTTON_B:
+				if current_mode != Mode.IDLE: cancel_operation()
+				else: focus_interface()
+			JOY_BUTTON_X: _delete_selected()
+			JOY_BUTTON_LEFT_STICK: _begin_cursor_move()
+			JOY_BUTTON_RIGHT_STICK: start_connection(selected_building_id)
+			JOY_BUTTON_LEFT_SHOULDER: _zoom_at_pointer(cursor_screen, 1.0 / ZOOM_STEP)
+			JOY_BUTTON_RIGHT_SHOULDER: _zoom_at_pointer(cursor_screen, ZOOM_STEP)
+			JOY_BUTTON_DPAD_LEFT: _move_cursor(Vector2(-24, 0))
+			JOY_BUTTON_DPAD_RIGHT: _move_cursor(Vector2(24, 0))
+			JOY_BUTTON_DPAD_UP: _move_cursor(Vector2(0, -24))
+			JOY_BUTTON_DPAD_DOWN: _move_cursor(Vector2(0, 24))
+		return true
+	if event is InputEventKey and event.pressed:
+		match event.keycode:
+			KEY_LEFT: _move_cursor(Vector2(-24, 0))
+			KEY_RIGHT: _move_cursor(Vector2(24, 0))
+			KEY_UP: _move_cursor(Vector2(0, -24))
+			KEY_DOWN: _move_cursor(Vector2(0, 24))
+			KEY_ENTER: _activate_cursor()
+			KEY_ESCAPE:
+				if current_mode != Mode.IDLE: cancel_operation()
+				else: focus_interface()
+			KEY_C: start_connection(selected_building_id)
+			KEY_M: _begin_cursor_move()
+			KEY_MINUS: _zoom_at_pointer(cursor_screen, 1.0 / ZOOM_STEP)
+			KEY_EQUAL: _zoom_at_pointer(cursor_screen, ZOOM_STEP)
+			_: _handle_key_press(event)
+		return true
+	return false
+
+func _begin_cursor_move() -> void:
+	var building := GameManager.get_game_state().get_building(selected_building_id)
+	if building.is_empty(): return
+	dragging_building_id = selected_building_id
+	drag_offset = _screen_to_world(cursor_screen) - Vector2(building.position)
+	drag_start_positions.clear()
+	for entity_id in selected_entity_ids:
+		if GameManager.get_game_state().buildings.has(entity_id):
+			drag_start_positions[entity_id] = GameManager.get_game_state().buildings[entity_id].position
+	current_mode = Mode.DRAGGING
+
+func reset_device_input() -> void:
+	canvas_focused = false
+	_stick = Vector2.ZERO
+	_pan_stick = Vector2.ZERO
+	cancel_operation()

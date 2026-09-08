@@ -56,6 +56,7 @@ var _dock_buttons: Dictionary = {}
 var _toast_label: Label
 var _toast_timer: Timer
 var _recipe_signature := ""
+const WORKSPACES := ["BlueprintWorkspace", "CampaignWorkspace", "TechnologyPanel", "CodexWorkspace", "GalaxyMap", "StationPanel", "DysonPanel", "EndgameWorkspace"]
 
 func _ready() -> void:
 	_create_workspace()
@@ -126,6 +127,9 @@ func _ready() -> void:
 	EventBus.connection_created.connect(_on_state_changed)
 	EventBus.connection_removed.connect(_on_state_changed)
 	refresh_now()
+	_create_settings_entry()
+	get_viewport().size_changed.connect(apply_device_layout)
+	apply_device_layout.call_deferred()
 
 func set_selected_building(building_id: String) -> void:
 	var input_handler := _get_input_handler()
@@ -188,7 +192,8 @@ func show_notice(message: String, tone: String = "info") -> void:
 	elif tone == "error":
 		color = ACCENT_ERROR
 	_toast_label.text = message
-	_toast_label.add_theme_color_override("font_color", color)
+	_toast_label.set_meta("device_colors", {"theme_override_colors/font_color": color})
+	_toast_label.add_theme_color_override("font_color", color.darkened(0.65) if LocalSettings.values.theme == "light" else color)
 	var toast := get_node("Toast") as Control
 	toast.visible = not message.is_empty()
 	_toast_timer.stop()
@@ -430,6 +435,7 @@ func show_exclusive_workspace(workspace_name: String) -> void:
 		var workspace := get_node_or_null(candidate_name) as Control
 		if workspace != null:
 			workspace.visible = candidate_name == workspace_name
+			if workspace.visible: get_parent().get_node("AppShell")._focus_first.call_deferred(workspace)
 
 func _on_notice_timeout() -> void:
 	get_node("Toast").hide()
@@ -1086,12 +1092,95 @@ func _refresh_construction_dock(state: GameState) -> void:
 		button.tooltip_text = DataManager.get_building(building_type).get("description", "") if missing_reason.is_empty() else missing_reason
 
 func _create_panel(node_name: String, color: Color) -> Panel:
-	var panel := Panel.new()
+	var panel: Panel = Panel.new() if node_name == "Toast" else AdaptivePanel.new()
 	panel.name = node_name
 	panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	panel.add_theme_stylebox_override("panel", _panel_style(color))
 	add_child(panel)
 	return panel
+
+func _create_settings_entry() -> void:
+	var settings := Button.new()
+	settings.name = "SettingsButton"
+	settings.text = "设置"
+	settings.position = Vector2(664, 9)
+	settings.size = Vector2(58, 34)
+	settings.pressed.connect(func(): get_parent().get_node("AppShell").open_settings())
+	get_node("TopBar").add_child(settings)
+	_top_status.position.x = 728
+	_top_status.size.x = 410
+
+func apply_device_layout() -> void:
+	if get_node_or_null("TopBar") == null: return
+	var viewport_size := get_viewport().get_visible_rect().size
+	var metrics := DesktopLayout.metrics(viewport_size, LocalSettings.values)
+	var enlarged: bool = not metrics.authored
+	var left_width: float = metrics.left_width
+	var right_width: float = metrics.right_width
+	var gap: float = metrics.gap
+	var dock_height: float = metrics.dock_height
+	var top := get_node("TopBar") as AdaptivePanel
+	top.horizontal = true
+	top.reflow = enlarged
+	top.offset_bottom = metrics.top_height
+	for panel_name in ["ResourceRail", "InspectorPanel", "ConstructionDock"]:
+		var panel := get_node(panel_name) as AdaptivePanel
+		panel.reflow = enlarged
+		panel.horizontal = panel_name == "ConstructionDock"
+		panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		panel.offset_top = top.offset_bottom
+		panel.offset_bottom = -dock_height
+		if panel_name == "ResourceRail": panel.offset_right = left_width - viewport_size.x
+		elif panel_name == "InspectorPanel": panel.offset_left = viewport_size.x - right_width
+		else:
+			panel.offset_left = left_width
+			panel.offset_right = -right_width
+			panel.offset_top = viewport_size.y - dock_height
+			panel.offset_bottom = 0
+		panel.arrange()
+	for workspace_name in WORKSPACES:
+		var workspace := get_node_or_null(workspace_name) as Control
+		if workspace == null: continue
+		if not workspace.has_meta("device_layout"):
+			var authored := {}
+			for property in ["anchor_left", "anchor_top", "anchor_right", "anchor_bottom", "offset_left", "offset_top", "offset_right", "offset_bottom", "z_index"]: authored[property] = workspace.get(property)
+			workspace.set_meta("device_layout", authored)
+		if enlarged:
+			workspace.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+			workspace.offset_top = top.size.y + 4
+			workspace.offset_bottom = -dock_height - 4
+			workspace.offset_left = left_width + gap
+			workspace.offset_right = -right_width - gap
+			workspace.z_index = 7
+		else:
+			for property in workspace.get_meta("device_layout"): workspace.set(property, workspace.get_meta("device_layout")[property])
+		workspace.custom_minimum_size = Vector2.ZERO
+	for optional in ["MiniMap", "TutorialOverlay"]:
+		var node := get_node_or_null(optional) as Control
+		if node != null:
+			if optional == "MiniMap":
+				if not node.has_meta("device_position"): node.set_meta("device_position", node.position)
+				node.size = MiniMap.MINIMAP_SIZE * float(metrics.automatic_scale)
+				node.position = Vector2(viewport_size.x - right_width - node.size.x - gap, top.size.y + 10) if enlarged else Vector2(node.get_meta("device_position"))
+				node.show()
+			else: node.visible = not enlarged
+	top.arrange()
+
+func close_active_workspace() -> bool:
+	for workspace_name in WORKSPACES:
+		var workspace := get_node_or_null(workspace_name) as Control
+		if workspace != null and workspace.visible:
+			workspace.hide()
+			get_parent().get_node("AppShell")._focus_first(get_node("TopBar"))
+			return true
+	return false
+
+func get_canvas_rect() -> Rect2:
+	var viewport_size := get_viewport().get_visible_rect().size
+	var top: Control = get_node("TopBar")
+	var left: Control = get_node("ResourceRail")
+	var right: Control = get_node("InspectorPanel")
+	return Rect2(left.size.x, top.size.y, maxf(0, right.position.x - left.size.x), maxf(0, viewport_size.y - top.size.y - get_node("ConstructionDock").size.y))
 
 func _create_label(node_name: String, text: String, font_size: int, color: Color) -> Label:
 	var label := Label.new()

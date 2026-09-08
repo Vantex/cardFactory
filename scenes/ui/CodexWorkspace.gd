@@ -1,5 +1,5 @@
 class_name CodexWorkspace
-extends PanelContainer
+extends ScrollContainer
 
 signal locate_requested(building_id: String, world_position: Vector2)
 
@@ -54,6 +54,7 @@ func _build_ui() -> void:
 
 	var content := Control.new()
 	content.name = "Content"
+	content.custom_minimum_size.y = 420
 	content.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	layout.add_child(content)
@@ -69,7 +70,8 @@ func _build_ui() -> void:
 	_show_view("StatisticsPanel")
 
 func _build_diagnostics_panel() -> Control:
-	var panel := Control.new()
+	var panel := AdaptivePanel.new()
+	panel.reflow = true
 	panel.name = "DiagnosticsPanel"
 	_fill_parent(panel)
 	var search := LineEdit.new()
@@ -95,7 +97,8 @@ func _build_diagnostics_panel() -> Control:
 	return panel
 
 func _build_codex_panel() -> Control:
-	var panel := Control.new()
+	var panel := AdaptivePanel.new()
+	panel.reflow = true
 	panel.name = "CodexPanel"
 	_fill_parent(panel)
 	var search := LineEdit.new()

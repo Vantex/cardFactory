@@ -117,7 +117,8 @@ func get_last_export_text() -> String:
 	return _clipboard_fallback
 
 func _build_controls() -> void:
-	var panel := Panel.new()
+	var panel := AdaptivePanel.new()
+	panel.reflow = true
 	panel.name = "Panel"
 	panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(panel)
@@ -125,6 +126,10 @@ func _build_controls() -> void:
 	title.text = "蓝图工作台  ·  预览"
 	title.position = Vector2(12, 8)
 	panel.add_child(title)
+	var preview_space := Control.new()
+	preview_space.custom_minimum_size.y = 100
+	preview_space.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.add_child(preview_space)
 	var controls := GridContainer.new()
 	controls.name = "Controls"
 	controls.columns = 2
@@ -149,6 +154,7 @@ func _install_toggle() -> void:
 	var title := inspector.get_node_or_null("Title") as Control
 	if title != null:
 		title.size.x = minf(title.size.x, 112.0)
+		title.set_meta("authored_size", title.size)
 	_toggle_button = Button.new()
 	_toggle_button.name = "BlueprintToggle"
 	_toggle_button.text = "蓝图"

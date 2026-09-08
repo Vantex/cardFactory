@@ -89,6 +89,13 @@ $testCases = @(
         ResourcePath = "res://scenes/test/TestOfflineSettlement.tscn"
         SuccessMarker = "OFFLINE SETTLEMENT TESTS PASSED"
         FailureMarker = "OFFLINE SETTLEMENT TESTS FAILED"
+    },
+    @{
+        Name = "Product shell"
+        ScenePath = Join-Path $repoRoot "scenes\test\TestProductShell.tscn"
+        ResourcePath = "res://scenes/test/TestProductShell.tscn"
+        SuccessMarker = "PRODUCT SHELL TESTS PASSED"
+        FailureMarker = "PRODUCT SHELL TESTS FAILED"
     }
 )
 
@@ -148,7 +155,7 @@ if ($importExitCode -ne 0 -or $importOutputText -match "SCRIPT ERROR|Parse Error
 foreach ($testCase in $testCases) {
     $startInfo = New-Object System.Diagnostics.ProcessStartInfo
     $startInfo.FileName = $GodotPath
-    $startInfo.Arguments = '--headless --path "{0}" --quit-after 600 "{1}"' -f $repoRoot, $testCase.ResourcePath
+    $startInfo.Arguments = '--headless --path "{0}" --quit-after 600 "{1}" -- --device-settings=res://.godot/gate-device-settings-{2}.cfg' -f $repoRoot, $testCase.ResourcePath, ([guid]::NewGuid().ToString("N"))
     $startInfo.WorkingDirectory = $repoRoot
     $startInfo.UseShellExecute = $false
     $startInfo.RedirectStandardOutput = $true
