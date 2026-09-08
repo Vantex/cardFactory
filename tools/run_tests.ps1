@@ -7,6 +7,13 @@ $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $testCases = @(
     @{
+        Name = "DSPONLINE parity"
+        ScenePath = Join-Path $repoRoot "scenes\test\TestDSPOnlineParity.tscn"
+        ResourcePath = "res://scenes/test/TestDSPOnlineParity.tscn"
+        SuccessMarker = "DSPONLINE PARITY TESTS PASSED"
+        FailureMarker = "DSPONLINE PARITY TESTS FAILED"
+    },
+    @{
         Name = "Performance budgets"
         ScenePath = Join-Path $repoRoot "scenes\test\TestPerformanceBudgets.tscn"
         ResourcePath = "res://scenes/test/TestPerformanceBudgets.tscn"

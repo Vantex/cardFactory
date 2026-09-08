@@ -1,0 +1,107 @@
+{
+  "online": {
+    "workspaces:GalaxyWorkspace": {
+      "reason": "账号、云存档或公共银河网络入口，不属于单机范围"
+    },
+    "commands:CloudAccountSecurity.onLoggedOut": {
+      "reason": "账号、云存档或公共银河网络入口，不属于单机范围"
+    },
+    "commands:CloudAccountSecurity.onUserChange": {
+      "reason": "账号、云存档或公共银河网络入口，不属于单机范围"
+    },
+    "commands:CloudSaveConflictDialog.onCancel": {
+      "reason": "账号、云存档或公共银河网络入口，不属于单机范围"
+    },
+    "commands:CloudSaveConflictDialog.onExportCloud": {
+      "reason": "账号、云存档或公共银河网络入口，不属于单机范围"
+    },
+    "commands:CloudSaveConflictDialog.onExportLocal": {
+      "reason": "账号、云存档或公共银河网络入口，不属于单机范围"
+    },
+    "commands:CloudSaveConflictDialog.onKeepLocal": {
+      "reason": "账号、云存档或公共银河网络入口，不属于单机范围"
+    },
+    "commands:CloudSaveConflictDialog.onUseCloud": {
+      "reason": "账号、云存档或公共银河网络入口，不属于单机范围"
+    },
+    "commands:CloudSaveSlotsPanel.onDelete": {
+      "reason": "账号、云存档或公共银河网络入口，不属于单机范围"
+    },
+    "commands:CloudSaveSlotsPanel.onDownload": {
+      "reason": "账号、云存档或公共银河网络入口，不属于单机范围"
+    },
+    "commands:CloudSaveSlotsPanel.onUpload": {
+      "reason": "账号、云存档或公共银河网络入口，不属于单机范围"
+    },
+    "commands:CloudSaveStatusCenter.onCancel": {
+      "reason": "账号、云存档或公共银河网络入口，不属于单机范围"
+    },
+    "commands:CloudSaveStatusCenter.onExportCloud": {
+      "reason": "账号、云存档或公共银河网络入口，不属于单机范围"
+    },
+    "commands:CloudSaveStatusCenter.onExportLocal": {
+      "reason": "账号、云存档或公共银河网络入口，不属于单机范围"
+    },
+    "commands:CloudSaveStatusCenter.onRetry": {
+      "reason": "账号、云存档或公共银河网络入口，不属于单机范围"
+    },
+    "commands:GalaxyWorkspace.onClose": {
+      "reason": "账号、云存档或公共银河网络入口，不属于单机范围"
+    },
+    "commands:GalaxyWorkspace.onCreateAccount": {
+      "reason": "账号、云存档或公共银河网络入口，不属于单机范围"
+    },
+    "commands:GalaxyWorkspace.onDiagnostics": {
+      "reason": "账号、云存档或公共银河网络入口，不属于单机范围"
+    },
+    "commands:GalaxyWorkspace.onRestoreCloudSave": {
+      "reason": "账号、云存档或公共银河网络入口，不属于单机范围"
+    },
+    "commands:GalaxyWorkspace.onStage": {
+      "reason": "账号、云存档或公共银河网络入口，不属于单机范围"
+    },
+    "commands:GalaxyWorkspace.onSwitchAccount": {
+      "reason": "账号、云存档或公共银河网络入口，不属于单机范围"
+    },
+    "commands:GalaxyWorkspace.onUpdateCloudBinding": {
+      "reason": "账号、云存档或公共银河网络入口，不属于单机范围"
+    },
+    "commands:GalaxyWorkspace.onUpdateProfile": {
+      "reason": "账号、云存档或公共银河网络入口，不属于单机范围"
+    }
+  },
+  "scope": {
+    "commands:BlueprintWorkspace.onMobileOpenDetail": {
+      "reason": "用户明确只做电脑中文版本",
+      "policy": "desktop_chinese_only"
+    },
+    "commands:GamePanels.onMobileUiSwitch": {
+      "reason": "用户明确只做电脑中文版本",
+      "policy": "desktop_chinese_only"
+    },
+    "commands:OrbitalStationWorkspace.onMobileBack": {
+      "reason": "用户明确只做电脑中文版本",
+      "policy": "desktop_chinese_only"
+    },
+    "commands:OrbitalStationWorkspace.onOpenMobileSubview": {
+      "reason": "用户明确只做电脑中文版本",
+      "policy": "desktop_chinese_only"
+    },
+    "commands:RecipeWorkspace.onMobileOpenDetail": {
+      "reason": "用户明确只做电脑中文版本",
+      "policy": "desktop_chinese_only"
+    },
+    "commands:RecipeWorkspace.onMobileReplaceDetail": {
+      "reason": "用户明确只做电脑中文版本",
+      "policy": "desktop_chinese_only"
+    },
+    "commands:StarMapWorkspace.onMobileOpenDetail": {
+      "reason": "用户明确只做电脑中文版本",
+      "policy": "desktop_chinese_only"
+    },
+    "commands:TechnologyWorkspace.onMobileOpenDetail": {
+      "reason": "用户明确只做电脑中文版本",
+      "policy": "desktop_chinese_only"
+    }
+  }
+}

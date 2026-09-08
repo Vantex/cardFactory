@@ -819,44 +819,41 @@ git commit -m "perf: add deterministic large factory budgets"
 
 **完成记录（2026-09-08）：** 已交付三档固定工厂、状态等价/存档往返门禁、设置页监测开关和双格式报告；优化传送带排序查询、空间命中、视口裁剪和 LOD 批绘。本机报告与限制见 [任务 18 验收](TASK18_ACCEPTANCE.md)。十四场景门禁和独立 OpenGL 基准通过；大型工厂仍有固定步超预算，未承诺 60 FPS。
 
-### 任务 19：内容覆盖审计、可选本地空间站与单机发布门
+### 任务 19：冻结 DSPONLINE 单机对齐基线
 
 **文件：**
 
 - 创建：`docs/CONTENT_PARITY.md`
-- 创建：`docs/testing/single-player-release-checklist.md`
-- 创建（可选）：`scripts/game/LocalSpaceStationSystem.gd`
-- 创建（可选）：`scenes/ui/LocalSpaceStationWorkspace.gd`
-- 修改：`README.md`
-- 修改：`docs/PROJECT_STATUS.md`
-- 修改：本计划复选框
+- 创建：`tests/fixtures/parity/dsponline_single_player_manifest.json`
+- 创建：`tools/check_dsponline_parity.ps1`
+- 创建：`scripts/test/TestDSPOnlineParity.gd`
+- 创建：`scenes/test/TestDSPOnlineParity.tscn`
+- 修改：`tools/run_tests.ps1`
 
-- [ ] **步骤 1：完成内容覆盖审计**
+- [x] **步骤 1：从 DSPONLINE 当前代码冻结单机目录**
 
-逐项记录 DSPONLINE 单机系统是否在 CardFactory 中“已交付/替代实现/明确不采用”。物品、配方、建筑和科技记录功能角色映射，不要求复制名称或素材。
+记录全部物品、配方、建筑、科技、战役任务、成就、难度、研究矩阵、传送带等级、单机工作区和可执行命令。冻结提交 472bf62 的实际数量为 78 个物品、80 条配方、39 类建筑、69 项有效科技（另有 7 项弃用保留定义）、32 个战役任务和 13 项成就；源版本及文件哈希记录在 fixture 中。
 
-- [ ] **步骤 2：决定本地空间站扩展**
+- [x] **步骤 2：建立逐项功能矩阵**
 
-核心终局稳定后再决定是否加入每档唯一空间站、本地合同和装饰。公共主页、收藏、玩家信号和服务器同步继续排除。
+`docs/CONTENT_PARITY.md` 对每个条目记录 DSPONLINE 稳定 ID、名称、输入输出、数值、前置、解锁、运行规则、UI 入口、CardFactory 对应 ID、自动测试和人工验收编号。状态只能是“未实现/实现中/已验证/在线排除”，不得使用“类似实现”代替验证。
 
-- [ ] **步骤 3：执行完整人工旅程**
+- [x] **步骤 3：建立自动差距门**
 
-按发布检查单完成：新游戏、基础工厂、保存加载、蓝图、科技、多行星、星际物流、戴森、离线、终局、设置、窄屏和损坏存档恢复。
+`check_dsponline_parity.ps1` 校验冻结 manifest 的条目在 CardFactory 数据目录中均有显式映射，且不存在未解释缺失；`TestDSPOnlineParity` 读取同一 manifest，拒绝无逐项规则验收规格的内容条目。登记门允许有明确承接任务的缺口；发布模式必须有实际行为验证，不允许以 pending 规格冒充已通过。在线排除项使用固定白名单并写明原因。
 
-- [ ] **步骤 4：验证本地导出**
+- [x] **步骤 4：把对齐门加入统一 runner**
 
-验证 Windows 单机包；如 Android 导出模板和签名条件具备，再验证 Android 本地包。导出失败不能影响源码门禁，但必须记录真实状态。
+在 `tools/run_tests.ps1` 中加入唯一成功标记；缺少冻结 fixture、映射、规则测试或出现未登记排除项时全量门失败。
 
-- [ ] **步骤 5：最终审查**
-
-使用 `requesting-code-review` 检查状态守恒、存档兼容、输入穿透、错误反馈、性能差分、许可边界和文档真实性。修复所有高置信度问题后重跑全程质量门。
-
-- [ ] **步骤 6：更新权威文档并提交**
+- [x] **步骤 5：提交**
 
 ```powershell
-git add README.md docs/PROJECT_STATUS.md docs/CONTENT_PARITY.md docs/testing/single-player-release-checklist.md docs/current/SINGLE_PLAYER_ROADMAP.md
-git commit -m "docs: complete single player parity roadmap"
+git add docs/CONTENT_PARITY.md tests/fixtures/parity tools/check_dsponline_parity.ps1 scripts/test/TestDSPOnlineParity.gd scenes/test/TestDSPOnlineParity.tscn tools/run_tests.ps1
+git commit -m "test: freeze DSPONLINE single player parity baseline"
 ```
+
+**完成记录（2026-09-08）：** 已冻结源目录与桌面操作契约，生成逐项矩阵、固定排除与规则规格，接入十五场景门禁；登记门通过，完整发布模式按预期拒绝待实现项。详见 [任务 19 验收](TASK19_ACCEPTANCE.md)。本轮未开始任务 20。
 
 ---
 

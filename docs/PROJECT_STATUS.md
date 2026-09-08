@@ -4,7 +4,7 @@
 
 接手前先读 [当前工作交接](current/HANDOFF.md)。任务 12 第二轮代码已合并，自动门禁通过；第二轮手动验收及独立复审的实际边界见交接记录。
 
-## Stage 6 任务 18 已交付
+## Stage 7 任务 19 登记基线已交付
 
 Stage 0 的可信门禁、版本化权威状态和可靠本地存档入口已经完成；Stage 1 已交付固定步长、真实电力、守恒库存、基础手工制造和从原矿到基础研究矩阵的完整科学链；Stage 2 已交付高级画布/线路编辑、蓝图与实时小地图。Stage 3 的任务 9 已交付正式教程、战役骨架和本地成就，任务 10 已交付数据驱动科技推进，任务 11 已交付固定采样统计、稳定生产诊断、生产资料库和正式分析工作区。
 
@@ -48,7 +48,7 @@ project.godot
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1
 ```
 
-它先自动执行一次无窗口编辑器导入，再顺序运行十四个场景：`TestBaseline`、`TestFactoryWorkspace`、`TestStatePersistence`、`TestSimulationCore`、`TestInventoryConstruction`、`TestAdvancedCanvas`、`TestBlueprints`、`TestProgression`、`TestStatisticsCodex`、`TestGalaxyLogistics`、`TestDysonEndgame`、`TestOfflineSettlement` 、`TestProductShell` 与 `TestPerformanceBudgets`，要求各自唯一的成功标记。门禁会在 Godot 非零退出、`SCRIPT ERROR`、`Parse Error`、失败标记、成功标记缺失/重复、ObjectDB 泄漏或资源仍被占用时失败。全新检出不再需要人工预热全局脚本类缓存。
+它先自动执行一次无窗口编辑器导入，再顺序运行十五个场景：`TestBaseline`、`TestFactoryWorkspace`、`TestStatePersistence`、`TestSimulationCore`、`TestInventoryConstruction`、`TestAdvancedCanvas`、`TestBlueprints`、`TestProgression`、`TestStatisticsCodex`、`TestGalaxyLogistics`、`TestDysonEndgame`、`TestOfflineSettlement` 、`TestProductShell` 、`TestPerformanceBudgets` 与 `TestDSPOnlineParity`，要求各自唯一的成功标记。门禁会在 Godot 非零退出、`SCRIPT ERROR`、`Parse Error`、失败标记、成功标记缺失/重复、ObjectDB 泄漏或资源仍被占用时失败。全新检出不再需要人工预热全局脚本类缓存。
 
 工作区测试覆盖：
 
@@ -114,7 +114,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1
 
 ## 下一阶段建议
 
-用户已批准继续对齐 DSPONLINE 的完整单机玩法，并明确排除账号、云存档、排行榜、在线社交和服务器运维。版本化状态、可靠本地存档、固定步长、真实电力、守恒施工库存、第一条科学链、多选批量编辑、线路配置、蓝图、实时小地图、正式教程/战役/成就、数据驱动科技推进、统计诊断资料库、多行星工厂和正式星图已经完成；任务 13～16 的物流、戴森工程、单机胜利和离线结算也已交付；下一项按[单机实施路线图](current/SINGLE_PLAYER_ROADMAP.md)推进任务 19 的 DSPONLINE 单机对齐基线。
+用户已批准继续对齐 DSPONLINE 的完整单机玩法，并明确排除账号、云存档、排行榜、在线社交和服务器运维。版本化状态、可靠本地存档、固定步长、真实电力、守恒施工库存、第一条科学链、多选批量编辑、线路配置、蓝图、实时小地图、正式教程/战役/成就、数据驱动科技推进、统计诊断资料库、多行星工厂和正式星图已经完成；任务 13～16 的物流、戴森工程、单机胜利和离线结算也已交付；下一项按[单机实施路线图](current/SINGLE_PLAYER_ROADMAP.md)推进任务 20 的本地存档控制与恢复体验。
 
 `DSPONLINE` 只在其非商业许可范围内作为行为和架构参考；不复制其源码或素材，也不把账号、云档、多核 Worker、排行榜等高级能力作为 CardFactory 当前开发的前置条件。
 
@@ -144,7 +144,7 @@ schema v9 持久化阶段、来源、已投入材料、整数进度和领奖标�
 
 每槽离线事务文件记录起点、目标、摘要及唯一完成标记；结果先持久化，再通过临时档验证与备份轮换提交主档。中断后从原始起点重放或复用已准备结果，重复继续/提交不会再次应用同一时段。回拨不会降低已处理时间边界，超过上限或主动放弃的时间不会在下次继续时补领；旧裸档无可信时间戳时仅建立时间边界。
 
-正式离线工作区显示进度，可放弃尚未进入提交阶段的收益；完成后显示真实离线、实际重放、跳过时间、产出、科技/目标变化与阻塞，写入失败可重试。报告中的产出来自模拟期间的真实统计，不直接添加估算收益。存档和事务文件用完整浮点精度写入，避免长时间累计数值的 JSON 截断导致摘要失败；GameState 保持 schema v9。详见 [任务 16 验收](current/TASK16_ACCEPTANCE.md)。下一项是任务 19 的 DSPONLINE 单机对齐基线。
+正式离线工作区显示进度，可放弃尚未进入提交阶段的收益；完成后显示真实离线、实际重放、跳过时间、产出、科技/目标变化与阻塞，写入失败可重试。报告中的产出来自模拟期间的真实统计，不直接添加估算收益。存档和事务文件用完整浮点精度写入，避免长时间累计数值的 JSON 截断导致摘要失败；GameState 保持 schema v9。详见 [任务 16 验收](current/TASK16_ACCEPTANCE.md)。下一项是任务 20 的本地存档控制与恢复体验。
 
 ## 任务 17：本机设置与桌面操作
 
@@ -152,7 +152,7 @@ schema v9 持久化阶段、来源、已投入材料、整数进度和领奖标�
 
 桌面窗口最小 1000×600，保留顶栏、左右侧栏和建造坞；大字号采用滚动布局，焦点边框随亮/暗主题保持可见。Tab / 方向键导航界面，Enter / 手柄 A 确认，Escape / B 返回。F6 / Y 在界面和画布之间切换；画布方向键 / 左摇杆移动光标，Enter / A 选择或放置，M / 左摇杆按下移动，C / 右摇杆按下连线，Delete / X 请求删除，减号/等号或 LB/RB 缩放，右摇杆平移。鼠标和原有建造快捷键继续可用，删除不会绕过确认。
 
-验收范围见 [任务 17 验收](current/TASK17_ACCEPTANCE.md)。测试入口为每个进程指定独立的 `--device-settings` 文件，避免读写玩家本机偏好。下一项为任务 19 的 DSPONLINE 单机对齐基线。
+验收范围见 [任务 17 验收](current/TASK17_ACCEPTANCE.md)。测试入口为每个进程指定独立的 `--device-settings` 文件，避免读写玩家本机偏好。下一项为任务 20 的本地存档控制与恢复体验。
 
 分辨率适配使用当前 Viewport 的可用尺寸，窗口缩放时自动重算，兼容 Godot 已有的窗口拉伸与高 DPI 坐标，不叠加读取主屏幕物理像素而重复缩放。以 1152×648 为参考，按宽高可容纳比例计算自动 UI 比例（85%～400%），再叠加用户字号；侧栏宽度有窗口占比上限，为画布保留空间。顶栏、建造坞、小地图、滚动条和画布命中区域同步更新，自动调整不写回字号偏好，也不改变 GameState。设置页显示当前可用尺寸和自动比例。
 
@@ -160,4 +160,8 @@ schema v9 持久化阶段、来源、已投入材料、整数进度和领奖标�
 
 设置页可开始性能监测，返回工厂操作后停止并导出 JSON / Markdown 报告。默认关闭，每项最多保留最近 3600 个样本；记录固定步、十二个模拟阶段、帧间隔、绘制提交、内存、模拟积压和保存耗时。报告显示实际保存路径，不进入游戏存档。
 
-三档确定性工厂与真实存档读回纳入门禁；图形基准与无窗口测试分开，支持本机趋势比较。已优化传送带排序重复查询、视口裁剪、空间命中和缩小视图批绘，并修复线路整数配置引发的存档摘要错误。实测数据及边界见 [任务 18 验收](current/TASK18_ACCEPTANCE.md)。下一项为任务 19，本轮未开始。
+三档确定性工厂与真实存档读回纳入门禁；图形基准与无窗口测试分开，支持本机趋势比较。已优化传送带排序重复查询、视口裁剪、空间命中和缩小视图批绘，并修复线路整数配置引发的存档摘要错误。实测数据及边界见 [任务 18 验收](current/TASK18_ACCEPTANCE.md)。下一项为任务 20，本地存档控制与恢复体验。
+
+## 任务 19：单机对齐登记
+
+已冻结 DSPONLINE 1.0.46 的实际目录和桌面操作契约，建立 [逐项差距矩阵](CONTENT_PARITY.md)。实际源数据为 78 个物品、80 条配方、39 类建筑、69 项有效科技（另有 7 项弃用定义）、32 个任务和 13 项成就。登记门要求全部条目有映射或缺口、规则规格和任务归属；这不表示原版玩法已经逐项通过。最终发布模式仍按预期拒绝未完成项。用户指定的电脑中文范围继续生效。
