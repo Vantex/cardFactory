@@ -353,6 +353,15 @@ func _digest_payload(payload: Dictionary) -> String:
 
 func _normalize_stored_digest_types(payload: Dictionary) -> Dictionary:
 	var normalized := payload.duplicate(true)
+	# JSON numbers decode as floats. Use that representation for belt integers;
+	# existing successfully saved float-valued records retain their digest.
+	var connections: Variant = normalized.get("connections")
+	if connections is Dictionary:
+		for connection in connections.values():
+			if connection is Dictionary:
+				for field in ["priority", "parallel_count", "stack_size"]:
+					if _is_integral_number(connection.get(field)):
+						connection[field] = float(connection[field])
 	LogisticsStateValidator.normalize_integer_fields(normalized)
 	DysonStateValidator.normalize_integer_fields(normalized)
 	EndgameStateValidator.normalize_integer_fields(normalized)

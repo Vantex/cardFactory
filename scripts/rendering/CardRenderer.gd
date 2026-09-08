@@ -15,6 +15,9 @@ const STATUS_COLORS := {
 	"blocked": Color("ff6b70"),
 }
 
+var optimize_rendering := true
+var profile_prefix := ""
+var _styles: Dictionary = {}
 var _game_state: GameState
 var _input_handler: Node
 
@@ -36,6 +39,13 @@ func is_building_selected(building_id: String) -> bool:
 		return input_handler.call("get_selected_entity_ids").has(building_id)
 	return input_handler.get("selected_building_id") == building_id
 
+func needs_full_detail(building_id: String) -> bool:
+	if is_building_selected(building_id): return true
+	var handler := _get_input_handler()
+	if handler == null: return false
+	if handler.get("connecting_source_id") == building_id or handler.get("selected_building_id") == building_id: return true
+	var state := _get_game_state()
+	return state != null and state.buildings.has(building_id) and Rect2(state.buildings[building_id].get("position", Vector2.ZERO), CARD_SIZE).has_point(get_global_mouse_position())
 func get_visible_building_ids() -> Array[String]:
 	var result: Array[String] = []
 	var game_state := _get_game_state()
@@ -49,6 +59,19 @@ func get_visible_building_ids() -> Array[String]:
 	result.sort()
 	return result
 
+func get_draw_building_ids() -> Array[String]:
+	if not optimize_rendering: return get_visible_building_ids()
+	var state := _get_game_state()
+	var result: Array[String] = []
+	if state == null: return result
+	var view := world_view_rect().grow(8.0)
+	var query := Rect2(view.position - CARD_SIZE, view.size + CARD_SIZE)
+	for id in state.get_spatial_index().get_entities_in_rect(query):
+		var building: Dictionary = state.buildings[id]
+		if String(building.get("planet_id", "")) == state.active_planet_id and view.intersects(Rect2(building.get("position", Vector2.ZERO), CARD_SIZE)):
+			result.append(String(id))
+	result.sort()
+	return result
 static func get_input_port_rect(card_position: Vector2) -> Rect2:
 	return Rect2(card_position + Vector2(0, (CARD_SIZE.y - PORT_SIZE.y) * 0.5), PORT_SIZE)
 
@@ -56,12 +79,17 @@ static func get_output_port_rect(card_position: Vector2) -> Rect2:
 	return Rect2(card_position + Vector2(CARD_SIZE.x - PORT_SIZE.x, (CARD_SIZE.y - PORT_SIZE.y) * 0.5), PORT_SIZE + Vector2(1, 0))
 
 func _draw() -> void:
+	var started := GameManager.performance_monitor.begin()
 	_draw_grid()
 	var game_state := _get_game_state()
 	if game_state == null:
 		return
-	for building_id in get_visible_building_ids():
+	for building_id in get_draw_building_ids():
 		_draw_building(game_state.buildings[building_id])
+	GameManager.performance_monitor.finish(profile_prefix + "card_draw_submit_ms", started)
+
+func world_view_rect() -> Rect2:
+	return get_viewport().get_canvas_transform().affine_inverse() * get_viewport().get_visible_rect()
 
 func _draw_grid() -> void:
 	var viewport := get_viewport()
@@ -71,12 +99,13 @@ func _draw_grid() -> void:
 	var viewport_size := viewport.get_visible_rect().size
 	var world_top_left := inverse_canvas * Vector2.ZERO
 	var world_bottom_right := inverse_canvas * viewport_size
-	var min_x: float = floorf(minf(world_top_left.x, world_bottom_right.x) / GRID_SIZE) * GRID_SIZE
-	var max_x: float = ceilf(maxf(world_top_left.x, world_bottom_right.x) / GRID_SIZE) * GRID_SIZE
-	var min_y: float = floorf(minf(world_top_left.y, world_bottom_right.y) / GRID_SIZE) * GRID_SIZE
-	var max_y: float = ceilf(maxf(world_top_left.y, world_bottom_right.y) / GRID_SIZE) * GRID_SIZE
-	for x in range(int(min_x), int(max_x) + 1, int(GRID_SIZE)):
-		for y in range(int(min_y), int(max_y) + 1, int(GRID_SIZE)):
+	var spacing := GRID_SIZE * (2.0 if optimize_rendering and viewport.get_canvas_transform().get_scale().x < 0.7 else 1.0)
+	var min_x: float = floorf(minf(world_top_left.x, world_bottom_right.x) / spacing) * spacing
+	var max_x: float = ceilf(maxf(world_top_left.x, world_bottom_right.x) / spacing) * spacing
+	var min_y: float = floorf(minf(world_top_left.y, world_bottom_right.y) / spacing) * spacing
+	var max_y: float = ceilf(maxf(world_top_left.y, world_bottom_right.y) / spacing) * spacing
+	for x in range(int(min_x), int(max_x) + 1, int(spacing)):
+		for y in range(int(min_y), int(max_y) + 1, int(spacing)):
 			draw_circle(Vector2(x, y), 1.0, Color(0.36, 0.52, 0.65, 0.28))
 
 func _draw_building(building: Dictionary) -> void:
@@ -87,6 +116,13 @@ func _draw_building(building: Dictionary) -> void:
 	draw_style_box(_make_card_style(CARD_COLOR_RUNNING if status == "running" else CARD_COLOR_BLOCKED if status == "blocked" else CARD_COLOR_IDLE), card_rect)
 	draw_rect(card_rect, CARD_BORDER, false, 1.5, true)
 
+	if optimize_rendering and get_viewport().get_canvas_transform().get_scale().x < 0.6 and not needs_full_detail(String(building.get("id", ""))):
+		var definition := DataManager.get_building(String(building.get("type", "")))
+		draw_string(ThemeDB.fallback_font, position + Vector2(14, 36), String(definition.get("name", building.get("type", ""))), HORIZONTAL_ALIGNMENT_LEFT, CARD_SIZE.x - 28, 22, Color("edf6ff"))
+		draw_circle(position + Vector2(CARD_SIZE.x - 17, 18), 5.0, status_color)
+		_draw_port(get_input_port_rect(position), Color("3a8fb7"), false)
+		_draw_port(get_output_port_rect(position), Color("d89b42"), true)
+		return
 	var font := ThemeDB.fallback_font
 	var building_type: String = building.get("type", "unknown")
 	var definition: Dictionary = DataManager.get_building(building_type)
@@ -131,12 +167,14 @@ func _draw_port(port_rect: Rect2, color: Color, is_output: bool) -> void:
 	draw_circle(center + Vector2(tip_offset, 0), 3.0, color)
 
 func _make_card_style(background_color: Color) -> StyleBoxFlat:
+	if optimize_rendering and _styles.has(background_color): return _styles[background_color]
 	var style := StyleBoxFlat.new()
 	style.bg_color = background_color
 	style.corner_radius_top_left = 8
 	style.corner_radius_top_right = 8
 	style.corner_radius_bottom_left = 8
 	style.corner_radius_bottom_right = 8
+	if optimize_rendering: _styles[background_color] = style
 	return style
 
 func _symbol_for_type(building_type: String) -> String:

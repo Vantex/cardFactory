@@ -40,3 +40,5 @@
 任务 16：[实现计划](current/TASK16_PLAN.md) · [验收边界](current/TASK16_ACCEPTANCE.md)。
 
 任务 17：[桌面实施计划](current/TASK17_PLAN.md) · [验收边界](current/TASK17_ACCEPTANCE.md)。
+
+任务 18 的性能监测、实测数据与验证边界见 [性能验收](current/TASK18_ACCEPTANCE.md)；夹具生成规则与趋势比较见 [性能夹具](../tests/fixtures/README.md)。

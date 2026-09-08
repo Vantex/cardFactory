@@ -485,8 +485,21 @@ func _delete_selected() -> void:
 	if request_delete_entities(building_ids):
 		EventBus.notice_requested.emit("请在检查器中确认删除 %d 个建筑" % building_ids.size(), "warning")
 
+func _hit_candidates(world_position: Vector2) -> Array:
+	var state := GameManager.get_game_state()
+	var ids := state.get_spatial_index().get_entities_in_rect(Rect2(world_position - CARD_SIZE - Vector2.ONE, CARD_SIZE + Vector2.ONE * 2))
+	# Preserve insertion-order hit precedence for overlapping cards.
+	var order := {}
+	var rank := 0
+	for id in state.buildings:
+		order[id] = rank
+		rank += 1
+	ids.sort_custom(func(a: String, b: String): return int(order[a]) < int(order[b]))
+	var result: Array = []
+	for id in ids: result.append(state.buildings[id])
+	return result
 func _get_building_at_position(world_position: Vector2) -> Dictionary:
-	for building in GameManager.get_game_state().buildings.values():
+	for building in _hit_candidates(world_position):
 		if not _is_active_entity(String(building.get("id", ""))):
 			continue
 		if Rect2(building.get("position", Vector2.ZERO), CARD_SIZE).has_point(world_position):
@@ -494,7 +507,7 @@ func _get_building_at_position(world_position: Vector2) -> Dictionary:
 	return {}
 
 func _get_input_port_at_position(world_position: Vector2) -> String:
-	for building in GameManager.get_game_state().buildings.values():
+	for building in _hit_candidates(world_position):
 		if not _is_active_entity(String(building.get("id", ""))):
 			continue
 		if _get_input_port_rect(building.get("position", Vector2.ZERO)).has_point(world_position):
@@ -502,7 +515,7 @@ func _get_input_port_at_position(world_position: Vector2) -> String:
 	return ""
 
 func _get_output_port_at_position(world_position: Vector2) -> String:
-	for building in GameManager.get_game_state().buildings.values():
+	for building in _hit_candidates(world_position):
 		if not _is_active_entity(String(building.get("id", ""))):
 			continue
 		if _get_output_port_rect(building.get("position", Vector2.ZERO)).has_point(world_position):

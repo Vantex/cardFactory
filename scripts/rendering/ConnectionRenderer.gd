@@ -4,6 +4,9 @@ const CardRenderer = preload("res://scripts/rendering/CardRenderer.gd")
 const CURVE_STEPS := 20
 const HIT_DISTANCE := 8.0
 
+var optimize_rendering := true
+var profile_prefix := ""
+var _line_batches: Dictionary = {}
 var _game_state: GameState
 var _input_handler: Node
 
@@ -58,12 +61,18 @@ func get_connection_at_position(world_position: Vector2) -> String:
 	return ""
 
 func _draw() -> void:
+	var started := GameManager.performance_monitor.begin()
+	_line_batches.clear()
 	var game_state := _get_game_state()
 	if game_state == null:
 		return
 	for connection_id in get_visible_connection_ids():
 		_draw_connection(game_state.connections[connection_id], game_state)
+	for batch in _line_batches.values():
+		draw_multiline(batch.points, batch.color, batch.width, true)
+	_line_batches.clear()
 	_draw_connection_draft(game_state)
+	GameManager.performance_monitor.finish(profile_prefix + "connection_draw_submit_ms", started)
 
 func _draw_connection(connection: Dictionary, game_state: GameState) -> void:
 	var source: Dictionary = game_state.get_building(connection.get("source_id", ""))
@@ -72,11 +81,27 @@ func _draw_connection(connection: Dictionary, game_state: GameState) -> void:
 		return
 	var start := CardRenderer.get_output_port_rect(source.get("position", Vector2.ZERO)).get_center()
 	var end := CardRenderer.get_input_port_rect(target.get("position", Vector2.ZERO)).get_center()
+	if optimize_rendering:
+		var control_point := _curve_control_for_connection(start, end, connection)
+		var bounds := Rect2(start, Vector2.ZERO).expand(end).expand(control_point).grow(128.0)
+		var view: Rect2 = get_viewport().get_canvas_transform().affine_inverse() * get_viewport().get_visible_rect()
+		if not view.intersects(bounds): return
 	var active := is_connection_active(connection)
 	var selected := is_connection_selected(String(connection.get("id", "")))
 	var color := Color("ffe585") if selected else Color("38e6c2") if active else Color("6e90ad")
 	var control := _curve_control_for_connection(start, end, connection)
-	draw_polyline(_curve_points_for_connection(start, end, connection), color, 4.0 if selected else 3.0 if active else 2.0, true)
+	var width := 4.0 if selected else 3.0 if active else 2.0
+	var points := _curve_points_for_connection(start, end, connection)
+	if _can_batch(connection, selected):
+		var key := color.to_html() + str(width)
+		if not _line_batches.has(key): _line_batches[key] = {"points": PackedVector2Array(), "color": color, "width": width}
+		var segments: PackedVector2Array = _line_batches[key].points
+		for index in range(points.size() - 1):
+			segments.append(points[index])
+			segments.append(points[index + 1])
+		_line_batches[key].points = segments
+		return
+	draw_polyline(points, color, width, true)
 	_draw_arrow(_quadratic_point(start, control, end, 0.92), _quadratic_tangent(start, control, end, 0.92), color)
 	var config := game_state.get_belt_configuration(String(connection.get("id", "")))
 	var label := String(connection.get("item_id", ""))
@@ -86,6 +111,15 @@ func _draw_connection(connection: Dictionary, game_state: GameState) -> void:
 	if active:
 		_draw_flow_particles(start, end)
 
+func _can_batch(connection: Dictionary, selected: bool) -> bool:
+	if not optimize_rendering or selected or get_viewport().get_canvas_transform().get_scale().x >= 0.6: return false
+	var handler := _get_input_handler()
+	if handler == null: return true
+	if handler.has_method("get_mode_name") and handler.call("get_mode_name") == "connecting": return false
+	if handler.has_method("get_selected_entity_ids"):
+		var ids: Array = handler.call("get_selected_entity_ids")
+		if ids.has(connection.get("source_id", "")) or ids.has(connection.get("target_id", "")): return false
+	return true
 func _draw_connection_draft(game_state: GameState) -> void:
 	var input_handler := get_node_or_null("../InputHandler")
 	if input_handler == null or not input_handler.has_method("get_mode_name") or input_handler.call("get_mode_name") != "connecting":

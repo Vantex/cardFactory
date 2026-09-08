@@ -790,32 +790,34 @@ git commit -m "feat: add accessible local game settings"
 - 创建：`tests/fixtures/README.md`
 - 修改：`tools/run_tests.ps1`
 
-- [ ] **步骤 1：建立合成存档夹具**
+- [x] **步骤 1：建立合成存档夹具**
 
 至少覆盖小型、中型和大型工厂；夹具不含玩家数据，生成规则固定，记录实体、线路和物流站规模。
 
-- [ ] **步骤 2：建立状态等价基线**
+- [x] **步骤 2：建立状态等价基线**
 
 任何空间索引、批处理、LOD 或休眠优化都必须与朴素路径比较持久摘要；不等价即失败。
 
-- [ ] **步骤 3：优化画布**
+- [x] **步骤 3：优化画布**
 
 引入视口裁剪、LOD、线路批绘和命中空间索引；选中、拖动、连接源/目标必须强制保持交互精度。
 
-- [ ] **步骤 4：优化模拟**
+- [x] **步骤 4：优化模拟**
 
 只缓存可重建索引和稳定查询；拓扑、供电、配方、库存或容量变化时使相关缓存失效。
 
-- [ ] **步骤 5：定义预算**
+- [x] **步骤 5：定义预算**
 
-把启动时间、固定 tick、画布更新、存档大小与保存时间记录为本机基线。先建立趋势门，不伪造跨机器绝对 FPS 承诺。
+把引擎至测试场景就绪时间、固定 tick、画布更新、存档大小与保存/加载时间记录为本机基线。提供默认关闭的运行时监测和 JSON / Markdown 报告，采用有界采样；趋势工具拒绝不匹配环境，不伪造跨机器绝对 FPS 承诺。
 
-- [ ] **步骤 6：提交**
+- [x] **步骤 6：提交**
 
 ```powershell
 git add scripts/game/PerformanceSystem.gd scripts/utils/SpatialIndex.gd scripts/rendering/CardRenderer.gd scripts/rendering/ConnectionRenderer.gd scripts/test/TestPerformanceBudgets.gd scenes/test/TestPerformanceBudgets.tscn tests/fixtures/README.md tools/run_tests.ps1
 git commit -m "perf: add deterministic large factory budgets"
 ```
+
+**完成记录（2026-09-08）：** 已交付三档固定工厂、状态等价/存档往返门禁、设置页监测开关和双格式报告；优化传送带排序查询、空间命中、视口裁剪和 LOD 批绘。本机报告与限制见 [任务 18 验收](TASK18_ACCEPTANCE.md)。十四场景门禁和独立 OpenGL 基准通过；大型工厂仍有固定步超预算，未承诺 60 FPS。
 
 ### 任务 19：内容覆盖审计、可选本地空间站与单机发布门
 

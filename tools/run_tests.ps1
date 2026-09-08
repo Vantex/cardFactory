@@ -7,6 +7,13 @@ $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $testCases = @(
     @{
+        Name = "Performance budgets"
+        ScenePath = Join-Path $repoRoot "scenes\test\TestPerformanceBudgets.tscn"
+        ResourcePath = "res://scenes/test/TestPerformanceBudgets.tscn"
+        SuccessMarker = "PERFORMANCE BUDGET TESTS PASSED"
+        FailureMarker = "PERFORMANCE BUDGET TESTS FAILED"
+    },
+    @{
         Name = "Baseline"
         ScenePath = Join-Path $repoRoot "scenes\test\TestBaseline.tscn"
         ResourcePath = "res://scenes/test/TestBaseline.tscn"

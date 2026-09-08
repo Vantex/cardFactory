@@ -346,9 +346,7 @@ func get_building(building_id: String) -> Dictionary:
     return buildings.get(building_id, {})
 
 func get_spatial_index() -> SpatialIndex:
-    _spatial_index.clear()
-    for building_id in buildings:
-        _spatial_index.add_entity(String(building_id), buildings[building_id].get("position", Vector2.ZERO))
+    _spatial_index.synchronize(buildings)
     return _spatial_index
 
 func get_connections_for_building(building_id: String) -> Array:

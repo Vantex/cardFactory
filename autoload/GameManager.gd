@@ -12,6 +12,7 @@ const DEFAULT_AUTOSAVE_INTERVAL := 120.0
 
 var game_state: GameState
 var simulation_engine: SimulationEngine
+var performance_monitor := PerformanceSystem.new()
 var _save_system: SaveSystem
 var _current_slot := -1
 var _session_active := false
@@ -32,6 +33,8 @@ func replace_game_state(new_state: GameState) -> void:
 	PlanetSystem.new(new_state).initialize_colonized_resource_sites()
 	game_state = new_state
 	simulation_engine = SimulationEngine.new(game_state)
+	performance_monitor.game_state = game_state
+	simulation_engine.performance_monitor = performance_monitor
 	game_state_replaced.emit(game_state)
 
 func get_game_state() -> GameState:
@@ -122,7 +125,9 @@ func save_current_game(reason: String = "manual") -> Dictionary:
 		return _failure("save_in_progress", "已有存档写入正在进行")
 	_save_in_progress = true
 	save_requested.emit(reason)
+	var started := performance_monitor.begin()
 	var result := _save_system.save_slot(_current_slot, game_state)
+	performance_monitor.finish("save_ms", started)
 	_save_in_progress = false
 	if result.get("ok", false):
 		_autosave_elapsed = 0.0
@@ -176,7 +181,14 @@ func _process(delta: float) -> void:
 		return
 	if not _session_active:
 		return
+	if performance_monitor.enabled:
+		performance_monitor.record("frame_interval_ms", delta * 1000.0)
+		performance_monitor.record("static_memory_bytes", Performance.get_monitor(Performance.MEMORY_STATIC))
+		performance_monitor.record("render_draw_calls", Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME))
+		performance_monitor.record("simulation_backlog_ms", simulation_engine.get_pending_simulation_time() * 1000.0)
+	var started := performance_monitor.begin()
 	simulation_engine.update(delta)
+	performance_monitor.finish("simulation_update_ms", started)
 	advance_autosave(delta)
 
 func _notification(what: int) -> void:

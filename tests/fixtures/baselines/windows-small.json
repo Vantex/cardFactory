@@ -1,0 +1,249 @@
+{
+	"buildings": 32,
+	"connections": 8,
+	"context": {
+		"cpu": "13th Gen Intel(R) Core(TM) i5-13500H",
+		"display": "Windows",
+		"fixture": "small",
+		"fixture_version": 1,
+		"godot": "4.7.2-stable (official)",
+		"gpu": "NVIDIA GeForce RTX 3050 4GB Laptop GPU",
+		"measurement": "synthetic local trend; no universal time threshold",
+		"os": "Windows",
+		"renderer": "gl_compatibility",
+		"stations": 2,
+		"ticks": 30,
+		"viewport": "1152x648"
+	},
+	"enabled": false,
+	"metrics": {
+		"engine_to_test_scene_ready_ms": {
+			"max": 2971.269,
+			"mean": 2971.269,
+			"p50": 2971.269,
+			"p95": 2971.269,
+			"samples": 1,
+			"total_samples": 1
+		},
+		"file_write_ms": {
+			"max": 0.24,
+			"mean": 0.24,
+			"p50": 0.24,
+			"p95": 0.24,
+			"samples": 1,
+			"total_samples": 1
+		},
+		"fixed_tick_ms": {
+			"max": 1.252,
+			"mean": 1.0439,
+			"p50": 1.03,
+			"p95": 1.123,
+			"samples": 30,
+			"total_samples": 30
+		},
+		"fixture_create_ms": {
+			"max": 0.209,
+			"mean": 0.209,
+			"p50": 0.209,
+			"p95": 0.209,
+			"samples": 1,
+			"total_samples": 1
+		},
+		"load_verified_ms": {
+			"max": 5.916,
+			"mean": 5.916,
+			"p50": 5.916,
+			"p95": 5.916,
+			"samples": 1,
+			"total_samples": 1
+		},
+		"optimized_card_draw_submit_ms": {
+			"max": 20.227,
+			"mean": 14.86759375,
+			"p50": 14.679,
+			"p95": 15.431,
+			"samples": 32,
+			"total_samples": 32
+		},
+		"optimized_connection_draw_submit_ms": {
+			"max": 0.113,
+			"mean": 0.06440625,
+			"p50": 0.063,
+			"p95": 0.067,
+			"samples": 32,
+			"total_samples": 32
+		},
+		"optimized_frame_ms": {
+			"max": 30.76,
+			"mean": 28.2654333333333,
+			"p50": 28.198,
+			"p95": 29.48,
+			"samples": 30,
+			"total_samples": 30
+		},
+		"optimized_update_ms": {
+			"max": 1.259,
+			"mean": 1.0478,
+			"p50": 1.033,
+			"p95": 1.127,
+			"samples": 30,
+			"total_samples": 30
+		},
+		"phase_belt_ms": {
+			"max": 0.146,
+			"mean": 0.133933333333333,
+			"p50": 0.133,
+			"p95": 0.142,
+			"samples": 30,
+			"total_samples": 30
+		},
+		"phase_dyson_decay_ms": {
+			"max": 0.003,
+			"mean": 0.0015,
+			"p50": 0.001,
+			"p95": 0.002,
+			"samples": 30,
+			"total_samples": 30
+		},
+		"phase_dyson_launch_ms": {
+			"max": 0.014,
+			"mean": 0.0114333333333333,
+			"p50": 0.011,
+			"p95": 0.012,
+			"samples": 30,
+			"total_samples": 30
+		},
+		"phase_endgame_ms": {
+			"max": 0.002,
+			"mean": 0.00126666666666667,
+			"p50": 0.001,
+			"p95": 0.002,
+			"samples": 30,
+			"total_samples": 30
+		},
+		"phase_galaxy_ms": {
+			"max": 0.003,
+			"mean": 0.00156666666666667,
+			"p50": 0.002,
+			"p95": 0.002,
+			"samples": 30,
+			"total_samples": 30
+		},
+		"phase_handcraft_ms": {
+			"max": 0.002,
+			"mean": 0.0016,
+			"p50": 0.002,
+			"p95": 0.002,
+			"samples": 30,
+			"total_samples": 30
+		},
+		"phase_logistics_ms": {
+			"max": 0.075,
+			"mean": 0.0402666666666667,
+			"p50": 0.038,
+			"p95": 0.047,
+			"samples": 30,
+			"total_samples": 30
+		},
+		"phase_power_ms": {
+			"max": 0.755,
+			"mean": 0.687966666666667,
+			"p50": 0.678,
+			"p95": 0.746,
+			"samples": 30,
+			"total_samples": 30
+		},
+		"phase_production_ms": {
+			"max": 0.083,
+			"mean": 0.0757666666666667,
+			"p50": 0.075,
+			"p95": 0.082,
+			"samples": 30,
+			"total_samples": 30
+		},
+		"phase_progression_ms": {
+			"max": 0.142,
+			"mean": 0.0624333333333333,
+			"p50": 0.059,
+			"p95": 0.068,
+			"samples": 30,
+			"total_samples": 30
+		},
+		"phase_research_ms": {
+			"max": 0.013,
+			"mean": 0.0112,
+			"p50": 0.011,
+			"p95": 0.012,
+			"samples": 30,
+			"total_samples": 30
+		},
+		"phase_statistics_ms": {
+			"max": 0.002,
+			"mean": 0.000833333333333334,
+			"p50": 0.001,
+			"p95": 0.001,
+			"samples": 30,
+			"total_samples": 30
+		},
+		"reference_card_draw_submit_ms": {
+			"max": 52.58,
+			"mean": 19.0824375,
+			"p50": 17.949,
+			"p95": 19.206,
+			"samples": 32,
+			"total_samples": 32
+		},
+		"reference_connection_draw_submit_ms": {
+			"max": 0.833,
+			"mean": 0.35228125,
+			"p50": 0.332,
+			"p95": 0.487,
+			"samples": 32,
+			"total_samples": 32
+		},
+		"reference_frame_ms": {
+			"max": 36.966,
+			"mean": 34.3063333333333,
+			"p50": 33.908,
+			"p95": 36.853,
+			"samples": 30,
+			"total_samples": 30
+		},
+		"reference_update_ms": {
+			"max": 1.401,
+			"mean": 1.12846666666667,
+			"p50": 1.115,
+			"p95": 1.184,
+			"samples": 30,
+			"total_samples": 30
+		},
+		"save_bytes": {
+			"max": 11789.0,
+			"mean": 11789.0,
+			"p50": 11789.0,
+			"p95": 11789.0,
+			"samples": 1,
+			"total_samples": 1
+		},
+		"save_verified_ms": {
+			"max": 13.177,
+			"mean": 13.177,
+			"p50": 13.177,
+			"p95": 13.177,
+			"samples": 1,
+			"total_samples": 1
+		},
+		"serialize_ms": {
+			"max": 2.836,
+			"mean": 2.836,
+			"p50": 2.836,
+			"p95": 2.836,
+			"samples": 1,
+			"total_samples": 1
+		}
+	},
+	"notes": "Times are wall-clock durations. draw_submit_ms measures CPU command submission, not GPU time. frame_ms and frame_interval_ms include rendering, scheduling and vsync waits. Headless has no graphical FPS evidence. Monitoring never changes fixed ticks.",
+	"sample_limit_per_metric": 3600,
+	"version": 1,
+	"window": "latest samples per metric"
+}

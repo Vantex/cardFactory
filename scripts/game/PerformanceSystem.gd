@@ -1,78 +1,80 @@
-# scripts/game/PerformanceSystem.gd
 class_name PerformanceSystem
 extends RefCounted
 
+const MAX_SAMPLES := 3600
+const MAX_METRICS := 48
 var game_state: GameState
+var enabled := false
+var _samples: Dictionary = {}
+var _counts: Dictionary = {}
+var _cursor: Dictionary = {}
+var _context: Dictionary = {}
 
-# 性能配置
-var config: Dictionary = {
-    "max_buildings_per_frame": 100,
-    "max_connections_per_frame": 100,
-    "use_spatial_index": true,
-    "use_batch_rendering": true,
-    "adaptive_quality": true
-}
+func _init(state: GameState = null) -> void:
+	game_state = state
 
-# 性能统计
-var stats: Dictionary = {
-    "fps": 0.0,
-    "frame_time": 0.0,
-    "building_count": 0,
-    "connection_count": 0,
-    "update_time": 0.0,
-    "render_time": 0.0
-}
+func start(context: Dictionary = {}) -> void:
+	_samples.clear()
+	_counts.clear()
+	_cursor.clear()
+	_context = context.duplicate(true)
+	_context.merge({"gpu": RenderingServer.get_video_adapter_name(), "os": OS.get_name(), "cpu": OS.get_processor_name(), "godot": Engine.get_version_info().string, "display": DisplayServer.get_name(), "renderer": RenderingServer.get_current_rendering_method()}, false)
+	enabled = true
 
-func _init(state: GameState):
-    game_state = state
+func stop() -> void:
+	enabled = false
 
-func update(delta: float):
-    _update_stats()
-    _optimize_performance()
+func begin() -> int:
+	return Time.get_ticks_usec() if enabled else 0
 
-func _update_stats():
-    stats.building_count = game_state.buildings.size()
-    stats.connection_count = game_state.connections.size()
+func finish(metric: String, started: int) -> void:
+	if enabled and started > 0:
+		record(metric, float(Time.get_ticks_usec() - started) / 1000.0)
 
-func _optimize_performance():
-    # 根据建筑数量调整优化策略
-    if stats.building_count > 1000:
-        config.max_buildings_per_frame = 50
-        config.use_batch_rendering = true
-    elif stats.building_count > 500:
-        config.max_buildings_per_frame = 100
-        config.use_batch_rendering = true
-    else:
-        config.max_buildings_per_frame = 200
-        config.use_batch_rendering = false
+func record(metric: String, value: float) -> void:
+	if not enabled or not is_finite(value) or value < 0.0:
+		return
+	if not _samples.has(metric):
+		if _samples.size() >= MAX_METRICS: return
+		_samples[metric] = []
+		_counts[metric] = 0
+		_cursor[metric] = 0
+	var samples: Array = _samples[metric]
+	if samples.size() < MAX_SAMPLES:
+		samples.append(value)
+	else:
+		samples[int(_cursor[metric])] = value
+		_cursor[metric] = (int(_cursor[metric]) + 1) % MAX_SAMPLES
+	_counts[metric] += 1
 
-func get_performance_stats() -> Dictionary:
-    return stats
+func get_report() -> Dictionary:
+	var metrics := {}
+	for key in _samples:
+		var values: Array = _samples[key].duplicate()
+		values.sort()
+		var total := 0.0
+		for value in values: total += float(value)
+		metrics[key] = {"samples": values.size(), "total_samples": _counts[key], "mean": total / values.size(), "p50": values[int((values.size() - 1) * 0.5)], "p95": values[int(ceil((values.size() - 1) * 0.95))], "max": values.back()}
+	return {"version": 1, "enabled": enabled, "context": _context.duplicate(true), "sample_limit_per_metric": MAX_SAMPLES, "window": "latest samples per metric", "metrics": metrics, "buildings": game_state.buildings.size() if game_state != null else 0, "connections": game_state.connections.size() if game_state != null else 0, "notes": "Times are wall-clock durations. draw_submit_ms measures CPU command submission, not GPU time. frame_ms and frame_interval_ms include rendering, scheduling and vsync waits. Headless has no graphical FPS evidence. Monitoring never changes fixed ticks."}
 
-func get_config() -> Dictionary:
-    return config
+func export_report(directory: String = "user://performance_reports") -> Dictionary:
+	var absolute := ProjectSettings.globalize_path(directory)
+	var error := DirAccess.make_dir_recursive_absolute(absolute)
+	if error != OK: return {"ok": false, "message": "无法创建性能报告目录 (%s)" % error}
+	var stem := absolute.path_join("performance_%s_%s" % [Time.get_unix_time_from_system(), Time.get_ticks_usec()])
+	var report := get_report()
+	var summary := "# 本地性能报告\n\n环境：%s\n\n%s\n\n| 指标 | 样本 | 平均 | P50 | P95 | 最大 |\n|---|---:|---:|---:|---:|---:|\n" % [JSON.stringify(report.context), report.notes]
+	for key in report.metrics:
+		var metric: Dictionary = report.metrics[key]
+		summary += "| %s | %d / %d | %.3f | %.3f | %.3f | %.3f |\n" % [key, metric.samples, metric.total_samples, metric.mean, metric.p50, metric.p95, metric.max]
+	for extension in ["json", "md"]:
+		var file := FileAccess.open(stem + "." + extension, FileAccess.WRITE)
+		if file == null: return {"ok": false, "message": "报告写入失败 (%s)" % FileAccess.get_open_error()}
+		file.store_string(JSON.stringify(report, "\t") if extension == "json" else summary)
+		file.flush()
+		if file.get_error() != OK: return {"ok": false, "message": "报告写入未完成"}
+		file.close()
+	return {"ok": true, "path": stem + ".md", "json_path": stem + ".json"}
 
-func set_config(new_config: Dictionary):
-    config = new_config
-
-# Web Worker支持（简化实现）
 func use_web_workers() -> bool:
-    return false
-
-# 模拟批处理
-func get_simulation_batch_size() -> int:
-    return config.max_buildings_per_frame
-
-# 视锥体剔除
-func is_in_viewport(position: Vector2, viewport_size: Vector2) -> bool:
-    return position.x >= 0 and position.x <= viewport_size.x and \
-           position.y >= 0 and position.y <= viewport_size.y
-
-# 层级渲染
-func get_lod_level(distance: float) -> int:
-    if distance < 100:
-        return 0  # 高细节
-    elif distance < 500:
-        return 1  # 中细节
-    else:
-        return 2  # 低细节
+	return false

@@ -71,7 +71,7 @@ static func to_persistent_dict(state: GameState) -> Dictionary:
 		"completed_achievement_ids": completed_achievement_ids,
 		"unlocked_progression_ids": unlocked_progression_ids,
 		"buildings": _encode_entity_collection(state.buildings, BUILDING_RUNTIME_FIELDS, state.active_planet_id),
-		"connections": _encode_entity_collection(state.connections, CONNECTION_RUNTIME_FIELDS, state.active_planet_id),
+		"connections": _encode_connections(state),
 	}
 	return _encode_dictionary(payload, ROOT_RUNTIME_FIELDS)
 
@@ -233,3 +233,11 @@ static func _vector2_from_value(value: Variant) -> Vector2:
 	if value is Dictionary:
 		return Vector2(float(value.get("x", 0.0)), float(value.get("y", 0.0)))
 	return Vector2.ZERO
+
+static func _encode_connections(state: GameState) -> Dictionary:
+	var encoded := _encode_entity_collection(state.connections, CONNECTION_RUNTIME_FIELDS, state.active_planet_id)
+	for connection in encoded.values():
+		for field in ["priority", "parallel_count", "stack_size"]:
+			if connection.get(field) is int:
+				connection[field] = float(connection[field])
+	return encoded

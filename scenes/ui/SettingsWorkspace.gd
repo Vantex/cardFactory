@@ -39,6 +39,13 @@ func _ready() -> void:
 	cursor_speed = _slider(content, 0.5, 2.0, 0.1)
 	_label(content, "Tab / 方向键导航，Enter / 手柄 A 确认，Escape / B 返回。\nF6 / 手柄 Y 在界面与画布之间切换焦点。画布方向键 / 左摇杆移动光标，Enter / A 选择或放置，M / 左摇杆按下移动选中建筑，C / 右摇杆按下连线，Delete / X 请求删除；LB / RB 缩放，右摇杆平移。")
 	status = _label(content, "")
+	_button(content, "开始性能监测（清空上次采样）", func():
+		GameManager.performance_monitor.start({"viewport": str(get_viewport().get_visible_rect().size), "scope": "interactive session"})
+		status.text = "监测已开启；返回工厂操作后，停止并导出报告。每项最多保留 3600 个样本。")
+	_button(content, "停止并导出性能报告", func():
+		GameManager.performance_monitor.stop()
+		var result := GameManager.performance_monitor.export_report()
+		status.text = "报告已保存：" + result.path if result.ok else result.message)
 	_button(content, "保存并应用", apply_preferences)
 	_button(content, "恢复默认设置", func(): _show_values(SettingsSystem.DEFAULTS))
 	_button(content, "返回", func(): hide(); dismissed.emit())

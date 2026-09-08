@@ -4,6 +4,8 @@ extends RefCounted
 
 const DEFAULT_BUFFER_CAPACITY := 60.0
 
+var optimize_queries := true
+var _tick_priorities: Dictionary = {}
 var game_state: GameState
 var statistics_system: StatisticsSystem
 
@@ -20,7 +22,12 @@ func clear_flow_state() -> void:
 func update(delta: float):
 	clear_flow_state()
 	var connection_ids: Array = game_state.connections.keys()
+	_tick_priorities.clear()
+	if optimize_queries:
+		for id in connection_ids:
+			_tick_priorities[id] = int(game_state.get_belt_configuration(String(id)).get("priority", 0))
 	connection_ids.sort_custom(_connection_precedes)
+	_tick_priorities.clear()
 	for conn_id in connection_ids:
 		var connection = game_state.connections[conn_id]
 		if not _is_connection_planet_local(connection):
@@ -30,6 +37,10 @@ func update(delta: float):
 func _connection_precedes(left_id: Variant, right_id: Variant) -> bool:
 	var left_key := String(left_id)
 	var right_key := String(right_id)
+	if optimize_queries:
+		var left := int(_tick_priorities[left_key])
+		var right := int(_tick_priorities[right_key])
+		return left > right if left != right else left_key < right_key
 	var left_config := game_state.get_belt_configuration(left_key)
 	var right_config := game_state.get_belt_configuration(right_key)
 	var left_priority := int(left_config.get("priority", 0))

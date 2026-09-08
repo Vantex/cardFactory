@@ -7,6 +7,8 @@ const STEP_EPSILON := 0.0000001
 const PHASE_ORDER := ["dyson_decay", "power", "production", "handcraft", "belt", "logistics", "dyson_launch", "galaxy", "research", "endgame", "progression", "statistics"]
 
 var game_state: GameState
+var performance_monitor: PerformanceSystem
+var optimize_queries := true
 var production_system: ProductionSystem
 var belt_system: BeltSystem
 var power_system: PowerSystem
@@ -37,6 +39,7 @@ func _init(state: GameState) -> void:
 	progression_system = ProgressionSystem.new(state)
 
 func update(delta: float) -> void:
+	belt_system.optimize_queries = optimize_queries
 	_last_step_count = 0
 	if game_state.paused:
 		belt_system.clear_flow_state()
@@ -53,26 +56,65 @@ func update(delta: float) -> void:
 		EventBus.simulation_updated.emit()
 
 func _run_fixed_tick() -> void:
+	var started := performance_monitor.begin() if performance_monitor != null else 0
+	var phase_started := started
 	game_state.elapsed_time += FIXED_DELTA
 	dyson_system.begin_tick()
+	if performance_monitor != null and performance_monitor.enabled:
+		performance_monitor.finish("phase_dyson_decay_ms", phase_started)
+		phase_started = performance_monitor.begin()
 	power_system.update(FIXED_DELTA)
+	if performance_monitor != null and performance_monitor.enabled:
+		performance_monitor.finish("phase_power_ms", phase_started)
+		phase_started = performance_monitor.begin()
 	production_system.update(FIXED_DELTA)
+	if performance_monitor != null and performance_monitor.enabled:
+		performance_monitor.finish("phase_production_ms", phase_started)
+		phase_started = performance_monitor.begin()
 	handcraft_system.update(FIXED_DELTA)
+	if performance_monitor != null and performance_monitor.enabled:
+		performance_monitor.finish("phase_handcraft_ms", phase_started)
+		phase_started = performance_monitor.begin()
 	belt_system.update(FIXED_DELTA)
+	if performance_monitor != null and performance_monitor.enabled:
+		performance_monitor.finish("phase_belt_ms", phase_started)
+		phase_started = performance_monitor.begin()
 	logistics_system.update(FIXED_DELTA)
+	if performance_monitor != null and performance_monitor.enabled:
+		performance_monitor.finish("phase_logistics_ms", phase_started)
+		phase_started = performance_monitor.begin()
 	dyson_system.update_launches(FIXED_DELTA)
+	if performance_monitor != null and performance_monitor.enabled:
+		performance_monitor.finish("phase_dyson_launch_ms", phase_started)
+		phase_started = performance_monitor.begin()
 	galaxy_system.update_exploration(FIXED_DELTA)
+	if performance_monitor != null and performance_monitor.enabled:
+		performance_monitor.finish("phase_galaxy_ms", phase_started)
+		phase_started = performance_monitor.begin()
 	_update_research(FIXED_DELTA)
+	if performance_monitor != null and performance_monitor.enabled:
+		performance_monitor.finish("phase_research_ms", phase_started)
+		phase_started = performance_monitor.begin()
 	endgame_system.update_tick()
+	if performance_monitor != null and performance_monitor.enabled:
+		performance_monitor.finish("phase_endgame_ms", phase_started)
+		phase_started = performance_monitor.begin()
 	progression_system.evaluate()
+	if performance_monitor != null and performance_monitor.enabled:
+		performance_monitor.finish("phase_progression_ms", phase_started)
+		phase_started = performance_monitor.begin()
 	statistics_system.update(FIXED_DELTA)
+	if performance_monitor != null and performance_monitor.enabled:
+		performance_monitor.finish("phase_statistics_ms", phase_started)
+		phase_started = performance_monitor.begin()
+	if performance_monitor != null: performance_monitor.finish("fixed_tick_ms", started)
 
 func _update_research(delta: float) -> void:
 	technology_system.update_research(delta, _has_powered_research_lab())
 
 func _has_powered_research_lab() -> bool:
 	var building_ids := game_state.buildings.keys()
-	building_ids.sort()
+	if not optimize_queries: building_ids.sort()
 	for building_id_value in building_ids:
 		var building: Dictionary = game_state.buildings[building_id_value]
 		if String(building.get("type", "")) == "matrix_lab" and float(building.get("power_efficiency", 0.0)) > 0.0:
