@@ -880,31 +880,35 @@ git commit -m "test: freeze DSPONLINE single player parity baseline"
 - 修改：`autoload/GameManager.gd`
 - 修改：`scenes/ui/AppShell.gd`
 - 创建：`scenes/ui/RecoveryWorkspace.gd`
-- 修改：`scripts/test/TestStatePersistence.gd`
+- 复用验证：`scripts/test/TestStatePersistence.gd`
+- 创建：`scripts/test/TestSaveRecovery.gd` 与对应测试场景
+- 修改：`scripts/game/OfflineSettlementSystem.gd`、`scenes/main/Main.gd` 和保存相关界面
 - 修改：`scripts/test/TestProductShell.gd`
 
-- [ ] **步骤 1：写手动保存和恢复失败测试**
+- [x] **步骤 1：写手动保存和恢复失败测试**
 
 覆盖立即保存、自动保存间隔、返回/退出保存、写入冲突、最近有效主档、备份、紧急恢复点、恢复来源提示和恢复后再次保存。任何失败不得替换当前权威状态或删除最后一份有效恢复点。
 
-- [ ] **步骤 2：实现统一保存协调器**
+- [x] **步骤 2：实现统一保存协调器**
 
 手动、自动、生命周期和离线结算只提交同一串行保存队列；相同状态请求合并，不同状态按权威修订号排序。完成写入、读回和摘要校验后才更新“已保存”状态。
 
-- [ ] **步骤 3：实现恢复工作区**
+- [x] **步骤 3：实现恢复工作区**
 
 开始菜单显示主档、备份和紧急恢复点的时间、游玩时长、版本与校验状态，允许玩家选择恢复来源；不提供 DSPONLINE 存档导入。
 
-- [ ] **步骤 4：接入正式 UI**
+- [x] **步骤 4：接入正式 UI**
 
 顶栏和暂停菜单提供“立即保存”，显示保存中、成功、失败和只读原因；桌面键鼠和已有手柄入口均能完成同一操作。
 
-- [ ] **步骤 5：提交**
+- [x] **步骤 5：提交**
 
 ```powershell
 git add scripts/game/SaveSystem.gd autoload/GameManager.gd scenes/ui/AppShell.gd scenes/ui/RecoveryWorkspace.gd scripts/test/TestStatePersistence.gd scripts/test/TestProductShell.gd
 git commit -m "feat: match local save and recovery controls"
 ```
+
+**完成记录（2026-09-09）：** 保存协调、来源检查/选择、紧急恢复和手动快照管理及桌面入口已交付；十六场景门禁通过，图形验证范围见 [任务 20 验收](TASK20_ACCEPTANCE.md)。源项目特有高级策略仍按矩阵逐项核对，不将本轮交付等同于完整发布对齐。
 
 ### 任务 21：对齐多电网、优先级与储能
 

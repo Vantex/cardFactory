@@ -48,8 +48,8 @@ func _ready() -> void:
 	galaxy_map.colonize_requested.connect(_on_galaxy_colonize_requested)
 	galaxy_map.travel_requested.connect(_on_galaxy_travel_requested)
 	galaxy_map.fleet_transfer_requested.connect(_on_galaxy_fleet_transfer_requested)
-	if not GameManager.save_requested.is_connected(_on_save_requested):
-		GameManager.save_requested.connect(_on_save_requested)
+	if not GameManager.save_preparing.is_connected(_on_save_requested):
+		GameManager.save_preparing.connect(_on_save_requested)
 
 	EventBus.card_placed.connect(_on_card_placed)
 	EventBus.card_selected.connect(_on_card_selected)

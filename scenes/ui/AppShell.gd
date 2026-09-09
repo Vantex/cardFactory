@@ -9,6 +9,10 @@ var _screen_name := "start"
 var _offline_report: Control
 var _settings: Control
 var _settings_return := "start"
+var _recovery: RecoveryWorkspace
+var _pause_menu: PanelContainer
+var _pause_message: Label
+var _was_paused := false
 
 func _ready() -> void:
 	layer = 30
@@ -33,6 +37,22 @@ func _ready() -> void:
 	_slots_panel.continue_requested.connect(_continue_game)
 	_slots_panel.delete_requested.connect(_delete_slot)
 	_slots_panel.back_requested.connect(_show_start)
+	_slots_panel.recovery_requested.connect(open_recovery)
+	_recovery = RecoveryWorkspace.new()
+	_recovery.name = "RecoveryWorkspace"
+	add_child(_recovery)
+	_recovery.dismissed.connect(func():
+		if GameManager.is_session_active():
+			_recovery.hide()
+			_screen_name = "pause"
+			_pause_menu.show()
+			_focus_first.call_deferred(_pause_menu)
+		else: _show_slots())
+	_recovery.restore_requested.connect(func(slot: int, source: String):
+		var result := GameManager.recover_game(slot, source)
+		if not result.ok: _recovery.show_error(_error_message(result)))
+	_create_pause_menu()
+	GameManager.save_status_changed.connect(_on_save_status_changed)
 	_offline_report = preload("res://scenes/ui/OfflineReportWorkspace.gd").new()
 	_offline_report.name = "OfflineReportWorkspace"
 	add_child(_offline_report)
@@ -60,13 +80,23 @@ func return_to_menu() -> Dictionary:
 		_show_start()
 		return {"ok": true, "skipped": true}
 	var result := GameManager.save_current_game("return_to_menu")
-	if not result.get("ok", false):
+	if not result.get("ok", false) or result.get("queued", false):
 		EventBus.notice_requested.emit(_error_message(result), "error")
 		return result
 	GameManager.end_session()
 	return result
 
 func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo and event.ctrl_pressed and event.keycode == KEY_S and _screen_name in ["game", "pause"]:
+		GameManager.save_current_game()
+		get_viewport().set_input_as_handled()
+		return
+	if _screen_name in ["pause", "recovery"]:
+		if event.is_action_pressed("ui_cancel"):
+			if _screen_name == "pause": close_pause_menu()
+			else: _recovery.dismissed.emit()
+			get_viewport().set_input_as_handled()
+		return
 	if _screen_name == "settings":
 		if event.is_action_pressed("ui_cancel"):
 			close_settings()
@@ -83,12 +113,14 @@ func _unhandled_input(event: InputEvent) -> void:
 		if _input_handler != null and _input_handler.call("get_mode_name") != "idle":
 			_input_handler.call("cancel_operation")
 		else:
-			return_to_menu()
+			open_pause_menu()
 	elif _screen_name == "slots":
 		_show_start()
 	get_viewport().set_input_as_handled()
 
 func _show_start() -> void:
+	if _recovery != null: _recovery.hide()
+	if _pause_menu != null: _pause_menu.hide()
 	if _settings != null: _settings.hide()
 	if _offline_report != null: _offline_report.hide()
 	_screen_name = "start"
@@ -100,6 +132,8 @@ func _show_start() -> void:
 	_focus_first.call_deferred(_start_menu)
 
 func _show_slots() -> void:
+	if _recovery != null: _recovery.hide()
+	if _pause_menu != null: _pause_menu.hide()
 	_screen_name = "slots"
 	_set_gameplay_visible(false)
 	_start_menu.hide()
@@ -114,6 +148,9 @@ func _start_new_game(slot: int) -> void:
 		_slots_panel.show_error(_error_message(result))
 
 func _continue_game(slot: int) -> void:
+	if GameManager.get_save_system().get_slot_info(slot).get("recovery_only", false):
+		open_recovery(slot)
+		return
 	var result := GameManager.continue_game(slot)
 	if result.get("ok", false):
 		if result.get("recovered_from_backup", false):
@@ -129,6 +166,8 @@ func _delete_slot(slot: int) -> void:
 	_slots_panel.show_error(_error_message(result))
 
 func _on_session_started(_slot: int, _is_new_game: bool) -> void:
+	if _recovery != null: _recovery.hide()
+	if _pause_menu != null: _pause_menu.hide()
 	_screen_name = "game"
 	_start_menu.hide()
 	_slots_panel.hide()
@@ -196,3 +235,57 @@ func _focus_first(root: Node) -> void:
 		if node.is_visible_in_tree() and not node.disabled:
 			node.grab_focus()
 			return
+
+func open_recovery(slot: int) -> void:
+	if _screen_name not in ["start", "slots", "pause"]: return
+	_pause_menu.hide()
+	_screen_name = "recovery"
+	_start_menu.hide()
+	_slots_panel.hide()
+	_set_gameplay_visible(false)
+	_recovery.open(slot)
+	_recovery.content.get_child(0).grab_focus.call_deferred()
+
+func _create_pause_menu() -> void:
+	_pause_menu = PanelContainer.new()
+	_pause_menu.name = "PauseMenu"
+	_pause_menu.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	add_child(_pause_menu)
+	var margin := MarginContainer.new()
+	for side in ["left", "right", "top", "bottom"]: margin.add_theme_constant_override("margin_" + side, 24)
+	_pause_menu.add_child(margin)
+	var scroll := ScrollContainer.new()
+	scroll.follow_focus = true
+	margin.add_child(scroll)
+	var content := VBoxContainer.new()
+	content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(content)
+	_pause_message = Label.new()
+	_pause_message.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	content.add_child(_pause_message)
+	for action in [["ResumeButton", "继续游戏", close_pause_menu], ["SaveButton", "立即保存 · Ctrl+S", func(): GameManager.save_current_game()], ["SnapshotButton", "创建恢复快照", func():
+		var result := GameManager.create_recovery_snapshot()
+		_pause_message.text = "恢复快照已创建" if result.ok else _error_message(result)], ["RecoveryButton", "管理恢复快照", func(): open_recovery(GameManager.get_current_slot())], ["ReturnButton", "保存并返回主菜单", return_to_menu]]:
+		var button := Button.new()
+		button.name = action[0]
+		button.text = action[1]
+		button.pressed.connect(action[2])
+		content.add_child(button)
+	_pause_menu.hide()
+
+func open_pause_menu() -> void:
+	if not GameManager.is_session_active() or _screen_name != "game": return
+	_was_paused = GameManager.game_state.paused
+	GameManager.game_state.paused = true
+	_screen_name = "pause"
+	_set_gameplay_visible(false)
+	_pause_message.text = GameManager.get_save_status().message
+	_pause_menu.show()
+	_focus_first.call_deferred(_pause_menu)
+
+func close_pause_menu() -> void:
+	GameManager.game_state.paused = _was_paused
+	_on_session_started(GameManager.get_current_slot(), false)
+
+func _on_save_status_changed(status: Dictionary) -> void:
+	_pause_message.text = status.message

@@ -4,6 +4,7 @@ extends Control
 signal new_game_requested(slot: int)
 signal continue_requested(slot: int)
 signal delete_requested(slot: int)
+signal recovery_requested(slot: int)
 signal back_requested
 
 const BACKGROUND := Color("#0b1110")
@@ -74,7 +75,7 @@ func _create_ui() -> void:
 	heading.add_child(titles)
 	var title := _label("Title", "本地存档", 25, TEXT)
 	titles.add_child(title)
-	var subtitle := _label("Subtitle", "每个槽位保留一份最近验证备份", 13, MUTED)
+	var subtitle := _label("Subtitle", "主档、最近备份与紧急恢复点可分别检查", 13, MUTED)
 	titles.add_child(subtitle)
 	var back_button := Button.new()
 	back_button.name = "BackButton"
@@ -133,8 +134,12 @@ func _create_slot(slot: int, info: Dictionary) -> Control:
 
 	if occupied:
 		var continue_button := _small_button("ContinueButton", "继续", ACCENT)
+		continue_button.disabled = not info.get("valid", true)
 		continue_button.pressed.connect(func() -> void: continue_requested.emit(slot))
 		row.add_child(continue_button)
+		var recovery := _small_button("RecoveryButton", "恢复", ACCENT)
+		recovery.pressed.connect(func(): recovery_requested.emit(slot))
+		row.add_child(recovery)
 		var delete_button := _small_button("DeleteButton", "删除", WARNING)
 		delete_button.pressed.connect(_request_delete.bind(slot))
 		row.add_child(delete_button)

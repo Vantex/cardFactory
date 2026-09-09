@@ -15,6 +15,7 @@ var ticks_done := 0
 var report: Dictionary = {}
 var error: Dictionary = {}
 var load_info: Dictionary = {}
+var save_writer: Callable
 
 func begin(save_system: SaveSystem, slot_id: int, now: float) -> Dictionary:
 	if not is_finite(now) or now < 0: return _fail("invalid_clock", "系统时间无效")
@@ -111,7 +112,8 @@ func commit() -> Dictionary:
 		entry["report"] = report.duplicate(true)
 		var written := journal.write(entry)
 		if not written.ok: return _adopt_error(written)
-	var saved := storage.save_slot(slot, state, {"offline_receipt": entry.receipt, "offline_processed_until": entry.target_time})
+	var metadata := {"offline_receipt": entry.receipt, "offline_processed_until": entry.target_time}
+	var saved: Dictionary = save_writer.call(slot, state, metadata) if save_writer.is_valid() else storage.save_slot(slot, state, metadata)
 	if not saved.ok: return _adopt_error(saved)
 	phase = "complete"
 	return saved

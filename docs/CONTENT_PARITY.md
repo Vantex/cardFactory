@@ -6,7 +6,7 @@
 
 此表是任务 19 的差距登记，不是玩法已经对齐的证明。现有系统仍可使用；“实现中”只表示存在候选映射，未逐项验证原版数值和行为。登记门允许明确登记的缺口，最终发布门必须清零未实现/实现中。
 
-状态统计：{"未实现":948,"实现中":128,"在线排除":23}。没有把同名条目自动标为已验证。
+状态统计：{"未实现":939,"实现中":137,"在线排除":23}。没有把同名条目自动标为已验证。
 
 完整来源定义保存输入输出、数值、前置、解锁、奖励和目录规则；成就判定等代码规则记录源文件及哈希，行为验证仍待任务 25/27。每行的自动规则编号为 rule:类别:源ID，人工编号为 manual:类别:源ID；规则规格见 [rule_cases.json](../tests/fixtures/parity/rule_cases.json)，规格登记不等于已执行行为测试。UI 栏为原版入口/定义来源，当前候选路径和缺口见 [机器清单](../tests/fixtures/parity/dsponline_single_player_manifest.json)。
 
@@ -1029,7 +1029,7 @@
 | LogisticsManagementPanel.onWarperAdjust | onWarperAdjust | 待映射 | 未实现 | 26 | src/components/LogisticsManagementPanel.tsx |
 | LogisticsManagementPanel.onWarperAutoRefillChange | onWarperAutoRefillChange | 待映射 | 未实现 | 26 | src/components/LogisticsManagementPanel.tsx |
 | LogisticsManagementPanel.onWarperTargetChange | onWarperTargetChange | 待映射 | 未实现 | 26 | src/components/LogisticsManagementPanel.tsx |
-| OfflineReportWorkspace.onClose | onClose | 待映射 | 未实现 | 20 | src/components/OfflineReportWorkspace.tsx |
+| OfflineReportWorkspace.onClose | onClose | scenes/ui/AppShell.gd::_on_session_started | 实现中 | 20 | src/components/OfflineReportWorkspace.tsx |
 | OnboardingCoach.onAction | onAction | 待映射 | 未实现 | 23 | src/components/OnboardingCoach.tsx |
 | OnboardingCoach.onDismiss | onDismiss | 待映射 | 未实现 | 23 | src/components/OnboardingCoach.tsx |
 | OperationsWorkspace.onAddSecondUnipolarVein | onAddSecondUnipolarVein | 待映射 | 未实现 | 23 | src/components/OperationsWorkspace.tsx |
@@ -1050,11 +1050,11 @@
 | OperationsWorkspace.onConnectExpandAllChange | onConnectExpandAllChange | 待映射 | 未实现 | 23 | src/components/OperationsWorkspace.tsx |
 | OperationsWorkspace.onConnectionHitAreaChange | onConnectionHitAreaChange | 待映射 | 未实现 | 23 | src/components/OperationsWorkspace.tsx |
 | OperationsWorkspace.onConnectionPointSizeChange | onConnectionPointSizeChange | 待映射 | 未实现 | 23 | src/components/OperationsWorkspace.tsx |
-| OperationsWorkspace.onCreateSnapshot | onCreateSnapshot | 待映射 | 未实现 | 20 | src/components/OperationsWorkspace.tsx |
+| OperationsWorkspace.onCreateSnapshot | onCreateSnapshot | autoload/GameManager.gd::create_recovery_snapshot | 实现中 | 20 | src/components/OperationsWorkspace.tsx |
 | OperationsWorkspace.onDefaultBeltLanesChange | onDefaultBeltLanesChange | 待映射 | 未实现 | 23 | src/components/OperationsWorkspace.tsx |
 | OperationsWorkspace.onDeleteSlot | onDeleteSlot | 待映射 | 未实现 | 23 | src/components/OperationsWorkspace.tsx |
-| OperationsWorkspace.onDeleteSnapshot | onDeleteSnapshot | 待映射 | 未实现 | 20 | src/components/OperationsWorkspace.tsx |
-| OperationsWorkspace.onDeleteSnapshots | onDeleteSnapshots | 待映射 | 未实现 | 20 | src/components/OperationsWorkspace.tsx |
+| OperationsWorkspace.onDeleteSnapshot | onDeleteSnapshot | scripts/game/SaveSystem.gd::delete_snapshots | 实现中 | 20 | src/components/OperationsWorkspace.tsx |
+| OperationsWorkspace.onDeleteSnapshots | onDeleteSnapshots | scripts/game/SaveSystem.gd::delete_snapshots | 实现中 | 20 | src/components/OperationsWorkspace.tsx |
 | OperationsWorkspace.onEndgameExtremeModeChange | onEndgameExtremeModeChange | 待映射 | 未实现 | 26 | src/components/OperationsWorkspace.tsx |
 | OperationsWorkspace.onExport | onExport | 待映射 | 未实现 | 23 | src/components/OperationsWorkspace.tsx |
 | OperationsWorkspace.onExportModTemplate | onExportModTemplate | 待映射 | 未实现 | 26 | src/components/OperationsWorkspace.tsx |
@@ -1067,8 +1067,8 @@
 | OperationsWorkspace.onLargeSaveAutosaveProtectionChange | onLargeSaveAutosaveProtectionChange | 待映射 | 未实现 | 20 | src/components/OperationsWorkspace.tsx |
 | OperationsWorkspace.onLineFindModeChange | onLineFindModeChange | 待映射 | 未实现 | 23 | src/components/OperationsWorkspace.tsx |
 | OperationsWorkspace.onLoadSlot | onLoadSlot | 待映射 | 未实现 | 23 | src/components/OperationsWorkspace.tsx |
-| OperationsWorkspace.onLoadSnapshot | onLoadSnapshot | 待映射 | 未实现 | 20 | src/components/OperationsWorkspace.tsx |
-| OperationsWorkspace.onManualSave | onManualSave | 待映射 | 未实现 | 20 | src/components/OperationsWorkspace.tsx |
+| OperationsWorkspace.onLoadSnapshot | onLoadSnapshot | autoload/GameManager.gd::recover_game | 实现中 | 20 | src/components/OperationsWorkspace.tsx |
+| OperationsWorkspace.onManualSave | onManualSave | autoload/GameManager.gd::save_current_game | 实现中 | 20 | src/components/OperationsWorkspace.tsx |
 | OperationsWorkspace.onOpenReleaseNotes | onOpenReleaseNotes | 待映射 | 未实现 | 23 | src/components/OperationsWorkspace.tsx |
 | OperationsWorkspace.onOpenTutorial | onOpenTutorial | 待映射 | 未实现 | 25 | src/components/OperationsWorkspace.tsx |
 | OperationsWorkspace.onProductionRefreshPreferenceChange | onProductionRefreshPreferenceChange | 待映射 | 未实现 | 23 | src/components/OperationsWorkspace.tsx |
@@ -1078,7 +1078,7 @@
 | OperationsWorkspace.onRemoveContentPack | onRemoveContentPack | 待映射 | 未实现 | 26 | src/components/OperationsWorkspace.tsx |
 | OperationsWorkspace.onRunBenchmark | onRunBenchmark | 待映射 | 未实现 | 23 | src/components/OperationsWorkspace.tsx |
 | OperationsWorkspace.onRunLogChange | onRunLogChange | 待映射 | 未实现 | 23 | src/components/OperationsWorkspace.tsx |
-| OperationsWorkspace.onSaveSlot | onSaveSlot | 待映射 | 未实现 | 20 | src/components/OperationsWorkspace.tsx |
+| OperationsWorkspace.onSaveSlot | onSaveSlot | autoload/GameManager.gd::save_current_game | 实现中 | 20 | src/components/OperationsWorkspace.tsx |
 | OperationsWorkspace.onSelect | onSelect | 待映射 | 未实现 | 23 | src/components/OperationsWorkspace.tsx |
 | OperationsWorkspace.onSetContentPackEnabled | onSetContentPackEnabled | 待映射 | 未实现 | 26 | src/components/OperationsWorkspace.tsx |
 | OperationsWorkspace.onSetEnabled | onSetEnabled | 待映射 | 未实现 | 23 | src/components/OperationsWorkspace.tsx |
@@ -1112,8 +1112,8 @@
 | RecipeWorkspace.onSelectBuilding | onSelectBuilding | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
 | RecipeWorkspace.onSelectTechnology | onSelectTechnology | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
 | ReleaseNotesDialog.onClose | onClose | 待映射 | 未实现 | 23 | src/components/ReleaseNotesDialog.tsx |
-| SaveDeleteDialog.onCancel | onCancel | 待映射 | 未实现 | 20 | src/components/SaveDeleteDialog.tsx |
-| SaveDeleteDialog.onDelete | onDelete | 待映射 | 未实现 | 20 | src/components/SaveDeleteDialog.tsx |
+| SaveDeleteDialog.onCancel | onCancel | scenes/ui/SaveSlotsPanel.gd::_request_delete | 实现中 | 20 | src/components/SaveDeleteDialog.tsx |
+| SaveDeleteDialog.onDelete | onDelete | scenes/ui/AppShell.gd::_delete_slot | 实现中 | 20 | src/components/SaveDeleteDialog.tsx |
 | SpeedrunCopyDialog.onCancel | onCancel | 待映射 | 未实现 | 26 | src/components/SpeedrunCopyDialog.tsx |
 | SpeedrunCopyDialog.onCopy | onCopy | 待映射 | 未实现 | 26 | src/components/SpeedrunCopyDialog.tsx |
 | StableTextInput.onValueChange | onValueChange | 待映射 | 未实现 | 23 | src/components/StableTextInput.tsx |

@@ -1107,8 +1107,24 @@ func _create_settings_entry() -> void:
 	settings.size = Vector2(58, 34)
 	settings.pressed.connect(func(): get_parent().get_node("AppShell").open_settings())
 	get_node("TopBar").add_child(settings)
-	_top_status.position.x = 728
-	_top_status.size.x = 410
+	var save_button := Button.new()
+	save_button.name = "SaveButton"
+	save_button.text = "立即保存"
+	save_button.position = Vector2(728, 9)
+	save_button.size = Vector2(90, 34)
+	save_button.pressed.connect(func(): GameManager.save_current_game())
+	get_node("TopBar").add_child(save_button)
+	var save_status := Label.new()
+	save_status.name = "SaveStatus"
+	save_status.text = GameManager.get_save_status().message
+	save_status.position = Vector2(824, 16)
+	save_status.size = Vector2(80, 24)
+	save_status.clip_text = true
+	GameManager.save_status_changed.connect(_on_save_status_changed)
+	get_node("TopBar").add_child(save_status)
+	_top_status.position.x = 910
+	_top_status.size.x = 228
+	_top_status.clip_text = true
 
 func apply_device_layout() -> void:
 	if get_node_or_null("TopBar") == null: return
@@ -1276,3 +1292,9 @@ func _open_station_panel() -> void:
 		return
 	show_exclusive_workspace("StationPanel")
 	get_node("StationPanel").open_stations(ids)
+
+func _on_save_status_changed(status: Dictionary) -> void:
+	var label := get_node_or_null("TopBar/SaveStatus") as Label
+	if label == null: return
+	label.text = status.message
+	label.tooltip_text = status.message

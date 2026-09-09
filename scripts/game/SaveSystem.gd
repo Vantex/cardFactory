@@ -57,7 +57,7 @@ func save_slot(slot: int, game_state: GameState, metadata_overrides: Dictionary 
 		return _failure("write_failed", "无法写入临时存档")
 
 	var verification := _read_slot_file(temporary_path)
-	if not verification.get("ok", false):
+	if not verification.get("ok", false) or _digest_payload(_normalize_stored_digest_types(GameStateCodec.to_persistent_dict(verification.state))) != digest:
 		_remove_if_exists(temporary_path)
 		return _failure("verification_failed", "临时存档写入后校验失败", verification.get("error", {}))
 
@@ -81,7 +81,53 @@ func save_slot(slot: int, game_state: GameState, metadata_overrides: Dictionary 
 		_remove_if_exists(temporary_path)
 		return _failure("replace_failed", "无法用已验证临时档替换主档")
 
+	var committed := _read_slot_file(primary_path)
+	if not committed.get("ok", false) or _digest_payload(_normalize_stored_digest_types(GameStateCodec.to_persistent_dict(committed.state))) != digest:
+		return _failure("verification_failed", "主档替换后校验失败，上一份有效备份仍保留")
 	return _success({"slot": slot, "metadata": metadata.duplicate(true)})
+
+func get_recovery_sources(slot: int) -> Array:
+	var sources: Array = []
+	for source in ["primary", "backup", "emergency"] + _snapshot_sources(slot):
+		var result := load_recovery_source(slot, source)
+		sources.append({"source": source, "valid": result.get("ok", false),
+			"exists": result.get("error", {}).get("code", "") != "save_not_found",
+			"metadata": result.get("metadata", {}), "error": result.get("error", {})})
+	return sources
+
+func load_recovery_source(slot: int, source: String) -> Dictionary:
+	var slot_error := _validate_slot(slot)
+	if not slot_error.is_empty(): return slot_error
+	var suffix := _recovery_suffix(source)
+	if suffix == "invalid": return _failure("invalid_source", "未知恢复来源")
+	var result := _read_slot_file(_get_slot_path(slot, suffix))
+	if result.get("ok", false):
+		result["source"] = source
+		result["slot"] = slot
+		result["recovered_from_backup"] = source == "backup"
+	return result
+
+func save_emergency(slot: int, state: GameState, source: String = "emergency") -> Dictionary:
+	var precondition := _validate_request(slot, state)
+	if not precondition.is_empty(): return precondition
+	var payload := GameStateCodec.to_persistent_dict(state)
+	var errors := GameStateValidator.validate_persistent_dict(payload)
+	if not errors.is_empty(): return _failure_from_validation(errors)
+	var metadata := {"schema_version": GameState.SCHEMA_VERSION, "saved_at": wall_time(),
+		"elapsed_time": state.elapsed_time, "active_planet": state.active_planet_id,
+		"digest": _digest_payload(_normalize_stored_digest_types(payload))}
+	var suffix := _recovery_suffix(source)
+	if suffix == "invalid" or source in ["primary", "backup"]: return _failure("invalid_source", "未知恢复来源")
+	var temporary := _get_slot_path(slot, suffix + ".tmp")
+	var path := _get_slot_path(slot, suffix)
+	if _write_text(temporary, JSON.stringify({"format": SAVE_FORMAT, "metadata": metadata, "state": payload}, "\t", true, true)) != OK:
+		return _failure("emergency_write_failed", "紧急恢复点写入失败，原恢复点仍保留")
+	if not _read_slot_file(temporary).get("ok", false):
+		return _failure("emergency_verification_failed", "紧急恢复点校验失败")
+	# Keep the previous recovery point until a verified replacement is ready.
+	if _rename_file(temporary, path) != OK:
+		return _failure("emergency_replace_failed", "紧急恢复点替换失败")
+	return _success({"metadata": metadata})
 
 func load_slot(slot: int) -> Dictionary:
 	var slot_error := _validate_slot(slot)
@@ -117,8 +163,11 @@ func delete_slot(slot: int) -> Dictionary:
 	if not _storage_available:
 		return _failure("storage_unavailable", "本地存档目录不可用")
 
-	var found := false
-	for suffix in ["", ".bak", ".tmp", ".offline", ".offline.bak", ".offline.tmp"]:
+	var snapshots := _snapshot_sources(slot)
+	for source in snapshots:
+		if _remove_snapshot(slot, source) != OK: return _failure("delete_failed", "无法删除恢复快照")
+	var found := not snapshots.is_empty()
+	for suffix in ["", ".bak", ".tmp", ".emergency", ".emergency.tmp", ".offline", ".offline.bak", ".offline.tmp"]:
 		var path := _get_slot_path(slot, suffix)
 		if not FileAccess.file_exists(path):
 			continue
@@ -131,12 +180,25 @@ func delete_slot(slot: int) -> Dictionary:
 	return _success({"slot": slot})
 
 func get_slot_info(slot: int) -> Dictionary:
-	var load_result := load_slot(slot)
+	var load_result := load_recovery_source(slot, "primary")
+	if not load_result.get("ok", false):
+		load_result = load_recovery_source(slot, "backup")
+	if not load_result.get("ok", false):
+		load_result = load_recovery_source(slot, "emergency")
+	if not load_result.get("ok", false):
+		for source in _snapshot_sources(slot):
+			load_result = load_recovery_source(slot, source)
+			if load_result.get("ok", false): break
+	if not load_result.get("ok", false):
+		for source in get_recovery_sources(slot):
+			if source.get("exists", false): return {"slot": slot, "valid": false, "error": source.get("error", {})}
 	if not load_result.get("ok", false):
 		return {}
 	var metadata: Dictionary = load_result.get("metadata", {}).duplicate(true)
 	var state: GameState = load_result.get("state")
 	metadata["slot"] = slot
+	metadata["valid"] = true
+	metadata["recovery_only"] = load_result.get("source", "primary") not in ["primary", "backup"]
 	metadata["building_count"] = state.buildings.size()
 	metadata["connection_count"] = state.connections.size()
 	metadata["recovered_from_backup"] = load_result.get("recovered_from_backup", false)
@@ -260,6 +322,7 @@ func _read_slot_file(path: String) -> Dictionary:
 		return _failure("decode_failed", "存档状态无法恢复")
 
 	var actual_digest := _digest_payload(migrated_payload)
+	metadata["source_schema_version"] = metadata.get("schema_version", 0)
 	metadata["schema_version"] = GameState.SCHEMA_VERSION
 	metadata["elapsed_time"] = decoded_state.elapsed_time
 	metadata["digest"] = actual_digest
@@ -429,3 +492,51 @@ func wall_time() -> float:
 
 func settlement_path(slot: int) -> String:
 	return _get_slot_path(slot, ".offline") if _validate_slot(slot).is_empty() else ""
+func _recovery_suffix(source: String) -> String:
+	var fixed := {"primary": "", "backup": ".bak", "emergency": ".emergency"}
+	if fixed.has(source): return fixed[source]
+	var number := source.trim_prefix("snapshot_")
+	if source.begins_with("snapshot_") and number.is_valid_int() and int(number) > 0 and str(int(number)) == number:
+		return "." + source
+	return "invalid"
+
+func _snapshot_sources(slot: int) -> Array:
+	var sources: Array = []
+	if not _validate_slot(slot).is_empty(): return sources
+	var directory := DirAccess.open(_save_path)
+	if directory == null: return sources
+	var prefix := "save_%d.json." % slot
+	for file in directory.get_files():
+		if not file.begins_with(prefix): continue
+		var source := file.trim_prefix(prefix)
+		if source.begins_with("snapshot_") and _recovery_suffix(source) != "invalid": sources.append(source)
+	sources.sort()
+	sources.reverse()
+	return sources
+
+func create_snapshot(slot: int, state: GameState) -> Dictionary:
+	var id := int(wall_time() * 1000000)
+	while FileAccess.file_exists(_get_slot_path(slot, ".snapshot_%d" % id)): id += 1
+	var source := "snapshot_%d" % id
+	var result := save_emergency(slot, state, source)
+	if result.get("ok", false): result["source"] = source
+	return result
+
+func delete_snapshots(slot: int, sources: Array) -> Dictionary:
+	if not _validate_slot(slot).is_empty(): return _validate_slot(slot)
+	for source in sources:
+		if not source is String or not source.begins_with("snapshot_") or _recovery_suffix(source) == "invalid":
+			return _failure("invalid_source", "只能删除明确选择的恢复快照")
+	var remaining := 0
+	for candidate in get_recovery_sources(slot):
+		if candidate.valid and not sources.has(candidate.source): remaining += 1
+	if remaining == 0: return _failure("last_recovery_point", "不能删除最后一份有效恢复点")
+	var deleted: Array = []
+	for source in sources:
+		if _remove_snapshot(slot, source) != OK:
+			return _failure("delete_failed", "部分快照删除失败，请刷新检查", {"deleted": deleted})
+		deleted.append(source)
+	return _success({"deleted": deleted})
+
+func _remove_snapshot(slot: int, source: String) -> Error:
+	return DirAccess.remove_absolute(ProjectSettings.globalize_path(_get_slot_path(slot, _recovery_suffix(source))))

@@ -596,9 +596,11 @@ func _test_selection_and_placement_mode_alignment() -> void:
 	state.resource_sites = GalaxySystem.new(state).build_resource_sites_for_planet("home", state.galaxy_seed)
 	test_viewport.push_input(escape_event, true)
 	await get_tree().process_frame
+	_expect(app_shell.call("get_screen_name") == "pause" and GameManager.is_session_active(), "Escape opens pause menu without ending the session")
+	app_shell.call("return_to_menu")
 	var returned_save: Dictionary = GameManager.get_save_system().load_slot(9)
 	var returned_state: Variant = returned_save.get("state")
-	_expect(app_shell.call("get_screen_name") == "start" and not GameManager.is_session_active(), "Escape from an idle canvas saves and returns to the start menu")
+	_expect(app_shell.call("get_screen_name") == "start" and not GameManager.is_session_active(), "pause menu saves and returns to the start menu")
 	_expect(returned_save.get("ok") == true and returned_state is GameState and returned_state.buildings.has(miner.id), "return-to-menu handshake persists the active factory before ending the session")
 	_expect(GameManager.start_new_game(9).get("ok") == true, "workspace tests resume an explicit session after exercising return-to-menu")
 	test_viewport.queue_free()

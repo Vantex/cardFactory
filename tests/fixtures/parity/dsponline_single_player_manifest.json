@@ -17006,17 +17006,23 @@
       "category": "commands",
       "source_id": "OfflineReportWorkspace.onClose",
       "name": "onClose",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scenes/ui/AppShell.gd::_on_session_started"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 20 已实现保存/恢复相关入口并通过本地回归；仍需逐项核对源策略、槽位语义及跨实现行为，未标记完全一致",
       "owner_task": 20,
       "rule_test": "rule:commands:OfflineReportWorkspace.onClose",
       "manual_acceptance": "manual:commands:OfflineReportWorkspace.onClose",
       "ui_entry": "src/components/OfflineReportWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "scripts/test/TestSaveRecovery.gd",
+        "scripts/test/TestProductShell.gd",
+        "scripts/test/TestStatePersistence.gd"
+      ],
       "source_definition": "commands:OfflineReportWorkspace.onClose"
     },
     {
@@ -17384,17 +17390,23 @@
       "category": "commands",
       "source_id": "OperationsWorkspace.onCreateSnapshot",
       "name": "onCreateSnapshot",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "autoload/GameManager.gd::create_recovery_snapshot"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 20 已实现保存/恢复相关入口并通过本地回归；仍需逐项核对源策略、槽位语义及跨实现行为，未标记完全一致",
       "owner_task": 20,
       "rule_test": "rule:commands:OperationsWorkspace.onCreateSnapshot",
       "manual_acceptance": "manual:commands:OperationsWorkspace.onCreateSnapshot",
       "ui_entry": "src/components/OperationsWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "scripts/test/TestSaveRecovery.gd",
+        "scripts/test/TestProductShell.gd",
+        "scripts/test/TestStatePersistence.gd"
+      ],
       "source_definition": "commands:OperationsWorkspace.onCreateSnapshot"
     },
     {
@@ -17438,17 +17450,23 @@
       "category": "commands",
       "source_id": "OperationsWorkspace.onDeleteSnapshot",
       "name": "onDeleteSnapshot",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/SaveSystem.gd::delete_snapshots"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 20 已实现保存/恢复相关入口并通过本地回归；仍需逐项核对源策略、槽位语义及跨实现行为，未标记完全一致",
       "owner_task": 20,
       "rule_test": "rule:commands:OperationsWorkspace.onDeleteSnapshot",
       "manual_acceptance": "manual:commands:OperationsWorkspace.onDeleteSnapshot",
       "ui_entry": "src/components/OperationsWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "scripts/test/TestSaveRecovery.gd",
+        "scripts/test/TestProductShell.gd",
+        "scripts/test/TestStatePersistence.gd"
+      ],
       "source_definition": "commands:OperationsWorkspace.onDeleteSnapshot"
     },
     {
@@ -17456,17 +17474,23 @@
       "category": "commands",
       "source_id": "OperationsWorkspace.onDeleteSnapshots",
       "name": "onDeleteSnapshots",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/SaveSystem.gd::delete_snapshots"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 20 已实现保存/恢复相关入口并通过本地回归；仍需逐项核对源策略、槽位语义及跨实现行为，未标记完全一致",
       "owner_task": 20,
       "rule_test": "rule:commands:OperationsWorkspace.onDeleteSnapshots",
       "manual_acceptance": "manual:commands:OperationsWorkspace.onDeleteSnapshots",
       "ui_entry": "src/components/OperationsWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "scripts/test/TestSaveRecovery.gd",
+        "scripts/test/TestProductShell.gd",
+        "scripts/test/TestStatePersistence.gd"
+      ],
       "source_definition": "commands:OperationsWorkspace.onDeleteSnapshots"
     },
     {
@@ -17690,17 +17714,23 @@
       "category": "commands",
       "source_id": "OperationsWorkspace.onLoadSnapshot",
       "name": "onLoadSnapshot",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "autoload/GameManager.gd::recover_game"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 20 已实现保存/恢复相关入口并通过本地回归；仍需逐项核对源策略、槽位语义及跨实现行为，未标记完全一致",
       "owner_task": 20,
       "rule_test": "rule:commands:OperationsWorkspace.onLoadSnapshot",
       "manual_acceptance": "manual:commands:OperationsWorkspace.onLoadSnapshot",
       "ui_entry": "src/components/OperationsWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "scripts/test/TestSaveRecovery.gd",
+        "scripts/test/TestProductShell.gd",
+        "scripts/test/TestStatePersistence.gd"
+      ],
       "source_definition": "commands:OperationsWorkspace.onLoadSnapshot"
     },
     {
@@ -17708,17 +17738,23 @@
       "category": "commands",
       "source_id": "OperationsWorkspace.onManualSave",
       "name": "onManualSave",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "autoload/GameManager.gd::save_current_game"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 20 已实现保存/恢复相关入口并通过本地回归；仍需逐项核对源策略、槽位语义及跨实现行为，未标记完全一致",
       "owner_task": 20,
       "rule_test": "rule:commands:OperationsWorkspace.onManualSave",
       "manual_acceptance": "manual:commands:OperationsWorkspace.onManualSave",
       "ui_entry": "src/components/OperationsWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "scripts/test/TestSaveRecovery.gd",
+        "scripts/test/TestProductShell.gd",
+        "scripts/test/TestStatePersistence.gd"
+      ],
       "source_definition": "commands:OperationsWorkspace.onManualSave"
     },
     {
@@ -17888,17 +17924,23 @@
       "category": "commands",
       "source_id": "OperationsWorkspace.onSaveSlot",
       "name": "onSaveSlot",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "autoload/GameManager.gd::save_current_game"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 20 已实现保存/恢复相关入口并通过本地回归；仍需逐项核对源策略、槽位语义及跨实现行为，未标记完全一致",
       "owner_task": 20,
       "rule_test": "rule:commands:OperationsWorkspace.onSaveSlot",
       "manual_acceptance": "manual:commands:OperationsWorkspace.onSaveSlot",
       "ui_entry": "src/components/OperationsWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "scripts/test/TestSaveRecovery.gd",
+        "scripts/test/TestProductShell.gd",
+        "scripts/test/TestStatePersistence.gd"
+      ],
       "source_definition": "commands:OperationsWorkspace.onSaveSlot"
     },
     {
@@ -18500,17 +18542,23 @@
       "category": "commands",
       "source_id": "SaveDeleteDialog.onCancel",
       "name": "onCancel",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scenes/ui/SaveSlotsPanel.gd::_request_delete"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 20 已实现保存/恢复相关入口并通过本地回归；仍需逐项核对源策略、槽位语义及跨实现行为，未标记完全一致",
       "owner_task": 20,
       "rule_test": "rule:commands:SaveDeleteDialog.onCancel",
       "manual_acceptance": "manual:commands:SaveDeleteDialog.onCancel",
       "ui_entry": "src/components/SaveDeleteDialog.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "scripts/test/TestSaveRecovery.gd",
+        "scripts/test/TestProductShell.gd",
+        "scripts/test/TestStatePersistence.gd"
+      ],
       "source_definition": "commands:SaveDeleteDialog.onCancel"
     },
     {
@@ -18518,17 +18566,23 @@
       "category": "commands",
       "source_id": "SaveDeleteDialog.onDelete",
       "name": "onDelete",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scenes/ui/AppShell.gd::_delete_slot"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 20 已实现保存/恢复相关入口并通过本地回归；仍需逐项核对源策略、槽位语义及跨实现行为，未标记完全一致",
       "owner_task": 20,
       "rule_test": "rule:commands:SaveDeleteDialog.onDelete",
       "manual_acceptance": "manual:commands:SaveDeleteDialog.onDelete",
       "ui_entry": "src/components/SaveDeleteDialog.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "scripts/test/TestSaveRecovery.gd",
+        "scripts/test/TestProductShell.gd",
+        "scripts/test/TestStatePersistence.gd"
+      ],
       "source_definition": "commands:SaveDeleteDialog.onDelete"
     },
     {

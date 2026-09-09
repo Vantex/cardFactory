@@ -40,7 +40,7 @@ Godot 不在默认位置时，通过 `-GodotPath` 覆盖：
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1 -GodotPath 'D:\Tools\Godot\Godot.exe'
 ```
 
-门禁会先自动执行无窗口编辑器导入，生成资产缓存和全局脚本类缓存，再运行十五个真实 Godot 测试场景：`TestBaseline`、`TestFactoryWorkspace`、`TestStatePersistence`、`TestSimulationCore`、`TestInventoryConstruction`、`TestAdvancedCanvas`、`TestBlueprints`、`TestProgression`、`TestStatisticsCodex`、`TestGalaxyLogistics`、`TestDysonEndgame`、`TestOfflineSettlement` 、`TestProductShell` 、`TestPerformanceBudgets` 与 `TestDSPOnlineParity`。正常通过必须同时满足：Godot 退出码为 0；每个场景的完整成功标记各出现一次；输出不包含 `SCRIPT ERROR`、`Parse Error`、对应失败标记、ObjectDB 泄漏或仍被占用的资源。引擎级 `--quit-after 600` 保证测试进程有界结束。
+门禁会先自动执行无窗口编辑器导入，生成资产缓存和全局脚本类缓存，再运行十六个真实 Godot 测试场景：`TestBaseline`、`TestFactoryWorkspace`、`TestStatePersistence`、`TestSimulationCore`、`TestInventoryConstruction`、`TestAdvancedCanvas`、`TestBlueprints`、`TestProgression`、`TestStatisticsCodex`、`TestGalaxyLogistics`、`TestDysonEndgame`、`TestOfflineSettlement` 、`TestProductShell` 、`TestPerformanceBudgets` 、`TestDSPOnlineParity` 与 `TestSaveRecovery`。正常通过必须同时满足：Godot 退出码为 0；每个场景的完整成功标记各出现一次；输出不包含 `SCRIPT ERROR`、`Parse Error`、对应失败标记、ObjectDB 泄漏或仍被占用的资源。引擎级 `--quit-after 600` 保证测试进程有界结束。
 
 ## 当前可玩工作区（Phase 2）
 
@@ -52,7 +52,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1 -G
 - 左键：在放置模式确认放置；空闲时选择建筑或线路，Ctrl 点击增减选择，从空白拖动可正向或反向框选，拖动已选建筑会批量移动；在右侧输出端口按下，拖到另一张卡片左侧输入端口并释放以创建连接。空白或 UI 上释放会取消连接并显示原因。
 - 右键或中键拖动：平移画布。
 - 滚轮：以指针为中心缩放画布。
-- `Escape`：有放置、拖动或连接操作时先取消该操作；画布空闲时保存并返回开始菜单。
+- `Escape`：有放置、拖动或连接操作时先取消该操作；画布空闲时打开暂停菜单，可立即保存、管理恢复快照或保存并返回主菜单。
 - `Delete`：对纯建筑选择打开确认框，确认后原子删除建筑及其连接；混合选择不会静默删除子集。
 - `Space`：暂停或继续模拟；`1` / `2` / `3`：切换 1×、2×、3× 模拟速度。
 
@@ -156,3 +156,7 @@ schema v9 持久化阶段、来源、已投入材料、整数进度和领奖标�
 ## 任务 19：单机对齐登记
 
 已冻结 DSPONLINE 1.0.46 的实际目录和桌面操作契约，建立 [逐项差距矩阵](docs/CONTENT_PARITY.md)。实际源数据为 78 个物品、80 条配方、39 类建筑、69 项有效科技（另有 7 项弃用定义）、32 个任务和 13 项成就。登记门要求全部条目有映射或缺口、规则规格和任务归属；这不表示原版玩法已经逐项通过。最终发布模式仍按预期拒绝未完成项。用户指定的电脑中文范围继续生效。
+
+## 任务 20：本地保存与恢复
+
+顶栏「立即保存」或 Ctrl+S 保存当前工厂；Escape 打开暂停菜单。开始菜单的存档列表提供「恢复」，可检查并选择主档、最近备份、紧急恢复点和手动快照。恢复旧档需确认，成功保存后才进入工厂，过去的离线时间不重复补算。暂停菜单支持创建快照和管理恢复来源，批量删除会保护最后有效恢复点。详细验证与限制见 [任务 20 验收](docs/current/TASK20_ACCEPTANCE.md)。

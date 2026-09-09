@@ -4,7 +4,9 @@ signal game_state_replaced(game_state: GameState)
 signal session_started(slot: int, is_new_game: bool)
 signal session_ended
 signal save_completed(slot: int, reason: String, metadata: Dictionary)
+signal save_preparing(reason: String)
 signal save_requested(reason: String)
+signal save_status_changed(status: Dictionary)
 signal session_error(error: Dictionary)
 signal offline_updated(snapshot: Dictionary)
 
@@ -20,6 +22,39 @@ var _save_in_progress := false
 var _autosave_interval := DEFAULT_AUTOSAVE_INTERVAL
 var _autosave_elapsed := 0.0
 var _offline_job: OfflineSettlementSystem
+var _save_queue: Array[Dictionary] = []
+var _inflight_digest := ""
+var _save_revision := 0
+var _save_status := {"phase": "idle", "message": "尚未保存", "revision": 0}
+
+func get_save_status() -> Dictionary:
+	return _save_status.duplicate(true)
+
+func _set_save_status(phase: String, message: String) -> void:
+	_save_status = {"phase": phase, "message": message, "revision": _save_revision}
+	save_status_changed.emit(get_save_status())
+
+func recover_game(slot: int, source: String) -> Dictionary:
+	if _save_in_progress or (_offline_job != null and _offline_job.phase in ["simulating", "ready"]):
+		return _failure("session_busy", "请先完成当前保存或离线结算")
+	var loaded := _save_system.load_recovery_source(slot, source)
+	if not loaded.get("ok", false): return loaded
+	var previous := OfflineSettlementJournal.new(_save_system, slot).read()
+	if not previous.get("ok", false): return previous
+	var boundary := maxf(_save_system.wall_time(), float(previous.get("entry", {}).get("target_time", 0)))
+	var saved := _commit_state(slot, loaded.state, "recovery", {"offline_processed_until": boundary})
+	if not saved.get("ok", false):
+		_set_save_status("failed", String(saved.error.message))
+		return saved
+	_current_slot = slot
+	_session_active = true
+	_offline_job = null
+	_autosave_elapsed = 0
+	replace_game_state(loaded.state)
+	_set_save_status("saved", "已从%s恢复并保存；过去的离线时间不再补算" % {"primary": "主档", "backup": "备份", "emergency": "紧急恢复点"}.get(source, source))
+	session_started.emit(slot, false)
+	return saved
+
 
 func _ready() -> void:
 	get_tree().auto_accept_quit = false
@@ -44,6 +79,7 @@ func get_simulation_engine() -> SimulationEngine:
 	return simulation_engine
 
 func configure_save_system(save_system: SaveSystem) -> void:
+	if _save_in_progress: return
 	if save_system != null:
 		_save_system = save_system
 		_offline_job = null
@@ -52,10 +88,11 @@ func get_save_system() -> SaveSystem:
 	return _save_system
 
 func start_new_game(slot: int) -> Dictionary:
+	if _save_in_progress: return _failure("save_in_progress", "请等待保存完成")
 	var new_state := GameState.new()
 	new_state.initialize_new_game_home_inventory()
 	PlanetSystem.new(new_state).initialize_colonized_resource_sites()
-	var save_result := _save_system.save_slot(slot, new_state)
+	var save_result := _commit_state(slot, new_state, "new_game")
 	if not save_result.get("ok", false):
 		session_error.emit(save_result.get("error", {}))
 		return save_result
@@ -70,9 +107,11 @@ func start_new_game(slot: int) -> Dictionary:
 	return save_result
 
 func continue_game(slot: int) -> Dictionary:
+	if _save_in_progress: return _failure("save_in_progress", "请等待保存完成")
 	if _offline_job != null and _offline_job.phase in ["simulating", "ready"]:
 		return _failure("offline_busy", "请先完成或放弃当前离线结算")
 	var candidate := OfflineSettlementSystem.new()
+	candidate.save_writer = _save_offline_state
 	var result := candidate.begin(_save_system, slot, _save_system.wall_time())
 	if not result.ok:
 		session_error.emit(result.get("error", {}))
@@ -121,19 +160,47 @@ func advance_offline_settlement() -> void:
 func save_current_game(reason: String = "manual") -> Dictionary:
 	if not _session_active or _current_slot < 0:
 		return _failure("no_active_session", "当前没有可保存的游戏会话")
+	save_preparing.emit(reason)
+	return _commit_state(_current_slot, game_state, reason)
+
+func _save_offline_state(slot: int, state: GameState, metadata: Dictionary) -> Dictionary:
+	return _commit_state(slot, state, "offline", metadata)
+
+func _commit_state(slot: int, state: GameState, reason: String, metadata: Dictionary = {}) -> Dictionary:
+	var snapshot := state.copy_state()
+	var digest := JSON.stringify([slot, GameStateCodec.to_persistent_dict(snapshot), metadata]).sha256_text()
 	if _save_in_progress:
-		return _failure("save_in_progress", "已有存档写入正在进行")
+		if _inflight_digest.is_empty(): return _failure("save_in_progress", "存档事务正在提交")
+		if (_save_queue.is_empty() and digest != _inflight_digest) or (not _save_queue.is_empty() and _save_queue.back().digest != digest):
+			_save_revision += 1
+			_save_queue.append({"slot": slot, "state": snapshot, "metadata": metadata.duplicate(true), "digest": digest, "reason": reason, "revision": _save_revision})
+		return {"ok": true, "queued": true, "durable": false}
+	_save_revision += 1
+	_save_queue.append({"slot": slot, "state": snapshot, "metadata": metadata.duplicate(true), "digest": digest, "reason": reason, "revision": _save_revision})
 	_save_in_progress = true
-	save_requested.emit(reason)
-	var started := performance_monitor.begin()
-	var result := _save_system.save_slot(_current_slot, game_state)
-	performance_monitor.finish("save_ms", started)
-	_save_in_progress = false
-	if result.get("ok", false):
+	var result: Dictionary = {}
+	while not _save_queue.is_empty():
+		var request: Dictionary = _save_queue.pop_front()
+		_inflight_digest = request.digest
+		_set_save_status("saving", "正在保存…")
+		save_requested.emit(request.reason)
+		var started := performance_monitor.begin()
+		result = _save_system.save_slot(request.slot, request.state, request.metadata)
+		performance_monitor.finish("save_ms", started)
+		if not result.get("ok", false):
+			var latest: Dictionary = _save_queue.back() if not _save_queue.is_empty() else request
+			var emergency := _save_system.save_emergency(latest.slot, latest.state) if reason not in ["recovery", "new_game"] else {"ok": false}
+			result["emergency_saved"] = emergency.get("ok", false)
+			_save_queue.clear()
+			_autosave_elapsed = 0.0
+			_set_save_status("failed", String(result.error.message) + ("；已保留紧急恢复点" if result.emergency_saved else "；请检查磁盘权限或空间"))
+			session_error.emit(result.error)
+			break
 		_autosave_elapsed = 0.0
-		save_completed.emit(_current_slot, reason, result.get("metadata", {}))
-	else:
-		session_error.emit(result.get("error", {}))
+		save_completed.emit(request.slot, request.reason, result.get("metadata", {}))
+	_inflight_digest = ""
+	_save_in_progress = false
+	if result.get("ok", false): _set_save_status("saved", "已保存")
 	return result
 
 func advance_autosave(delta: float) -> Dictionary:
@@ -150,6 +217,7 @@ func prepare_to_quit() -> Dictionary:
 	return save_current_game("exit")
 
 func end_session() -> void:
+	if _save_in_progress: return
 	_offline_job = null
 	_current_slot = -1
 	_session_active = false
@@ -195,7 +263,7 @@ func _notification(what: int) -> void:
 	if what != NOTIFICATION_WM_CLOSE_REQUEST:
 		return
 	var result := prepare_to_quit()
-	if result.get("ok", false):
+	if result.get("ok", false) and not result.get("queued", false):
 		get_tree().quit()
 
 func _failure(code: String, message: String) -> Dictionary:
@@ -203,3 +271,12 @@ func _failure(code: String, message: String) -> Dictionary:
 		"ok": false,
 		"error": {"code": code, "source": "game_manager", "message": message},
 	}
+
+func create_recovery_snapshot() -> Dictionary:
+	if not _session_active or _save_in_progress: return _failure("session_busy", "当前无法创建快照")
+	save_preparing.emit("snapshot")
+	_save_in_progress = true
+	var result := _save_system.create_snapshot(_current_slot, game_state.copy_state())
+	_save_in_progress = false
+	if not result.get("ok", false): session_error.emit(result.error)
+	return result
