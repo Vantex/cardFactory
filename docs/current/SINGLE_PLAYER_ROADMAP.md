@@ -2,7 +2,7 @@
 
 > **执行要求：** 后续会话使用 `executing-plans` 或 `subagent-driven-development` 技能按任务实施。每项功能先写失败测试，再做最小实现；每完成一个任务都运行本任务门和全量门，并形成可回滚提交。
 
-**目标：** 在 Godot 4 中把 CardFactory 建设为完整的离线单机工厂游戏，覆盖可靠存档、确定性生产、电力、物流、科技、多行星、戴森工程、离线结算和终局；不实现账号、云存档、排行榜、在线社交或服务器运维。
+**目标：** 在 Godot 4 中完整复刻 DSPONLINE 的离线单机功能、内容、数值规则和操作闭环，覆盖可靠存档、确定性生产、电力、物流、科技、多行星、戴森工程、离线结算和终局；不要求读取或转换 DSPONLINE 旧存档，不实现账号、云存档、排行榜、在线社交或服务器运维。
 
 **设计依据：** `docs/current/SINGLE_PLAYER_GAP_ANALYSIS.md`
 
@@ -18,14 +18,16 @@
 
 - 完整单机工厂、科技、星图、物流、戴森和终局循环。
 - 本地存档、备份、自动保存、离线结算和崩溃后安全恢复。
-- 蓝图、统计、资料库、设置、移动/手柄/无障碍和本地导出。
-- 纯本地空间站扩展作为核心终局后的可选阶段。
+- 蓝图、统计、资料库、设置、桌面键鼠/手柄/无障碍和本地导出。
+- DSPONLINE 当前单机目录中的全部物品、配方、建筑、科技、战役、成就、难度、速通、时间扭曲和本地空间站功能。
+- DSPONLINE 单机 UI 中的等价操作、反馈、快捷键和桌面键鼠工作流；Godot 可以使用原生控件实现，不要求复用 React 代码或像素级复制网页布局。
 
 ### 本计划明确排除
 
 - 账号、邮箱、云存档、云冲突、排行榜、在线活动、遥测。
 - 公共空间站主页、玩家社交、在线合同和服务器同步。
 - Node/SQLite 服务端、部署、备份、运营后台、PWA/Electron/Capacitor 实现。
+- 读取、导入或无损转换 DSPONLINE 既有存档；CardFactory 只保证自身版本间的存档迁移。
 
 旧 `SaveSystem` 中的云方法不得继续伪装成功；在任务 1 中将其隔离或明确返回“不支持”。
 
@@ -63,6 +65,7 @@ git status --short --branch
 - `scripts/test/TestOfflineSettlement.gd`：离线时间、重复结算保护和离线报告。
 - `scripts/test/TestProductShell.gd`：菜单、设置、输入方式和响应式 UI。
 - `scripts/test/TestPerformanceBudgets.gd`：大工厂状态一致性与性能预算。
+- `scripts/test/TestDSPOnlineParity.gd`：冻结目录、规则夹具、单机操作和端到端内容对齐。
 
 每个脚本配一个同名 `scenes/test/*.tscn` 入口，并有唯一成功标记。
 
@@ -302,7 +305,7 @@ git commit -m "feat: add conserved construction inventory"
 
 - [x] **步骤 1：建立内容清单**
 
-创建物品、配方、建筑、科技和解锁映射表。DSPONLINE 的 78/78/37/67 用于覆盖度检查，不复制其名字、素材或源码；CardFactory 可使用原创命名和视觉。
+创建物品、配方、建筑、科技和解锁映射表。历史参考数量 78/78/37/67 已由任务 19 冻结目录取代（78 物品、80 配方、39 建筑、69 有效科技及 7 弃用定义），后续以冻结目录检查覆盖度，不复制其名字、素材或源码；CardFactory 可使用原创命名和视觉。
 
 - [x] **步骤 2：先完成一条完整科学链**
 
@@ -819,6 +822,12 @@ git commit -m "perf: add deterministic large factory budgets"
 
 **完成记录（2026-09-08）：** 已交付三档固定工厂、状态等价/存档往返门禁、设置页监测开关和双格式报告；优化传送带排序查询、空间命中、视口裁剪和 LOD 批绘。本机报告与限制见 [任务 18 验收](TASK18_ACCEPTANCE.md)。十四场景门禁和独立 OpenGL 基准通过；大型工厂仍有固定步超预算，未承诺 60 FPS。
 
+---
+
+## 阶段 7：DSPONLINE 完整单机功能与内容复刻
+
+本阶段以任务 19 冻结的 DSPONLINE 单机基线为验收依据。要求功能、内容、数值规则和玩家可执行操作一致；Godot 内部架构、控件和存档格式可以不同。账号、云存档、排行榜、在线社交、在线合同、服务器和 DSPONLINE 旧存档导入继续排除。
+
 ### 任务 19：冻结 DSPONLINE 单机对齐基线
 
 **文件：**
@@ -855,6 +864,314 @@ git commit -m "test: freeze DSPONLINE single player parity baseline"
 
 **完成记录（2026-09-08）：** 已冻结源目录与桌面操作契约，生成逐项矩阵、固定排除与规则规格，接入十五场景门禁；登记门通过，完整发布模式按预期拒绝待实现项。详见 [任务 19 验收](TASK19_ACCEPTANCE.md)。本轮未开始任务 20。
 
+### 后续任务执行约定（任务 19 复核，2026-09-09）
+
+顺序保持 20 → 21 → 22 → 23 → 24 → 25 → 26 → 27。每项先核实候选映射，区分已有能力待验证、行为不一致和真正缺失；“未实现”登记数量不能直接当开发工作量。任务归属表示主责，跨系统行为仍需关联验证。
+
+任务 20 先保证保存协调与恢复；后续每次新增状态同时补 codec、迁移和保存往返，保留 schema v9 旧档与待提交离线结算的兼容证据。任务 22 的科技引用先完成目录一致性检查，任务 25 再对齐完整研究效果，任务 26 复核特殊系统中的效果，避免循环依赖阻塞。
+
+任务 20～26 每批同步补真实行为夹具、更新矩阵和运行对应门禁，不把全部行为验证推迟到任务 27。任务 27 负责全覆盖与完整旅程收口。各批保留任务 18 同场景、同设备的性能差分；新增规模单独版本化基线，不与不同输入混比，也不承诺已达到 60 FPS。文件列表是实施入口，优先扩展当前活跃系统，避免另建同义系统。
+
+### 任务 20：对齐本地存档控制与恢复体验
+
+**文件：**
+
+- 修改：`scripts/game/SaveSystem.gd`
+- 修改：`autoload/GameManager.gd`
+- 修改：`scenes/ui/AppShell.gd`
+- 创建：`scenes/ui/RecoveryWorkspace.gd`
+- 修改：`scripts/test/TestStatePersistence.gd`
+- 修改：`scripts/test/TestProductShell.gd`
+
+- [ ] **步骤 1：写手动保存和恢复失败测试**
+
+覆盖立即保存、自动保存间隔、返回/退出保存、写入冲突、最近有效主档、备份、紧急恢复点、恢复来源提示和恢复后再次保存。任何失败不得替换当前权威状态或删除最后一份有效恢复点。
+
+- [ ] **步骤 2：实现统一保存协调器**
+
+手动、自动、生命周期和离线结算只提交同一串行保存队列；相同状态请求合并，不同状态按权威修订号排序。完成写入、读回和摘要校验后才更新“已保存”状态。
+
+- [ ] **步骤 3：实现恢复工作区**
+
+开始菜单显示主档、备份和紧急恢复点的时间、游玩时长、版本与校验状态，允许玩家选择恢复来源；不提供 DSPONLINE 存档导入。
+
+- [ ] **步骤 4：接入正式 UI**
+
+顶栏和暂停菜单提供“立即保存”，显示保存中、成功、失败和只读原因；桌面键鼠和已有手柄入口均能完成同一操作。
+
+- [ ] **步骤 5：提交**
+
+```powershell
+git add scripts/game/SaveSystem.gd autoload/GameManager.gd scenes/ui/AppShell.gd scenes/ui/RecoveryWorkspace.gd scripts/test/TestStatePersistence.gd scripts/test/TestProductShell.gd
+git commit -m "feat: match local save and recovery controls"
+```
+
+### 任务 21：对齐多电网、优先级与储能
+
+**文件：**
+
+- 重写：`scripts/game/PowerSystem.gd`
+- 创建：`scripts/game/PowerGridSystem.gd`
+- 修改：`scripts/game/GameState.gd`
+- 修改：`scripts/game/GameStateCodec.gd`
+- 修改：`scenes/ui/FactoryWorkspaceUI.gd`
+- 修改：`scripts/test/TestSimulationCore.gd`
+
+- [ ] **步骤 1：写电网隔离和能量守恒失败测试**
+
+覆盖同一行星多个电网、覆盖丢失、建筑换网、发电优先级、用电优先级、蓄电池充放电、能量枢纽、断电、满储能、空储能和保存加载。每个固定 tick 的发电、消耗、充电、放电和损耗必须守恒。
+
+- [ ] **步骤 2：实现稳定电网归属**
+
+电网使用稳定 ID；每个建筑持久化电网、用电优先级，发电设备另存发电优先级。覆盖变化只重建可派生索引，不隐式搬运库存或重置生产进度。
+
+- [ ] **步骤 3：实现分级供电和储能调度**
+
+按 DSPONLINE 冻结基线的优先级、容量、充放电功率和待机规则分配能源；可再生、燃料、戴森功率和储能遵循相同数值顺序。
+
+- [ ] **步骤 4：对齐检查器与反馈**
+
+建筑检查器可修改电网和优先级，显示需求、获得功率、覆盖、储能水平和阻塞原因；批量修改先完整预检再原子提交。
+
+- [ ] **步骤 5：提交**
+
+```powershell
+git add scripts/game/PowerSystem.gd scripts/game/PowerGridSystem.gd scripts/game/GameState.gd scripts/game/GameStateCodec.gd scenes/ui/FactoryWorkspaceUI.gd scripts/test/TestSimulationCore.gd
+git commit -m "feat: match DSPONLINE power grids and storage"
+```
+
+### 任务 22：对齐完整生产目录、递归制造与喷涂
+
+**文件：**
+
+- 修改：`data/*.json`
+- 创建：`scripts/game/CraftingPlanner.gd`
+- 创建：`scripts/game/ConstructionAutomationSystem.gd`
+- 创建：`scripts/game/ProliferatorSystem.gd`
+- 修改：`scripts/game/ProductionSystem.gd`
+- 修改：`scripts/game/HandcraftSystem.gd`
+- 修改：`autoload/DataManager.gd`
+- 创建：`scripts/test/TestContentParity.gd`
+- 创建：`scenes/test/TestContentParity.tscn`
+
+- [ ] **步骤 1：写目录和规则差距测试**
+
+逐项断言冻结 manifest 中全部物品、配方和建筑都有对应数据、设备约束、科技前置、输入输出、时间、功率、缓存和施工成本；缺一项即失败。
+
+- [ ] **步骤 2：迁移完整单机目录**
+
+把 DSPONLINE 冻结基线的 78 个物品、80 条配方和 39 类建筑及其数值迁入 Godot 数据文件，保留稳定映射并接入正式建造、生产和资料库入口。所有源项目后续新增内容必须通过新的基线更新进入，不静默改变本阶段目标。
+
+- [ ] **步骤 3：实现递归材料规划**
+
+从目标数量构建完整无环依赖图，按已解锁配方优先级选择路线；输入不足、输出容量不足、副产物堵塞或配方锁定时返回确定缺口。确认后一次性保留材料，失败不产生半成品状态。
+
+- [ ] **步骤 4：实现建筑制造中心和自动补货**
+
+持续目标库存、阶段 WIP、缺料、预计时间、暂停和保存恢复均进入权威状态；物流载具和复杂建筑可以一键递归制造。
+
+- [ ] **步骤 5：实现三级喷涂规则**
+
+按冻结基线实现喷涂点、额外产物、加速、功耗倍率、配方资格和拆卸返还；生产、科研、统计、蓝图和保存共用同一规则源。
+
+- [ ] **步骤 6：提交**
+
+```powershell
+git add data scripts/game/CraftingPlanner.gd scripts/game/ConstructionAutomationSystem.gd scripts/game/ProliferatorSystem.gd scripts/game/ProductionSystem.gd scripts/game/HandcraftSystem.gd autoload/DataManager.gd scripts/test/TestContentParity.gd scenes/test/TestContentParity.tscn
+git commit -m "feat: match DSPONLINE production content and crafting"
+```
+
+### 任务 23：对齐画布历史、自动布局与高效命令
+
+**文件：**
+
+- 创建：`scripts/game/CommandHistory.gd`
+- 创建：`scripts/game/FactoryAutoLayout.gd`
+- 创建：`scenes/ui/CommandPalette.gd`
+- 修改：`scripts/input/InputHandler.gd`
+- 修改：`scenes/ui/FactoryWorkspaceUI.gd`
+- 修改：`scripts/game/BeltSystem.gd`
+- 修改：`scripts/test/TestAdvancedCanvas.gd`
+
+- [ ] **步骤 1：写可逆命令和批量交互失败测试**
+
+覆盖建造、移动、删除、连接、线路配置、配方修改、自动布局的撤销/重做；覆盖连续拉线候选、确认、撤销最近候选和取消。历史操作前后资源、稳定 ID、在途货物和累计统计必须守恒。
+
+- [ ] **步骤 2：实现会话命令历史**
+
+所有玩家画布修改封装为可验证命令，保存提交前后摘要；`Ctrl+Z`、`Ctrl+Shift+Z` 和 UI 按钮共享同一历史。加载、新游戏和明确清空历史不会修改 GameState。
+
+- [ ] **步骤 3：实现确定性自动布局**
+
+按生产拓扑、稳定 ID 和卡片尺寸生成布局，保留锁定建筑并避免重叠；自动布局作为单一可撤销命令提交。
+
+- [ ] **步骤 4：实现命令面板和连续拉线**
+
+命令面板提供工作区导航、建造、实体定位和批量命令；连续拉线支持候选预览、兼容性原因、确认和取消，不允许 UI 释放穿透。
+
+- [ ] **步骤 5：对齐线路规模与批量配置**
+
+把并联上限、直接输入、增减、整网同步、批量减堆和施工库存扣除对齐冻结基线；扩大上限不能改变既有线路设置或在途货物。
+
+- [ ] **步骤 6：提交**
+
+```powershell
+git add scripts/game/CommandHistory.gd scripts/game/FactoryAutoLayout.gd scenes/ui/CommandPalette.gd scripts/input/InputHandler.gd scenes/ui/FactoryWorkspaceUI.gd scripts/game/BeltSystem.gd scripts/test/TestAdvancedCanvas.gd
+git commit -m "feat: match DSPONLINE factory editing workflow"
+```
+
+### 任务 24：对齐持久蓝图库、施工队列与导航标记
+
+**文件：**
+
+- 修改：`scripts/game/BlueprintSystem.gd`
+- 修改：`scripts/game/BlueprintCodec.gd`
+- 创建：`scripts/game/ConstructionQueueSystem.gd`
+- 修改：`scripts/game/GameState.gd`
+- 重写：`scenes/ui/BlueprintWorkspace.gd`
+- 修改：`scenes/ui/MiniMap.gd`
+- 修改：`scripts/test/TestBlueprints.gd`
+
+- [ ] **步骤 1：写蓝图库持久化和施工队列失败测试**
+
+覆盖命名、重命名、删除、旋转、镜像、配方替换、导入导出、排队部署、部分资助、全部资助、取消、重叠策略、载具目标和保存加载。
+
+- [ ] **步骤 2：把蓝图库迁入权威状态**
+
+蓝图定义、变换和配方替换持久化；运行缓存、临时进度、选中态和来源建筑稳定 ID 不复制。导入继续使用受限格式和完整引用校验。
+
+- [ ] **步骤 3：实现待建与补足队列**
+
+部署可选择立即原子完成或生成灰模队列；材料、建筑、线路和载具逐项资助并保持唯一所有权，取消按真实未消耗数量返还。
+
+- [ ] **步骤 4：持久化区域和书签**
+
+区域名称、矩形、颜色和书签视口进入 GameState；支持重命名、调整、删除、跨行星导航和保存加载，数量上限与冻结基线一致。
+
+- [ ] **步骤 5：提交**
+
+```powershell
+git add scripts/game/BlueprintSystem.gd scripts/game/BlueprintCodec.gd scripts/game/ConstructionQueueSystem.gd scripts/game/GameState.gd scenes/ui/BlueprintWorkspace.gd scenes/ui/MiniMap.gd scripts/test/TestBlueprints.gd
+git commit -m "feat: match DSPONLINE blueprint and navigation persistence"
+```
+
+### 任务 25：对齐科技、战役、成就和完整内容推进
+
+**文件：**
+
+- 修改：`data/technologies.json`
+- 修改：`data/progression.json`
+- 修改：`scripts/game/TechnologySystem.gd`
+- 修改：`scripts/game/ProgressionSystem.gd`
+- 修改：`scenes/ui/TechnologyPanel.gd`
+- 修改：`scenes/ui/CampaignWorkspace.gd`
+- 修改：`scripts/test/TestProgression.gd`
+
+- [ ] **步骤 1：写完整推进目录失败测试**
+
+断言冻结基线全部有限/无限科技、战役任务和成就均有稳定映射、真实领域条件、矩阵成本、前置、效果、导航和奖励；UI 点击本身不得完成目标。
+
+- [ ] **步骤 2：对齐 69 项有效科技、7 项弃用定义处理和完整矩阵层级**
+
+对齐电磁、能量、结构、信息、引力和宇宙矩阵成本，接入生产、采矿、物流、电力、储量利用、建筑和无限研究效果。队列、暂停、取消、层数、投入和保存规则继续保持原子。
+
+- [ ] **步骤 3：迁移 32 个战役任务和 13 项成就**
+
+覆盖基础工业、六色矩阵、行星/星际物流、稀有资源、喷涂、蓝图、戴森工程和银河终局；旧 CardFactory 存档依据已有领域事实补齐进度，不重复发放奖励。
+
+- [ ] **步骤 4：对齐工作区操作**
+
+科技和战役工作区提供冻结基线中的搜索、筛选、层级导航、任务选择、缺口、定位、奖励和无限研究操作；桌面键鼠和已有手柄入口等价。
+
+- [ ] **步骤 5：提交**
+
+```powershell
+git add data/technologies.json data/progression.json scripts/game/TechnologySystem.gd scripts/game/ProgressionSystem.gd scenes/ui/TechnologyPanel.gd scenes/ui/CampaignWorkspace.gd scripts/test/TestProgression.gd
+git commit -m "feat: match DSPONLINE technology and progression content"
+```
+
+### 任务 26：对齐单机模式、本地空间站与剩余特殊规则
+
+**文件：**
+
+- 创建：`scripts/game/GameModeSystem.gd`
+- 创建：`scripts/game/LocalSpaceStationSystem.gd`
+- 创建：`scenes/ui/LocalSpaceStationWorkspace.gd`
+- 修改：`scripts/game/EndgameSystem.gd`
+- 修改：`scripts/game/SimulationEngine.gd`
+- 修改：`scenes/ui/StartMenu.gd`
+- 创建：`scripts/test/TestSinglePlayerModes.gd`
+- 创建：`scenes/test/TestSinglePlayerModes.tscn`
+
+- [ ] **步骤 1：写模式隔离和特殊规则失败测试**
+
+覆盖冻结基线中的难度、速通、时间扭曲、纯挂机/宏观推进、本地空间站、银河出口和无限科研目标。模式创建后不可通过加载或 UI 操作绕过规则，模式间存档和成就互不污染。
+
+- [ ] **步骤 2：实现难度、速通和时间扭曲**
+
+对齐生产、采矿、物流、功耗、计时、暂停和时间扭曲功率限制；时间扭曲只改变规定的模拟领域，不重复累计游玩时间或离线结算。
+
+- [ ] **步骤 3：实现本地空间站和银河项目**
+
+每档唯一空间站、建设阶段、材料守恒、本地合同、银河出口和长期目标进入权威状态；公共主页、玩家信号和服务器同步不进入代码路径。
+
+- [ ] **步骤 4：清零冻结 manifest 的特殊规则差距**
+
+按以下批次处理冻结清单，每批先核实已有实现，再补差和验证：
+
+- 26A：标准、速通、时间扭曲、纯挂机及难度规则。
+- 26B：本地空间站、银河工业/出口与项目，以及星图、资源储量和戴森工程的剩余差异。
+- 26C：站点槽位、舰队和翘曲器配置、量子物流挂接与容量、轨道采集器及黑洞特殊规则；复用既有物流和电力系统。
+- 26D：本地内容包的注册、校验、依赖和启停操作；只承接源清单中的离线能力。
+
+每批须有具体领域测试、正式 UI 入口和必要的持久化往返；查询/展示项验证派生值，不强行新增持久状态。不得把普通线路 Mode 或电力 Snapshot 归入特殊玩法。科技效果由任务 25 实现，本任务验证模式和特殊系统中的集成。
+
+- [ ] **步骤 5：提交**
+
+```powershell
+git add scripts/game/GameModeSystem.gd scripts/game/LocalSpaceStationSystem.gd scenes/ui/LocalSpaceStationWorkspace.gd scripts/game/EndgameSystem.gd scripts/game/SimulationEngine.gd scenes/ui/StartMenu.gd scripts/test/TestSinglePlayerModes.gd scenes/test/TestSinglePlayerModes.tscn
+git commit -m "feat: match remaining DSPONLINE single player modes"
+```
+
+### 任务 27：逐项对齐验收与单机发布门
+
+**文件：**
+
+- 创建：`docs/testing/dsponline-parity-checklist.md`
+- 创建：`docs/testing/single-player-release-checklist.md`
+- 创建：`tests/fixtures/parity/behavior/`
+- 修改：`docs/CONTENT_PARITY.md`
+- 修改：`README.md`
+- 修改：`docs/PROJECT_STATUS.md`
+- 修改：本计划复选框
+
+- [ ] **步骤 1：建立跨实现行为金标**
+
+汇总并补齐任务 20～26 随功能建立的行为金标。从冻结 DSPONLINE 基线导出不含账号和玩家数据的确定性输入/输出夹具，CardFactory 对相同初始目录、命令序列和模拟时间验证库存、产量、研究、物流、电力、戴森、任务和终局结果。Godot 内部字段可不同，玩家可见数值和资源守恒结果必须一致。
+
+- [ ] **步骤 2：清零内容矩阵**
+
+`docs/CONTENT_PARITY.md` 中所有非在线条目必须为“已验证”，并链接自动测试或人工验收编号；任何“未实现/实现中”都阻止发布。
+
+- [ ] **步骤 3：执行完整人工旅程**
+
+分别完成标准、难度、速通、时间扭曲和纯挂机的适用旅程；以电脑键鼠操作验收，并检查窗口缩放、常见桌面分辨率和大字号：新游戏、六色矩阵、蓝图、科技、多行星、星际物流、戴森、离线、终局、空间站、保存恢复及损坏档处理。逐项核对 DSPONLINE 对应入口、反馈和数值。
+
+- [ ] **步骤 4：验证本地导出**
+
+Windows 单机包必须通过完整旅程；不设置 Android 或手机触摸验收。导出包不得包含账号、云、排行榜或服务器入口。
+
+- [ ] **步骤 5：最终审查**
+
+使用 `requesting-code-review` 检查状态守恒、CardFactory 存档兼容、输入穿透、错误反馈、性能差分、冻结基线覆盖和文档真实性。修复所有高置信度问题后重跑全程质量门与行为金标。
+
+- [ ] **步骤 6：更新权威文档并提交**
+
+```powershell
+git add README.md docs/PROJECT_STATUS.md docs/CONTENT_PARITY.md docs/testing tests/fixtures/parity docs/current/SINGLE_PLAYER_ROADMAP.md
+git commit -m "docs: verify complete DSPONLINE single player parity"
+```
+
 ---
 
 ## 阶段交付检查点
@@ -867,11 +1184,12 @@ git commit -m "test: freeze DSPONLINE single player parity baseline"
 | 阶段 3 | 教程、科技和分析形成正式推进 | 任务靠 UI 点击、科技效果未进入模拟、诊断不可信 |
 | 阶段 4 | 多行星和星际物流形成跨星生产链 | 行星状态混合、货物/载具归属不唯一、迁移丢数据 |
 | 阶段 5 | 戴森工程和单机终局完整，离线可恢复 | 离线重复结算、戴森状态跨星混合、胜利依赖联网 |
-| 阶段 6 | 设置、平台适配、性能与发布证据齐全 | 大工厂优化改变状态、核心 UI 重叠或存档不可恢复 |
+| 阶段 6 | 设置、平台适配和大型工厂性能证据齐全 | 大工厂优化改变状态、核心 UI 重叠或存档不可恢复 |
+| 阶段 7 | DSPONLINE 单机功能、内容、数值规则和操作逐项通过对齐门 | 冻结 manifest 有任何非在线差距、行为金标不一致或完整旅程未通过 |
 
 ## 文档维护规则
 
 - 本计划是程序级路线图；每个阶段开始前可以创建更细的阶段计划，但不得改变本文件的范围边界和停止门，除非先更新设计规格并获得用户批准。
 - 每完成一步勾选对应复选框；不能按“已有类似函数”提前勾选。
-- 新发现差距先加入设计规格的差距矩阵，再决定插入哪个阶段。
+- 新发现差距先加入 `docs/CONTENT_PARITY.md`；Stage 7 完成前所有非在线差距都必须落实到任务 20～26 并通过任务 27 验收。
 - 在线功能需求若未来重新进入范围，必须新建设计规格和独立计划，不能悄悄加入本单机路线。

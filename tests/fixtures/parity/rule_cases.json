@@ -4182,7 +4182,7 @@
   "rule:workspaces:OfflineReportWorkspace": {
     "source_key": "workspaces:OfflineReportWorkspace",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 20,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -4215,7 +4215,7 @@
   "rule:workspaces:RecipeWorkspace": {
     "source_key": "workspaces:RecipeWorkspace",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 22,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -4226,7 +4226,7 @@
   "rule:workspaces:StarMapWorkspace": {
     "source_key": "workspaces:StarMapWorkspace",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -4303,7 +4303,7 @@
   "rule:commands:BlueprintWorkspace.onBatchConnectionModeChange": {
     "source_key": "commands:BlueprintWorkspace.onBatchConnectionModeChange",
     "kind": "pending_behavior",
-    "owner_task": 26,
+    "owner_task": 24,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -4468,7 +4468,7 @@
   "rule:commands:BlueprintWorkspace.onModeChange": {
     "source_key": "commands:BlueprintWorkspace.onModeChange",
     "kind": "pending_behavior",
-    "owner_task": 26,
+    "owner_task": 24,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -4523,7 +4523,7 @@
   "rule:commands:BlueprintWorkspace.onRegionModeChange": {
     "source_key": "commands:BlueprintWorkspace.onRegionModeChange",
     "kind": "pending_behavior",
-    "owner_task": 26,
+    "owner_task": 24,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -4589,7 +4589,7 @@
   "rule:commands:BlueprintWorkspace.onToggleLineFindMode": {
     "source_key": "commands:BlueprintWorkspace.onToggleLineFindMode",
     "kind": "pending_behavior",
-    "owner_task": 26,
+    "owner_task": 24,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -5337,7 +5337,7 @@
   "rule:commands:DysonPlannerWorkspace.onSave": {
     "source_key": "commands:DysonPlannerWorkspace.onSave",
     "kind": "pending_behavior",
-    "owner_task": 20,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -5645,7 +5645,7 @@
   "rule:commands:engine.cancelHandcraftQueueEntry": {
     "source_key": "commands:engine.cancelHandcraftQueueEntry",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 22,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -5722,7 +5722,7 @@
   "rule:commands:engine.canHandcraftRecipe": {
     "source_key": "commands:engine.canHandcraftRecipe",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 22,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -5766,7 +5766,7 @@
   "rule:commands:engine.canQueueHandcraftRecipe": {
     "source_key": "commands:engine.canQueueHandcraftRecipe",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 22,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -5942,7 +5942,7 @@
   "rule:commands:engine.craftConstruction": {
     "source_key": "commands:engine.craftConstruction",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 22,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -5953,7 +5953,7 @@
   "rule:commands:engine.craftConstructionWithUpstream": {
     "source_key": "commands:engine.craftConstructionWithUpstream",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 22,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -6052,7 +6052,7 @@
   "rule:commands:engine.dispatchGalacticExport": {
     "source_key": "commands:engine.dispatchGalacticExport",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -6371,7 +6371,7 @@
   "rule:commands:engine.getDysonEngineeringSnapshot": {
     "source_key": "commands:engine.getDysonEngineeringSnapshot",
     "kind": "pending_behavior",
-    "owner_task": 20,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -6536,7 +6536,7 @@
   "rule:commands:engine.getGalacticIndustrySnapshot": {
     "source_key": "commands:engine.getGalacticIndustrySnapshot",
     "kind": "pending_behavior",
-    "owner_task": 20,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -6635,7 +6635,7 @@
   "rule:commands:engine.getMaxHandcraftBatches": {
     "source_key": "commands:engine.getMaxHandcraftBatches",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 22,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -6646,7 +6646,7 @@
   "rule:commands:engine.getMaxRecursiveHandcraftBatches": {
     "source_key": "commands:engine.getMaxRecursiveHandcraftBatches",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 22,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -6679,7 +6679,7 @@
   "rule:commands:engine.getOrbitalCollectorQuantumStatus": {
     "source_key": "commands:engine.getOrbitalCollectorQuantumStatus",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -6756,7 +6756,7 @@
   "rule:commands:engine.getQuantumAttachmentStatus": {
     "source_key": "commands:engine.getQuantumAttachmentStatus",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -6800,7 +6800,7 @@
   "rule:commands:engine.getRecursiveHandcraftPlan": {
     "source_key": "commands:engine.getRecursiveHandcraftPlan",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 22,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -6811,7 +6811,7 @@
   "rule:commands:engine.getResourceReserveSnapshot": {
     "source_key": "commands:engine.getResourceReserveSnapshot",
     "kind": "pending_behavior",
-    "owner_task": 20,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -6921,7 +6921,7 @@
   "rule:commands:engine.getStationWarperRefillSnapshot": {
     "source_key": "commands:engine.getStationWarperRefillSnapshot",
     "kind": "pending_behavior",
-    "owner_task": 20,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -6943,7 +6943,7 @@
   "rule:commands:engine.handcraftRecipe": {
     "source_key": "commands:engine.handcraftRecipe",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 22,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -6954,7 +6954,7 @@
   "rule:commands:engine.handcraftRecipeWithUpstream": {
     "source_key": "commands:engine.handcraftRecipeWithUpstream",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 22,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -7317,7 +7317,7 @@
   "rule:commands:engine.queueHandcraftRecipe": {
     "source_key": "commands:engine.queueHandcraftRecipe",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 22,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -7339,7 +7339,7 @@
   "rule:commands:engine.refreshDysonGenerationSnapshot": {
     "source_key": "commands:engine.refreshDysonGenerationSnapshot",
     "kind": "pending_behavior",
-    "owner_task": 20,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -7350,7 +7350,7 @@
   "rule:commands:engine.refreshTimeWarpPowerSnapshot": {
     "source_key": "commands:engine.refreshTimeWarpPowerSnapshot",
     "kind": "pending_behavior",
-    "owner_task": 20,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -7361,7 +7361,7 @@
   "rule:commands:engine.refreshTimeWarpPowerSnapshotInPlace": {
     "source_key": "commands:engine.refreshTimeWarpPowerSnapshotInPlace",
     "kind": "pending_behavior",
-    "owner_task": 20,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -7647,7 +7647,7 @@
   "rule:commands:engine.setBeltNetworkRouteMode": {
     "source_key": "commands:engine.setBeltNetworkRouteMode",
     "kind": "pending_behavior",
-    "owner_task": 26,
+    "owner_task": 23,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -7669,7 +7669,7 @@
   "rule:commands:engine.setBeltRouteMode": {
     "source_key": "commands:engine.setBeltRouteMode",
     "kind": "pending_behavior",
-    "owner_task": 26,
+    "owner_task": 23,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -7702,7 +7702,7 @@
   "rule:commands:engine.setBlackHolePaused": {
     "source_key": "commands:engine.setBlackHolePaused",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -7845,7 +7845,7 @@
   "rule:commands:engine.setEnergyMode": {
     "source_key": "commands:engine.setEnergyMode",
     "kind": "pending_behavior",
-    "owner_task": 26,
+    "owner_task": 21,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -7889,7 +7889,7 @@
   "rule:commands:engine.setEntityGenerationPriority": {
     "source_key": "commands:engine.setEntityGenerationPriority",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 21,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -7944,7 +7944,7 @@
   "rule:commands:engine.setFuelItem": {
     "source_key": "commands:engine.setFuelItem",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 21,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -7955,7 +7955,7 @@
   "rule:commands:engine.setGalacticDispatchAutomation": {
     "source_key": "commands:engine.setGalacticDispatchAutomation",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -7966,7 +7966,7 @@
   "rule:commands:engine.setGalacticDispatchThrottle": {
     "source_key": "commands:engine.setGalacticDispatchThrottle",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -7977,7 +7977,7 @@
   "rule:commands:engine.setGalacticExportEnabled": {
     "source_key": "commands:engine.setGalacticExportEnabled",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -7988,7 +7988,7 @@
   "rule:commands:engine.setGalacticExportPriority": {
     "source_key": "commands:engine.setGalacticExportPriority",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -7999,7 +7999,7 @@
   "rule:commands:engine.setGalacticMaterialExporterPaused": {
     "source_key": "commands:engine.setGalacticMaterialExporterPaused",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -8109,7 +8109,7 @@
   "rule:commands:engine.setQuantumLogisticsItemCapacity": {
     "source_key": "commands:engine.setQuantumLogisticsItemCapacity",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -8120,7 +8120,7 @@
   "rule:commands:engine.setRecipeFocus": {
     "source_key": "commands:engine.setRecipeFocus",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 22,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -8131,7 +8131,7 @@
   "rule:commands:engine.setRecipeFocusMode": {
     "source_key": "commands:engine.setRecipeFocusMode",
     "kind": "pending_behavior",
-    "owner_task": 26,
+    "owner_task": 22,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -8142,7 +8142,7 @@
   "rule:commands:engine.setRecipeFocusPosition": {
     "source_key": "commands:engine.setRecipeFocusPosition",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 22,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -8186,7 +8186,7 @@
   "rule:commands:engine.setSplitterMode": {
     "source_key": "commands:engine.setSplitterMode",
     "kind": "pending_behavior",
-    "owner_task": 26,
+    "owner_task": 22,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -8527,7 +8527,7 @@
   "rule:commands:FactoryNodes.onEnergyModeChange": {
     "source_key": "commands:FactoryNodes.onEnergyModeChange",
     "kind": "pending_behavior",
-    "owner_task": 26,
+    "owner_task": 21,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -8538,7 +8538,7 @@
   "rule:commands:FactoryNodes.onFuelChange": {
     "source_key": "commands:FactoryNodes.onFuelChange",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 21,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -8846,7 +8846,7 @@
   "rule:commands:GamePanels.onBeltRouteModeChange": {
     "source_key": "commands:GamePanels.onBeltRouteModeChange",
     "kind": "pending_behavior",
-    "owner_task": 26,
+    "owner_task": 23,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -8890,7 +8890,7 @@
   "rule:commands:GamePanels.onBeltTierModeChange": {
     "source_key": "commands:GamePanels.onBeltTierModeChange",
     "kind": "pending_behavior",
-    "owner_task": 26,
+    "owner_task": 23,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -8901,7 +8901,7 @@
   "rule:commands:GamePanels.onBlackHolePausedChange": {
     "source_key": "commands:GamePanels.onBlackHolePausedChange",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -9044,7 +9044,7 @@
   "rule:commands:GamePanels.onEnergyModeChange": {
     "source_key": "commands:GamePanels.onEnergyModeChange",
     "kind": "pending_behavior",
-    "owner_task": 26,
+    "owner_task": 21,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -9099,7 +9099,7 @@
   "rule:commands:GamePanels.onFuelChange": {
     "source_key": "commands:GamePanels.onFuelChange",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 21,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -9110,7 +9110,7 @@
   "rule:commands:GamePanels.onGalacticExporterPausedChange": {
     "source_key": "commands:GamePanels.onGalacticExporterPausedChange",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -9121,7 +9121,7 @@
   "rule:commands:GamePanels.onGenerationPriorityChange": {
     "source_key": "commands:GamePanels.onGenerationPriorityChange",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 21,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -9352,7 +9352,7 @@
   "rule:commands:GamePanels.onOpenStarMap": {
     "source_key": "commands:GamePanels.onOpenStarMap",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -9550,7 +9550,7 @@
   "rule:commands:GamePanels.onQuantumAttachment": {
     "source_key": "commands:GamePanels.onQuantumAttachment",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -9660,7 +9660,7 @@
   "rule:commands:GamePanels.onRouteModeChange": {
     "source_key": "commands:GamePanels.onRouteModeChange",
     "kind": "pending_behavior",
-    "owner_task": 26,
+    "owner_task": 23,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -9704,7 +9704,7 @@
   "rule:commands:GamePanels.onSplitterModeChange": {
     "source_key": "commands:GamePanels.onSplitterModeChange",
     "kind": "pending_behavior",
-    "owner_task": 26,
+    "owner_task": 22,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -10067,7 +10067,7 @@
   "rule:commands:LogisticsManagementPanel.onCollectorItemChange": {
     "source_key": "commands:LogisticsManagementPanel.onCollectorItemChange",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -10089,7 +10089,7 @@
   "rule:commands:LogisticsManagementPanel.onFleetTargetChange": {
     "source_key": "commands:LogisticsManagementPanel.onFleetTargetChange",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -10100,7 +10100,7 @@
   "rule:commands:LogisticsManagementPanel.onQuantumAttach": {
     "source_key": "commands:LogisticsManagementPanel.onQuantumAttach",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -10111,7 +10111,7 @@
   "rule:commands:LogisticsManagementPanel.onSlotItemChange": {
     "source_key": "commands:LogisticsManagementPanel.onSlotItemChange",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -10122,7 +10122,7 @@
   "rule:commands:LogisticsManagementPanel.onSlotLimitsChange": {
     "source_key": "commands:LogisticsManagementPanel.onSlotLimitsChange",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -10133,7 +10133,7 @@
   "rule:commands:LogisticsManagementPanel.onSlotMinimumLoadChange": {
     "source_key": "commands:LogisticsManagementPanel.onSlotMinimumLoadChange",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -10155,7 +10155,7 @@
   "rule:commands:LogisticsManagementPanel.onSlotPriorityChange": {
     "source_key": "commands:LogisticsManagementPanel.onSlotPriorityChange",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -10166,7 +10166,7 @@
   "rule:commands:LogisticsManagementPanel.onStackTargetChange": {
     "source_key": "commands:LogisticsManagementPanel.onStackTargetChange",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -10177,7 +10177,7 @@
   "rule:commands:LogisticsManagementPanel.onToggle": {
     "source_key": "commands:LogisticsManagementPanel.onToggle",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -10232,7 +10232,7 @@
   "rule:commands:OfflineReportWorkspace.onClose": {
     "source_key": "commands:OfflineReportWorkspace.onClose",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 20,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -10628,7 +10628,7 @@
   "rule:commands:OperationsWorkspace.onLineFindModeChange": {
     "source_key": "commands:OperationsWorkspace.onLineFindModeChange",
     "kind": "pending_behavior",
-    "owner_task": 26,
+    "owner_task": 23,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -11024,7 +11024,7 @@
   "rule:commands:RecipeFocusPanel.onClear": {
     "source_key": "commands:RecipeFocusPanel.onClear",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 22,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -11035,7 +11035,7 @@
   "rule:commands:RecipeFocusPanel.onModeChange": {
     "source_key": "commands:RecipeFocusPanel.onModeChange",
     "kind": "pending_behavior",
-    "owner_task": 26,
+    "owner_task": 22,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -11046,7 +11046,7 @@
   "rule:commands:RecipeFocusPanel.onOpen": {
     "source_key": "commands:RecipeFocusPanel.onOpen",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 22,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -11057,7 +11057,7 @@
   "rule:commands:RecipeFocusPanel.onPositionChange": {
     "source_key": "commands:RecipeFocusPanel.onPositionChange",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 22,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -11068,7 +11068,7 @@
   "rule:commands:RecipeWorkspace.onClose": {
     "source_key": "commands:RecipeWorkspace.onClose",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 22,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -11079,7 +11079,7 @@
   "rule:commands:RecipeWorkspace.onFocus": {
     "source_key": "commands:RecipeWorkspace.onFocus",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 22,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -11090,7 +11090,7 @@
   "rule:commands:RecipeWorkspace.onLocateProductionLine": {
     "source_key": "commands:RecipeWorkspace.onLocateProductionLine",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 22,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -11101,7 +11101,7 @@
   "rule:commands:RecipeWorkspace.onSelect": {
     "source_key": "commands:RecipeWorkspace.onSelect",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 22,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -11112,7 +11112,7 @@
   "rule:commands:RecipeWorkspace.onSelectBuilding": {
     "source_key": "commands:RecipeWorkspace.onSelectBuilding",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 22,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -11123,7 +11123,7 @@
   "rule:commands:RecipeWorkspace.onSelectTechnology": {
     "source_key": "commands:RecipeWorkspace.onSelectTechnology",
     "kind": "pending_behavior",
-    "owner_task": 25,
+    "owner_task": 22,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -11200,7 +11200,7 @@
   "rule:commands:StarMapWorkspace.onChange": {
     "source_key": "commands:StarMapWorkspace.onChange",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -11211,7 +11211,7 @@
   "rule:commands:StarMapWorkspace.onClose": {
     "source_key": "commands:StarMapWorkspace.onClose",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -11233,7 +11233,7 @@
   "rule:commands:StarMapWorkspace.onColonize": {
     "source_key": "commands:StarMapWorkspace.onColonize",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -11244,7 +11244,7 @@
   "rule:commands:StarMapWorkspace.onExplore": {
     "source_key": "commands:StarMapWorkspace.onExplore",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -11266,7 +11266,7 @@
   "rule:commands:StarMapWorkspace.onItemCapacityChange": {
     "source_key": "commands:StarMapWorkspace.onItemCapacityChange",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -11288,7 +11288,7 @@
   "rule:commands:StarMapWorkspace.onQuantumItemCapacityChange": {
     "source_key": "commands:StarMapWorkspace.onQuantumItemCapacityChange",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -11299,7 +11299,7 @@
   "rule:commands:StarMapWorkspace.onRoleChange": {
     "source_key": "commands:StarMapWorkspace.onRoleChange",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -11343,7 +11343,7 @@
   "rule:commands:StarMapWorkspace.onSystemNameChange": {
     "source_key": "commands:StarMapWorkspace.onSystemNameChange",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -11354,7 +11354,7 @@
   "rule:commands:StarMapWorkspace.onTravel": {
     "source_key": "commands:StarMapWorkspace.onTravel",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -11585,7 +11585,7 @@
   "rule:commands:StatisticsWorkspace.onDispatchGalacticExport": {
     "source_key": "commands:StatisticsWorkspace.onDispatchGalacticExport",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -11618,7 +11618,7 @@
   "rule:commands:StatisticsWorkspace.onGalacticDispatchAutomation": {
     "source_key": "commands:StatisticsWorkspace.onGalacticDispatchAutomation",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -11629,7 +11629,7 @@
   "rule:commands:StatisticsWorkspace.onGalacticDispatchThrottle": {
     "source_key": "commands:StatisticsWorkspace.onGalacticDispatchThrottle",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -11640,7 +11640,7 @@
   "rule:commands:StatisticsWorkspace.onGalacticExportEnabled": {
     "source_key": "commands:StatisticsWorkspace.onGalacticExportEnabled",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -11651,7 +11651,7 @@
   "rule:commands:StatisticsWorkspace.onGalacticExporterPausedChange": {
     "source_key": "commands:StatisticsWorkspace.onGalacticExporterPausedChange",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -11662,7 +11662,7 @@
   "rule:commands:StatisticsWorkspace.onGalacticExportPriority": {
     "source_key": "commands:StatisticsWorkspace.onGalacticExportPriority",
     "kind": "pending_behavior",
-    "owner_task": 23,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",
@@ -11970,7 +11970,7 @@
   "rule:commands:TimeWarpIdleOverlay.onRetryRecovery": {
     "source_key": "commands:TimeWarpIdleOverlay.onRetryRecovery",
     "kind": "pending_behavior",
-    "owner_task": 20,
+    "owner_task": 26,
     "acceptance": [
       "来源定义及 ID 必须存在",
       "候选映射必须存在或明确登记缺口",

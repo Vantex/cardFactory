@@ -1,3 +1,4 @@
+import {taskFor} from './parity_task_ownership.mjs';
 import {readFileSync,writeFileSync,readdirSync,existsSync} from 'node:fs';
 import {resolve} from 'node:path';
 const root=resolve(import.meta.dirname,'..'),dir=resolve(root,'tests/fixtures/parity');
@@ -13,7 +14,6 @@ const symbols={};
 for(const folder of ['scripts/game','scripts/input','autoload'])for(const f of readdirSync(resolve(root,folder)).filter(f=>f.endsWith('.gd'))){const text=readFileSync(resolve(root,folder,f),'utf8');for(const m of text.matchAll(/^func (\w+)\(/gm))(symbols[m[1]]??=[]).push(folder+'/'+f+'::'+m[1]);}
 const sourceUi={items:'RecipeWorkspace',recipes:'RecipeWorkspace',buildings:'RecipeWorkspace',technologies:'TechnologyWorkspace',campaign:'CampaignWorkspace',achievements:'CampaignWorkspace',difficulties:'OperationsWorkspace',matrices:'TechnologyWorkspace',construction:'ConstructionCenterWorkspace',proliferators:'RecipeWorkspace',belts:'RecipeWorkspace',modes:'OperationsWorkspace'};
 const rows=[],rules={},online={},scope={};
-function taskFor(category,id){if(category==='buildings'&&['accumulator','energy_exchanger','wind_turbine','solar_panel','thermal_power_plant','geothermal_power_station','mini_fusion_power_plant','artificial_star'].includes(id))return 21;if(['items','recipes','buildings','construction','proliferators','matrices'].includes(category))return 22;if(['technologies','campaign','achievements'].includes(category))return 25;if(['difficulties','modes'].includes(category))return 26;if(category==='belts')return 23;if(/Mod|ContentPack|Register|Simulation|ExportTemplate/.test(id))return 26;if(/Save|Snapshot|ImportRescue|Recovery/.test(id))return 20;if(/Power|Grid|Energy|Accumulator/.test(id))return 21;if(/Blueprint|ConstructionQueue|Bookmark|Region/.test(id))return 24;if(/Craft|Spray|Proliferat|ConstructionCenter/.test(id))return 22;if(/Technology|Research|Campaign|Achievement|Tutorial/.test(id))return 25;if(/Station|Idle|Warp|Speedrun|Endgame|Dyson|Galaxy|Planet/.test(id))return 26;return 23;}
 for(const [category,entries] of Object.entries(snapshot.catalog))for(const entry of entries){
  const key=category+':'+entry.id;
  if(['commands','workspaces'].includes(category)&&/Mobile|Touch|Language|Locale/.test(entry.id)){scope[key]={reason:'用户明确只做电脑中文版本',policy:'desktop_chinese_only'};continue;}

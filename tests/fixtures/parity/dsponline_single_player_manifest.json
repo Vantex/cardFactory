@@ -7037,7 +7037,7 @@
         ]
       },
       "gap": "已有候选；源数值、约束、效果和操作尚未逐项对比验证",
-      "owner_task": 23,
+      "owner_task": 20,
       "rule_test": "rule:workspaces:OfflineReportWorkspace",
       "manual_acceptance": "manual:workspaces:OfflineReportWorkspace",
       "ui_entry": "src/components/OfflineReportWorkspace.tsx",
@@ -7095,7 +7095,7 @@
         ]
       },
       "gap": "已有候选；源数值、约束、效果和操作尚未逐项对比验证",
-      "owner_task": 23,
+      "owner_task": 22,
       "rule_test": "rule:workspaces:RecipeWorkspace",
       "manual_acceptance": "manual:workspaces:RecipeWorkspace",
       "ui_entry": "src/components/RecipeWorkspace.tsx",
@@ -7115,7 +7115,7 @@
         ]
       },
       "gap": "已有候选；源数值、约束、效果和操作尚未逐项对比验证",
-      "owner_task": 23,
+      "owner_task": 26,
       "rule_test": "rule:workspaces:StarMapWorkspace",
       "manual_acceptance": "manual:workspaces:StarMapWorkspace",
       "ui_entry": "src/components/StarMapWorkspace.tsx",
@@ -7245,7 +7245,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 26,
+      "owner_task": 24,
       "rule_test": "rule:commands:BlueprintWorkspace.onBatchConnectionModeChange",
       "manual_acceptance": "manual:commands:BlueprintWorkspace.onBatchConnectionModeChange",
       "ui_entry": "src/components/BlueprintWorkspace.tsx",
@@ -7515,7 +7515,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 26,
+      "owner_task": 24,
       "rule_test": "rule:commands:BlueprintWorkspace.onModeChange",
       "manual_acceptance": "manual:commands:BlueprintWorkspace.onModeChange",
       "ui_entry": "src/components/BlueprintWorkspace.tsx",
@@ -7605,7 +7605,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 26,
+      "owner_task": 24,
       "rule_test": "rule:commands:BlueprintWorkspace.onRegionModeChange",
       "manual_acceptance": "manual:commands:BlueprintWorkspace.onRegionModeChange",
       "ui_entry": "src/components/BlueprintWorkspace.tsx",
@@ -7713,7 +7713,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 26,
+      "owner_task": 24,
       "rule_test": "rule:commands:BlueprintWorkspace.onToggleLineFindMode",
       "manual_acceptance": "manual:commands:BlueprintWorkspace.onToggleLineFindMode",
       "ui_entry": "src/components/BlueprintWorkspace.tsx",
@@ -8937,7 +8937,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 20,
+      "owner_task": 26,
       "rule_test": "rule:commands:DysonPlannerWorkspace.onSave",
       "manual_acceptance": "manual:commands:DysonPlannerWorkspace.onSave",
       "ui_entry": "src/components/DysonPlannerWorkspace.tsx",
@@ -9445,7 +9445,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 22,
       "rule_test": "rule:commands:engine.cancelHandcraftQueueEntry",
       "manual_acceptance": "manual:commands:engine.cancelHandcraftQueueEntry",
       "ui_entry": "src/game/engine.ts",
@@ -9571,7 +9571,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 22,
       "rule_test": "rule:commands:engine.canHandcraftRecipe",
       "manual_acceptance": "manual:commands:engine.canHandcraftRecipe",
       "ui_entry": "src/game/engine.ts",
@@ -9643,7 +9643,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 22,
       "rule_test": "rule:commands:engine.canQueueHandcraftRecipe",
       "manual_acceptance": "manual:commands:engine.canQueueHandcraftRecipe",
       "ui_entry": "src/game/engine.ts",
@@ -9931,7 +9931,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 22,
       "rule_test": "rule:commands:engine.craftConstruction",
       "manual_acceptance": "manual:commands:engine.craftConstruction",
       "ui_entry": "src/game/engine.ts",
@@ -9949,7 +9949,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 22,
       "rule_test": "rule:commands:engine.craftConstructionWithUpstream",
       "manual_acceptance": "manual:commands:engine.craftConstructionWithUpstream",
       "ui_entry": "src/game/engine.ts",
@@ -10111,7 +10111,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 26,
       "rule_test": "rule:commands:engine.dispatchGalacticExport",
       "manual_acceptance": "manual:commands:engine.dispatchGalacticExport",
       "ui_entry": "src/game/engine.ts",
@@ -10635,7 +10635,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 20,
+      "owner_task": 26,
       "rule_test": "rule:commands:engine.getDysonEngineeringSnapshot",
       "manual_acceptance": "manual:commands:engine.getDysonEngineeringSnapshot",
       "ui_entry": "src/game/engine.ts",
@@ -10913,7 +10913,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 20,
+      "owner_task": 26,
       "rule_test": "rule:commands:engine.getGalacticIndustrySnapshot",
       "manual_acceptance": "manual:commands:engine.getGalacticIndustrySnapshot",
       "ui_entry": "src/game/engine.ts",
@@ -11075,7 +11075,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 22,
       "rule_test": "rule:commands:engine.getMaxHandcraftBatches",
       "manual_acceptance": "manual:commands:engine.getMaxHandcraftBatches",
       "ui_entry": "src/game/engine.ts",
@@ -11093,7 +11093,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 22,
       "rule_test": "rule:commands:engine.getMaxRecursiveHandcraftBatches",
       "manual_acceptance": "manual:commands:engine.getMaxRecursiveHandcraftBatches",
       "ui_entry": "src/game/engine.ts",
@@ -11147,7 +11147,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 26,
       "rule_test": "rule:commands:engine.getOrbitalCollectorQuantumStatus",
       "manual_acceptance": "manual:commands:engine.getOrbitalCollectorQuantumStatus",
       "ui_entry": "src/game/engine.ts",
@@ -11273,7 +11273,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 26,
       "rule_test": "rule:commands:engine.getQuantumAttachmentStatus",
       "manual_acceptance": "manual:commands:engine.getQuantumAttachmentStatus",
       "ui_entry": "src/game/engine.ts",
@@ -11345,7 +11345,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 22,
       "rule_test": "rule:commands:engine.getRecursiveHandcraftPlan",
       "manual_acceptance": "manual:commands:engine.getRecursiveHandcraftPlan",
       "ui_entry": "src/game/engine.ts",
@@ -11363,7 +11363,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 20,
+      "owner_task": 26,
       "rule_test": "rule:commands:engine.getResourceReserveSnapshot",
       "manual_acceptance": "manual:commands:engine.getResourceReserveSnapshot",
       "ui_entry": "src/game/engine.ts",
@@ -11543,7 +11543,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 20,
+      "owner_task": 26,
       "rule_test": "rule:commands:engine.getStationWarperRefillSnapshot",
       "manual_acceptance": "manual:commands:engine.getStationWarperRefillSnapshot",
       "ui_entry": "src/game/engine.ts",
@@ -11579,7 +11579,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 22,
       "rule_test": "rule:commands:engine.handcraftRecipe",
       "manual_acceptance": "manual:commands:engine.handcraftRecipe",
       "ui_entry": "src/game/engine.ts",
@@ -11597,7 +11597,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 22,
       "rule_test": "rule:commands:engine.handcraftRecipeWithUpstream",
       "manual_acceptance": "manual:commands:engine.handcraftRecipeWithUpstream",
       "ui_entry": "src/game/engine.ts",
@@ -12200,7 +12200,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 22,
       "rule_test": "rule:commands:engine.queueHandcraftRecipe",
       "manual_acceptance": "manual:commands:engine.queueHandcraftRecipe",
       "ui_entry": "src/game/engine.ts",
@@ -12236,7 +12236,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 20,
+      "owner_task": 26,
       "rule_test": "rule:commands:engine.refreshDysonGenerationSnapshot",
       "manual_acceptance": "manual:commands:engine.refreshDysonGenerationSnapshot",
       "ui_entry": "src/game/engine.ts",
@@ -12254,7 +12254,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 20,
+      "owner_task": 26,
       "rule_test": "rule:commands:engine.refreshTimeWarpPowerSnapshot",
       "manual_acceptance": "manual:commands:engine.refreshTimeWarpPowerSnapshot",
       "ui_entry": "src/game/engine.ts",
@@ -12272,7 +12272,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 20,
+      "owner_task": 26,
       "rule_test": "rule:commands:engine.refreshTimeWarpPowerSnapshotInPlace",
       "manual_acceptance": "manual:commands:engine.refreshTimeWarpPowerSnapshotInPlace",
       "ui_entry": "src/game/engine.ts",
@@ -12750,7 +12750,7 @@
         ]
       },
       "gap": "已有候选；源数值、约束、效果和操作尚未逐项对比验证",
-      "owner_task": 26,
+      "owner_task": 23,
       "rule_test": "rule:commands:engine.setBeltNetworkRouteMode",
       "manual_acceptance": "manual:commands:engine.setBeltNetworkRouteMode",
       "ui_entry": "src/game/engine.ts",
@@ -12790,7 +12790,7 @@
         ]
       },
       "gap": "已有候选；源数值、约束、效果和操作尚未逐项对比验证",
-      "owner_task": 26,
+      "owner_task": 23,
       "rule_test": "rule:commands:engine.setBeltRouteMode",
       "manual_acceptance": "manual:commands:engine.setBeltRouteMode",
       "ui_entry": "src/game/engine.ts",
@@ -12848,7 +12848,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 26,
       "rule_test": "rule:commands:engine.setBlackHolePaused",
       "manual_acceptance": "manual:commands:engine.setBlackHolePaused",
       "ui_entry": "src/game/engine.ts",
@@ -13082,7 +13082,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 26,
+      "owner_task": 21,
       "rule_test": "rule:commands:engine.setEnergyMode",
       "manual_acceptance": "manual:commands:engine.setEnergyMode",
       "ui_entry": "src/game/engine.ts",
@@ -13160,7 +13160,7 @@
         ]
       },
       "gap": "已有候选；源数值、约束、效果和操作尚未逐项对比验证",
-      "owner_task": 23,
+      "owner_task": 21,
       "rule_test": "rule:commands:engine.setEntityGenerationPriority",
       "manual_acceptance": "manual:commands:engine.setEntityGenerationPriority",
       "ui_entry": "src/game/engine.ts",
@@ -13256,7 +13256,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 21,
       "rule_test": "rule:commands:engine.setFuelItem",
       "manual_acceptance": "manual:commands:engine.setFuelItem",
       "ui_entry": "src/game/engine.ts",
@@ -13274,7 +13274,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 26,
       "rule_test": "rule:commands:engine.setGalacticDispatchAutomation",
       "manual_acceptance": "manual:commands:engine.setGalacticDispatchAutomation",
       "ui_entry": "src/game/engine.ts",
@@ -13292,7 +13292,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 26,
       "rule_test": "rule:commands:engine.setGalacticDispatchThrottle",
       "manual_acceptance": "manual:commands:engine.setGalacticDispatchThrottle",
       "ui_entry": "src/game/engine.ts",
@@ -13310,7 +13310,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 26,
       "rule_test": "rule:commands:engine.setGalacticExportEnabled",
       "manual_acceptance": "manual:commands:engine.setGalacticExportEnabled",
       "ui_entry": "src/game/engine.ts",
@@ -13328,7 +13328,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 26,
       "rule_test": "rule:commands:engine.setGalacticExportPriority",
       "manual_acceptance": "manual:commands:engine.setGalacticExportPriority",
       "ui_entry": "src/game/engine.ts",
@@ -13346,7 +13346,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 26,
       "rule_test": "rule:commands:engine.setGalacticMaterialExporterPaused",
       "manual_acceptance": "manual:commands:engine.setGalacticMaterialExporterPaused",
       "ui_entry": "src/game/engine.ts",
@@ -13526,7 +13526,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 26,
       "rule_test": "rule:commands:engine.setQuantumLogisticsItemCapacity",
       "manual_acceptance": "manual:commands:engine.setQuantumLogisticsItemCapacity",
       "ui_entry": "src/game/engine.ts",
@@ -13544,7 +13544,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 22,
       "rule_test": "rule:commands:engine.setRecipeFocus",
       "manual_acceptance": "manual:commands:engine.setRecipeFocus",
       "ui_entry": "src/game/engine.ts",
@@ -13562,7 +13562,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 26,
+      "owner_task": 22,
       "rule_test": "rule:commands:engine.setRecipeFocusMode",
       "manual_acceptance": "manual:commands:engine.setRecipeFocusMode",
       "ui_entry": "src/game/engine.ts",
@@ -13580,7 +13580,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 22,
       "rule_test": "rule:commands:engine.setRecipeFocusPosition",
       "manual_acceptance": "manual:commands:engine.setRecipeFocusPosition",
       "ui_entry": "src/game/engine.ts",
@@ -13652,7 +13652,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 26,
+      "owner_task": 22,
       "rule_test": "rule:commands:engine.setSplitterMode",
       "manual_acceptance": "manual:commands:engine.setSplitterMode",
       "ui_entry": "src/game/engine.ts",
@@ -14222,7 +14222,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 26,
+      "owner_task": 21,
       "rule_test": "rule:commands:FactoryNodes.onEnergyModeChange",
       "manual_acceptance": "manual:commands:FactoryNodes.onEnergyModeChange",
       "ui_entry": "src/components/FactoryNodes.tsx",
@@ -14240,7 +14240,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 21,
       "rule_test": "rule:commands:FactoryNodes.onFuelChange",
       "manual_acceptance": "manual:commands:FactoryNodes.onFuelChange",
       "ui_entry": "src/components/FactoryNodes.tsx",
@@ -14744,7 +14744,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 26,
+      "owner_task": 23,
       "rule_test": "rule:commands:GamePanels.onBeltRouteModeChange",
       "manual_acceptance": "manual:commands:GamePanels.onBeltRouteModeChange",
       "ui_entry": "src/components/GamePanels.tsx",
@@ -14816,7 +14816,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 26,
+      "owner_task": 23,
       "rule_test": "rule:commands:GamePanels.onBeltTierModeChange",
       "manual_acceptance": "manual:commands:GamePanels.onBeltTierModeChange",
       "ui_entry": "src/components/GamePanels.tsx",
@@ -14834,7 +14834,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 26,
       "rule_test": "rule:commands:GamePanels.onBlackHolePausedChange",
       "manual_acceptance": "manual:commands:GamePanels.onBlackHolePausedChange",
       "ui_entry": "src/components/GamePanels.tsx",
@@ -15068,7 +15068,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 26,
+      "owner_task": 21,
       "rule_test": "rule:commands:GamePanels.onEnergyModeChange",
       "manual_acceptance": "manual:commands:GamePanels.onEnergyModeChange",
       "ui_entry": "src/components/GamePanels.tsx",
@@ -15158,7 +15158,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 21,
       "rule_test": "rule:commands:GamePanels.onFuelChange",
       "manual_acceptance": "manual:commands:GamePanels.onFuelChange",
       "ui_entry": "src/components/GamePanels.tsx",
@@ -15176,7 +15176,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 26,
       "rule_test": "rule:commands:GamePanels.onGalacticExporterPausedChange",
       "manual_acceptance": "manual:commands:GamePanels.onGalacticExporterPausedChange",
       "ui_entry": "src/components/GamePanels.tsx",
@@ -15194,7 +15194,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 21,
       "rule_test": "rule:commands:GamePanels.onGenerationPriorityChange",
       "manual_acceptance": "manual:commands:GamePanels.onGenerationPriorityChange",
       "ui_entry": "src/components/GamePanels.tsx",
@@ -15572,7 +15572,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 26,
       "rule_test": "rule:commands:GamePanels.onOpenStarMap",
       "manual_acceptance": "manual:commands:GamePanels.onOpenStarMap",
       "ui_entry": "src/components/GamePanels.tsx",
@@ -15896,7 +15896,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 26,
       "rule_test": "rule:commands:GamePanels.onQuantumAttachment",
       "manual_acceptance": "manual:commands:GamePanels.onQuantumAttachment",
       "ui_entry": "src/components/GamePanels.tsx",
@@ -16076,7 +16076,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 26,
+      "owner_task": 23,
       "rule_test": "rule:commands:GamePanels.onRouteModeChange",
       "manual_acceptance": "manual:commands:GamePanels.onRouteModeChange",
       "ui_entry": "src/components/GamePanels.tsx",
@@ -16148,7 +16148,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 26,
+      "owner_task": 22,
       "rule_test": "rule:commands:GamePanels.onSplitterModeChange",
       "manual_acceptance": "manual:commands:GamePanels.onSplitterModeChange",
       "ui_entry": "src/components/GamePanels.tsx",
@@ -16742,7 +16742,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 26,
       "rule_test": "rule:commands:LogisticsManagementPanel.onCollectorItemChange",
       "manual_acceptance": "manual:commands:LogisticsManagementPanel.onCollectorItemChange",
       "ui_entry": "src/components/LogisticsManagementPanel.tsx",
@@ -16778,7 +16778,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 26,
       "rule_test": "rule:commands:LogisticsManagementPanel.onFleetTargetChange",
       "manual_acceptance": "manual:commands:LogisticsManagementPanel.onFleetTargetChange",
       "ui_entry": "src/components/LogisticsManagementPanel.tsx",
@@ -16796,7 +16796,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 26,
       "rule_test": "rule:commands:LogisticsManagementPanel.onQuantumAttach",
       "manual_acceptance": "manual:commands:LogisticsManagementPanel.onQuantumAttach",
       "ui_entry": "src/components/LogisticsManagementPanel.tsx",
@@ -16814,7 +16814,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 26,
       "rule_test": "rule:commands:LogisticsManagementPanel.onSlotItemChange",
       "manual_acceptance": "manual:commands:LogisticsManagementPanel.onSlotItemChange",
       "ui_entry": "src/components/LogisticsManagementPanel.tsx",
@@ -16832,7 +16832,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 26,
       "rule_test": "rule:commands:LogisticsManagementPanel.onSlotLimitsChange",
       "manual_acceptance": "manual:commands:LogisticsManagementPanel.onSlotLimitsChange",
       "ui_entry": "src/components/LogisticsManagementPanel.tsx",
@@ -16850,7 +16850,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 26,
       "rule_test": "rule:commands:LogisticsManagementPanel.onSlotMinimumLoadChange",
       "manual_acceptance": "manual:commands:LogisticsManagementPanel.onSlotMinimumLoadChange",
       "ui_entry": "src/components/LogisticsManagementPanel.tsx",
@@ -16886,7 +16886,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 26,
       "rule_test": "rule:commands:LogisticsManagementPanel.onSlotPriorityChange",
       "manual_acceptance": "manual:commands:LogisticsManagementPanel.onSlotPriorityChange",
       "ui_entry": "src/components/LogisticsManagementPanel.tsx",
@@ -16904,7 +16904,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 26,
       "rule_test": "rule:commands:LogisticsManagementPanel.onStackTargetChange",
       "manual_acceptance": "manual:commands:LogisticsManagementPanel.onStackTargetChange",
       "ui_entry": "src/components/LogisticsManagementPanel.tsx",
@@ -16922,7 +16922,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 26,
       "rule_test": "rule:commands:LogisticsManagementPanel.onToggle",
       "manual_acceptance": "manual:commands:LogisticsManagementPanel.onToggle",
       "ui_entry": "src/components/LogisticsManagementPanel.tsx",
@@ -17012,7 +17012,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 20,
       "rule_test": "rule:commands:OfflineReportWorkspace.onClose",
       "manual_acceptance": "manual:commands:OfflineReportWorkspace.onClose",
       "ui_entry": "src/components/OfflineReportWorkspace.tsx",
@@ -17660,7 +17660,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 26,
+      "owner_task": 23,
       "rule_test": "rule:commands:OperationsWorkspace.onLineFindModeChange",
       "manual_acceptance": "manual:commands:OperationsWorkspace.onLineFindModeChange",
       "ui_entry": "src/components/OperationsWorkspace.tsx",
@@ -18308,7 +18308,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 22,
       "rule_test": "rule:commands:RecipeFocusPanel.onClear",
       "manual_acceptance": "manual:commands:RecipeFocusPanel.onClear",
       "ui_entry": "src/components/RecipeFocusPanel.tsx",
@@ -18326,7 +18326,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 26,
+      "owner_task": 22,
       "rule_test": "rule:commands:RecipeFocusPanel.onModeChange",
       "manual_acceptance": "manual:commands:RecipeFocusPanel.onModeChange",
       "ui_entry": "src/components/RecipeFocusPanel.tsx",
@@ -18344,7 +18344,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 22,
       "rule_test": "rule:commands:RecipeFocusPanel.onOpen",
       "manual_acceptance": "manual:commands:RecipeFocusPanel.onOpen",
       "ui_entry": "src/components/RecipeFocusPanel.tsx",
@@ -18362,7 +18362,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 22,
       "rule_test": "rule:commands:RecipeFocusPanel.onPositionChange",
       "manual_acceptance": "manual:commands:RecipeFocusPanel.onPositionChange",
       "ui_entry": "src/components/RecipeFocusPanel.tsx",
@@ -18380,7 +18380,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 22,
       "rule_test": "rule:commands:RecipeWorkspace.onClose",
       "manual_acceptance": "manual:commands:RecipeWorkspace.onClose",
       "ui_entry": "src/components/RecipeWorkspace.tsx",
@@ -18398,7 +18398,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 22,
       "rule_test": "rule:commands:RecipeWorkspace.onFocus",
       "manual_acceptance": "manual:commands:RecipeWorkspace.onFocus",
       "ui_entry": "src/components/RecipeWorkspace.tsx",
@@ -18416,7 +18416,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 22,
       "rule_test": "rule:commands:RecipeWorkspace.onLocateProductionLine",
       "manual_acceptance": "manual:commands:RecipeWorkspace.onLocateProductionLine",
       "ui_entry": "src/components/RecipeWorkspace.tsx",
@@ -18434,7 +18434,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 22,
       "rule_test": "rule:commands:RecipeWorkspace.onSelect",
       "manual_acceptance": "manual:commands:RecipeWorkspace.onSelect",
       "ui_entry": "src/components/RecipeWorkspace.tsx",
@@ -18452,7 +18452,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 22,
       "rule_test": "rule:commands:RecipeWorkspace.onSelectBuilding",
       "manual_acceptance": "manual:commands:RecipeWorkspace.onSelectBuilding",
       "ui_entry": "src/components/RecipeWorkspace.tsx",
@@ -18470,7 +18470,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 25,
+      "owner_task": 22,
       "rule_test": "rule:commands:RecipeWorkspace.onSelectTechnology",
       "manual_acceptance": "manual:commands:RecipeWorkspace.onSelectTechnology",
       "ui_entry": "src/components/RecipeWorkspace.tsx",
@@ -18596,7 +18596,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 26,
       "rule_test": "rule:commands:StarMapWorkspace.onChange",
       "manual_acceptance": "manual:commands:StarMapWorkspace.onChange",
       "ui_entry": "src/components/StarMapWorkspace.tsx",
@@ -18614,7 +18614,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 26,
       "rule_test": "rule:commands:StarMapWorkspace.onClose",
       "manual_acceptance": "manual:commands:StarMapWorkspace.onClose",
       "ui_entry": "src/components/StarMapWorkspace.tsx",
@@ -18650,7 +18650,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 26,
       "rule_test": "rule:commands:StarMapWorkspace.onColonize",
       "manual_acceptance": "manual:commands:StarMapWorkspace.onColonize",
       "ui_entry": "src/components/StarMapWorkspace.tsx",
@@ -18668,7 +18668,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 26,
       "rule_test": "rule:commands:StarMapWorkspace.onExplore",
       "manual_acceptance": "manual:commands:StarMapWorkspace.onExplore",
       "ui_entry": "src/components/StarMapWorkspace.tsx",
@@ -18704,7 +18704,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 26,
       "rule_test": "rule:commands:StarMapWorkspace.onItemCapacityChange",
       "manual_acceptance": "manual:commands:StarMapWorkspace.onItemCapacityChange",
       "ui_entry": "src/components/StarMapWorkspace.tsx",
@@ -18740,7 +18740,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 26,
       "rule_test": "rule:commands:StarMapWorkspace.onQuantumItemCapacityChange",
       "manual_acceptance": "manual:commands:StarMapWorkspace.onQuantumItemCapacityChange",
       "ui_entry": "src/components/StarMapWorkspace.tsx",
@@ -18758,7 +18758,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 26,
       "rule_test": "rule:commands:StarMapWorkspace.onRoleChange",
       "manual_acceptance": "manual:commands:StarMapWorkspace.onRoleChange",
       "ui_entry": "src/components/StarMapWorkspace.tsx",
@@ -18830,7 +18830,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 26,
       "rule_test": "rule:commands:StarMapWorkspace.onSystemNameChange",
       "manual_acceptance": "manual:commands:StarMapWorkspace.onSystemNameChange",
       "ui_entry": "src/components/StarMapWorkspace.tsx",
@@ -18848,7 +18848,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 26,
       "rule_test": "rule:commands:StarMapWorkspace.onTravel",
       "manual_acceptance": "manual:commands:StarMapWorkspace.onTravel",
       "ui_entry": "src/components/StarMapWorkspace.tsx",
@@ -19226,7 +19226,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 26,
       "rule_test": "rule:commands:StatisticsWorkspace.onDispatchGalacticExport",
       "manual_acceptance": "manual:commands:StatisticsWorkspace.onDispatchGalacticExport",
       "ui_entry": "src/components/StatisticsWorkspace.tsx",
@@ -19280,7 +19280,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 26,
       "rule_test": "rule:commands:StatisticsWorkspace.onGalacticDispatchAutomation",
       "manual_acceptance": "manual:commands:StatisticsWorkspace.onGalacticDispatchAutomation",
       "ui_entry": "src/components/StatisticsWorkspace.tsx",
@@ -19298,7 +19298,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 26,
       "rule_test": "rule:commands:StatisticsWorkspace.onGalacticDispatchThrottle",
       "manual_acceptance": "manual:commands:StatisticsWorkspace.onGalacticDispatchThrottle",
       "ui_entry": "src/components/StatisticsWorkspace.tsx",
@@ -19316,7 +19316,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 26,
       "rule_test": "rule:commands:StatisticsWorkspace.onGalacticExportEnabled",
       "manual_acceptance": "manual:commands:StatisticsWorkspace.onGalacticExportEnabled",
       "ui_entry": "src/components/StatisticsWorkspace.tsx",
@@ -19334,7 +19334,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 26,
       "rule_test": "rule:commands:StatisticsWorkspace.onGalacticExporterPausedChange",
       "manual_acceptance": "manual:commands:StatisticsWorkspace.onGalacticExporterPausedChange",
       "ui_entry": "src/components/StatisticsWorkspace.tsx",
@@ -19352,7 +19352,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 23,
+      "owner_task": 26,
       "rule_test": "rule:commands:StatisticsWorkspace.onGalacticExportPriority",
       "manual_acceptance": "manual:commands:StatisticsWorkspace.onGalacticExportPriority",
       "ui_entry": "src/components/StatisticsWorkspace.tsx",
@@ -19856,7 +19856,7 @@
         "ids": []
       },
       "gap": "无已确认对应项，需实现或明确映射后验证",
-      "owner_task": 20,
+      "owner_task": 26,
       "rule_test": "rule:commands:TimeWarpIdleOverlay.onRetryRecovery",
       "manual_acceptance": "manual:commands:TimeWarpIdleOverlay.onRetryRecovery",
       "ui_entry": "src/components/TimeWarpIdleOverlay.tsx",
