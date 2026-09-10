@@ -11,6 +11,9 @@ const BUILDING_RUNTIME_FIELDS := {
 	"interaction_locked": true,
 	"power_efficiency": true,
 	"power_output": true,
+	"power_input": true,
+	"power_requested": true,
+	"power_covered": true,
 }
 const CONNECTION_RUNTIME_FIELDS := {
 	"active": true,

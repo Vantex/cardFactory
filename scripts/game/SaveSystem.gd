@@ -418,6 +418,12 @@ func _normalize_stored_digest_types(payload: Dictionary) -> Dictionary:
 	var normalized := payload.duplicate(true)
 	# JSON numbers decode as floats. Use that representation for belt integers;
 	# existing successfully saved float-valued records retain their digest.
+	var buildings: Variant = normalized.get("buildings")
+	if buildings is Dictionary:
+		for building in buildings.values():
+			if building is Dictionary:
+				for field in ["power_priority", "generation_priority", "stored_energy_mj"]:
+					if _is_number(building.get(field)): building[field] = float(building[field])
 	var connections: Variant = normalized.get("connections")
 	if connections is Dictionary:
 		for connection in connections.values():

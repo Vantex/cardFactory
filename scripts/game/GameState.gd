@@ -163,6 +163,11 @@ func add_building(building_data: Dictionary) -> String:
     var id = generate_id("building")
     building_data["id"] = id
     building_data["planet_id"] = String(building_data.get("planet_id", active_planet_id))
+    if building_data.get("type") == "energy_exchanger":
+        if not building_data.has("energy_mode"):
+            building_data["energy_mode"] = "discharge" if building_data.get("recipe_id") == "discharge_accumulator" else "charge"
+        if String(building_data.get("recipe_id", "")).is_empty():
+            building_data["recipe_id"] = "discharge_accumulator" if building_data.energy_mode == "discharge" else "charge_accumulator" if building_data.energy_mode == "charge" else ""
     buildings[id] = building_data
     EventBus.card_placed.emit(id, building_data.get("position", Vector2.ZERO))
     return id
@@ -410,6 +415,8 @@ func try_remove_entities(entity_ids: Array) -> Dictionary:
         normalized.append(entity_id)
         var building: Dictionary = buildings[entity_id]
         var building_type := String(building.get("type", ""))
+        if float(building.get("stored_energy_mj", 0)) > 0:
+            return _batch_failure("请先放空储能再拆除，避免丢失能量", "stored_energy_remaining")
         if building.has("station"):
             if building.get("planet_id", "") != active_planet_id or building.get("interaction_locked", false) or StationSystem.new(self).has_route(entity_id):
                 return _batch_failure("物流站不在当前行星、已锁定或仍有关联航线", "station_busy")
@@ -467,6 +474,8 @@ func set_entity_recipe(entity_id: String, recipe_id: String) -> bool:
         print("ERROR: Entity not found: ", entity_id)
         return false
 
+    if buildings[entity_id].get("type") == "energy_exchanger":
+        return set_energy_mode(entity_id, "charge" if recipe_id == "charge_accumulator" else "discharge" if recipe_id == "discharge_accumulator" else "invalid")
     var recipe = DataManager.get_recipe(recipe_id)
     if recipe.is_empty():
         print("ERROR: Recipe not found: ", recipe_id)
@@ -940,40 +949,15 @@ func set_sorter_filter(sorter_id: String, item_id: String) -> bool:
 
 # 功能25: 设置实体电力网格
 func set_entity_power_grid(entity_id: String, grid_id: String) -> bool:
-    if not buildings.has(entity_id):
-        print("ERROR: Entity not found: ", entity_id)
-        return false
-    
-    var valid_grids = ["grid-a", "grid-b", "grid-c"]
-    if grid_id not in valid_grids:
-        print("ERROR: Invalid grid ID: ", grid_id)
-        return false
-    
-    buildings[entity_id]["power_grid_id"] = grid_id
-    print("Set entity ", entity_id, " power grid to ", grid_id)
-    return true
+    return PowerGridSystem.new(self).configure([entity_id], {"power_grid_id": grid_id}).get("ok", false)
 
 # 功能26: 设置实体电力优先级
 func set_entity_power_priority(entity_id: String, priority: int) -> bool:
-    if not buildings.has(entity_id):
-        print("ERROR: Entity not found: ", entity_id)
-        return false
-    
-    var clamped_priority = clamp(priority, 1, 3)
-    buildings[entity_id]["power_priority"] = clamped_priority
-    print("Set entity ", entity_id, " power priority to ", clamped_priority)
-    return true
+    return PowerGridSystem.new(self).configure([entity_id], {"power_priority": priority}).get("ok", false)
 
 # 功能27: 设置实体发电优先级
 func set_entity_generation_priority(entity_id: String, priority: int) -> bool:
-    if not buildings.has(entity_id):
-        print("ERROR: Entity not found: ", entity_id)
-        return false
-    
-    var clamped_priority = clamp(priority, 1, 3)
-    buildings[entity_id]["generation_priority"] = clamped_priority
-    print("Set entity ", entity_id, " generation priority to ", clamped_priority)
-    return true
+    return PowerGridSystem.new(self).configure([entity_id], {"generation_priority": priority}).get("ok", false)
 
 # 功能28: 检查科技是否完成
 func is_technology_completed(tech_id: String) -> bool:
@@ -1334,7 +1318,7 @@ func get_entity_power_factor(entity_id: String) -> float:
     var entity = get_building(entity_id)
     if entity.is_empty():
         return 0.0
-    return entity.get("power_factor", 1.0)
+    return entity.get("power_efficiency", 0.0)
 
 # 2. 设置实体电力因子
 func set_entity_power_factor(entity_id: String, factor: float) -> bool:
@@ -1359,7 +1343,7 @@ func get_entity_power_generation(entity_id: String) -> float:
         return 0.0
     var building_type = entity.get("type", "")
     var building_def = DataManager.get_building(building_type)
-    return building_def.get("power_generation", 0.0)
+    return entity.get("power_output", 0.0)
 
 # 5. 计算总电力需求
 func calculate_total_power_demand() -> float:
@@ -1381,7 +1365,10 @@ func calculate_power_balance() -> float:
 
 # 8. 检查电力是否充足
 func is_power_sufficient() -> bool:
-    return calculate_power_balance() >= 0
+    for building_id in buildings:
+        if get_entity_power_demand(building_id) > 0 and get_entity_power_factor(building_id) < 1.0:
+            return false
+    return true
 
 # 9. 获取电力网格统计
 func get_power_grid_stats() -> Dictionary:
@@ -1402,18 +1389,12 @@ func get_building_power_info(entity_id: String) -> Dictionary:
         "generation": get_entity_power_generation(entity_id),
         "factor": get_entity_power_factor(entity_id),
         "grid": entity.get("power_grid_id", "grid-a"),
-        "priority": entity.get("power_priority", 1)
+        "priority": entity.get("power_priority", 2)
     }
 
 # 11. 设置建筑电力网格
 func set_building_power_grid(entity_id: String, grid_id: String) -> bool:
-    if not buildings.has(entity_id):
-        return false
-    var valid_grids = ["grid-a", "grid-b", "grid-c"]
-    if grid_id not in valid_grids:
-        return false
-    buildings[entity_id]["power_grid_id"] = grid_id
-    return true
+    return PowerGridSystem.new(self).configure([entity_id], {"power_grid_id": grid_id}).get("ok", false)
 
 # 12. 获取建筑电力网格
 func get_building_power_grid(entity_id: String) -> String:
@@ -1424,37 +1405,31 @@ func get_building_power_grid(entity_id: String) -> String:
 
 # 13. 设置建筑电力优先级
 func set_building_power_priority(entity_id: String, priority: int) -> bool:
-    if not buildings.has(entity_id):
-        return false
-    buildings[entity_id]["power_priority"] = clamp(priority, 1, 3)
-    return true
+    return PowerGridSystem.new(self).configure([entity_id], {"power_priority": priority}).get("ok", false)
 
 # 14. 获取建筑电力优先级
 func get_building_power_priority(entity_id: String) -> int:
     var entity = get_building(entity_id)
     if entity.is_empty():
         return 1
-    return entity.get("power_priority", 1)
+    return entity.get("power_priority", 2)
 
 # 15. 设置建筑发电优先级
 func set_building_generation_priority(entity_id: String, priority: int) -> bool:
-    if not buildings.has(entity_id):
-        return false
-    buildings[entity_id]["generation_priority"] = clamp(priority, 1, 3)
-    return true
+    return PowerGridSystem.new(self).configure([entity_id], {"generation_priority": priority}).get("ok", false)
 
 # 16. 获取建筑发电优先级
 func get_building_generation_priority(entity_id: String) -> int:
     var entity = get_building(entity_id)
     if entity.is_empty():
         return 1
-    return entity.get("generation_priority", 1)
+    return PowerGridSystem.generation_priority(entity)
 
 # 17. 获取电力网格中的建筑
 func get_buildings_in_power_grid(grid_id: String) -> Array:
     var result = []
     for building_id in buildings:
-        if buildings[building_id].get("power_grid_id") == grid_id:
+        if buildings[building_id].get("planet_id", active_planet_id) == active_planet_id and buildings[building_id].get("power_grid_id", "grid-a") == grid_id:
             result.append(building_id)
     return result
 
@@ -1490,9 +1465,7 @@ func has_power(entity_id: String) -> bool:
     var entity = get_building(entity_id)
     if entity.is_empty():
         return false
-    var grid_id = entity.get("power_grid_id", "grid-a")
-    var grid_stats = calculate_power_grid_stats(grid_id)
-    return grid_stats.balance >= 0
+    return get_entity_power_demand(entity_id) <= 0 or float(entity.get("power_efficiency", 0)) > 0
 
 # === 物流系统补完功能 ===
 
@@ -1534,3 +1507,9 @@ func get_quantum_bandwidth(network_id: String) -> float:
 func set_quantum_bandwidth(network_id: String, bandwidth: float) -> bool:
     print("Set quantum bandwidth for ", network_id, " to ", bandwidth)
     return true
+
+func try_configure_power_entities(ids: Array, changes: Dictionary) -> Dictionary:
+    return PowerGridSystem.new(self).configure(ids, changes)
+
+func set_energy_mode(entity_id: String, mode: String) -> bool:
+    return try_configure_power_entities([entity_id], {"energy_mode": mode}).get("ok", false)

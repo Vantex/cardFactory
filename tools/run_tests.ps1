@@ -7,6 +7,13 @@ $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $testCases = @(
     @{
+        Name = "Power grids"
+        ScenePath = Join-Path $repoRoot "scenes\test\TestPowerGrids.tscn"
+        ResourcePath = "res://scenes/test/TestPowerGrids.tscn"
+        SuccessMarker = "POWER GRID TESTS PASSED"
+        FailureMarker = "POWER GRID TESTS FAILED"
+    },
+    @{
         Name = "Save recovery"
         ScenePath = Join-Path $repoRoot "scenes\test\TestSaveRecovery.tscn"
         ResourcePath = "res://scenes/test/TestSaveRecovery.tscn"

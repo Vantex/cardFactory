@@ -61,7 +61,7 @@ func _test_environment_and_summaries() -> void:
 	engine.update(1.0 / 60.0)
 	for planet_id in expected:
 		_expect(is_equal_approx(float(state.buildings[solar_ids[planet_id]].power_output), expected[planet_id]), "owning planet solar ratio " + planet_id)
-	_expect(state.buildings[wind].power_output == 150.0 and state.buildings[thermal].power_output == 500.0, "solar environment does not alter wind or fuel generators")
+	_expect(state.buildings[wind].power_output == 150.0 and state.buildings[thermal].power_output == 0.0 and state.buildings[thermal].input_buffer.coal == 1.0, "solar environment leaves wind unchanged and idle fuel generation does not burn coal")
 	state.set_active_planet("giant")
 	engine.update(1.0 / 60.0)
 	_expect(state.buildings[solar_ids.ashen].power_output == 270.0, "background solar generation survives active switch")
@@ -137,7 +137,7 @@ func _test_formal_entry_points() -> void:
 	var placed := ConstructionSystem.new(state).try_place_building("miner", Vector2(-470, -250))
 	var engine := GameManager.get_simulation_engine()
 	for tick in range(60): engine.update(1.0 / 60.0)
-	_expect(before_coal == 10.0 and float(state.planet_inventory.get("coal", 0)) == 0.0 and generator.get("ok", false) and placed.get("ok", false) and state.buildings[generator.id].power_output == 500.0 and float(state.buildings[placed.id].output_buffer.get("iron_ore", 0)) > 0, "new home bootstrap powers legal mining without injected inventory")
+	_expect(before_coal == 10.0 and float(state.planet_inventory.get("coal", 0)) == 0.0 and generator.get("ok", false) and placed.get("ok", false) and is_equal_approx(state.buildings[generator.id].power_output, DataManager.get_building("miner").power_demand) and float(state.buildings[placed.id].output_buffer.get("iron_ore", 0)) > 0, "new home bootstrap powers legal mining without injected inventory")
 	_expect(state.planet_inventory == state.planet_inventories.home and state.planet_inventory.get("iron_ingot", 0) == 12.0, "starter tray binds home compatibility projection")
 	var viewport := SubViewport.new()
 	viewport.size = Vector2i(1152, 648)

@@ -21,10 +21,13 @@ func _update_building(building: Dictionary, delta: float) -> void:
 	var building_type := String(building.get("type", ""))
 	var building_definition := DataManager.get_building(building_type)
 	if building_definition.get("kind", "") == "generator":
+		if float(building.get("power_input", 0.0)) > 0.0:
+			building["status"] = "charging"
+			return
 		if float(building.get("power_output", 0.0)) > 0.0:
 			building["status"] = "running"
 		elif not building_definition.get("fuel", {}).is_empty():
-			building["status"] = "no_fuel"
+			building["status"] = "standby" if float(building.get("fuel_remaining", 0)) > 0 or float(building.get("input_buffer", {}).get(building_definition.fuel.item_id, 0)) >= 1 else "no_fuel"
 		else:
 			building["status"] = "idle"
 		return

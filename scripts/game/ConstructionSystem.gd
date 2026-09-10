@@ -5,6 +5,8 @@ const FactoryGeometry = preload("res://scripts/game/FactoryGeometry.gd")
 const AMOUNT_EPSILON := 0.0000001
 const GENERATOR_STARTUP_FUEL_UNITS := 10.0
 const LEGACY_COSTS := {
+	"accumulator": INF,
+	"energy_exchanger": INF,
 	"miner": 1.0,
 	"smelter": 2.0,
 	"assembling_machine_mk1": 3.0,

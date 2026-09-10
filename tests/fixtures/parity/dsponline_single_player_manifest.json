@@ -9,17 +9,22 @@
       "category": "items",
       "source_id": "accumulator",
       "name": "蓄电器",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "items",
-        "ids": []
+        "ids": [
+          "accumulator"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 21 已接入电网/储能和桌面入口；本地守恒回归通过。完整目录成本、动态功耗及源行为金标仍待任务 22/27 核对。",
       "owner_task": 22,
       "rule_test": "rule:items:accumulator",
       "manual_acceptance": "manual:items:accumulator",
       "ui_entry": "src/components/RecipeWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestPowerGrids.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "items:accumulator"
     },
     {
@@ -121,17 +126,22 @@
       "category": "items",
       "source_id": "charged_accumulator",
       "name": "蓄电器（满）",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "items",
-        "ids": []
+        "ids": [
+          "charged_accumulator"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 21 已接入电网/储能和桌面入口；本地守恒回归通过。完整目录成本、动态功耗及源行为金标仍待任务 22/27 核对。",
       "owner_task": 22,
       "rule_test": "rule:items:charged_accumulator",
       "manual_acceptance": "manual:items:charged_accumulator",
       "ui_entry": "src/components/RecipeWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestPowerGrids.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "items:charged_accumulator"
     },
     {
@@ -1501,17 +1511,22 @@
       "category": "recipes",
       "source_id": "accumulator_charge",
       "name": "蓄电器充电",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "recipes",
-        "ids": []
+        "ids": [
+          "charge_accumulator"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 21 已接入电网/储能和桌面入口；本地守恒回归通过。完整目录成本、动态功耗及源行为金标仍待任务 22/27 核对。",
       "owner_task": 22,
       "rule_test": "rule:recipes:accumulator_charge",
       "manual_acceptance": "manual:recipes:accumulator_charge",
       "ui_entry": "src/components/RecipeWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestPowerGrids.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "recipes:accumulator_charge"
     },
     {
@@ -1519,17 +1534,22 @@
       "category": "recipes",
       "source_id": "accumulator_discharge",
       "name": "蓄电器放电",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "recipes",
-        "ids": []
+        "ids": [
+          "discharge_accumulator"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 21 已接入电网/储能和桌面入口；本地守恒回归通过。完整目录成本、动态功耗及源行为金标仍待任务 22/27 核对。",
       "owner_task": 22,
       "rule_test": "rule:recipes:accumulator_discharge",
       "manual_acceptance": "manual:recipes:accumulator_discharge",
       "ui_entry": "src/components/RecipeWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestPowerGrids.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "recipes:accumulator_discharge"
     },
     {
@@ -2957,17 +2977,22 @@
       "category": "buildings",
       "source_id": "accumulator",
       "name": "蓄电器",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "buildings",
-        "ids": []
+        "ids": [
+          "accumulator"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 21 已接入电网/储能和桌面入口；本地守恒回归通过。完整目录成本、动态功耗及源行为金标仍待任务 22/27 核对。",
       "owner_task": 21,
       "rule_test": "rule:buildings:accumulator",
       "manual_acceptance": "manual:buildings:accumulator",
       "ui_entry": "src/components/RecipeWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestPowerGrids.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "buildings:accumulator"
     },
     {
@@ -3123,17 +3148,22 @@
       "category": "buildings",
       "source_id": "energy_exchanger",
       "name": "能量枢纽",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "buildings",
-        "ids": []
+        "ids": [
+          "energy_exchanger"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 21 已接入电网/储能和桌面入口；本地守恒回归通过。完整目录成本、动态功耗及源行为金标仍待任务 22/27 核对。",
       "owner_task": 21,
       "rule_test": "rule:buildings:energy_exchanger",
       "manual_acceptance": "manual:buildings:energy_exchanger",
       "ui_entry": "src/components/RecipeWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestPowerGrids.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "buildings:energy_exchanger"
     },
     {
@@ -11249,17 +11279,22 @@
       "category": "commands",
       "source_id": "engine.getPowerGridMetrics",
       "name": "getPowerGridMetrics",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/PowerSystem.gd::get_grid_info"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 21 已接入电网/储能和桌面入口；本地守恒回归通过。完整目录成本、动态功耗及源行为金标仍待任务 22/27 核对。",
       "owner_task": 21,
       "rule_test": "rule:commands:engine.getPowerGridMetrics",
       "manual_acceptance": "manual:commands:engine.getPowerGridMetrics",
       "ui_entry": "src/game/engine.ts",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestPowerGrids.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:engine.getPowerGridMetrics"
     },
     {
@@ -13076,17 +13111,22 @@
       "category": "commands",
       "source_id": "engine.setEnergyMode",
       "name": "setEnergyMode",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/GameState.gd::set_energy_mode"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 21 已接入电网/储能和桌面入口；本地守恒回归通过。完整目录成本、动态功耗及源行为金标仍待任务 22/27 核对。",
       "owner_task": 21,
       "rule_test": "rule:commands:engine.setEnergyMode",
       "manual_acceptance": "manual:commands:engine.setEnergyMode",
       "ui_entry": "src/game/engine.ts",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestPowerGrids.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:engine.setEnergyMode"
     },
     {
@@ -13159,12 +13199,15 @@
           "scripts/game/GameState.gd::set_entity_generation_priority"
         ]
       },
-      "gap": "已有候选；源数值、约束、效果和操作尚未逐项对比验证",
+      "gap": "任务 21 已接入电网/储能和桌面入口；本地守恒回归通过。完整目录成本、动态功耗及源行为金标仍待任务 22/27 核对。",
       "owner_task": 21,
       "rule_test": "rule:commands:engine.setEntityGenerationPriority",
       "manual_acceptance": "manual:commands:engine.setEntityGenerationPriority",
       "ui_entry": "src/game/engine.ts",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestPowerGrids.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:engine.setEntityGenerationPriority"
     },
     {
@@ -13199,12 +13242,15 @@
           "scripts/game/GameState.gd::set_entity_power_priority"
         ]
       },
-      "gap": "已有候选；源数值、约束、效果和操作尚未逐项对比验证",
+      "gap": "任务 21 已接入电网/储能和桌面入口；本地守恒回归通过。完整目录成本、动态功耗及源行为金标仍待任务 22/27 核对。",
       "owner_task": 21,
       "rule_test": "rule:commands:engine.setEntityPowerPriority",
       "manual_acceptance": "manual:commands:engine.setEntityPowerPriority",
       "ui_entry": "src/game/engine.ts",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestPowerGrids.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:engine.setEntityPowerPriority"
     },
     {
@@ -14216,17 +14262,22 @@
       "category": "commands",
       "source_id": "FactoryNodes.onEnergyModeChange",
       "name": "onEnergyModeChange",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/GameState.gd::set_energy_mode"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 21 已接入电网/储能和桌面入口；本地守恒回归通过。完整目录成本、动态功耗及源行为金标仍待任务 22/27 核对。",
       "owner_task": 21,
       "rule_test": "rule:commands:FactoryNodes.onEnergyModeChange",
       "manual_acceptance": "manual:commands:FactoryNodes.onEnergyModeChange",
       "ui_entry": "src/components/FactoryNodes.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestPowerGrids.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:FactoryNodes.onEnergyModeChange"
     },
     {
@@ -15062,17 +15113,22 @@
       "category": "commands",
       "source_id": "GamePanels.onEnergyModeChange",
       "name": "onEnergyModeChange",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/GameState.gd::set_energy_mode"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 21 已接入电网/储能和桌面入口；本地守恒回归通过。完整目录成本、动态功耗及源行为金标仍待任务 22/27 核对。",
       "owner_task": 21,
       "rule_test": "rule:commands:GamePanels.onEnergyModeChange",
       "manual_acceptance": "manual:commands:GamePanels.onEnergyModeChange",
       "ui_entry": "src/components/GamePanels.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestPowerGrids.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:GamePanels.onEnergyModeChange"
     },
     {
@@ -15188,17 +15244,22 @@
       "category": "commands",
       "source_id": "GamePanels.onGenerationPriorityChange",
       "name": "onGenerationPriorityChange",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/GameState.gd::set_entity_generation_priority"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 21 已接入电网/储能和桌面入口；本地守恒回归通过。完整目录成本、动态功耗及源行为金标仍待任务 22/27 核对。",
       "owner_task": 21,
       "rule_test": "rule:commands:GamePanels.onGenerationPriorityChange",
       "manual_acceptance": "manual:commands:GamePanels.onGenerationPriorityChange",
       "ui_entry": "src/components/GamePanels.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestPowerGrids.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:GamePanels.onGenerationPriorityChange"
     },
     {
@@ -15206,17 +15267,22 @@
       "category": "commands",
       "source_id": "GamePanels.onGridChange",
       "name": "onGridChange",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/GameState.gd::set_entity_power_grid"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 21 已接入电网/储能和桌面入口；本地守恒回归通过。完整目录成本、动态功耗及源行为金标仍待任务 22/27 核对。",
       "owner_task": 21,
       "rule_test": "rule:commands:GamePanels.onGridChange",
       "manual_acceptance": "manual:commands:GamePanels.onGridChange",
       "ui_entry": "src/components/GamePanels.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestPowerGrids.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:GamePanels.onGridChange"
     },
     {
@@ -15818,17 +15884,22 @@
       "category": "commands",
       "source_id": "GamePanels.onPowerGridChange",
       "name": "onPowerGridChange",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/GameState.gd::set_entity_power_grid"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 21 已接入电网/储能和桌面入口；本地守恒回归通过。完整目录成本、动态功耗及源行为金标仍待任务 22/27 核对。",
       "owner_task": 21,
       "rule_test": "rule:commands:GamePanels.onPowerGridChange",
       "manual_acceptance": "manual:commands:GamePanels.onPowerGridChange",
       "ui_entry": "src/components/GamePanels.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestPowerGrids.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:GamePanels.onPowerGridChange"
     },
     {
@@ -15836,17 +15907,22 @@
       "category": "commands",
       "source_id": "GamePanels.onPowerPriorityChange",
       "name": "onPowerPriorityChange",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/GameState.gd::set_entity_power_priority"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 21 已接入电网/储能和桌面入口；本地守恒回归通过。完整目录成本、动态功耗及源行为金标仍待任务 22/27 核对。",
       "owner_task": 21,
       "rule_test": "rule:commands:GamePanels.onPowerPriorityChange",
       "manual_acceptance": "manual:commands:GamePanels.onPowerPriorityChange",
       "ui_entry": "src/components/GamePanels.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestPowerGrids.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:GamePanels.onPowerPriorityChange"
     },
     {

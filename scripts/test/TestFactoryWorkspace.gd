@@ -114,7 +114,7 @@ func _test_workspace_chrome_contract() -> void:
 	_expect(brand.position == Vector2(14, 15) and pause_button.get_rect() == Rect2(132, 9, 64, 34), "top-bar children keep their authored positions instead of filling the panel")
 	_expect(summary.position == Vector2(16, 14) and objective.position == Vector2(16, 76) and not summary.get_rect().intersects(objective.get_rect()), "resource-rail sections keep distinct non-overlapping rectangles")
 	_expect(inspector_title.get_rect() == Rect2(18, 14, 250, 28) and inspector_details.get_rect() == Rect2(18, 46, 250, 76) and not inspector_title.get_rect().intersects(inspector_details.get_rect()), "inspector sections keep distinct non-overlapping rectangles")
-	_expect(dock_points.position == Vector2(14, 12) and dock_buttons.get_rect() == Rect2(126, 13, 510, 64), "construction-dock labels and buttons keep separate authored regions")
+	_expect(dock_points.position == Vector2(14, 12) and dock_buttons.get_rect() == Rect2(126, 13, 706, 64), "construction-dock labels and buttons keep separate authored regions")
 	_expect(_controls_do_not_overlap(workspace.get_node("TopBar"), ["Brand", "PauseButton", "SpeedButtons", "Status"]), "all top-bar regions remain non-overlapping")
 	_expect(_controls_do_not_overlap(workspace.get_node("ResourceRail"), ["Summary", "Objective", "Stock", "Cursor", "Handcraft", "Production", "Tips"]), "all resource-rail regions remain non-overlapping")
 	_expect(_controls_do_not_overlap(workspace.get_node("InspectorPanel"), ["Title", "Details", "InputBuffers", "OutputBuffers", "RecipeHeading", "RecipeScroll", "StartConnectionButton", "DeleteButton"]), "all inspector regions remain non-overlapping")

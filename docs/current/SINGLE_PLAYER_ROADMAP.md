@@ -921,11 +921,11 @@ git commit -m "feat: match local save and recovery controls"
 - 修改：`scenes/ui/FactoryWorkspaceUI.gd`
 - 修改：`scripts/test/TestSimulationCore.gd`
 
-- [ ] **步骤 1：写电网隔离和能量守恒失败测试**
+- [x] **步骤 1：写电网隔离和能量守恒失败测试**
 
 覆盖同一行星多个电网、覆盖丢失、建筑换网、发电优先级、用电优先级、蓄电池充放电、能量枢纽、断电、满储能、空储能和保存加载。每个固定 tick 的发电、消耗、充电、放电和损耗必须守恒。
 
-- [ ] **步骤 2：实现稳定电网归属**
+- [x] **步骤 2：实现稳定电网归属**
 
 电网使用稳定 ID；每个建筑持久化电网、用电优先级，发电设备另存发电优先级。覆盖变化只重建可派生索引，不隐式搬运库存或重置生产进度。
 
@@ -933,16 +933,18 @@ git commit -m "feat: match local save and recovery controls"
 
 按 DSPONLINE 冻结基线的优先级、容量、充放电功率和待机规则分配能源；可再生、燃料、戴森功率和储能遵循相同数值顺序。
 
-- [ ] **步骤 4：对齐检查器与反馈**
+- [x] **步骤 4：对齐检查器与反馈**
 
 建筑检查器可修改电网和优先级，显示需求、获得功率、覆盖、储能水平和阻塞原因；批量修改先完整预检再原子提交。
 
-- [ ] **步骤 5：提交**
+- [x] **步骤 5：提交**
 
 ```powershell
 git add scripts/game/PowerSystem.gd scripts/game/PowerGridSystem.gd scripts/game/GameState.gd scripts/game/GameStateCodec.gd scenes/ui/FactoryWorkspaceUI.gd scripts/test/TestSimulationCore.gd
 git commit -m "feat: match DSPONLINE power grids and storage"
 ```
+
+**本轮记录（2026-09-10）：** 电网、分级调度、储能和桌面配置核心已实现，十七场景门禁及 OpenGL 产品界面门通过；本轮提交本地 main，不推送。步骤 3 的完整源待机/动态需求及多燃料规则依赖任务 22 的目录，暂不勾为完全对齐；任务 22 必须接续，见 [验收边界](TASK21_ACCEPTANCE.md)。
 
 ### 任务 22：对齐完整生产目录、递归制造与喷涂
 

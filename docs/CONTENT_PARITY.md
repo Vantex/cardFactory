@@ -6,7 +6,7 @@
 
 此表是任务 19 的差距登记，不是玩法已经对齐的证明。现有系统仍可使用；“实现中”只表示存在候选映射，未逐项验证原版数值和行为。登记门允许明确登记的缺口，最终发布门必须清零未实现/实现中。
 
-状态统计：{"未实现":939,"实现中":137,"在线排除":23}。没有把同名条目自动标为已验证。
+状态统计：{"实现中":151,"未实现":925,"在线排除":23}。没有把同名条目自动标为已验证。
 
 完整来源定义保存输入输出、数值、前置、解锁、奖励和目录规则；成就判定等代码规则记录源文件及哈希，行为验证仍待任务 25/27。每行的自动规则编号为 rule:类别:源ID，人工编号为 manual:类别:源ID；规则规格见 [rule_cases.json](../tests/fixtures/parity/rule_cases.json)，规格登记不等于已执行行为测试。UI 栏为原版入口/定义来源，当前候选路径和缺口见 [机器清单](../tests/fixtures/parity/dsponline_single_player_manifest.json)。
 
@@ -39,13 +39,13 @@
 
 | 源 ID | 名称 | 当前候选 ID/文件 | 状态 | 后续任务 | 来源/UI |
 |---|---|---|---|---:|---|
-| accumulator | 蓄电器 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
+| accumulator | 蓄电器 | accumulator | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | annihilation_constraint_sphere | 湮灭约束球 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
 | antimatter | 反物质 | antimatter | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | antimatter_fuel_rod | 反物质燃料棒 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
 | carbon_nanotube | 碳纳米管 | carbon_nanotube | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | casimir_crystal | 卡西米尔晶体 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| charged_accumulator | 蓄电器（满） | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
+| charged_accumulator | 蓄电器（满） | charged_accumulator | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | circuit_board | 电路板 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
 | coal | 煤矿 | coal | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | copper_ingot | 铜块 | copper_ingot | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
@@ -123,8 +123,8 @@
 | 源 ID | 名称 | 当前候选 ID/文件 | 状态 | 后续任务 | 来源/UI |
 |---|---|---|---|---:|---|
 | accumulator | 蓄电器 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| accumulator_charge | 蓄电器充电 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| accumulator_discharge | 蓄电器放电 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
+| accumulator_charge | 蓄电器充电 | charge_accumulator | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| accumulator_discharge | 蓄电器放电 | discharge_accumulator | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | annihilation_constraint_sphere | 湮灭约束球 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
 | antimatter | 质能转换 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
 | antimatter_fuel_rod | 反物质燃料棒 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
@@ -207,7 +207,7 @@
 
 | 源 ID | 名称 | 当前候选 ID/文件 | 状态 | 后续任务 | 来源/UI |
 |---|---|---|---|---:|---|
-| accumulator | 蓄电器 | 待映射 | 未实现 | 21 | src/components/RecipeWorkspace.tsx |
+| accumulator | 蓄电器 | accumulator | 实现中 | 21 | src/components/RecipeWorkspace.tsx |
 | arc_smelter | 电弧熔炉 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
 | artificial_star | 人造恒星 | 待映射 | 未实现 | 21 | src/components/RecipeWorkspace.tsx |
 | assembling_machine_mk1 | 制造台 Mk.I | assembling_machine_mk1 | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
@@ -216,7 +216,7 @@
 | chemical_plant | 化工厂 | chemical_plant | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | construction_center | 建筑制造中心 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
 | em_rail_ejector | 电磁轨道弹射器 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| energy_exchanger | 能量枢纽 | 待映射 | 未实现 | 21 | src/components/RecipeWorkspace.tsx |
+| energy_exchanger | 能量枢纽 | energy_exchanger | 实现中 | 21 | src/components/RecipeWorkspace.tsx |
 | fractionator | 分馏塔 | fractionator | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | galactic_material_exporter | 超大型物资出口 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
 | geothermal_power_station | 地热发电站 | 待映射 | 未实现 | 21 | src/components/RecipeWorkspace.tsx |
@@ -712,7 +712,7 @@
 | engine.getPlanetMetrics | getPlanetMetrics | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.getPlanetTrayItemFreeCapacity | getPlanetTrayItemFreeCapacity | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.getPlanetTrayItemLimit | getPlanetTrayItemLimit | 待映射 | 未实现 | 26 | src/game/engine.ts |
-| engine.getPowerGridMetrics | getPowerGridMetrics | 待映射 | 未实现 | 21 | src/game/engine.ts |
+| engine.getPowerGridMetrics | getPowerGridMetrics | scripts/game/PowerSystem.gd::get_grid_info | 实现中 | 21 | src/game/engine.ts |
 | engine.getQuantumAttachmentStatus | getQuantumAttachmentStatus | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.getRayReceiverCapacityKw | getRayReceiverCapacityKw | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.getRecipeCompatibleEntityIds | getRecipeCompatibleEntityIds | 待映射 | 未实现 | 23 | src/game/engine.ts |
@@ -812,7 +812,7 @@
 | engine.setDysonSwarmOrbit | setDysonSwarmOrbit | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.setEjectorTargetOrbit | setEjectorTargetOrbit | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.setEjectorTargetOrbitForEntities | setEjectorTargetOrbitForEntities | 待映射 | 未实现 | 23 | src/game/engine.ts |
-| engine.setEnergyMode | setEnergyMode | 待映射 | 未实现 | 21 | src/game/engine.ts |
+| engine.setEnergyMode | setEnergyMode | scripts/game/GameState.gd::set_energy_mode | 实现中 | 21 | src/game/engine.ts |
 | engine.setEntitiesInteractionLocked | setEntitiesInteractionLocked | scripts/game/GameState.gd::set_entities_interaction_locked | 实现中 | 23 | src/game/engine.ts |
 | engine.setEntitiesProliferatorConfiguration | setEntitiesProliferatorConfiguration | 待映射 | 未实现 | 22 | src/game/engine.ts |
 | engine.setEntitiesRecipe | setEntitiesRecipe | scripts/game/GameState.gd::set_entities_recipe | 实现中 | 23 | src/game/engine.ts |
@@ -874,7 +874,7 @@
 | FactoryNodes.onAddBuilding | onAddBuilding | 待映射 | 未实现 | 23 | src/components/FactoryNodes.tsx |
 | FactoryNodes.onDropCargo | onDropCargo | 待映射 | 未实现 | 23 | src/components/FactoryNodes.tsx |
 | FactoryNodes.onDropDraggedItem | onDropDraggedItem | 待映射 | 未实现 | 23 | src/components/FactoryNodes.tsx |
-| FactoryNodes.onEnergyModeChange | onEnergyModeChange | 待映射 | 未实现 | 21 | src/components/FactoryNodes.tsx |
+| FactoryNodes.onEnergyModeChange | onEnergyModeChange | scripts/game/GameState.gd::set_energy_mode | 实现中 | 21 | src/components/FactoryNodes.tsx |
 | FactoryNodes.onFuelChange | onFuelChange | 待映射 | 未实现 | 21 | src/components/FactoryNodes.tsx |
 | FactoryNodes.onInstallMiner | onInstallMiner | 待映射 | 未实现 | 23 | src/components/FactoryNodes.tsx |
 | FactoryNodes.onInteractionLockChange | onInteractionLockChange | 待映射 | 未实现 | 23 | src/components/FactoryNodes.tsx |
@@ -921,15 +921,15 @@
 | GamePanels.onDropCargo | onDropCargo | 待映射 | 未实现 | 23 | src/components/GamePanels.tsx |
 | GamePanels.onDropDraggedItem | onDropDraggedItem | 待映射 | 未实现 | 23 | src/components/GamePanels.tsx |
 | GamePanels.onEjectorOrbitChange | onEjectorOrbitChange | 待映射 | 未实现 | 23 | src/components/GamePanels.tsx |
-| GamePanels.onEnergyModeChange | onEnergyModeChange | 待映射 | 未实现 | 21 | src/components/GamePanels.tsx |
+| GamePanels.onEnergyModeChange | onEnergyModeChange | scripts/game/GameState.gd::set_energy_mode | 实现中 | 21 | src/components/GamePanels.tsx |
 | GamePanels.onEntityLockChange | onEntityLockChange | 待映射 | 未实现 | 23 | src/components/GamePanels.tsx |
 | GamePanels.onEntityStackTarget | onEntityStackTarget | 待映射 | 未实现 | 23 | src/components/GamePanels.tsx |
 | GamePanels.onFocusBeltNetwork | onFocusBeltNetwork | 待映射 | 未实现 | 23 | src/components/GamePanels.tsx |
 | GamePanels.onFocusNetwork | onFocusNetwork | 待映射 | 未实现 | 23 | src/components/GamePanels.tsx |
 | GamePanels.onFuelChange | onFuelChange | 待映射 | 未实现 | 21 | src/components/GamePanels.tsx |
 | GamePanels.onGalacticExporterPausedChange | onGalacticExporterPausedChange | 待映射 | 未实现 | 26 | src/components/GamePanels.tsx |
-| GamePanels.onGenerationPriorityChange | onGenerationPriorityChange | 待映射 | 未实现 | 21 | src/components/GamePanels.tsx |
-| GamePanels.onGridChange | onGridChange | 待映射 | 未实现 | 21 | src/components/GamePanels.tsx |
+| GamePanels.onGenerationPriorityChange | onGenerationPriorityChange | scripts/game/GameState.gd::set_entity_generation_priority | 实现中 | 21 | src/components/GamePanels.tsx |
+| GamePanels.onGridChange | onGridChange | scripts/game/GameState.gd::set_entity_power_grid | 实现中 | 21 | src/components/GamePanels.tsx |
 | GamePanels.onInstall | onInstall | 待映射 | 未实现 | 23 | src/components/GamePanels.tsx |
 | GamePanels.onInstallSprayCoater | onInstallSprayCoater | 待映射 | 未实现 | 22 | src/components/GamePanels.tsx |
 | GamePanels.onLaneCountChange | onLaneCountChange | 待映射 | 未实现 | 23 | src/components/GamePanels.tsx |
@@ -963,8 +963,8 @@
 | GamePanels.onPlacementChange | onPlacementChange | 待映射 | 未实现 | 23 | src/components/GamePanels.tsx |
 | GamePanels.onPlacementCountChange | onPlacementCountChange | 待映射 | 未实现 | 23 | src/components/GamePanels.tsx |
 | GamePanels.onPlanetChange | onPlanetChange | 待映射 | 未实现 | 26 | src/components/GamePanels.tsx |
-| GamePanels.onPowerGridChange | onPowerGridChange | 待映射 | 未实现 | 21 | src/components/GamePanels.tsx |
-| GamePanels.onPowerPriorityChange | onPowerPriorityChange | 待映射 | 未实现 | 21 | src/components/GamePanels.tsx |
+| GamePanels.onPowerGridChange | onPowerGridChange | scripts/game/GameState.gd::set_entity_power_grid | 实现中 | 21 | src/components/GamePanels.tsx |
+| GamePanels.onPowerPriorityChange | onPowerPriorityChange | scripts/game/GameState.gd::set_entity_power_priority | 实现中 | 21 | src/components/GamePanels.tsx |
 | GamePanels.onPriorityChange | onPriorityChange | 待映射 | 未实现 | 23 | src/components/GamePanels.tsx |
 | GamePanels.onProliferatorConfiguration | onProliferatorConfiguration | 待映射 | 未实现 | 22 | src/components/GamePanels.tsx |
 | GamePanels.onQuantumAttachment | onQuantumAttachment | 待映射 | 未实现 | 26 | src/components/GamePanels.tsx |

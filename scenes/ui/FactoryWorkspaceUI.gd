@@ -17,7 +17,7 @@ const ACCENT_GREEN := Color("#70bb85")
 const ACCENT_YELLOW := Color("#e1b452")
 const ACCENT_ERROR := Color("#df7666")
 
-const DOCK_BUILDINGS := ["miner", "smelter", "assembling_machine_mk1", "power_generator", "matrix_lab"]
+const DOCK_BUILDINGS := ["miner", "smelter", "assembling_machine_mk1", "power_generator", "matrix_lab", "accumulator", "energy_exchanger"]
 const DOCK_SHORTCUTS := {
 	"miner": "Q",
 	"smelter": "W",
@@ -215,6 +215,7 @@ func refresh_now(_arg_1 = null, _arg_2 = null, _arg_3 = null) -> void:
 	_construction_mode.text = "当前：%s" % ("选择建筑" if _placement_building_type.is_empty() else "放置 %s" % _building_name(_placement_building_type))
 	_refresh_construction_dock(state)
 	_refresh_inspector(state)
+	get_node("InspectorPanel/PowerConfiguration").refresh(_current_selected_building_ids())
 	var galaxy_map := get_node_or_null("GalaxyMap")
 	if galaxy_map != null and galaxy_map.has_method("refresh_now"):
 		galaxy_map.call("refresh_now")
@@ -576,6 +577,11 @@ func _create_inspector_panel() -> void:
 	_inspector_title.position = Vector2(18, 14)
 	_inspector_title.size = Vector2(250, 28)
 	inspector.add_child(_inspector_title)
+	var power_panel := preload("res://scenes/ui/PowerConfigurationPanel.gd").new()
+	power_panel.name = "PowerConfiguration"
+	power_panel.position = Vector2(18, 450)
+	power_panel.size = Vector2(230, 340)
+	inspector.add_child(power_panel)
 	_inspector_details = _create_label("Details", "", 12, Color("#d7e2de"))
 	_inspector_details.position = Vector2(18, 46)
 	_inspector_details.size = Vector2(250, 76)
@@ -646,6 +652,7 @@ func _create_inspector_panel() -> void:
 	_delete_button.size = Vector2(118, 38)
 	_delete_button.pressed.connect(_on_delete_pressed)
 	inspector.add_child(_delete_button)
+	inspector.move_child(power_panel, -1)
 
 func _create_construction_dock() -> void:
 	var dock := _create_panel("ConstructionDock", PANEL_DARK)
@@ -667,14 +674,14 @@ func _create_construction_dock() -> void:
 	var buttons := HBoxContainer.new()
 	buttons.name = "BuildingButtons"
 	buttons.position = Vector2(126, 13)
-	buttons.size = Vector2(510, 64)
+	buttons.size = Vector2(706, 64)
 	buttons.add_theme_constant_override("separation", 8)
 	dock.add_child(buttons)
 	for building_type in DOCK_BUILDINGS:
 		var definition := DataManager.get_building(building_type)
 		var button := Button.new()
 		button.name = _building_button_name(building_type)
-		button.text = "%s %s\n已有 0 / 需要 1" % [DOCK_SHORTCUTS[building_type], _building_name(building_type)]
+		button.text = "%s %s\n已有 0 / 需要 1" % [DOCK_SHORTCUTS.get(building_type, ""), _building_name(building_type)]
 		button.clip_text = true
 		button.tooltip_text = definition.get("description", "")
 		button.custom_minimum_size = Vector2(94, 56)
@@ -1084,10 +1091,11 @@ func _refresh_construction_dock(state: GameState) -> void:
 		var owned := int(floor(construction.get_owned_count(building_type)))
 		var missing_reason := construction.get_missing_reason(building_type)
 		var legacy_credit := int(floor(float(state.construction_inventory.get("legacy_credit", 0.0))))
-		var legacy_cost := int(ConstructionSystem.LEGACY_COSTS.get(building_type, 0.0))
-		button.text = "%s %s\n已有 %d / 需要 1" % [DOCK_SHORTCUTS[building_type], _building_name(building_type), owned]
-		if owned < 1 and legacy_credit > 0:
-			button.text = "%s %s\n旧额度 %d / 需要 %d" % [DOCK_SHORTCUTS[building_type], _building_name(building_type), legacy_credit, legacy_cost]
+		var raw_legacy_cost := float(ConstructionSystem.LEGACY_COSTS.get(building_type, 0.0))
+		var legacy_cost := int(raw_legacy_cost) if is_finite(raw_legacy_cost) else 0
+		button.text = "%s %s\n已有 %d / 需要 1" % [DOCK_SHORTCUTS.get(building_type, ""), _building_name(building_type), owned]
+		if owned < 1 and legacy_credit > 0 and is_finite(raw_legacy_cost):
+			button.text = "%s %s\n旧额度 %d / 需要 %d" % [DOCK_SHORTCUTS.get(building_type, ""), _building_name(building_type), legacy_credit, legacy_cost]
 		button.disabled = not missing_reason.is_empty()
 		button.tooltip_text = DataManager.get_building(building_type).get("description", "") if missing_reason.is_empty() else missing_reason
 

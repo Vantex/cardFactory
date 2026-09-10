@@ -40,7 +40,7 @@ Godot 不在默认位置时，通过 `-GodotPath` 覆盖：
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1 -GodotPath 'D:\Tools\Godot\Godot.exe'
 ```
 
-门禁会先自动执行无窗口编辑器导入，生成资产缓存和全局脚本类缓存，再运行十六个真实 Godot 测试场景：`TestBaseline`、`TestFactoryWorkspace`、`TestStatePersistence`、`TestSimulationCore`、`TestInventoryConstruction`、`TestAdvancedCanvas`、`TestBlueprints`、`TestProgression`、`TestStatisticsCodex`、`TestGalaxyLogistics`、`TestDysonEndgame`、`TestOfflineSettlement` 、`TestProductShell` 、`TestPerformanceBudgets` 、`TestDSPOnlineParity` 与 `TestSaveRecovery`。正常通过必须同时满足：Godot 退出码为 0；每个场景的完整成功标记各出现一次；输出不包含 `SCRIPT ERROR`、`Parse Error`、对应失败标记、ObjectDB 泄漏或仍被占用的资源。引擎级 `--quit-after 600` 保证测试进程有界结束。
+门禁会先自动执行无窗口编辑器导入，生成资产缓存和全局脚本类缓存，再运行十七个真实 Godot 测试场景：`TestBaseline`、`TestFactoryWorkspace`、`TestStatePersistence`、`TestSimulationCore`、`TestInventoryConstruction`、`TestAdvancedCanvas`、`TestBlueprints`、`TestProgression`、`TestStatisticsCodex`、`TestGalaxyLogistics`、`TestDysonEndgame`、`TestOfflineSettlement` 、`TestProductShell` 、`TestPerformanceBudgets` 、`TestDSPOnlineParity` 、`TestSaveRecovery` 与 `TestPowerGrids`。正常通过必须同时满足：Godot 退出码为 0；每个场景的完整成功标记各出现一次；输出不包含 `SCRIPT ERROR`、`Parse Error`、对应失败标记、ObjectDB 泄漏或仍被占用的资源。引擎级 `--quit-after 600` 保证测试进程有界结束。
 
 ## 当前可玩工作区（Phase 2）
 
@@ -160,3 +160,7 @@ schema v9 持久化阶段、来源、已投入材料、整数进度和领奖标�
 ## 任务 20：本地保存与恢复
 
 顶栏「立即保存」或 Ctrl+S 保存当前工厂；Escape 打开暂停菜单。开始菜单的存档列表提供「恢复」，可检查并选择主档、最近备份、紧急恢复点和手动快照。恢复旧档需确认，成功保存后才进入工厂，过去的离线时间不重复补算。暂停菜单支持创建快照和管理恢复来源，批量删除会保护最后有效恢复点。详细验证与限制见 [任务 20 验收](docs/current/TASK20_ACCEPTANCE.md)。
+
+## 任务 21：多电网与储能
+
+选中建筑后，在检查器下方设置 A/B/C 电网和用电、发电优先级；多选时对全部建筑原子应用。建造栏新增蓄电器和能量枢纽，手工制造提供施工件及空电池。枢纽支持充电、放电和停用，余电充电，缺电时按优先级放电。带剩余能量的设备需先放空才能拆除。完整源目录与成本待任务 22 继续，详见 [任务 21 验收](docs/current/TASK21_ACCEPTANCE.md)。

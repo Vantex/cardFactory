@@ -1,0 +1,98 @@
+{
+  "line_id": "power_storage",
+  "name": "电网储能",
+  "items": {
+    "accumulator": {
+      "id": "accumulator",
+      "name": "空蓄电器",
+      "symbol": "▱",
+      "color": "#62b5ae",
+      "description": "90 MJ 能量载体"
+    },
+    "charged_accumulator": {
+      "id": "charged_accumulator",
+      "name": "满蓄电器",
+      "symbol": "▰",
+      "color": "#62b5ae",
+      "description": "90 MJ 能量载体"
+    }
+  },
+  "buildings": {
+    "accumulator": {
+      "id": "accumulator",
+      "name": "蓄电器",
+      "symbol": "⚡",
+      "kind": "generator",
+      "description": "电网储能设备",
+      "size": {
+        "width": 1,
+        "height": 1
+      },
+      "power_demand": 0,
+      "power_generation": 900,
+      "power_charge": 900,
+      "energy_capacity_mj": 90,
+      "input_slots": 0,
+      "output_slots": 0,
+      "speed": 1
+    },
+    "energy_exchanger": {
+      "id": "energy_exchanger",
+      "name": "能量枢纽",
+      "symbol": "⚡",
+      "kind": "generator",
+      "description": "电网储能设备",
+      "size": {
+        "width": 1,
+        "height": 1
+      },
+      "power_demand": 0,
+      "power_generation": 45000,
+      "power_charge": 45000,
+      "energy_capacity_mj": 90,
+      "input_slots": 1,
+      "output_slots": 1,
+      "input_buffer_capacity": 120,
+      "output_buffer_capacity": 120,
+      "speed": 1
+    }
+  },
+  "recipes": {
+    "charge_accumulator": {
+      "id": "charge_accumulator",
+      "name": "蓄电器充电",
+      "inputs": [
+        {
+          "item_id": "accumulator",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "charged_accumulator",
+          "amount": 1
+        }
+      ],
+      "building_id": "energy_exchanger",
+      "duration": 2
+    },
+    "discharge_accumulator": {
+      "id": "discharge_accumulator",
+      "name": "蓄电器放电",
+      "inputs": [
+        {
+          "item_id": "charged_accumulator",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "accumulator",
+          "amount": 1
+        }
+      ],
+      "building_id": "energy_exchanger",
+      "duration": 2
+    }
+  }
+}

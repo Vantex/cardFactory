@@ -525,6 +525,17 @@ static func _validate_handcraft_job(errors: Array, job: Dictionary, seen_job_ids
 		_add_error(errors, "invalid_handcraft_progress", "handcraft", job_id, "手工制造进度超出合法范围")
 
 static func _validate_power_state(errors: Array, building_id: String, building: Dictionary) -> void:
+	if building.get("power_grid_id", "grid-a") not in ["grid-a", "grid-b", "grid-c"]:
+		_add_error(errors, "invalid_power_grid", "building", building_id, "未知电网")
+	for key in ["power_priority", "generation_priority"]:
+		if building.has(key) and (not _is_integral_number(building[key]) or int(building[key]) not in [1, 2, 3]):
+			_add_error(errors, "invalid_power_priority", "building", building_id, "电力优先级必须为 1 到 3")
+	if building.has("stored_energy_mj"):
+		var energy: Variant = building.stored_energy_mj
+		if building.get("type") not in ["accumulator", "energy_exchanger"] or not _is_finite_number(energy) or float(energy) < 0 or float(energy) > 90:
+			_add_error(errors, "invalid_stored_energy", "building", building_id, "储能必须在设备容量范围内")
+	if building.has("energy_mode") and (building.get("type") != "energy_exchanger" or building.energy_mode not in ["charge", "discharge", "idle"]):
+		_add_error(errors, "invalid_energy_mode", "building", building_id, "无效储能模式")
 	if building.has("fuel_remaining"):
 		var fuel_remaining: Variant = building["fuel_remaining"]
 		if not _is_number(fuel_remaining) or float(fuel_remaining) < 0.0:

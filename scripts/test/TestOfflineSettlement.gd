@@ -151,6 +151,8 @@ func _test_recovery_and_receipts() -> void:
 func _test_limits_and_discard() -> void:
 	var save := _storage("limits")
 	var base := _factory()
+	# At 50/500 load, ten rated seconds last 100 simulation seconds.
+	base.buildings[base.buildings.keys()[0]].fuel_remaining = 10.0
 	save.save_slot(0, base)
 	save.clock = 900
 	var rollback := OfflineSettlementSystem.new()
