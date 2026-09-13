@@ -68,11 +68,24 @@ func _dispatch_grid(buildings: Array, delta: float) -> Dictionary:
 		var rated := float(definition.get("power_generation", 0))
 		if definition.get("kind") == "generator" or rated > 0: covered = true
 		var needed := maxf(float(definition.get("power_demand", 0)), 0)
+		if definition.get("source_id") == "construction_center":
+			needed = float(definition.get("power_demand", 0)) if not building.get("automation_paused", false) and game_state.production_orders.any(func(job): return job.center_id == building.id and not job.paused) else 0.0
+		elif definition.has("source_id") and definition.get("kind") == "processor":
+			var recipe := DataManager.get_recipe(String(building.get("recipe_id", "")))
+			if recipe.get("source_id") == "matrix_research":
+				needed = needed if TechnologySystem.new(game_state).source_lab_can_work(building) else 0.0
+			elif recipe.is_empty() or not ProductionSystem.new(game_state)._has_required_inputs(building, recipe) or not ProductionSystem.new(game_state)._has_output_space(building, recipe): needed = 0
+		if definition.has("source_id") and definition.get("kind") == "processor" and building.get("spray_coater_installed", false):
+			var recipe := DataManager.get_recipe(String(building.get("recipe_id", "")))
+			var outputs := ProliferatorSystem.outputs(building, recipe, ProliferatorSystem.profile(building, recipe))
+			for item in outputs:
+				if float(building.get("output_buffer", {}).get(item, 0)) + outputs[item] > float(definition.get("output_buffer_capacity", 60)): needed = 0
+		if building.get("spray_coater_installed", false): needed *= float(ProliferatorSystem.profile(building, DataManager.get_recipe(String(building.get("recipe_id", "")))).power)
 		building["power_requested"] = needed
 		if needed > 0:
 			consumers.append({"building": building, "capacity": needed})
 			demand += needed
-		if building.get("type") in ["accumulator", "energy_exchanger"]:
+		if PowerGridSystem.kind_id(building) in ["accumulator", "energy_exchanger"]:
 			dispatch.append({"building": building, "capacity": PowerGridSystem.storage_capacity(building, delta, false)})
 			chargers.append({"building": building, "capacity": PowerGridSystem.storage_capacity(building, delta, true)})
 		elif definition.has("fuel"):
@@ -103,7 +116,7 @@ func _dispatch_grid(buildings: Array, delta: float) -> Dictionary:
 		var output: float = building.power_output
 		actual += output
 		if output <= 0: continue
-		if building.get("type") in ["accumulator", "energy_exchanger"]:
+		if PowerGridSystem.kind_id(building) in ["accumulator", "energy_exchanger"]:
 			PowerGridSystem.apply_storage(building, output * delta / 1000.0, false, statistics_system)
 			discharged += output
 		else:
@@ -111,7 +124,7 @@ func _dispatch_grid(buildings: Array, delta: float) -> Dictionary:
 	remaining = maxf(base - demand, 0)
 	var charged := 0.0
 	for type in ["energy_exchanger", "accumulator"]:
-		var group: Array = chargers.filter(func(candidate): return candidate.building.get("type") == type)
+		var group: Array = chargers.filter(func(candidate): return PowerGridSystem.kind_id(candidate.building) == type)
 		var allocated := _allocate(group, remaining, "power_input")
 		remaining -= allocated
 		charged += allocated
@@ -129,7 +142,7 @@ func _allocate(candidates: Array, requested: float, field: String) -> float:
 	return amount
 
 func _fuel_capacity(building: Dictionary, definition: Dictionary, delta: float) -> float:
-	var rule: Dictionary = definition.fuel
+	var rule: Dictionary = fuel_rule(building, definition)
 	var item := String(building.get("fuel_item", rule.get("item_id", "")))
 	if item != rule.get("item_id"): return 0
 	var seconds := float(building.get("fuel_remaining", 0)) + floorf(float(building.get("input_buffer", {}).get(item, 0))) * float(rule.get("burn_duration", 0))
@@ -138,7 +151,7 @@ func _fuel_capacity(building: Dictionary, definition: Dictionary, delta: float) 
 
 func _burn_dispatched_fuel(building: Dictionary, output: float, delta: float) -> void:
 	var definition := DataManager.get_building(String(building.type))
-	var rule: Dictionary = definition.fuel
+	var rule: Dictionary = fuel_rule(building, definition)
 	var item: String = rule.item_id
 	var rated := float(definition.power_generation) * float(building.get("generation_factor", 1))
 	var required := output * delta / rated if rated > 0 else 0.0
@@ -159,9 +172,11 @@ func _building_generation(building: Dictionary, building_definition: Dictionary,
 		return float(_dyson_receiver_outputs.get(building.get("id", ""), 0))
 	var generation_factor := clampf(float(building.get("generation_factor", 1.0)), 0.0, 1.0)
 	var environment_multiplier := 1.0
-	if String(building.get("type", "")) == "solar_panel":
+	if PowerGridSystem.kind_id(building) == "solar_panel":
 		var planet := galaxy_system.get_planet(String(building.get("planet_id", game_state.active_planet_id)))
 		environment_multiplier = maxf(float(planet.get("solar_multiplier", 1.0)), 0.0)
+	if building_definition.has("source_id"):
+		environment_multiplier = source_environment_multiplier(game_state, String(building.type), String(building.planet_id))
 	return base_generation * generation_factor * environment_multiplier
 
 func get_power_info(planet_id: String = "") -> Dictionary:
@@ -173,3 +188,17 @@ func is_power_sufficient(planet_id: String = "") -> bool:
 
 func _empty_power_info() -> Dictionary:
 	return {"generation": 0.0, "consumption": 0.0, "balance": 0.0, "efficiency": 1.0}
+
+static func fuel_rule(building: Dictionary, definition: Dictionary) -> Dictionary:
+	var rule: Dictionary = definition.get("fuel", {}).duplicate()
+	var item := String(building.get("fuel_item", rule.get("item_id", "")))
+	if definition.get("fuel_options", {}).has(item):
+		rule = {"item_id": item, "burn_duration": float(definition.fuel_options[item])}
+	return rule
+
+static func source_environment_multiplier(state: GameState, building_type: String, planet_id: String) -> float:
+	var role := String(DataManager.get_building(building_type).get("source_id", ""))
+	if role == "solar_panel": return float(GalaxySystem.new(state).get_planet(planet_id).get("solar_multiplier", 0))
+	if role == "geothermal_power_station": return float({"ashen": 1.0, "frost": 0.08, "magnetar": 0.18}.get(planet_id, 0))
+	if role == "wind_turbine": return float({"home": 1.0, "ashen": 1.0, "frost": 1.32, "magnetar": 0.28}.get(planet_id, 0))
+	return 1.0

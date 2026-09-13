@@ -56,7 +56,7 @@ var _dock_buttons: Dictionary = {}
 var _toast_label: Label
 var _toast_timer: Timer
 var _recipe_signature := ""
-const WORKSPACES := ["BlueprintWorkspace", "CampaignWorkspace", "TechnologyPanel", "CodexWorkspace", "GalaxyMap", "StationPanel", "DysonPanel", "EndgameWorkspace"]
+const WORKSPACES := ["BlueprintWorkspace", "CampaignWorkspace", "TechnologyPanel", "CodexWorkspace", "GalaxyMap", "StationPanel", "DysonPanel", "EndgameWorkspace", "ProductionCatalogWorkspace"]
 
 func _ready() -> void:
 	_create_workspace()
@@ -201,7 +201,7 @@ func show_notice(message: String, tone: String = "info") -> void:
 		_toast_timer.start()
 
 func is_pointer_over_ui(viewport_position: Vector2) -> bool:
-	for node_name in ["TopBar", "ResourceRail", "InspectorPanel", "ConstructionDock", "BlueprintWorkspace", "CampaignWorkspace", "MiniMap", "TechnologyPanel", "CodexWorkspace", "GalaxyMap", "StationPanel", "DysonPanel", "EndgameWorkspace"]:
+	for node_name in ["TopBar", "ResourceRail", "InspectorPanel", "ConstructionDock", "BlueprintWorkspace", "CampaignWorkspace", "MiniMap", "TechnologyPanel", "CodexWorkspace", "GalaxyMap", "StationPanel", "DysonPanel", "EndgameWorkspace", "ProductionCatalogWorkspace"]:
 		var region := get_node_or_null(node_name) as Control
 		if region != null and region.visible and Rect2(Vector2.ZERO, region.size).has_point(region.get_global_transform_with_canvas().affine_inverse() * viewport_position):
 			return true
@@ -216,6 +216,7 @@ func refresh_now(_arg_1 = null, _arg_2 = null, _arg_3 = null) -> void:
 	_refresh_construction_dock(state)
 	_refresh_inspector(state)
 	get_node("InspectorPanel/PowerConfiguration").refresh(_current_selected_building_ids())
+	get_node("InspectorPanel/ProductionConfiguration").refresh(_current_selected_building_ids())
 	var galaxy_map := get_node_or_null("GalaxyMap")
 	if galaxy_map != null and galaxy_map.has_method("refresh_now"):
 		galaxy_map.call("refresh_now")
@@ -432,7 +433,7 @@ func _toggle_galaxy_workspace() -> void:
 			show_exclusive_workspace("GalaxyMap")
 
 func show_exclusive_workspace(workspace_name: String) -> void:
-	for candidate_name in ["TechnologyPanel", "CampaignWorkspace", "BlueprintWorkspace", "CodexWorkspace", "GalaxyMap", "StationPanel", "DysonPanel", "EndgameWorkspace"]:
+	for candidate_name in ["TechnologyPanel", "CampaignWorkspace", "BlueprintWorkspace", "CodexWorkspace", "GalaxyMap", "StationPanel", "DysonPanel", "EndgameWorkspace", "ProductionCatalogWorkspace"]:
 		var workspace := get_node_or_null(candidate_name) as Control
 		if workspace != null:
 			workspace.visible = candidate_name == workspace_name
@@ -446,6 +447,16 @@ func _create_workspace() -> void:
 	_create_resource_rail()
 	_create_inspector_panel()
 	_create_construction_dock()
+	var production_catalog := preload("res://scenes/ui/ProductionCatalogWorkspace.gd").new()
+	production_catalog.name = "ProductionCatalogWorkspace"
+	add_child(production_catalog)
+	var catalog_button := Button.new()
+	catalog_button.name = "FullProduction"
+	catalog_button.text = "完整制造"
+	catalog_button.position = Vector2(844, 13)
+	catalog_button.size = Vector2(100, 64)
+	catalog_button.pressed.connect(func(): show_exclusive_workspace("ProductionCatalogWorkspace"))
+	get_node("ConstructionDock").add_child(catalog_button)
 	_create_toast()
 	_delete_confirmation = ConfirmationDialog.new()
 	_delete_confirmation.name = "DeleteConfirmation"
@@ -653,6 +664,11 @@ func _create_inspector_panel() -> void:
 	_delete_button.pressed.connect(_on_delete_pressed)
 	inspector.add_child(_delete_button)
 	inspector.move_child(power_panel, -1)
+	var production_panel := preload("res://scenes/ui/ProductionConfigurationPanel.gd").new()
+	production_panel.name = "ProductionConfiguration"
+	production_panel.position = Vector2(18, 820)
+	production_panel.size = Vector2(230, 420)
+	inspector.add_child(production_panel)
 
 func _create_construction_dock() -> void:
 	var dock := _create_panel("ConstructionDock", PANEL_DARK)

@@ -7,6 +7,13 @@ $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $testCases = @(
     @{
+        Name = "Content parity"
+        ScenePath = Join-Path $repoRoot "scenes\test\TestContentParity.tscn"
+        ResourcePath = "res://scenes/test/TestContentParity.tscn"
+        SuccessMarker = "CONTENT PARITY TESTS PASSED"
+        FailureMarker = "CONTENT PARITY TESTS FAILED"
+    },
+    @{
         Name = "Power grids"
         ScenePath = Join-Path $repoRoot "scenes\test\TestPowerGrids.tscn"
         ResourcePath = "res://scenes/test/TestPowerGrids.tscn"

@@ -4,17 +4,19 @@
   "items": {
     "accumulator": {
       "id": "accumulator",
-      "name": "空蓄电器",
-      "symbol": "▱",
-      "color": "#62b5ae",
-      "description": "90 MJ 能量载体"
+      "name": "蓄电器",
+      "symbol": "Acc",
+      "color": "#789993",
+      "description": "可由能量枢纽充电并跨行星运输的空储能单元。",
+      "kind": "solid"
     },
     "charged_accumulator": {
       "id": "charged_accumulator",
-      "name": "满蓄电器",
-      "symbol": "▰",
-      "color": "#62b5ae",
-      "description": "90 MJ 能量载体"
+      "name": "蓄电器（满）",
+      "symbol": "Acc+",
+      "color": "#8fc8a3",
+      "description": "储有 90 MJ 电能，可在能量枢纽放电后还原为空蓄电器。",
+      "kind": "solid"
     }
   },
   "buildings": {

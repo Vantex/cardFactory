@@ -32,13 +32,14 @@ func _ready() -> void:
 		"res://data/dyson.json", "res://data/electronics.json",
 		"res://data/galaxy.json",
 		"res://data/power_storage.json",
+		"res://data/production_catalog.json",
 		"res://data/progression.json",
 		"res://data/technologies.json",
 	]
 	var loaded_data_files = DataManager.get_loaded_data_files()
 	_expect(loaded_data_files is Array, "DataManager loaded data files are an Array")
 	if loaded_data_files is Array:
-		_expect(loaded_data_files.size() == expected_loaded_data_files.size(), "DataManager loaded exactly nine data files")
+		_expect(loaded_data_files.size() == expected_loaded_data_files.size(), "DataManager loaded exactly ten data files")
 		for expected_path in expected_loaded_data_files:
 			_expect(loaded_data_files.has(expected_path), "DataManager loaded %s" % expected_path)
 		loaded_data_files.clear()

@@ -71,6 +71,7 @@ func _run_fixed_tick() -> void:
 	if performance_monitor != null and performance_monitor.enabled:
 		performance_monitor.finish("phase_production_ms", phase_started)
 		phase_started = performance_monitor.begin()
+	ConstructionAutomationSystem.new(game_state).update(FIXED_DELTA)
 	handcraft_system.update(FIXED_DELTA)
 	if performance_monitor != null and performance_monitor.enabled:
 		performance_monitor.finish("phase_handcraft_ms", phase_started)
@@ -111,6 +112,7 @@ func _run_fixed_tick() -> void:
 
 func _update_research(delta: float) -> void:
 	technology_system.update_research(delta, _has_powered_research_lab())
+	technology_system.update_source_labs(delta, statistics_system)
 
 func _has_powered_research_lab() -> bool:
 	var building_ids := game_state.buildings.keys()

@@ -12,7 +12,7 @@ static func grid_id(building: Dictionary) -> String:
 
 static func generation_priority(building: Dictionary) -> int:
 	var definition := DataManager.get_building(String(building.get("type", "")))
-	var fallback := 2 if building.get("type") == "energy_exchanger" else 1 if building.get("type") == "accumulator" or definition.has("fuel") else 3
+	var fallback := 2 if kind_id(building) == "energy_exchanger" else 1 if kind_id(building) == "accumulator" or definition.has("fuel") else 3
 	return int(building.get("generation_priority", fallback))
 
 func configure(ids: Array, changes: Dictionary) -> Dictionary:
@@ -30,12 +30,12 @@ func configure(ids: Array, changes: Dictionary) -> Dictionary:
 		var building: Dictionary = state.buildings[id]
 		if building.get("interaction_locked", false): return _failure("建筑已锁定")
 		if changes.has("energy_mode"):
-			if building.get("type") != "energy_exchanger": return _failure("只有能量枢纽可切换充放电模式")
+			if kind_id(building) != "energy_exchanger": return _failure("只有能量枢纽可切换充放电模式")
 			if float(building.get("stored_energy_mj", 0)) > 0: return _failure("请先完成当前蓄电器转换再切换模式")
 	for id in ids:
 		state.buildings[id].merge(changes, true)
 		if changes.has("energy_mode"):
-			state.buildings[id]["recipe_id"] = "charge_accumulator" if changes.energy_mode == "charge" else "discharge_accumulator" if changes.energy_mode == "discharge" else ""
+			state.buildings[id]["recipe_id"] = energy_recipe(state.buildings[id], changes.energy_mode)
 	return {"ok": true, "message": "电力配置已更新"}
 
 static func storage_capacity(building: Dictionary, delta: float, charge: bool) -> float:
@@ -44,7 +44,7 @@ static func storage_capacity(building: Dictionary, delta: float, charge: bool) -
 	var stored := float(building.get("stored_energy_mj", 0))
 	var capacity := float(definition.get("energy_capacity_mj", 0))
 	var energy := maxf(capacity - stored, 0) if charge else stored
-	if building.get("type") == "energy_exchanger":
+	if kind_id(building) == "energy_exchanger":
 		if building.get("energy_mode", "charge") != ("charge" if charge else "discharge"): return 0
 		var input := "accumulator" if charge else "charged_accumulator"
 		var output := "charged_accumulator" if charge else "accumulator"
@@ -57,7 +57,7 @@ static func storage_capacity(building: Dictionary, delta: float, charge: bool) -
 
 static func apply_storage(building: Dictionary, energy: float, charge: bool, statistics: StatisticsSystem = null) -> void:
 	var stored := float(building.get("stored_energy_mj", 0))
-	if building.get("type") == "accumulator":
+	if kind_id(building) == "accumulator":
 		building["stored_energy_mj"] = clampf(stored + (energy if charge else -energy), 0, CELL_ENERGY_MJ)
 		return
 	var input := "accumulator" if charge else "charged_accumulator"
@@ -83,3 +83,11 @@ static func apply_storage(building: Dictionary, energy: float, charge: bool, sta
 
 static func _failure(message: String) -> Dictionary:
 	return {"ok": false, "reason": "invalid_power_configuration", "message": message}
+
+static func kind_id(building: Dictionary) -> String:
+	return String(DataManager.get_building(String(building.get("type", ""))).get("source_id", building.get("type", "")))
+
+static func energy_recipe(building: Dictionary, mode: String) -> String:
+	if mode == "idle": return ""
+	if String(building.get("type", "")).begins_with("dsp_"): return "dsp_accumulator_charge" if mode == "charge" else "dsp_accumulator_discharge"
+	return "charge_accumulator" if mode == "charge" else "discharge_accumulator"

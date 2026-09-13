@@ -416,13 +416,16 @@ func _digest_payload(payload: Dictionary) -> String:
 
 func _normalize_stored_digest_types(payload: Dictionary) -> Dictionary:
 	var normalized := payload.duplicate(true)
+	if normalized.has("production_orders"): normalized.production_orders = _json_numeric_tree(normalized.production_orders)
 	# JSON numbers decode as floats. Use that representation for belt integers;
 	# existing successfully saved float-valued records retain their digest.
 	var buildings: Variant = normalized.get("buildings")
 	if buildings is Dictionary:
 		for building in buildings.values():
 			if building is Dictionary:
-				for field in ["power_priority", "generation_priority", "stored_energy_mj"]:
+				for field in ["proliferator_bonus", "construction_targets"]:
+					if building.has(field): building[field] = _json_numeric_tree(building[field])
+				for field in ["power_priority", "generation_priority", "stored_energy_mj", "proliferator_tier", "proliferator_points"]:
 					if _is_number(building.get(field)): building[field] = float(building[field])
 	var connections: Variant = normalized.get("connections")
 	if connections is Dictionary:
@@ -546,3 +549,15 @@ func delete_snapshots(slot: int, sources: Array) -> Dictionary:
 
 func _remove_snapshot(slot: int, source: String) -> Error:
 	return DirAccess.remove_absolute(ProjectSettings.globalize_path(_get_slot_path(slot, _recovery_suffix(source))))
+
+func _json_numeric_tree(value: Variant) -> Variant:
+	if value is int or value is float: return float(value)
+	if value is Array:
+		var result: Array = []
+		for entry in value: result.append(_json_numeric_tree(entry))
+		return result
+	if value is Dictionary:
+		var result := {}
+		for key in value: result[key] = _json_numeric_tree(value[key])
+		return result
+	return value

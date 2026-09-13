@@ -76,6 +76,7 @@ static func to_persistent_dict(state: GameState) -> Dictionary:
 		"buildings": _encode_entity_collection(state.buildings, BUILDING_RUNTIME_FIELDS, state.active_planet_id),
 		"connections": _encode_connections(state),
 	}
+	if not state.production_orders.is_empty(): payload["production_orders"] = state.production_orders.duplicate(true)
 	return _encode_dictionary(payload, ROOT_RUNTIME_FIELDS)
 
 static func from_persistent_dict(payload: Variant) -> GameState:
@@ -108,6 +109,7 @@ static func from_persistent_dict(payload: Variant) -> GameState:
 	state.construction_inventory = data["construction_inventory"].duplicate(true)
 	state.cursor_payload = data["cursor_payload"].duplicate(true)
 	state.handcraft_queue = data["handcraft_queue"].duplicate(true)
+	state.production_orders = data.get("production_orders", []).duplicate(true)
 	state.completed_technologies = data["completed_technologies"].duplicate(true)
 	state.research_current_id = String(data["research_current_id"])
 	state.research_queue = data["research_queue"].duplicate(true)

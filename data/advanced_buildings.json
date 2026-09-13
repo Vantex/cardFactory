@@ -6,57 +6,65 @@
       "id": "graphene",
       "name": "石墨烯",
       "symbol": "Gr",
-      "color": "#333333",
-      "description": "高强度材料"
+      "color": "#749692",
+      "description": "由高能石墨剥离形成的二维碳材料。",
+      "kind": "solid"
     },
     "carbon_nanotube": {
       "id": "carbon_nanotube",
       "name": "碳纳米管",
-      "symbol": "CN",
-      "color": "#444444",
-      "description": "超级材料"
+      "symbol": "CNT",
+      "color": "#7e969d",
+      "description": "石墨烯与钛材料形成的高强度纳米结构。",
+      "kind": "solid"
     },
     "titanium_alloy": {
       "id": "titanium_alloy",
       "name": "钛合金",
       "symbol": "TiA",
-      "color": "#80769c",
-      "description": "高强度合金"
+      "color": "#9d9cb9",
+      "description": "钛、钢材与硫酸共同形成的耐高温星际结构材料。",
+      "kind": "solid"
     },
     "super_magnetic_ring": {
       "id": "super_magnetic_ring",
       "name": "超级磁场环",
       "symbol": "SMR",
-      "color": "#d0d0d0",
-      "description": "高级电磁元件"
+      "color": "#3fa6a0",
+      "description": "约束高能粒子和制造氘核燃料棒的强磁组件。",
+      "kind": "solid"
     },
     "particle_container": {
       "id": "particle_container",
       "name": "粒子容器",
       "symbol": "PC",
-      "color": "#7aaa7a",
-      "description": "容纳奇异物质"
+      "color": "#71a9aa",
+      "description": "利用电磁涡轮与石墨烯约束高能粒子的容器。",
+      "kind": "solid"
     },
     "strange_matter": {
       "id": "strange_matter",
       "name": "奇异物质",
       "symbol": "SM",
-      "color": "#9b59b6",
-      "description": "极端物理状态"
+      "color": "#ae86bf",
+      "description": "由粒子对撞机在极端能级下制造的非常规物质。",
+      "kind": "solid"
     },
     "antimatter": {
       "id": "antimatter",
       "name": "反物质",
       "symbol": "AM",
-      "color": "#ff6b6b",
-      "description": "能量密度极高"
+      "color": "#d3c4e5",
+      "description": "由临界光子进行质能转换得到的高能物质。",
+      "kind": "fluid"
     },
     "space_warper": {
       "id": "space_warper",
       "name": "空间翘曲器",
-      "symbol": "SW",
-      "color": "#e74c3c",
-      "description": "星际航行必需品"
+      "symbol": "Wrp",
+      "color": "#8c79c7",
+      "description": "供物流运输船跨恒星航行时消耗的曲率驱动介质。",
+      "kind": "solid"
     }
   },
   "buildings": {
@@ -66,9 +74,12 @@
       "symbol": "🔷",
       "kind": "processor",
       "description": "生产石墨烯",
-      "size": {"width": 2, "height": 2},
+      "size": {
+        "width": 2,
+        "height": 2
+      },
       "power_demand": 1200,
-      "speed": 1.0,
+      "speed": 1,
       "input_slots": 2,
       "output_slots": 1
     },
@@ -78,7 +89,10 @@
       "symbol": "⚛️",
       "kind": "processor",
       "description": "制造量子芯片",
-      "size": {"width": 2, "height": 2},
+      "size": {
+        "width": 2,
+        "height": 2
+      },
       "power_demand": 2400,
       "speed": 0.5,
       "input_slots": 3,
@@ -90,13 +104,19 @@
       "symbol": "💥",
       "kind": "generator",
       "description": "利用反物质发电",
-      "size": {"width": 2, "height": 2},
+      "size": {
+        "width": 2,
+        "height": 2
+      },
       "power_demand": 0,
       "power_generation": 50000,
       "input_slots": 1,
       "output_slots": 0,
       "input_buffer_capacity": 12,
-      "fuel": {"item_id": "antimatter", "burn_duration": 120.0}
+      "fuel": {
+        "item_id": "antimatter",
+        "burn_duration": 120
+      }
     },
     "dyson_sphere_launcher": {
       "id": "dyson_sphere_launcher",
@@ -104,9 +124,12 @@
       "symbol": "🚀",
       "kind": "special",
       "description": "发射戴森球组件",
-      "size": {"width": 3, "height": 3},
+      "size": {
+        "width": 3,
+        "height": 3
+      },
       "power_demand": 10000,
-      "speed": 1.0,
+      "speed": 1,
       "input_slots": 1,
       "output_slots": 0
     },
@@ -116,7 +139,10 @@
       "symbol": "📡",
       "kind": "generator",
       "description": "接收戴森球能量",
-      "size": {"width": 2, "height": 2},
+      "size": {
+        "width": 2,
+        "height": 2
+      },
       "power_demand": 0,
       "power_generation": 10000,
       "input_slots": 0,
@@ -128,49 +154,129 @@
       "id": "titanium_alloy_recipe",
       "name": "钛合金冶炼",
       "building_id": "smelter",
-      "inputs": [{"item_id": "iron_ingot", "amount": 1}, {"item_id": "copper_ingot", "amount": 1}],
-      "outputs": [{"item_id": "titanium_alloy", "amount": 4}],
-      "duration": 3.0
+      "inputs": [
+        {
+          "item_id": "iron_ingot",
+          "amount": 1
+        },
+        {
+          "item_id": "copper_ingot",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "titanium_alloy",
+          "amount": 4
+        }
+      ],
+      "duration": 3
     },
     "graphene_recipe": {
       "id": "graphene_recipe",
       "name": "石墨烯生产",
       "building_id": "graphene_facility",
-      "inputs": [{"item_id": "coal", "amount": 3}],
-      "outputs": [{"item_id": "graphene", "amount": 1}],
-      "duration": 2.0
+      "inputs": [
+        {
+          "item_id": "coal",
+          "amount": 3
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "graphene",
+          "amount": 1
+        }
+      ],
+      "duration": 2
     },
     "carbon_nanotube_recipe": {
       "id": "carbon_nanotube_recipe",
       "name": "碳纳米管生产",
       "building_id": "graphene_facility",
-      "inputs": [{"item_id": "graphene", "amount": 2}, {"item_id": "titanium_alloy", "amount": 1}],
-      "outputs": [{"item_id": "carbon_nanotube", "amount": 1}],
-      "duration": 3.0
+      "inputs": [
+        {
+          "item_id": "graphene",
+          "amount": 2
+        },
+        {
+          "item_id": "titanium_alloy",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "carbon_nanotube",
+          "amount": 1
+        }
+      ],
+      "duration": 3
     },
     "quantum_chip_recipe": {
       "id": "quantum_chip_recipe",
       "name": "量子芯片制造",
       "building_id": "quantum_processor",
-      "inputs": [{"item_id": "processor", "amount": 2}, {"item_id": "graphene", "amount": 1}],
-      "outputs": [{"item_id": "quantum_chip", "amount": 1}],
-      "duration": 4.0
+      "inputs": [
+        {
+          "item_id": "processor",
+          "amount": 2
+        },
+        {
+          "item_id": "graphene",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "quantum_chip",
+          "amount": 1
+        }
+      ],
+      "duration": 4
     },
     "strange_matter_recipe": {
       "id": "strange_matter_recipe",
       "name": "奇异物质制造",
       "building_id": "miniature_particle_collider",
-      "inputs": [{"item_id": "particle_container", "amount": 2}, {"item_id": "iron_ingot", "amount": 2}],
-      "outputs": [{"item_id": "strange_matter", "amount": 1}],
-      "duration": 5.0
+      "inputs": [
+        {
+          "item_id": "particle_container",
+          "amount": 2
+        },
+        {
+          "item_id": "iron_ingot",
+          "amount": 2
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "strange_matter",
+          "amount": 1
+        }
+      ],
+      "duration": 5
     },
     "space_warper_recipe": {
       "id": "space_warper_recipe",
       "name": "空间翘曲器制造",
       "building_id": "assembler",
-      "inputs": [{"item_id": "gravity_lens", "amount": 1}, {"item_id": "processor", "amount": 1}],
-      "outputs": [{"item_id": "space_warper", "amount": 1}],
-      "duration": 10.0
+      "inputs": [
+        {
+          "item_id": "gravity_lens",
+          "amount": 1
+        },
+        {
+          "item_id": "processor",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "space_warper",
+          "amount": 1
+        }
+      ],
+      "duration": 10
     }
   }
 }

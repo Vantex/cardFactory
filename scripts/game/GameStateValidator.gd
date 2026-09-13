@@ -27,6 +27,8 @@ static func validate_persistent_dict(payload: Variant) -> Array:
 	_validate_galaxy_state(errors, data, galaxy)
 	_validate_root_inventory(errors, "construction_inventory", data.get("construction_inventory"), 99.0, true)
 	_validate_cursor_payload(errors, data.get("cursor_payload"))
+	for message in ConstructionAutomationSystem.validate(data.get("production_orders", []), data.get("planet_inventories", {}), data.get("buildings", {})):
+		_add_error(errors, "invalid_production_order", "state", "", message)
 	var handcraft_queue_value: Variant = data.get("handcraft_queue")
 	if not handcraft_queue_value is Array:
 		_add_error(errors, "invalid_handcraft_queue", "state", "", "手工制造队列必须是数组")
@@ -366,7 +368,10 @@ static func _validate_research_state(errors: Array, data: Dictionary) -> void:
 		elif technology.is_empty():
 			_add_error(errors, "unknown_research_investment", "technology", tech_id, "研究投入引用未知目录 ID")
 			continue
-		_validate_exact_research_cost(errors, tech_id, technology.get("cost", {}), invested_by_id[tech_id_value])
+		if technology.get("source_research_bridge", false):
+			_validate_source_research_cost(errors, tech_id, technology.cost, invested_by_id[tech_id_value], progress_by_id.get(tech_id, 0))
+		else:
+			_validate_exact_research_cost(errors, tech_id, technology.get("cost", {}), invested_by_id[tech_id_value])
 	if not current.is_empty() and not invested_by_id.has(current):
 		_add_error(errors, "research_cost_not_paid", "technology", current, "当前研究必须已经支付完整目录成本")
 
@@ -532,10 +537,35 @@ static func _validate_power_state(errors: Array, building_id: String, building: 
 			_add_error(errors, "invalid_power_priority", "building", building_id, "电力优先级必须为 1 到 3")
 	if building.has("stored_energy_mj"):
 		var energy: Variant = building.stored_energy_mj
-		if building.get("type") not in ["accumulator", "energy_exchanger"] or not _is_finite_number(energy) or float(energy) < 0 or float(energy) > 90:
+		if PowerGridSystem.kind_id(building) not in ["accumulator", "energy_exchanger"] or not _is_finite_number(energy) or float(energy) < 0 or float(energy) > 90:
 			_add_error(errors, "invalid_stored_energy", "building", building_id, "储能必须在设备容量范围内")
-	if building.has("energy_mode") and (building.get("type") != "energy_exchanger" or building.energy_mode not in ["charge", "discharge", "idle"]):
+	if building.has("energy_mode") and (PowerGridSystem.kind_id(building) != "energy_exchanger" or building.energy_mode not in ["charge", "discharge", "idle"]):
 		_add_error(errors, "invalid_energy_mode", "building", building_id, "无效储能模式")
+	if building.has("spray_coater_installed") and not building.spray_coater_installed is bool:
+		_add_error(errors, "invalid_spray", "building", building_id, "喷涂安装状态无效")
+	if building.has("proliferator_tier") and (not _is_integral_number(building.proliferator_tier) or int(building.proliferator_tier) not in [1, 2, 3]):
+		_add_error(errors, "invalid_spray_tier", "building", building_id, "喷涂等级无效")
+	if building.has("proliferator_mode") and building.proliferator_mode not in ["normal", "extra", "speed"]:
+		_add_error(errors, "invalid_spray_mode", "building", building_id, "喷涂模式无效")
+	if building.has("proliferator_points") and (not _is_finite_number(building.proliferator_points) or float(building.proliferator_points) < 0 or float(building.proliferator_points) > 60):
+		_add_error(errors, "invalid_spray_points", "building", building_id, "剩余喷涂点无效")
+	if building.has("proliferator_bonus"):
+		if not building.proliferator_bonus is Dictionary:
+			_add_error(errors, "invalid_spray_bonus", "building", building_id, "喷涂产出余量无效")
+		else:
+			for value in building.proliferator_bonus.values():
+				if not _is_finite_number(value) or float(value) < 0 or float(value) >= 1:
+					_add_error(errors, "invalid_spray_bonus", "building", building_id, "喷涂产出余量越界")
+	if building.has("construction_targets"):
+		if PowerGridSystem.kind_id(building) != "construction_center" or not building.construction_targets is Dictionary:
+			_add_error(errors, "invalid_construction_targets", "building", building_id, "制造中心目标无效")
+		else:
+			for target in building.construction_targets:
+				var count: Variant = building.construction_targets[target]
+				if not DataManager.construction.has(target) or not _is_integral_number(count) or float(count) < 1 or float(count) > 99:
+					_add_error(errors, "invalid_construction_targets", "building", building_id, "制造目标数量无效")
+	if building.has("automation_paused") and not building.automation_paused is bool:
+		_add_error(errors, "invalid_automation_pause", "building", building_id, "制造暂停状态无效")
 	if building.has("fuel_remaining"):
 		var fuel_remaining: Variant = building["fuel_remaining"]
 		if not _is_number(fuel_remaining) or float(fuel_remaining) < 0.0:
@@ -574,3 +604,17 @@ static func _add_error(errors: Array, code: String, source: String, id: String, 
 		"id": id,
 		"message": message,
 	})
+
+static func _validate_source_research_cost(errors: Array, tech: String, expected: Dictionary, invested: Variant, progress: Variant) -> void:
+	if not invested is Dictionary:
+		_add_error(errors, "invalid_source_research", "technology", tech, "源科研投入必须是字典")
+		return
+	var total := 0.0
+	for item in invested:
+		var amount: Variant = invested[item]
+		if not expected.has(item) or not _is_integral_number(amount) or float(amount) < 0 or float(amount) > float(expected[item]):
+			_add_error(errors, "invalid_source_research", "technology", tech, "源科研投入超过目录成本")
+			return
+		total += float(amount)
+	if not _is_finite_number(progress) or not is_equal_approx(float(progress), total * 3.0):
+		_add_error(errors, "invalid_source_research", "technology", tech, "源科研进度与已消耗材料不一致")

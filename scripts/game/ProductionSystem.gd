@@ -27,7 +27,7 @@ func _update_building(building: Dictionary, delta: float) -> void:
 		if float(building.get("power_output", 0.0)) > 0.0:
 			building["status"] = "running"
 		elif not building_definition.get("fuel", {}).is_empty():
-			building["status"] = "standby" if float(building.get("fuel_remaining", 0)) > 0 or float(building.get("input_buffer", {}).get(building_definition.fuel.item_id, 0)) >= 1 else "no_fuel"
+			building["status"] = "standby" if float(building.get("fuel_remaining", 0)) > 0 or float(building.get("input_buffer", {}).get(PowerSystem.fuel_rule(building, building_definition).item_id, 0)) >= 1 else "no_fuel"
 		else:
 			building["status"] = "idle"
 		return
@@ -41,6 +41,13 @@ func _update_building(building: Dictionary, delta: float) -> void:
 	var recipe := DataManager.get_recipe(recipe_id)
 	if recipe.is_empty():
 		building["status"] = "error"
+		return
+	# Special operations are advanced by their owning systems, never by item conversion.
+	if recipe.get("operation", "production") != "production" or building_definition.get("source_id") in ["ray_receiver", "energy_exchanger"]:
+		building["status"] = "idle"
+		return
+	if building.get("spray_coater_installed", false):
+		_update_sprayed(building, recipe, delta)
 		return
 	var power_efficiency := clampf(float(building.get("power_efficiency", 1.0)), 0.0, 1.0)
 	if power_efficiency <= 0.0:
@@ -156,4 +163,38 @@ func _emit_production_completed(building: Dictionary, recipe: Dictionary) -> voi
 
 func _get_buffer_capacity(building: Dictionary, building_definition: Dictionary, direction: String) -> float:
 	var key := "%s_buffer_capacity" % direction
-	return maxf(float(building.get(key, building_definition.get(key, DEFAULT_BUFFER_CAPACITY))), PROGRESS_EPSILON)
+	return maxf(float(building.get(key, building_definition.get(key, DEFAULT_BUFFER_CAPACITY))), 0.0)
+
+func _update_sprayed(building: Dictionary, recipe: Dictionary, delta: float) -> void:
+	var remaining := delta
+	var efficiency := float(building.get("power_efficiency", 0))
+	if efficiency <= 0:
+		building.status = "no_power"
+		return
+	while remaining > PROGRESS_EPSILON:
+		var effect := ProliferatorSystem.profile(building, recipe)
+		var outputs := ProliferatorSystem.outputs(building, recipe, effect)
+		var capacity := _get_buffer_capacity(building, DataManager.get_building(building.type), "output")
+		if not _has_required_inputs(building, recipe):
+			building.status = "blocked"
+			return
+		for item in outputs:
+			if float(building.get("output_buffer", {}).get(item, 0)) + outputs[item] > capacity:
+				building.status = "blocked"
+				return
+		var rate := float(building.get("speed", 1)) * efficiency * float(effect.speed) * game_state.get_technology_effect_multiplier("production_speed")
+		if rate <= 0: return
+		var progress := float(building.get("progress", 0))
+		var seconds := maxf(float(recipe.duration) - progress, 0) / rate
+		var applied := minf(remaining, seconds)
+		building.progress = progress + applied * rate
+		remaining -= applied
+		building.status = "running"
+		if building.progress + PROGRESS_EPSILON < float(recipe.duration): return
+		_consume_inputs(building, recipe)
+		ProliferatorSystem.consume(building, recipe, effect, statistics_system)
+		for item in outputs:
+			building.output_buffer[item] = float(building.output_buffer.get(item, 0)) + outputs[item]
+			if statistics_system != null: statistics_system.record_produced(item, outputs[item], building.id, building.planet_id)
+		building.progress = 0.0
+		_emit_production_completed(building, recipe)

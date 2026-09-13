@@ -2,11 +2,13 @@
 
 源版本 1.0.46，提交 `472bf62c76b695852b5577e563c1d113192ac731`，工作区干净。固定文件 SHA-256 与完整数据定义见 [冻结目录](../tests/fixtures/parity/dsponline_source_catalog.json)。
 
+任务 22 已登记正式源目录及制造/喷涂候选，仍保留跨系统运行缺口；详见 [任务 22 验收](current/TASK22_ACCEPTANCE.md)。
+
 ## 如何阅读
 
 此表是任务 19 的差距登记，不是玩法已经对齐的证明。现有系统仍可使用；“实现中”只表示存在候选映射，未逐项验证原版数值和行为。登记门允许明确登记的缺口，最终发布门必须清零未实现/实现中。
 
-状态统计：{"实现中":151,"未实现":925,"在线排除":23}。没有把同名条目自动标为已验证。
+状态统计：{"实现中":326,"未实现":750,"在线排除":23}。没有把同名条目自动标为已验证。
 
 完整来源定义保存输入输出、数值、前置、解锁、奖励和目录规则；成就判定等代码规则记录源文件及哈希，行为验证仍待任务 25/27。每行的自动规则编号为 rule:类别:源ID，人工编号为 manual:类别:源ID；规则规格见 [rule_cases.json](../tests/fixtures/parity/rule_cases.json)，规格登记不等于已执行行为测试。UI 栏为原版入口/定义来源，当前候选路径和缺口见 [机器清单](../tests/fixtures/parity/dsponline_single_player_manifest.json)。
 
@@ -40,81 +42,81 @@
 | 源 ID | 名称 | 当前候选 ID/文件 | 状态 | 后续任务 | 来源/UI |
 |---|---|---|---|---:|---|
 | accumulator | 蓄电器 | accumulator | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| annihilation_constraint_sphere | 湮灭约束球 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
+| annihilation_constraint_sphere | 湮灭约束球 | annihilation_constraint_sphere | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | antimatter | 反物质 | antimatter | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| antimatter_fuel_rod | 反物质燃料棒 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
+| antimatter_fuel_rod | 反物质燃料棒 | antimatter_fuel_rod | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | carbon_nanotube | 碳纳米管 | carbon_nanotube | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| casimir_crystal | 卡西米尔晶体 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
+| casimir_crystal | 卡西米尔晶体 | casimir_crystal | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | charged_accumulator | 蓄电器（满） | charged_accumulator | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| circuit_board | 电路板 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
+| circuit_board | 电路板 | circuit_board | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | coal | 煤矿 | coal | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | copper_ingot | 铜块 | copper_ingot | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | copper_ore | 铜矿石 | copper_ore | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| critical_photon | 临界光子 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
+| critical_photon | 临界光子 | critical_photon | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | crude_oil | 原油 | crude_oil | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| crystal_silicon | 晶格硅 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
+| crystal_silicon | 晶格硅 | crystal_silicon | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | deuterium | 氘 | deuterium | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| deuteron_fuel_rod | 氘核燃料棒 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
+| deuteron_fuel_rod | 氘核燃料棒 | deuteron_fuel_rod | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | diamond | 金刚石 | diamond | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | dyson_sphere_component | 戴森球组件 | dyson_sphere_component | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | electric_motor | 电动机 | electric_motor | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| electromagnetic_matrix | 电磁矩阵 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| electromagnetic_turbine | 电磁涡轮 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| energetic_graphite | 高能石墨 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| energy_matrix | 能量矩阵 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| fire_ice | 可燃冰 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| fractal_silicon | 分形硅石 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
+| electromagnetic_matrix | 电磁矩阵 | electromagnetic_matrix | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| electromagnetic_turbine | 电磁涡轮 | electromagnetic_turbine | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| energetic_graphite | 高能石墨 | energetic_graphite | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| energy_matrix | 能量矩阵 | energy_matrix | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| fire_ice | 可燃冰 | fire_ice | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| fractal_silicon | 分形硅石 | fractal_silicon | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | frame_material | 框架材料 | frame_material | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | gear | 齿轮 | gear | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| glass | 玻璃 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
+| glass | 玻璃 | glass | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | graphene | 石墨烯 | graphene | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| graviton_lens | 引力透镜 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| gravity_matrix | 引力矩阵 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| high_purity_silicon | 高纯硅块 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
+| graviton_lens | 引力透镜 | graviton_lens | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| gravity_matrix | 引力矩阵 | gravity_matrix | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| high_purity_silicon | 高纯硅块 | high_purity_silicon | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | hydrogen | 氢 | hydrogen | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| hydrogen_fuel_rod | 氢燃料棒 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| information_matrix | 信息矩阵 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
+| hydrogen_fuel_rod | 氢燃料棒 | hydrogen_fuel_rod | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| information_matrix | 信息矩阵 | information_matrix | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | iron_ingot | 铁块 | iron_ingot | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | iron_ore | 铁矿石 | iron_ore | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| kimberlite_ore | 金伯利矿石 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
+| kimberlite_ore | 金伯利矿石 | kimberlite_ore | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | logistics_drone | 物流运输机 | logistics_drone | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | logistics_vessel | 物流运输船 | logistics_vessel | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | magnet | 磁铁 | magnet | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | magnetic_coil | 磁线圈 | magnetic_coil | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| microcrystalline_component | 微晶元件 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| optical_grating_crystal | 光栅石 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| organic_crystal | 有机晶体 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| particle_broadband | 粒子宽带 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
+| microcrystalline_component | 微晶元件 | microcrystalline_component | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| optical_grating_crystal | 光栅石 | optical_grating_crystal | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| organic_crystal | 有机晶体 | organic_crystal | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| particle_broadband | 粒子宽带 | particle_broadband | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | particle_container | 粒子容器 | particle_container | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| photon_combiner | 光子合并器 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| plane_filter | 位面过滤器 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| plasma_exciter | 电浆激发器 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
+| photon_combiner | 光子合并器 | photon_combiner | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| plane_filter | 位面过滤器 | plane_filter | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| plasma_exciter | 电浆激发器 | plasma_exciter | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | plastic | 塑料 | plastic | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| prism | 棱镜 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
+| prism | 棱镜 | prism | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | processor | 处理器 | processor | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| proliferator_mk1 | 增产剂 Mk.I | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| proliferator_mk2 | 增产剂 Mk.II | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| proliferator_mk3 | 增产剂 Mk.III | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
+| proliferator_mk1 | 增产剂 Mk.I | proliferator_mk1 | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| proliferator_mk2 | 增产剂 Mk.II | proliferator_mk2 | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| proliferator_mk3 | 增产剂 Mk.III | proliferator_mk3 | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | quantum_chip | 量子芯片 | quantum_chip | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | refined_oil | 精炼油 | refined_oil | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| silicon_ore | 硅石 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
+| silicon_ore | 硅石 | silicon_ore | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | small_carrier_rocket | 小型运载火箭 | small_carrier_rocket | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | solar_sail | 太阳帆 | solar_sail | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | space_warper | 空间翘曲器 | space_warper | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| spiniform_stalagmite_crystal | 刺笋结晶 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| steel | 钢材 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
+| spiniform_stalagmite_crystal | 刺笋结晶 | spiniform_stalagmite_crystal | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| steel | 钢材 | steel | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | stone | 石矿 | stone | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| stone_brick | 石材 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
+| stone_brick | 石材 | stone_brick | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | strange_matter | 奇异物质 | strange_matter | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| structure_matrix | 结构矩阵 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
+| structure_matrix | 结构矩阵 | structure_matrix | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | sulfuric_acid | 硫酸 | sulfuric_acid | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | super_magnetic_ring | 超级磁场环 | super_magnetic_ring | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | titanium_alloy | 钛合金 | titanium_alloy | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| titanium_crystal | 钛晶石 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| titanium_glass | 钛化玻璃 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| titanium_ingot | 钛块 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| titanium_ore | 钛石 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| unipolar_magnet | 单极磁石 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
+| titanium_crystal | 钛晶石 | titanium_crystal | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| titanium_glass | 钛化玻璃 | titanium_glass | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| titanium_ingot | 钛块 | titanium_ingot | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| titanium_ore | 钛石 | titanium_ore | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| unipolar_magnet | 单极磁石 | unipolar_magnet | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | universe_matrix | 宇宙矩阵 | universe_matrix | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | water | 水 | water | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 
@@ -122,130 +124,130 @@
 
 | 源 ID | 名称 | 当前候选 ID/文件 | 状态 | 后续任务 | 来源/UI |
 |---|---|---|---|---:|---|
-| accumulator | 蓄电器 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| accumulator_charge | 蓄电器充电 | charge_accumulator | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| accumulator_discharge | 蓄电器放电 | discharge_accumulator | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| annihilation_constraint_sphere | 湮灭约束球 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| antimatter | 质能转换 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| antimatter_fuel_rod | 反物质燃料棒 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| carbon_nanotube | 碳纳米管 | carbon_nanotube_recipe | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| carbon_nanotube_from_spiniform | 刺笋结晶制碳纳米管 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| carrier_rocket_launch | 运载火箭发射 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| casimir_crystal | 卡西米尔晶体 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| casimir_crystal_advanced | 高效卡西米尔晶体 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| circuit_board | 电路板 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| copper_ingot | 铜块 | copper_ingot_recipe | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| critical_photon | 临界光子 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| crystal_silicon | 晶格硅 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| crystal_silicon_from_fractal | 分形硅晶格化 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| deuterium | 氘富集 | deuterium_recipe | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| deuterium_fractionation | 氢分馏 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| deuteron_fuel_rod | 氘核燃料棒 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| diamond | 金刚石 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| diamond_from_kimberlite | 金伯利矿提炼 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| dyson_sphere_component | 戴森球组件 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| electric_motor | 电动机 | electric_motor_recipe | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| electromagnetic_matrix | 电磁矩阵 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| electromagnetic_turbine | 电磁涡轮 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| energetic_graphite | 高能石墨 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| energy_matrix | 能量矩阵 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| frame_material | 框架材料 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| gear | 齿轮 | gear_recipe | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| glass | 玻璃 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| graphene | 石墨烯 | graphene_recipe | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| graphene_from_fire_ice | 可燃冰裂解 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| graviton_lens | 引力透镜 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| gravity_matrix | 引力矩阵 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| high_purity_silicon | 高纯硅块 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| hydrogen_fuel_rod | 氢燃料棒 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| information_matrix | 信息矩阵 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| iron_ingot | 铁块 | iron_ingot_recipe | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| logistics_drone | 物流运输机 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| logistics_vessel | 物流运输船 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| magnet | 磁铁 | magnet_recipe | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| magnetic_coil | 磁线圈 | magnetic_coil_recipe | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| matrix_research | 科研模式 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| microcrystalline_component | 微晶元件 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| organic_crystal | 有机晶体 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| particle_broadband | 粒子宽带 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| particle_container | 粒子容器 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| particle_container_from_unipolar | 单极磁石粒子容器 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| photon_combiner | 光子合并器 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| photon_combiner_from_grating | 光栅石光子合并器 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| plane_filter | 位面过滤器 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| plasma_exciter | 电浆激发器 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| plasma_refining | 等离子精炼 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| plastic | 塑料 | plastic_recipe | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| prism | 棱镜 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| processor | 处理器 | processor_recipe | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| proliferator_mk1 | 增产剂 Mk.I | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| proliferator_mk2 | 增产剂 Mk.II | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| proliferator_mk3 | 增产剂 Mk.III | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| quantum_chip | 量子芯片 | quantum_chip_recipe | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| ray_power | 电力接收 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| reforming_refine | 重整精炼 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| silicon_ore_from_stone | 石矿提炼硅石 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| small_carrier_rocket | 小型运载火箭 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| solar_sail | 太阳帆 | solar_sail_recipe | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| solar_sail_launch | 太阳帆发射 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| space_warper | 空间翘曲器 | space_warper_recipe | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| space_warper_from_gravity_matrix | 引力矩阵制空间翘曲器 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| steel | 钢材 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| stone_brick | 石材 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| strange_matter | 奇异物质 | strange_matter_recipe | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| structure_matrix | 结构矩阵 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| sulfuric_acid | 硫酸 | sulfuric_acid_recipe | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| super_magnetic_ring | 超级磁场环 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| titanium_alloy | 钛合金 | titanium_alloy_recipe | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| titanium_crystal | 钛晶石 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| titanium_glass | 钛化玻璃 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| titanium_ingot | 钛块 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| universe_matrix | 宇宙矩阵 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| xray_cracking | X 射线裂解 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
+| accumulator | 蓄电器 | dsp_accumulator | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| accumulator_charge | 蓄电器充电 | dsp_accumulator_charge | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| accumulator_discharge | 蓄电器放电 | dsp_accumulator_discharge | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| annihilation_constraint_sphere | 湮灭约束球 | dsp_annihilation_constraint_sphere | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| antimatter | 质能转换 | dsp_antimatter | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| antimatter_fuel_rod | 反物质燃料棒 | dsp_antimatter_fuel_rod | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| carbon_nanotube | 碳纳米管 | dsp_carbon_nanotube | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| carbon_nanotube_from_spiniform | 刺笋结晶制碳纳米管 | dsp_carbon_nanotube_from_spiniform | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| carrier_rocket_launch | 运载火箭发射 | dsp_carrier_rocket_launch | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| casimir_crystal | 卡西米尔晶体 | dsp_casimir_crystal | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| casimir_crystal_advanced | 高效卡西米尔晶体 | dsp_casimir_crystal_advanced | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| circuit_board | 电路板 | dsp_circuit_board | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| copper_ingot | 铜块 | dsp_copper_ingot | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| critical_photon | 临界光子 | dsp_critical_photon | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| crystal_silicon | 晶格硅 | dsp_crystal_silicon | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| crystal_silicon_from_fractal | 分形硅晶格化 | dsp_crystal_silicon_from_fractal | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| deuterium | 氘富集 | dsp_deuterium | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| deuterium_fractionation | 氢分馏 | dsp_deuterium_fractionation | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| deuteron_fuel_rod | 氘核燃料棒 | dsp_deuteron_fuel_rod | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| diamond | 金刚石 | dsp_diamond | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| diamond_from_kimberlite | 金伯利矿提炼 | dsp_diamond_from_kimberlite | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| dyson_sphere_component | 戴森球组件 | dsp_dyson_sphere_component | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| electric_motor | 电动机 | dsp_electric_motor | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| electromagnetic_matrix | 电磁矩阵 | dsp_electromagnetic_matrix | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| electromagnetic_turbine | 电磁涡轮 | dsp_electromagnetic_turbine | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| energetic_graphite | 高能石墨 | dsp_energetic_graphite | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| energy_matrix | 能量矩阵 | dsp_energy_matrix | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| frame_material | 框架材料 | dsp_frame_material | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| gear | 齿轮 | dsp_gear | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| glass | 玻璃 | dsp_glass | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| graphene | 石墨烯 | dsp_graphene | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| graphene_from_fire_ice | 可燃冰裂解 | dsp_graphene_from_fire_ice | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| graviton_lens | 引力透镜 | dsp_graviton_lens | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| gravity_matrix | 引力矩阵 | dsp_gravity_matrix | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| high_purity_silicon | 高纯硅块 | dsp_high_purity_silicon | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| hydrogen_fuel_rod | 氢燃料棒 | dsp_hydrogen_fuel_rod | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| information_matrix | 信息矩阵 | dsp_information_matrix | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| iron_ingot | 铁块 | dsp_iron_ingot | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| logistics_drone | 物流运输机 | dsp_logistics_drone | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| logistics_vessel | 物流运输船 | dsp_logistics_vessel | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| magnet | 磁铁 | dsp_magnet | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| magnetic_coil | 磁线圈 | dsp_magnetic_coil | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| matrix_research | 科研模式 | dsp_matrix_research | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| microcrystalline_component | 微晶元件 | dsp_microcrystalline_component | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| organic_crystal | 有机晶体 | dsp_organic_crystal | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| particle_broadband | 粒子宽带 | dsp_particle_broadband | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| particle_container | 粒子容器 | dsp_particle_container | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| particle_container_from_unipolar | 单极磁石粒子容器 | dsp_particle_container_from_unipolar | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| photon_combiner | 光子合并器 | dsp_photon_combiner | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| photon_combiner_from_grating | 光栅石光子合并器 | dsp_photon_combiner_from_grating | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| plane_filter | 位面过滤器 | dsp_plane_filter | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| plasma_exciter | 电浆激发器 | dsp_plasma_exciter | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| plasma_refining | 等离子精炼 | dsp_plasma_refining | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| plastic | 塑料 | dsp_plastic | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| prism | 棱镜 | dsp_prism | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| processor | 处理器 | dsp_processor | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| proliferator_mk1 | 增产剂 Mk.I | dsp_proliferator_mk1 | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| proliferator_mk2 | 增产剂 Mk.II | dsp_proliferator_mk2 | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| proliferator_mk3 | 增产剂 Mk.III | dsp_proliferator_mk3 | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| quantum_chip | 量子芯片 | dsp_quantum_chip | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| ray_power | 电力接收 | dsp_ray_power | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| reforming_refine | 重整精炼 | dsp_reforming_refine | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| silicon_ore_from_stone | 石矿提炼硅石 | dsp_silicon_ore_from_stone | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| small_carrier_rocket | 小型运载火箭 | dsp_small_carrier_rocket | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| solar_sail | 太阳帆 | dsp_solar_sail | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| solar_sail_launch | 太阳帆发射 | dsp_solar_sail_launch | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| space_warper | 空间翘曲器 | dsp_space_warper | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| space_warper_from_gravity_matrix | 引力矩阵制空间翘曲器 | dsp_space_warper_from_gravity_matrix | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| steel | 钢材 | dsp_steel | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| stone_brick | 石材 | dsp_stone_brick | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| strange_matter | 奇异物质 | dsp_strange_matter | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| structure_matrix | 结构矩阵 | dsp_structure_matrix | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| sulfuric_acid | 硫酸 | dsp_sulfuric_acid | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| super_magnetic_ring | 超级磁场环 | dsp_super_magnetic_ring | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| titanium_alloy | 钛合金 | dsp_titanium_alloy | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| titanium_crystal | 钛晶石 | dsp_titanium_crystal | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| titanium_glass | 钛化玻璃 | dsp_titanium_glass | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| titanium_ingot | 钛块 | dsp_titanium_ingot | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| universe_matrix | 宇宙矩阵 | dsp_universe_matrix | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| xray_cracking | X 射线裂解 | dsp_xray_cracking | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 
 ### buildings
 
 | 源 ID | 名称 | 当前候选 ID/文件 | 状态 | 后续任务 | 来源/UI |
 |---|---|---|---|---:|---|
-| accumulator | 蓄电器 | accumulator | 实现中 | 21 | src/components/RecipeWorkspace.tsx |
-| arc_smelter | 电弧熔炉 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| artificial_star | 人造恒星 | 待映射 | 未实现 | 21 | src/components/RecipeWorkspace.tsx |
-| assembling_machine_mk1 | 制造台 Mk.I | assembling_machine_mk1 | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| assembling_machine_mk2 | 制造台 Mk.II | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| assembling_machine_mk3 | 制造台 Mk.III | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| chemical_plant | 化工厂 | chemical_plant | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| construction_center | 建筑制造中心 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| em_rail_ejector | 电磁轨道弹射器 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| energy_exchanger | 能量枢纽 | energy_exchanger | 实现中 | 21 | src/components/RecipeWorkspace.tsx |
-| fractionator | 分馏塔 | fractionator | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| galactic_material_exporter | 超大型物资出口 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| geothermal_power_station | 地热发电站 | 待映射 | 未实现 | 21 | src/components/RecipeWorkspace.tsx |
-| interstellar_logistics_station | 星际物流站 | interstellar_logistics_station | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| material_delivery_hub | 物资配送枢纽 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| matrix_lab | 矩阵研究站 | matrix_lab | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| micro_black_hole_connector | 微型黑洞连接装置 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| mini_fusion_power_plant | 微型聚变发电站 | 待映射 | 未实现 | 21 | src/components/RecipeWorkspace.tsx |
-| miniature_particle_collider | 微型粒子对撞机 | miniature_particle_collider | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| mining_machine | 采矿机 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| oil_extractor | 原油萃取站 | oil_extractor | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| oil_refinery | 原油精炼厂 | oil_refinery | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| orbital_cargo_terminal | 轨道货运终端 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| orbital_collector | 轨道采集器 | orbital_collector | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| plane_smelter | 位面熔炉 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| planetary_logistics_station | 行星物流站 | planetary_logistics_station | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| quantum_chemical_plant | 量子化工厂 | quantum_chemical_plant | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| ray_receiver | 射线接收站 | ray_receiver | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| solar_panel | 太阳能板 | solar_panel | 实现中 | 21 | src/components/RecipeWorkspace.tsx |
-| space_station_construction_launcher | 空间站施工发射平台 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| splitter_4way | 四向分流器 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| spray_coater | 喷涂机 | spray_coater | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| storage_mk1 | 小型储物仓 | storage_mk1 | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| storage_tank | 储液罐 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| thermal_power_plant | 火力发电厂 | 待映射 | 未实现 | 21 | src/components/RecipeWorkspace.tsx |
-| time_warp_device | 时间扭曲装置 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| vertical_launching_silo | 垂直发射井 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| water_pump | 抽水站 | water_pump | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| wind_turbine | 风力涡轮机 | wind_turbine | 实现中 | 21 | src/components/RecipeWorkspace.tsx |
+| accumulator | 蓄电器 | dsp_accumulator | 实现中 | 21 | src/components/RecipeWorkspace.tsx |
+| arc_smelter | 电弧熔炉 | dsp_arc_smelter | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| artificial_star | 人造恒星 | dsp_artificial_star | 实现中 | 21 | src/components/RecipeWorkspace.tsx |
+| assembling_machine_mk1 | 制造台 Mk.I | dsp_assembling_machine_mk1 | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| assembling_machine_mk2 | 制造台 Mk.II | dsp_assembling_machine_mk2 | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| assembling_machine_mk3 | 制造台 Mk.III | dsp_assembling_machine_mk3 | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| chemical_plant | 化工厂 | dsp_chemical_plant | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| construction_center | 建筑制造中心 | dsp_construction_center | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| em_rail_ejector | 电磁轨道弹射器 | dsp_em_rail_ejector | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| energy_exchanger | 能量枢纽 | dsp_energy_exchanger | 实现中 | 21 | src/components/RecipeWorkspace.tsx |
+| fractionator | 分馏塔 | dsp_fractionator | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| galactic_material_exporter | 超大型物资出口 | dsp_galactic_material_exporter | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| geothermal_power_station | 地热发电站 | dsp_geothermal_power_station | 实现中 | 21 | src/components/RecipeWorkspace.tsx |
+| interstellar_logistics_station | 星际物流站 | dsp_interstellar_logistics_station | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| material_delivery_hub | 物资配送枢纽 | dsp_material_delivery_hub | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| matrix_lab | 矩阵研究站 | dsp_matrix_lab | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| micro_black_hole_connector | 微型黑洞连接装置 | dsp_micro_black_hole_connector | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| mini_fusion_power_plant | 微型聚变发电站 | dsp_mini_fusion_power_plant | 实现中 | 21 | src/components/RecipeWorkspace.tsx |
+| miniature_particle_collider | 微型粒子对撞机 | dsp_miniature_particle_collider | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| mining_machine | 采矿机 | dsp_mining_machine | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| oil_extractor | 原油萃取站 | dsp_oil_extractor | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| oil_refinery | 原油精炼厂 | dsp_oil_refinery | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| orbital_cargo_terminal | 轨道货运终端 | dsp_orbital_cargo_terminal | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| orbital_collector | 轨道采集器 | dsp_orbital_collector | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| plane_smelter | 位面熔炉 | dsp_plane_smelter | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| planetary_logistics_station | 行星物流站 | dsp_planetary_logistics_station | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| quantum_chemical_plant | 量子化工厂 | dsp_quantum_chemical_plant | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| ray_receiver | 射线接收站 | dsp_ray_receiver | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| solar_panel | 太阳能板 | dsp_solar_panel | 实现中 | 21 | src/components/RecipeWorkspace.tsx |
+| space_station_construction_launcher | 空间站施工发射平台 | dsp_space_station_construction_launcher | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| splitter_4way | 四向分流器 | dsp_splitter_4way | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| spray_coater | 喷涂机 | dsp_spray_coater | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| storage_mk1 | 小型储物仓 | dsp_storage_mk1 | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| storage_tank | 储液罐 | dsp_storage_tank | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| thermal_power_plant | 火力发电厂 | dsp_thermal_power_plant | 实现中 | 21 | src/components/RecipeWorkspace.tsx |
+| time_warp_device | 时间扭曲装置 | dsp_time_warp_device | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| vertical_launching_silo | 垂直发射井 | dsp_vertical_launching_silo | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| water_pump | 抽水站 | dsp_water_pump | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| wind_turbine | 风力涡轮机 | dsp_wind_turbine | 实现中 | 21 | src/components/RecipeWorkspace.tsx |
 
 ### technologies
 
@@ -395,11 +397,11 @@
 
 | 源 ID | 名称 | 当前候选 ID/文件 | 状态 | 后续任务 | 来源/UI |
 |---|---|---|---|---:|---|
-| electromagnetic_matrix | 电磁矩阵 | 待映射 | 未实现 | 22 | src/components/TechnologyWorkspace.tsx |
-| energy_matrix | 能量矩阵 | 待映射 | 未实现 | 22 | src/components/TechnologyWorkspace.tsx |
-| gravity_matrix | 引力矩阵 | 待映射 | 未实现 | 22 | src/components/TechnologyWorkspace.tsx |
-| information_matrix | 信息矩阵 | 待映射 | 未实现 | 22 | src/components/TechnologyWorkspace.tsx |
-| structure_matrix | 结构矩阵 | 待映射 | 未实现 | 22 | src/components/TechnologyWorkspace.tsx |
+| electromagnetic_matrix | 电磁矩阵 | electromagnetic_matrix | 实现中 | 22 | src/components/TechnologyWorkspace.tsx |
+| energy_matrix | 能量矩阵 | energy_matrix | 实现中 | 22 | src/components/TechnologyWorkspace.tsx |
+| gravity_matrix | 引力矩阵 | gravity_matrix | 实现中 | 22 | src/components/TechnologyWorkspace.tsx |
+| information_matrix | 信息矩阵 | information_matrix | 实现中 | 22 | src/components/TechnologyWorkspace.tsx |
+| structure_matrix | 结构矩阵 | structure_matrix | 实现中 | 22 | src/components/TechnologyWorkspace.tsx |
 | universe_matrix | 宇宙矩阵 | universe_matrix | 实现中 | 22 | src/components/TechnologyWorkspace.tsx |
 
 ### belts
@@ -414,56 +416,56 @@
 
 | 源 ID | 名称 | 当前候选 ID/文件 | 状态 | 后续任务 | 来源/UI |
 |---|---|---|---|---:|---|
-| accumulator | 蓄电器 | 待映射 | 未实现 | 22 | src/components/ConstructionCenterWorkspace.tsx |
-| arc_smelter | 电弧熔炉 | 待映射 | 未实现 | 22 | src/components/ConstructionCenterWorkspace.tsx |
-| artificial_star | 人造恒星 | 待映射 | 未实现 | 22 | src/components/ConstructionCenterWorkspace.tsx |
-| assembling_machine_mk1 | 制造台 Mk.I | assembling_machine_mk1 | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
-| assembling_machine_mk2 | 制造台 Mk.II | 待映射 | 未实现 | 22 | src/components/ConstructionCenterWorkspace.tsx |
-| assembling_machine_mk3 | 制造台 Mk.III | 待映射 | 未实现 | 22 | src/components/ConstructionCenterWorkspace.tsx |
-| chemical_plant | 化工厂 | chemical_plant | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
-| construction_center | 建筑制造中心 | 待映射 | 未实现 | 22 | src/components/ConstructionCenterWorkspace.tsx |
-| conveyor_belt_mk1 | 传送带 Mk.I | 待映射 | 未实现 | 22 | src/components/ConstructionCenterWorkspace.tsx |
-| conveyor_belt_mk2 | 传送带 Mk.II | 待映射 | 未实现 | 22 | src/components/ConstructionCenterWorkspace.tsx |
-| conveyor_belt_mk3 | 传送带 Mk.III | 待映射 | 未实现 | 22 | src/components/ConstructionCenterWorkspace.tsx |
-| em_rail_ejector | 电磁轨道弹射器 | 待映射 | 未实现 | 22 | src/components/ConstructionCenterWorkspace.tsx |
-| energy_exchanger | 能量枢纽 | 待映射 | 未实现 | 22 | src/components/ConstructionCenterWorkspace.tsx |
-| fractionator | 分馏塔 | fractionator | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
-| galactic_material_exporter | 超大型物资出口 | 待映射 | 未实现 | 22 | src/components/ConstructionCenterWorkspace.tsx |
-| geothermal_power_station | 地热发电站 | 待映射 | 未实现 | 22 | src/components/ConstructionCenterWorkspace.tsx |
-| interstellar_logistics_station | 星际物流站 | interstellar_logistics_station | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
-| material_delivery_hub | 物资配送枢纽 | 待映射 | 未实现 | 22 | src/components/ConstructionCenterWorkspace.tsx |
-| matrix_lab | 矩阵研究站 | matrix_lab | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
-| micro_black_hole_connector | 微型黑洞连接装置 | 待映射 | 未实现 | 22 | src/components/ConstructionCenterWorkspace.tsx |
-| mini_fusion_power_plant | 微型聚变发电站 | 待映射 | 未实现 | 22 | src/components/ConstructionCenterWorkspace.tsx |
-| miniature_particle_collider | 微型粒子对撞机 | miniature_particle_collider | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
-| mining_machine | 采矿机 | 待映射 | 未实现 | 22 | src/components/ConstructionCenterWorkspace.tsx |
-| oil_extractor | 原油萃取站 | oil_extractor | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
-| oil_refinery | 原油精炼厂 | oil_refinery | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
-| orbital_cargo_terminal | 轨道货运终端 | 待映射 | 未实现 | 22 | src/components/ConstructionCenterWorkspace.tsx |
-| orbital_collector | 轨道采集器 | orbital_collector | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
-| plane_smelter | 位面熔炉 | 待映射 | 未实现 | 22 | src/components/ConstructionCenterWorkspace.tsx |
-| planetary_logistics_station | 行星物流站 | planetary_logistics_station | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
-| quantum_chemical_plant | 量子化工厂 | quantum_chemical_plant | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
-| ray_receiver | 射线接收站 | ray_receiver | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
-| solar_panel | 太阳能板 | solar_panel | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
-| space_station_construction_launcher | 空间站施工发射平台 | 待映射 | 未实现 | 22 | src/components/ConstructionCenterWorkspace.tsx |
-| splitter_4way | 四向分流器 | 待映射 | 未实现 | 22 | src/components/ConstructionCenterWorkspace.tsx |
-| spray_coater | 喷涂机 | spray_coater | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
-| storage_mk1 | 小型储物仓 | storage_mk1 | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
-| storage_tank | 储液罐 | 待映射 | 未实现 | 22 | src/components/ConstructionCenterWorkspace.tsx |
-| thermal_power_plant | 火力发电厂 | 待映射 | 未实现 | 22 | src/components/ConstructionCenterWorkspace.tsx |
-| time_warp_device | 时间扭曲装置 | 待映射 | 未实现 | 22 | src/components/ConstructionCenterWorkspace.tsx |
-| vertical_launching_silo | 垂直发射井 | 待映射 | 未实现 | 22 | src/components/ConstructionCenterWorkspace.tsx |
-| water_pump | 抽水站 | water_pump | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
-| wind_turbine | 风力涡轮机 | wind_turbine | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| accumulator | 蓄电器 | dsp_accumulator | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| arc_smelter | 电弧熔炉 | dsp_arc_smelter | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| artificial_star | 人造恒星 | dsp_artificial_star | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| assembling_machine_mk1 | 制造台 Mk.I | dsp_assembling_machine_mk1 | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| assembling_machine_mk2 | 制造台 Mk.II | dsp_assembling_machine_mk2 | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| assembling_machine_mk3 | 制造台 Mk.III | dsp_assembling_machine_mk3 | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| chemical_plant | 化工厂 | dsp_chemical_plant | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| construction_center | 建筑制造中心 | dsp_construction_center | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| conveyor_belt_mk1 | 传送带 Mk.I | dsp_conveyor_belt_mk1 | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| conveyor_belt_mk2 | 传送带 Mk.II | dsp_conveyor_belt_mk2 | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| conveyor_belt_mk3 | 传送带 Mk.III | dsp_conveyor_belt_mk3 | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| em_rail_ejector | 电磁轨道弹射器 | dsp_em_rail_ejector | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| energy_exchanger | 能量枢纽 | dsp_energy_exchanger | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| fractionator | 分馏塔 | dsp_fractionator | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| galactic_material_exporter | 超大型物资出口 | dsp_galactic_material_exporter | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| geothermal_power_station | 地热发电站 | dsp_geothermal_power_station | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| interstellar_logistics_station | 星际物流站 | dsp_interstellar_logistics_station | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| material_delivery_hub | 物资配送枢纽 | dsp_material_delivery_hub | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| matrix_lab | 矩阵研究站 | dsp_matrix_lab | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| micro_black_hole_connector | 微型黑洞连接装置 | dsp_micro_black_hole_connector | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| mini_fusion_power_plant | 微型聚变发电站 | dsp_mini_fusion_power_plant | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| miniature_particle_collider | 微型粒子对撞机 | dsp_miniature_particle_collider | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| mining_machine | 采矿机 | dsp_mining_machine | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| oil_extractor | 原油萃取站 | dsp_oil_extractor | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| oil_refinery | 原油精炼厂 | dsp_oil_refinery | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| orbital_cargo_terminal | 轨道货运终端 | dsp_orbital_cargo_terminal | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| orbital_collector | 轨道采集器 | dsp_orbital_collector | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| plane_smelter | 位面熔炉 | dsp_plane_smelter | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| planetary_logistics_station | 行星物流站 | dsp_planetary_logistics_station | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| quantum_chemical_plant | 量子化工厂 | dsp_quantum_chemical_plant | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| ray_receiver | 射线接收站 | dsp_ray_receiver | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| solar_panel | 太阳能板 | dsp_solar_panel | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| space_station_construction_launcher | 空间站施工发射平台 | dsp_space_station_construction_launcher | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| splitter_4way | 四向分流器 | dsp_splitter_4way | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| spray_coater | 喷涂机 | dsp_spray_coater | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| storage_mk1 | 小型储物仓 | dsp_storage_mk1 | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| storage_tank | 储液罐 | dsp_storage_tank | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| thermal_power_plant | 火力发电厂 | dsp_thermal_power_plant | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| time_warp_device | 时间扭曲装置 | dsp_time_warp_device | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| vertical_launching_silo | 垂直发射井 | dsp_vertical_launching_silo | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| water_pump | 抽水站 | dsp_water_pump | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| wind_turbine | 风力涡轮机 | dsp_wind_turbine | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
 
 ### proliferators
 
 | 源 ID | 名称 | 当前候选 ID/文件 | 状态 | 后续任务 | 来源/UI |
 |---|---|---|---|---:|---|
-| proliferator_mk1 | proliferator_mk1 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| proliferator_mk2 | proliferator_mk2 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
-| proliferator_mk3 | proliferator_mk3 | 待映射 | 未实现 | 22 | src/components/RecipeWorkspace.tsx |
+| proliferator_mk1 | proliferator_mk1 | proliferator_mk1 | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| proliferator_mk2 | proliferator_mk2 | proliferator_mk2 | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| proliferator_mk3 | proliferator_mk3 | proliferator_mk3 | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 
 ### workspaces
 
@@ -471,13 +473,13 @@
 |---|---|---|---|---:|---|
 | BlueprintWorkspace | BlueprintWorkspace | scenes/ui/BlueprintWorkspace.gd | 实现中 | 24 | src/components/BlueprintWorkspace.tsx |
 | CampaignWorkspace | CampaignWorkspace | scenes/ui/CampaignWorkspace.gd | 实现中 | 25 | src/components/CampaignWorkspace.tsx |
-| ConstructionCenterWorkspace | ConstructionCenterWorkspace | 待映射 | 未实现 | 22 | src/components/ConstructionCenterWorkspace.tsx |
+| ConstructionCenterWorkspace | ConstructionCenterWorkspace | scenes/ui/ProductionCatalogWorkspace.gd | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
 | DysonPlannerWorkspace | DysonPlannerWorkspace | 待映射 | 未实现 | 26 | src/components/DysonPlannerWorkspace.tsx |
 | GalaxyWorkspace | GalaxyWorkspace | 待映射 | 在线排除 | 26 | src/components/GalaxyWorkspace.tsx |
 | OfflineReportWorkspace | OfflineReportWorkspace | scenes/ui/OfflineReportWorkspace.gd | 实现中 | 20 | src/components/OfflineReportWorkspace.tsx |
 | OperationsWorkspace | OperationsWorkspace | scenes/ui/SettingsWorkspace.gd | 实现中 | 23 | src/components/OperationsWorkspace.tsx |
 | OrbitalStationWorkspace | OrbitalStationWorkspace | 待映射 | 未实现 | 26 | src/components/OrbitalStationWorkspace.tsx |
-| RecipeWorkspace | RecipeWorkspace | scenes/ui/CodexWorkspace.gd | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| RecipeWorkspace | RecipeWorkspace | scenes/ui/ProductionCatalogWorkspace.gd | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
 | StarMapWorkspace | StarMapWorkspace | scenes/ui/GalaxyMap.gd | 实现中 | 26 | src/components/StarMapWorkspace.tsx |
 | StatisticsWorkspace | StatisticsWorkspace | 待映射 | 未实现 | 23 | src/components/StatisticsWorkspace.tsx |
 | SystemSpaceStationWorkspace | SystemSpaceStationWorkspace | 待映射 | 未实现 | 26 | src/components/SystemSpaceStationWorkspace.tsx |
@@ -612,18 +614,18 @@
 | engine.batchIncreaseSelection | batchIncreaseSelection | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.cancelConstructionQueueEntry | cancelConstructionQueueEntry | 待映射 | 未实现 | 24 | src/game/engine.ts |
 | engine.cancelCurrentResearch | cancelCurrentResearch | 待映射 | 未实现 | 25 | src/game/engine.ts |
-| engine.cancelHandcraftQueueEntry | cancelHandcraftQueueEntry | 待映射 | 未实现 | 22 | src/game/engine.ts |
+| engine.cancelHandcraftQueueEntry | cancelHandcraftQueueEntry | scripts/game/ConstructionAutomationSystem.gd::cancel | 实现中 | 22 | src/game/engine.ts |
 | engine.cancelQuantumStationAttachment | cancelQuantumStationAttachment | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.canColonizePlanet | canColonizePlanet | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.canConnectBelt | canConnectBelt | 待映射 | 未实现 | 23 | src/game/engine.ts |
-| engine.canCraftConstruction | canCraftConstruction | 待映射 | 未实现 | 22 | src/game/engine.ts |
+| engine.canCraftConstruction | canCraftConstruction | scripts/game/CraftingPlanner.gd::plan | 实现中 | 22 | src/game/engine.ts |
 | engine.canEntityAcceptBeltItem | canEntityAcceptBeltItem | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.canExploreStarSystem | canExploreStarSystem | 待映射 | 未实现 | 23 | src/game/engine.ts |
-| engine.canHandcraftRecipe | canHandcraftRecipe | 待映射 | 未实现 | 22 | src/game/engine.ts |
-| engine.canInstallSprayCoater | canInstallSprayCoater | 待映射 | 未实现 | 22 | src/game/engine.ts |
+| engine.canHandcraftRecipe | canHandcraftRecipe | scripts/game/CraftingPlanner.gd::plan | 实现中 | 22 | src/game/engine.ts |
+| engine.canInstallSprayCoater | canInstallSprayCoater | scripts/game/ProliferatorSystem.gd::eligible | 实现中 | 22 | src/game/engine.ts |
 | engine.canPlaceBlueprint | canPlaceBlueprint | 待映射 | 未实现 | 24 | src/game/engine.ts |
 | engine.canQueueBlueprint | canQueueBlueprint | 待映射 | 未实现 | 24 | src/game/engine.ts |
-| engine.canQueueHandcraftRecipe | canQueueHandcraftRecipe | 待映射 | 未实现 | 22 | src/game/engine.ts |
+| engine.canQueueHandcraftRecipe | canQueueHandcraftRecipe | scripts/game/CraftingPlanner.gd::plan | 实现中 | 22 | src/game/engine.ts |
 | engine.canQueueTechnology | canQueueTechnology | 待映射 | 未实现 | 25 | src/game/engine.ts |
 | engine.canSelectTechnology | canSelectTechnology | 待映射 | 未实现 | 25 | src/game/engine.ts |
 | engine.canSetBeltStackSize | canSetBeltStackSize | 待映射 | 未实现 | 23 | src/game/engine.ts |
@@ -639,8 +641,8 @@
 | engine.connectBeltsAtomically | connectBeltsAtomically | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.connectBeltWithResult | connectBeltWithResult | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.connectDysonNodes | connectDysonNodes | 待映射 | 未实现 | 26 | src/game/engine.ts |
-| engine.craftConstruction | craftConstruction | 待映射 | 未实现 | 22 | src/game/engine.ts |
-| engine.craftConstructionWithUpstream | craftConstructionWithUpstream | 待映射 | 未实现 | 22 | src/game/engine.ts |
+| engine.craftConstruction | craftConstruction | scripts/game/ConstructionAutomationSystem.gd::queue | 实现中 | 22 | src/game/engine.ts |
+| engine.craftConstructionWithUpstream | craftConstructionWithUpstream | scripts/game/ConstructionAutomationSystem.gd::queue | 实现中 | 22 | src/game/engine.ts |
 | engine.createBlueprint | createBlueprint | 待映射 | 未实现 | 24 | src/game/engine.ts |
 | engine.createPersistentSimulationRuntime | createPersistentSimulationRuntime | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.createSimulationAdvanceSession | createSimulationAdvanceSession | 待映射 | 未实现 | 26 | src/game/engine.ts |
@@ -673,11 +675,11 @@
 | engine.getConstructionAutomationStatus | getConstructionAutomationStatus | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.getConstructionAutomationStockLimit | getConstructionAutomationStockLimit | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.getConstructionCenterTraceSample | getConstructionCenterTraceSample | 待映射 | 未实现 | 22 | src/game/engine.ts |
-| engine.getConstructionCraftDeficits | getConstructionCraftDeficits | 待映射 | 未实现 | 22 | src/game/engine.ts |
+| engine.getConstructionCraftDeficits | getConstructionCraftDeficits | scripts/game/CraftingPlanner.gd::plan | 实现中 | 22 | src/game/engine.ts |
 | engine.getConstructionCraftNavigation | getConstructionCraftNavigation | 待映射 | 未实现 | 22 | src/game/engine.ts |
 | engine.getConstructionQueueDeficits | getConstructionQueueDeficits | 待映射 | 未实现 | 24 | src/game/engine.ts |
 | engine.getConstructionQueueDetails | getConstructionQueueDetails | 待映射 | 未实现 | 24 | src/game/engine.ts |
-| engine.getConstructionQuickCraftPlan | getConstructionQuickCraftPlan | 待映射 | 未实现 | 22 | src/game/engine.ts |
+| engine.getConstructionQuickCraftPlan | getConstructionQuickCraftPlan | scripts/game/CraftingPlanner.gd::plan | 实现中 | 22 | src/game/engine.ts |
 | engine.getDysonEngineeringSnapshot | getDysonEngineeringSnapshot | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.getDysonSailAbsorptionMultiplier | getDysonSailAbsorptionMultiplier | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.getDysonShellCapacity | getDysonShellCapacity | 待映射 | 未实现 | 26 | src/game/engine.ts |
@@ -717,11 +719,11 @@
 | engine.getRayReceiverCapacityKw | getRayReceiverCapacityKw | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.getRecipeCompatibleEntityIds | getRecipeCompatibleEntityIds | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.getRecipeSpeedMultiplier | getRecipeSpeedMultiplier | 待映射 | 未实现 | 23 | src/game/engine.ts |
-| engine.getRecursiveHandcraftPlan | getRecursiveHandcraftPlan | 待映射 | 未实现 | 22 | src/game/engine.ts |
+| engine.getRecursiveHandcraftPlan | getRecursiveHandcraftPlan | scripts/game/CraftingPlanner.gd::plan | 实现中 | 22 | src/game/engine.ts |
 | engine.getResourceReserveSnapshot | getResourceReserveSnapshot | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.getSolarSailLifetimeSeconds | getSolarSailLifetimeSeconds | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.getSprayCoaterInstallCheck | getSprayCoaterInstallCheck | 待映射 | 未实现 | 22 | src/game/engine.ts |
-| engine.getSprayCoaterRemovalRefund | getSprayCoaterRemovalRefund | 待映射 | 未实现 | 22 | src/game/engine.ts |
+| engine.getSprayCoaterRemovalRefund | getSprayCoaterRemovalRefund | scripts/game/ProliferatorSystem.gd::_refund | 实现中 | 22 | src/game/engine.ts |
 | engine.getStationActiveRoutes | getStationActiveRoutes | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.getStationBusyVehicleCount | getStationBusyVehicleCount | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.getStationFleetDiagnostic | getStationFleetDiagnostic | 待映射 | 未实现 | 26 | src/game/engine.ts |
@@ -730,14 +732,14 @@
 | engine.getStationTemplateCompatibleEntityIds | getStationTemplateCompatibleEntityIds | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.getStationWarperRefillSnapshot | getStationWarperRefillSnapshot | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.getVeinConsumptionMultiplier | getVeinConsumptionMultiplier | 待映射 | 未实现 | 23 | src/game/engine.ts |
-| engine.handcraftRecipe | handcraftRecipe | 待映射 | 未实现 | 22 | src/game/engine.ts |
-| engine.handcraftRecipeWithUpstream | handcraftRecipeWithUpstream | 待映射 | 未实现 | 22 | src/game/engine.ts |
+| engine.handcraftRecipe | handcraftRecipe | scripts/game/ConstructionAutomationSystem.gd::queue | 实现中 | 22 | src/game/engine.ts |
+| engine.handcraftRecipeWithUpstream | handcraftRecipeWithUpstream | scripts/game/ConstructionAutomationSystem.gd::queue | 实现中 | 22 | src/game/engine.ts |
 | engine.hasActiveResearch | hasActiveResearch | 待映射 | 未实现 | 25 | src/game/engine.ts |
 | engine.hasBlueprintExactOverlap | hasBlueprintExactOverlap | 待映射 | 未实现 | 24 | src/game/engine.ts |
 | engine.hasExactEntityPositionOverlap | hasExactEntityPositionOverlap | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.installMiner | installMiner | 待映射 | 未实现 | 23 | src/game/engine.ts |
-| engine.installSprayCoater | installSprayCoater | 待映射 | 未实现 | 22 | src/game/engine.ts |
-| engine.installSprayCoaters | installSprayCoaters | 待映射 | 未实现 | 22 | src/game/engine.ts |
+| engine.installSprayCoater | installSprayCoater | scripts/game/ProliferatorSystem.gd::configure | 实现中 | 22 | src/game/engine.ts |
+| engine.installSprayCoaters | installSprayCoaters | scripts/game/ProliferatorSystem.gd::configure_batch | 实现中 | 22 | src/game/engine.ts |
 | engine.investInfiniteResearchBudgetInPlace | investInfiniteResearchBudgetInPlace | 待映射 | 未实现 | 25 | src/game/engine.ts |
 | engine.isEntityInPowerCoverage | isEntityInPowerCoverage | 待映射 | 未实现 | 21 | src/game/engine.ts |
 | engine.isEntityInteractionLocked | isEntityInteractionLocked | scripts/game/GameState.gd::is_entity_interaction_locked | 实现中 | 23 | src/game/engine.ts |
@@ -764,7 +766,7 @@
 | engine.prepareSimulationStep | prepareSimulationStep | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.processConstructionQueue | processConstructionQueue | 待映射 | 未实现 | 24 | src/game/engine.ts |
 | engine.queueBlueprint | queueBlueprint | 待映射 | 未实现 | 24 | src/game/engine.ts |
-| engine.queueHandcraftRecipe | queueHandcraftRecipe | 待映射 | 未实现 | 22 | src/game/engine.ts |
+| engine.queueHandcraftRecipe | queueHandcraftRecipe | scripts/game/ConstructionAutomationSystem.gd::queue | 实现中 | 22 | src/game/engine.ts |
 | engine.refillStationWarpers | refillStationWarpers | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.refreshDysonGenerationSnapshot | refreshDysonGenerationSnapshot | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.refreshTimeWarpPowerSnapshot | refreshTimeWarpPowerSnapshot | 待映射 | 未实现 | 26 | src/game/engine.ts |
@@ -780,7 +782,7 @@
 | engine.removeEntities | removeEntities | scripts/game/GameState.gd::remove_entities | 实现中 | 23 | src/game/engine.ts |
 | engine.removeEntity | removeEntity | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.removeQueuedTechnology | removeQueuedTechnology | 待映射 | 未实现 | 25 | src/game/engine.ts |
-| engine.removeSprayCoater | removeSprayCoater | 待映射 | 未实现 | 22 | src/game/engine.ts |
+| engine.removeSprayCoater | removeSprayCoater | scripts/game/ProliferatorSystem.gd::remove | 实现中 | 22 | src/game/engine.ts |
 | engine.renameBlueprint | renameBlueprint | 待映射 | 未实现 | 24 | src/game/engine.ts |
 | engine.renameCanvasBookmark | renameCanvasBookmark | 待映射 | 未实现 | 24 | src/game/engine.ts |
 | engine.resizeCanvasRegion | resizeCanvasRegion | 待映射 | 未实现 | 24 | src/game/engine.ts |
@@ -814,7 +816,7 @@
 | engine.setEjectorTargetOrbitForEntities | setEjectorTargetOrbitForEntities | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.setEnergyMode | setEnergyMode | scripts/game/GameState.gd::set_energy_mode | 实现中 | 21 | src/game/engine.ts |
 | engine.setEntitiesInteractionLocked | setEntitiesInteractionLocked | scripts/game/GameState.gd::set_entities_interaction_locked | 实现中 | 23 | src/game/engine.ts |
-| engine.setEntitiesProliferatorConfiguration | setEntitiesProliferatorConfiguration | 待映射 | 未实现 | 22 | src/game/engine.ts |
+| engine.setEntitiesProliferatorConfiguration | setEntitiesProliferatorConfiguration | scripts/game/ProliferatorSystem.gd::configure_batch | 实现中 | 22 | src/game/engine.ts |
 | engine.setEntitiesRecipe | setEntitiesRecipe | scripts/game/GameState.gd::set_entities_recipe | 实现中 | 23 | src/game/engine.ts |
 | engine.setEntityGenerationPriority | setEntityGenerationPriority | scripts/game/GameState.gd::set_entity_generation_priority | 实现中 | 21 | src/game/engine.ts |
 | engine.setEntityPowerGrid | setEntityPowerGrid | scripts/game/GameState.gd::set_entity_power_grid | 实现中 | 21 | src/game/engine.ts |
@@ -835,7 +837,7 @@
 | engine.setPlanetDisplayMetadata | setPlanetDisplayMetadata | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.setPlanetIndustryRole | setPlanetIndustryRole | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.setPlanetTrayItemLimit | setPlanetTrayItemLimit | 待映射 | 未实现 | 26 | src/game/engine.ts |
-| engine.setProliferatorConfiguration | setProliferatorConfiguration | 待映射 | 未实现 | 22 | src/game/engine.ts |
+| engine.setProliferatorConfiguration | setProliferatorConfiguration | scripts/game/ProliferatorSystem.gd::configure | 实现中 | 22 | src/game/engine.ts |
 | engine.setQuantumLogisticsItemCapacity | setQuantumLogisticsItemCapacity | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.setRecipeFocus | setRecipeFocus | 待映射 | 未实现 | 22 | src/game/engine.ts |
 | engine.setRecipeFocusMode | setRecipeFocusMode | 待映射 | 未实现 | 22 | src/game/engine.ts |

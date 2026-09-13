@@ -41,6 +41,7 @@ var construction_inventory: Dictionary = {
 }
 var cursor_payload: Dictionary = {"item_id": "", "amount": 0.0}
 var handcraft_queue: Array = []
+var production_orders: Array = []
 
 # 所有建筑（卡牌）
 var buildings: Dictionary = {}
@@ -163,11 +164,11 @@ func add_building(building_data: Dictionary) -> String:
     var id = generate_id("building")
     building_data["id"] = id
     building_data["planet_id"] = String(building_data.get("planet_id", active_planet_id))
-    if building_data.get("type") == "energy_exchanger":
+    if PowerGridSystem.kind_id(building_data) == "energy_exchanger":
         if not building_data.has("energy_mode"):
-            building_data["energy_mode"] = "discharge" if building_data.get("recipe_id") == "discharge_accumulator" else "charge"
+            building_data["energy_mode"] = "discharge" if building_data.get("recipe_id") in ["discharge_accumulator", "dsp_accumulator_discharge"] else "charge"
         if String(building_data.get("recipe_id", "")).is_empty():
-            building_data["recipe_id"] = "discharge_accumulator" if building_data.energy_mode == "discharge" else "charge_accumulator" if building_data.energy_mode == "charge" else ""
+            building_data["recipe_id"] = PowerGridSystem.energy_recipe(building_data, building_data.energy_mode)
     buildings[id] = building_data
     EventBus.card_placed.emit(id, building_data.get("position", Vector2.ZERO))
     return id
@@ -229,6 +230,12 @@ func try_add_connection(source_id: String, target_id: String, requested_output_i
                 accepts = true
         if not accepts:
             return {"ok": false, "message": "目标物流站没有配置该物品槽"}
+    elif target_building.get("spray_coater_installed", false) and output_item == "proliferator_mk%d" % int(target_building.get("proliferator_tier", 1)):
+        pass
+    elif DataManager.get_building(String(target_building.type)).get("fuel_options", {}).has(output_item) and output_item == String(target_building.get("fuel_item", "")):
+        pass
+    elif existing_recipe_id == "dsp_matrix_research" and DataManager.is_source_research_item(output_item):
+        pass
     elif not existing_recipe_id.is_empty():
         var existing_recipe := DataManager.get_recipe(existing_recipe_id)
         var existing_recipe_accepts_output := false
@@ -266,6 +273,8 @@ func try_add_connection(source_id: String, target_id: String, requested_output_i
 func get_compatible_recipes(building_type: String, input_item_id: String = "") -> Array:
     var compatible_recipes: Array = []
     for recipe in DataManager.get_recipes_for_building(building_type):
+        if not DataManager.source_technology_unlocked(self, String(recipe.get("required_source_technology", ""))):
+            continue
         if input_item_id.is_empty():
             compatible_recipes.append(recipe)
             continue
@@ -412,6 +421,8 @@ func try_remove_entities(entity_ids: Array) -> Dictionary:
         if entity_id.is_empty() or seen.has(entity_id) or not buildings.has(entity_id):
             return _batch_failure("删除建筑不存在或重复", "invalid_entity")
         seen[entity_id] = true
+        if production_orders.any(func(job): return job.get("center_id", "") == entity_id):
+            return _batch_failure("请等待制造任务完成再拆除", "manufacturing_busy")
         normalized.append(entity_id)
         var building: Dictionary = buildings[entity_id]
         var building_type := String(building.get("type", ""))
@@ -426,10 +437,16 @@ func try_remove_entities(entity_ids: Array) -> Dictionary:
             for item in building.station.fleet:
                 if int(building.station.fleet[item]) > 0:
                     material_refund[item] = float(material_refund.get(item, 0)) + float(building.station.fleet[item])
-        if not ConstructionSystem.LEGACY_COSTS.has(building_type):
+        if not ConstructionSystem.LEGACY_COSTS.has(building_type) and not DataManager.construction.has(building_type):
             return _batch_failure("建筑没有可返还的施工件", "invalid_construction_item")
         construction_refund[building_type] = float(construction_refund.get(building_type, 0.0)) + 1.0
         _collect_building_material_refund(building, material_refund)
+        if building.get("spray_coater_installed", false):
+            construction_refund["dsp_spray_coater"] = float(construction_refund.get("dsp_spray_coater", 0)) + 1.0
+            var spray_item := "proliferator_mk%d" % int(building.get("proliferator_tier", 1))
+            var spray_rule: Dictionary = DataManager.proliferators.get(spray_item, {})
+            if not spray_rule.is_empty():
+                material_refund[spray_item] = float(material_refund.get(spray_item, 0)) + ceilf(float(building.get("proliferator_points", 0)) / float(spray_rule.spray_points))
         for connection_id in connections:
             var connection: Dictionary = connections[connection_id]
             if connection.get("source_id", "") == entity_id or connection.get("target_id", "") == entity_id:
@@ -474,9 +491,11 @@ func set_entity_recipe(entity_id: String, recipe_id: String) -> bool:
         print("ERROR: Entity not found: ", entity_id)
         return false
 
-    if buildings[entity_id].get("type") == "energy_exchanger":
-        return set_energy_mode(entity_id, "charge" if recipe_id == "charge_accumulator" else "discharge" if recipe_id == "discharge_accumulator" else "invalid")
+    if PowerGridSystem.kind_id(buildings[entity_id]) == "energy_exchanger":
+        return set_energy_mode(entity_id, "charge" if recipe_id in ["charge_accumulator", "dsp_accumulator_charge"] else "discharge" if recipe_id in ["discharge_accumulator", "dsp_accumulator_discharge"] else "invalid")
     var recipe = DataManager.get_recipe(recipe_id)
+    if not DataManager.source_technology_unlocked(self, String(recipe.get("required_source_technology", ""))):
+        return false
     if recipe.is_empty():
         print("ERROR: Recipe not found: ", recipe_id)
         return false
@@ -905,7 +924,7 @@ func _collect_building_material_refund(building: Dictionary, refund: Dictionary)
                 var item_id := String(item_key)
                 refund[item_id] = float(refund.get(item_id, 0.0)) + amount
     var definition := DataManager.get_building(String(building.get("type", "")))
-    var fuel_rule: Dictionary = definition.get("fuel", {})
+    var fuel_rule: Dictionary = PowerSystem.fuel_rule(building, definition)
     if not fuel_rule.is_empty():
         var fuel_item := String(building.get("fuel_item", fuel_rule.get("item_id", "")))
         var burn_duration := maxf(float(fuel_rule.get("burn_duration", 0.0)), 0.0000001)
@@ -1513,3 +1532,13 @@ func try_configure_power_entities(ids: Array, changes: Dictionary) -> Dictionary
 
 func set_energy_mode(entity_id: String, mode: String) -> bool:
     return try_configure_power_entities([entity_id], {"energy_mode": mode}).get("ok", false)
+
+func set_fuel_item(entity_id: String, item: String) -> Dictionary:
+    var building: Dictionary = buildings.get(entity_id, {})
+    var definition := DataManager.get_building(String(building.get("type", "")))
+    if building.is_empty() or building.get("interaction_locked", false) or not definition.get("fuel_options", {}).has(item):
+        return {"ok": false, "message": "该设备不支持此燃料"}
+    if float(building.get("fuel_remaining", 0)) > 0:
+        return {"ok": false, "message": "请先用完当前燃料再切换"}
+    building.fuel_item = item
+    return {"ok": true, "message": "燃料已切换"}

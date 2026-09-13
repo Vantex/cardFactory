@@ -16,6 +16,8 @@
 
 任务 13 的手动检查见 [物流验收](current/TASK13_ACCEPTANCE.md)。任务 12 的手动检查见 [验收补充](current/TASK12_ACCEPTANCE.md)。`docs/superpowers/plans/` 和 `specs/` 中任务 11、12 的文件保留为已交付批次的设计追溯，不是另一份活跃路线图。
 
+任务 22 的实现、验证和后续接续边界见 [任务 22 验收](current/TASK22_ACCEPTANCE.md)。
+
 ## 历史文档
 
 [历史归档](history/README.md)保存已经结束的设计、计划、审计、测试说明和架构工件。它们用于追溯当时为什么这样做，不证明当前功能状态，也不能作为新的实施入口。

@@ -104,6 +104,9 @@ func deploy(blueprint: Dictionary, offset: Vector2, rotation_quarters: int = 0, 
 		local_refs[entity.ref] = plan
 		cost[building_type] = float(cost.get(building_type, 0.0)) + 1.0
 		building_items.append(building_type)
+		if entity.configuration.get("spray_coater_installed", false):
+			building_items.append("dsp_spray_coater")
+			cost["dsp_spray_coater"] = float(cost.get("dsp_spray_coater", 0)) + 1
 
 	var connection_plans: Array = []
 	var connection_items: Array[String] = []
@@ -191,6 +194,8 @@ func _capture_entity_configuration(building: Dictionary) -> Dictionary:
 		var value := String(building.get(key, ""))
 		if not value.is_empty():
 			configuration[key] = value
+	if building.get("spray_coater_installed", false):
+		configuration.merge({"spray_coater_installed": true, "proliferator_tier": int(building.get("proliferator_tier", 1)), "proliferator_mode": String(building.get("proliferator_mode", "normal"))})
 	return configuration
 
 func _capture_connection_configuration(connection: Dictionary) -> Dictionary:
@@ -220,6 +225,10 @@ func _transform_position(position: Vector2, rotation_quarters: int, mirrored: bo
 
 func _validate_entity_configuration(building_type: String, configuration: Dictionary) -> Dictionary:
 	var definition := DataManager.get_building(building_type)
+	var pending := DataManager.building_pending_reason(building_type)
+	if not pending.is_empty(): return _failure("feature_pending", pending)
+	if definition.get("source_id") == "geothermal_power_station" and PowerSystem.source_environment_multiplier(game_state, building_type, game_state.active_planet_id) <= 0:
+		return _failure("invalid_planet", "该行星不具备地热发电条件")
 	var recipe_id := String(configuration.get("recipe_id", ""))
 	if not recipe_id.is_empty():
 		var recipe := DataManager.get_recipe(recipe_id)
@@ -227,6 +236,13 @@ func _validate_entity_configuration(building_type: String, configuration: Dictio
 			return _failure("invalid_reference", "蓝图配方与建筑不兼容")
 		if not _is_catalog_entry_unlocked("recipe", recipe_id):
 			return _failure("locked", "蓝图包含尚未解锁的配方")
+	if configuration.get("spray_coater_installed", false):
+		var tier := int(configuration.get("proliferator_tier", 0))
+		var mode := String(configuration.get("proliferator_mode", ""))
+		if (DataManager.get_recipe(recipe_id).get("source_id") == "matrix_research" and mode == "extra") or tier not in [1, 2, 3] or mode not in ["normal", "extra", "speed"] or not ProliferatorSystem.eligible({"type": building_type}, DataManager.get_recipe(recipe_id)):
+			return _failure("invalid_spray", "蓝图喷涂配置无效")
+		if not DataManager.source_technology_unlocked(game_state, "proliferator_%d" % tier):
+			return _failure("locked", "蓝图增产剂科技未解锁")
 	var output_item := String(configuration.get("output_item", ""))
 	if not output_item.is_empty() and DataManager.get_item(output_item).is_empty():
 		return _failure("invalid_reference", "蓝图输出物品引用不存在")
@@ -264,7 +280,10 @@ func _validate_planned_connection(source_plan: Dictionary, target_plan: Dictiona
 	if item_id.is_empty() or not source_outputs.has(item_id):
 		return _failure("incompatible_connection", "蓝图源建筑不提供线路物品")
 	var target_configuration: Dictionary = target_plan.configuration
+	if target_configuration.get("spray_coater_installed", false) and item_id == "proliferator_mk%d" % int(target_configuration.get("proliferator_tier", 1)):
+		return {"ok": true}
 	var target_recipe_id := String(target_configuration.get("recipe_id", ""))
+	if target_recipe_id == "dsp_matrix_research" and DataManager.is_source_research_item(item_id): return {"ok": true}
 	var candidate_recipes: Array = []
 	if target_recipe_id.is_empty():
 		candidate_recipes = DataManager.get_recipes_for_building(String(target_plan.type))
@@ -352,6 +371,8 @@ func _make_building_data(building_type: String, position: Vector2, configuration
 		building["fuel_remaining"] = 0.0
 	if building_type in StationSystem.TYPES:
 		building["station"] = StationSystem.empty_station()
+	for key in ["spray_coater_installed", "proliferator_tier", "proliferator_mode"]:
+		if configuration.has(key): building[key] = configuration[key]
 	return building
 
 func _make_connection_data(connection: Dictionary, ref_to_id: Dictionary) -> Dictionary:

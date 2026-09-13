@@ -11,7 +11,7 @@ const MAX_STRING_LENGTH := 256
 const ROOT_KEYS := ["version", "entities", "connections"]
 const ENTITY_KEYS := ["ref", "type", "position", "configuration"]
 const CONNECTION_KEYS := ["source", "target", "type", "configuration"]
-const ENTITY_CONFIGURATION_KEYS := ["recipe_id", "output_item"]
+const ENTITY_CONFIGURATION_KEYS := ["recipe_id", "output_item", "spray_coater_installed", "proliferator_tier", "proliferator_mode"]
 const CONNECTION_CONFIGURATION_KEYS := ["item_id", "parallel_count", "stack_size", "priority", "route_mode", "route_offset_y", "monitor_enabled", "enabled"]
 
 func encode(blueprint: Dictionary) -> Dictionary:
@@ -136,13 +136,13 @@ func _normalize_configuration(value: Variant, allowed_keys: Array) -> Dictionary
 		if not allowed_keys.has(key):
 			return _failure("invalid_configuration_field", "蓝图配置包含未允许字段")
 		var field_value: Variant = configuration[key_value]
-		if ["recipe_id", "output_item", "item_id", "route_mode"].has(key) and not field_value is String:
+		if ["recipe_id", "output_item", "item_id", "route_mode", "proliferator_mode"].has(key) and not field_value is String:
 			return _failure("invalid_configuration_value", "蓝图配置文本字段类型无效")
-		if ["parallel_count", "stack_size", "priority"].has(key) and not _is_integer_number(field_value):
+		if ["parallel_count", "stack_size", "priority", "proliferator_tier"].has(key) and not _is_integer_number(field_value):
 			return _failure("invalid_configuration_value", "蓝图配置整数字段类型无效")
 		if key == "route_offset_y" and not _is_finite_number(field_value):
 			return _failure("invalid_configuration_value", "蓝图配置数值字段类型无效")
-		if ["monitor_enabled", "enabled"].has(key) and not field_value is bool:
+		if ["monitor_enabled", "enabled", "spray_coater_installed"].has(key) and not field_value is bool:
 			return _failure("invalid_configuration_value", "蓝图配置开关字段类型无效")
 		if not (field_value is String or field_value is int or field_value is float or field_value is bool):
 			return _failure("invalid_configuration_value", "蓝图配置值类型不受支持")

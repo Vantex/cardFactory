@@ -1,0 +1,5461 @@
+{
+  "line_id": "frozen_production",
+  "name": "完整生产目录",
+  "source_commit": "472bf62c76b695852b5577e563c1d113192ac731",
+  "items": {
+    "annihilation_constraint_sphere": {
+      "id": "annihilation_constraint_sphere",
+      "name": "湮灭约束球",
+      "symbol": "ACS",
+      "color": "#93a5b8",
+      "kind": "solid",
+      "description": "约束反物质湮灭反应的精密容器。"
+    },
+    "antimatter_fuel_rod": {
+      "id": "antimatter_fuel_rod",
+      "name": "反物质燃料棒",
+      "symbol": "AFR",
+      "color": "#c9bde1",
+      "kind": "solid",
+      "description": "封装反物质与氢的终极高密度燃料。"
+    },
+    "casimir_crystal": {
+      "id": "casimir_crystal",
+      "name": "卡西米尔晶体",
+      "symbol": "Cas",
+      "color": "#74b9a4",
+      "kind": "solid",
+      "description": "利用氢与纳米材料形成的量子级晶体。"
+    },
+    "circuit_board": {
+      "id": "circuit_board",
+      "name": "电路板",
+      "symbol": "Cb",
+      "color": "#78b776",
+      "kind": "solid",
+      "description": "自动化设备的基础控制元件。"
+    },
+    "critical_photon": {
+      "id": "critical_photon",
+      "name": "临界光子",
+      "symbol": "CP",
+      "color": "#d8e2d7",
+      "kind": "solid",
+      "description": "射线接收站在光子模式下凝聚的高能光子。"
+    },
+    "crystal_silicon": {
+      "id": "crystal_silicon",
+      "name": "晶格硅",
+      "symbol": "CSi",
+      "color": "#84b5a5",
+      "kind": "solid",
+      "description": "由高纯硅块进一步重排得到的精密晶格材料。"
+    },
+    "deuteron_fuel_rod": {
+      "id": "deuteron_fuel_rod",
+      "name": "氘核燃料棒",
+      "symbol": "DFR",
+      "color": "#67b8c0",
+      "kind": "solid",
+      "description": "以氘和超级磁场环封装的高密度燃料。"
+    },
+    "electromagnetic_matrix": {
+      "id": "electromagnetic_matrix",
+      "name": "电磁矩阵",
+      "symbol": "EM",
+      "color": "#56b8cf",
+      "kind": "matrix",
+      "description": "第一阶段科研矩阵。"
+    },
+    "electromagnetic_turbine": {
+      "id": "electromagnetic_turbine",
+      "name": "电磁涡轮",
+      "symbol": "Tur",
+      "color": "#4f9b9e",
+      "kind": "solid",
+      "description": "高速电磁设备与粒子容器所需的动力核心。"
+    },
+    "energetic_graphite": {
+      "id": "energetic_graphite",
+      "name": "高能石墨",
+      "symbol": "EG",
+      "color": "#817b8f",
+      "kind": "solid",
+      "description": "能源矩阵所需的高密度碳材料。"
+    },
+    "energy_matrix": {
+      "id": "energy_matrix",
+      "name": "能量矩阵",
+      "symbol": "En",
+      "color": "#d85f50",
+      "kind": "matrix",
+      "description": "由氢与高能石墨制成的第二阶段科研矩阵。"
+    },
+    "fire_ice": {
+      "id": "fire_ice",
+      "name": "可燃冰",
+      "symbol": "FI",
+      "color": "#87b9c5",
+      "kind": "solid",
+      "description": "气态巨星轨道中的稀有冰晶，可直接裂解为石墨烯和氢。"
+    },
+    "fractal_silicon": {
+      "id": "fractal_silicon",
+      "name": "分形硅石",
+      "symbol": "FrSi",
+      "color": "#82aaa4",
+      "kind": "solid",
+      "description": "具有规则分形晶格的稀有硅矿，可高效加工晶格硅。"
+    },
+    "glass": {
+      "id": "glass",
+      "name": "玻璃",
+      "symbol": "Gl",
+      "color": "#8fc7c6",
+      "kind": "solid",
+      "description": "科研和光学设备所需材料。"
+    },
+    "graviton_lens": {
+      "id": "graviton_lens",
+      "name": "引力透镜",
+      "symbol": "GL",
+      "color": "#8fb676",
+      "kind": "solid",
+      "description": "利用奇异物质改变局部引力场的精密器件。"
+    },
+    "gravity_matrix": {
+      "id": "gravity_matrix",
+      "name": "引力矩阵",
+      "symbol": "Grv",
+      "color": "#77bd76",
+      "kind": "matrix",
+      "description": "由引力透镜与量子芯片制成的第五阶段科研矩阵。"
+    },
+    "high_purity_silicon": {
+      "id": "high_purity_silicon",
+      "name": "高纯硅块",
+      "symbol": "Si",
+      "color": "#73aaa1",
+      "kind": "solid",
+      "description": "处理器与精密电子元件的基础半导体材料。"
+    },
+    "hydrogen_fuel_rod": {
+      "id": "hydrogen_fuel_rod",
+      "name": "氢燃料棒",
+      "symbol": "HFR",
+      "color": "#7ab4c0",
+      "kind": "solid",
+      "description": "将氢封装为便于运输和火力发电的中密度燃料。"
+    },
+    "information_matrix": {
+      "id": "information_matrix",
+      "name": "信息矩阵",
+      "symbol": "Inf",
+      "color": "#9b77cf",
+      "kind": "matrix",
+      "description": "由粒子宽带与处理器制成的第四阶段科研矩阵。"
+    },
+    "kimberlite_ore": {
+      "id": "kimberlite_ore",
+      "name": "金伯利矿石",
+      "symbol": "Kim",
+      "color": "#8aa29c",
+      "kind": "solid",
+      "description": "富含天然金刚石结构的稀有矿物。"
+    },
+    "microcrystalline_component": {
+      "id": "microcrystalline_component",
+      "name": "微晶元件",
+      "symbol": "McC",
+      "color": "#67a994",
+      "kind": "solid",
+      "description": "以高纯硅块制造的精密半导体元件。"
+    },
+    "optical_grating_crystal": {
+      "id": "optical_grating_crystal",
+      "name": "光栅石",
+      "symbol": "OGC",
+      "color": "#d4b866",
+      "kind": "solid",
+      "description": "天然形成的精密光栅晶体，可旁路高级光学和卡西米尔配方。"
+    },
+    "organic_crystal": {
+      "id": "organic_crystal",
+      "name": "有机晶体",
+      "symbol": "Org",
+      "color": "#74ad69",
+      "kind": "solid",
+      "description": "由塑料、精炼油和水合成的有机材料。"
+    },
+    "particle_broadband": {
+      "id": "particle_broadband",
+      "name": "粒子宽带",
+      "symbol": "PB",
+      "color": "#b486b1",
+      "kind": "solid",
+      "description": "由纳米碳、晶格硅与塑料制造的信息载体。"
+    },
+    "photon_combiner": {
+      "id": "photon_combiner",
+      "name": "光子合并器",
+      "symbol": "PhC",
+      "color": "#d8b65f",
+      "kind": "solid",
+      "description": "汇聚光能并稳定太阳帆工作面的光学部件。"
+    },
+    "plane_filter": {
+      "id": "plane_filter",
+      "name": "位面过滤器",
+      "symbol": "PF",
+      "color": "#75a2bd",
+      "kind": "solid",
+      "description": "由卡西米尔晶体与钛化玻璃组成的精密过滤结构。"
+    },
+    "plasma_exciter": {
+      "id": "plasma_exciter",
+      "name": "电浆激发器",
+      "symbol": "Px",
+      "color": "#d78961",
+      "kind": "solid",
+      "description": "原油萃取和精炼设备的关键部件。"
+    },
+    "prism": {
+      "id": "prism",
+      "name": "棱镜",
+      "symbol": "Pr",
+      "color": "#8ecbc3",
+      "kind": "solid",
+      "description": "由玻璃加工成的光学元件。"
+    },
+    "proliferator_mk1": {
+      "id": "proliferator_mk1",
+      "name": "增产剂 Mk.I",
+      "symbol": "P1",
+      "color": "#8f9872",
+      "kind": "solid",
+      "description": "由煤加工的基础喷涂介质，每件提供 12 个喷涂点数。"
+    },
+    "proliferator_mk2": {
+      "id": "proliferator_mk2",
+      "name": "增产剂 Mk.II",
+      "symbol": "P2",
+      "color": "#56a58f",
+      "kind": "solid",
+      "description": "加入金刚石强化的增产剂，每件提供 24 个喷涂点数。"
+    },
+    "proliferator_mk3": {
+      "id": "proliferator_mk3",
+      "name": "增产剂 Mk.III",
+      "symbol": "P3",
+      "color": "#628fba",
+      "kind": "solid",
+      "description": "利用碳纳米管稳定喷涂结构，每件提供 60 个喷涂点数。"
+    },
+    "silicon_ore": {
+      "id": "silicon_ore",
+      "name": "硅石",
+      "symbol": "SiO",
+      "color": "#78948c",
+      "kind": "solid",
+      "description": "远端矿区出产的半导体基础矿物。"
+    },
+    "spiniform_stalagmite_crystal": {
+      "id": "spiniform_stalagmite_crystal",
+      "name": "刺笋结晶",
+      "symbol": "SSC",
+      "color": "#829c9d",
+      "kind": "solid",
+      "description": "拥有天然纳米管结构的稀有晶体，可直接制造碳纳米管。"
+    },
+    "steel": {
+      "id": "steel",
+      "name": "钢材",
+      "symbol": "Stl",
+      "color": "#7f9298",
+      "kind": "solid",
+      "description": "重型工业设备所需的高强度结构材料。"
+    },
+    "stone_brick": {
+      "id": "stone_brick",
+      "name": "石材",
+      "symbol": "Br",
+      "color": "#c5bba9",
+      "kind": "solid",
+      "description": "耐热建筑结构材料。"
+    },
+    "structure_matrix": {
+      "id": "structure_matrix",
+      "name": "结构矩阵",
+      "symbol": "Str",
+      "color": "#dfba48",
+      "kind": "matrix",
+      "description": "由金刚石与钛晶石制成的第三阶段科研矩阵。"
+    },
+    "titanium_crystal": {
+      "id": "titanium_crystal",
+      "name": "钛晶石",
+      "symbol": "TiC",
+      "color": "#b19ac8",
+      "kind": "solid",
+      "description": "钛块与有机晶体形成的结构矩阵中间体。"
+    },
+    "titanium_glass": {
+      "id": "titanium_glass",
+      "name": "钛化玻璃",
+      "symbol": "TiG",
+      "color": "#8fc6c1",
+      "kind": "solid",
+      "description": "兼具高透明度与结构强度的精密材料。"
+    },
+    "titanium_ingot": {
+      "id": "titanium_ingot",
+      "name": "钛块",
+      "symbol": "Ti",
+      "color": "#978db4",
+      "kind": "solid",
+      "description": "结构矩阵产业链所需的高强度金属材料。"
+    },
+    "titanium_ore": {
+      "id": "titanium_ore",
+      "name": "钛石",
+      "symbol": "TiO",
+      "color": "#80769c",
+      "kind": "solid",
+      "description": "远端矿区出产的高强度金属矿物。"
+    },
+    "unipolar_magnet": {
+      "id": "unipolar_magnet",
+      "name": "单极磁石",
+      "symbol": "UM",
+      "color": "#7c91b0",
+      "kind": "solid",
+      "description": "极端磁场环境形成的单极材料，可大幅简化粒子容器生产。"
+    }
+  },
+  "buildings": {
+    "dsp_accumulator": {
+      "id": "dsp_accumulator",
+      "source_id": "accumulator",
+      "name": "蓄电器",
+      "description": "内置 90 MJ 储能，电网富余时自动充电，供电不足时自动放电。",
+      "symbol": "蓄电器",
+      "kind": "generator",
+      "power_demand": 0,
+      "power_generation": 900,
+      "speed": 1,
+      "input_slots": 0,
+      "output_slots": 0,
+      "source_input_capacity": 0,
+      "source_output_capacity": 0,
+      "family": "",
+      "tier": 1,
+      "input_buffer_capacity": 0,
+      "output_buffer_capacity": 0,
+      "energy_capacity_mj": 90,
+      "power_charge": 900,
+      "required_source_technology": "energy_storage"
+    },
+    "dsp_arc_smelter": {
+      "id": "dsp_arc_smelter",
+      "source_id": "arc_smelter",
+      "name": "电弧熔炉",
+      "description": "处理矿石、磁铁和基础建材。",
+      "symbol": "熔炉",
+      "kind": "processor",
+      "power_demand": 360,
+      "power_generation": 0,
+      "speed": 1,
+      "input_slots": 4,
+      "output_slots": 4,
+      "source_input_capacity": 120,
+      "source_output_capacity": 120,
+      "family": "smelter",
+      "tier": 1,
+      "input_buffer_capacity": 120,
+      "output_buffer_capacity": 120,
+      "required_source_technology": ""
+    },
+    "dsp_artificial_star": {
+      "id": "dsp_artificial_star",
+      "source_id": "artificial_star",
+      "name": "人造恒星",
+      "description": "以反物质燃料棒维持湮灭反应，按电网缺口提供最高 72 MW 电力。",
+      "symbol": "人造恒星",
+      "kind": "generator",
+      "power_demand": 0,
+      "power_generation": 72000,
+      "speed": 1,
+      "input_slots": 4,
+      "output_slots": 0,
+      "source_input_capacity": 30,
+      "source_output_capacity": 0,
+      "family": "",
+      "tier": 1,
+      "input_buffer_capacity": 30,
+      "output_buffer_capacity": 0,
+      "fuel_options": {
+        "antimatter_fuel_rod": 100
+      },
+      "fuel": {
+        "item_id": "antimatter_fuel_rod",
+        "burn_duration": 100
+      },
+      "required_source_technology": "artificial_star"
+    },
+    "dsp_assembling_machine_mk1": {
+      "id": "dsp_assembling_machine_mk1",
+      "source_id": "assembling_machine_mk1",
+      "name": "制造台 Mk.I",
+      "description": "以 0.75 倍配方速度组装基础零件。",
+      "symbol": "制造台",
+      "kind": "processor",
+      "power_demand": 270,
+      "power_generation": 0,
+      "speed": 0.75,
+      "input_slots": 4,
+      "output_slots": 4,
+      "source_input_capacity": 120,
+      "source_output_capacity": 120,
+      "family": "assembler",
+      "tier": 1,
+      "input_buffer_capacity": 120,
+      "output_buffer_capacity": 120,
+      "required_source_technology": ""
+    },
+    "dsp_assembling_machine_mk2": {
+      "id": "dsp_assembling_machine_mk2",
+      "source_id": "assembling_machine_mk2",
+      "name": "制造台 Mk.II",
+      "description": "以标准配方速度组装物品，在相同节点规模下提供更高吞吐。",
+      "symbol": "制造台 Mk.II",
+      "kind": "processor",
+      "power_demand": 540,
+      "power_generation": 0,
+      "speed": 1,
+      "input_slots": 4,
+      "output_slots": 4,
+      "source_input_capacity": 180,
+      "source_output_capacity": 180,
+      "family": "assembler",
+      "tier": 2,
+      "input_buffer_capacity": 180,
+      "output_buffer_capacity": 180,
+      "required_source_technology": "high_speed_assembling"
+    },
+    "dsp_assembling_machine_mk3": {
+      "id": "dsp_assembling_machine_mk3",
+      "source_id": "assembling_machine_mk3",
+      "name": "制造台 Mk.III",
+      "description": "以 1.5 倍配方速度进行量子级装配，是最高等级的通用制造设备。",
+      "symbol": "制造台 Mk.III",
+      "kind": "processor",
+      "power_demand": 1080,
+      "power_generation": 0,
+      "speed": 1.5,
+      "input_slots": 4,
+      "output_slots": 4,
+      "source_input_capacity": 240,
+      "source_output_capacity": 240,
+      "family": "assembler",
+      "tier": 3,
+      "input_buffer_capacity": 240,
+      "output_buffer_capacity": 240,
+      "required_source_technology": "quantum_printing"
+    },
+    "dsp_chemical_plant": {
+      "id": "dsp_chemical_plant",
+      "source_id": "chemical_plant",
+      "name": "化工厂",
+      "description": "执行塑料、有机晶体等高分子化工配方。",
+      "symbol": "化工厂",
+      "kind": "processor",
+      "power_demand": 720,
+      "power_generation": 0,
+      "speed": 1,
+      "input_slots": 4,
+      "output_slots": 4,
+      "source_input_capacity": 240,
+      "source_output_capacity": 240,
+      "family": "chemical",
+      "tier": 1,
+      "input_buffer_capacity": 240,
+      "output_buffer_capacity": 240,
+      "required_source_technology": "basic_chemical_engineering"
+    },
+    "dsp_construction_center": {
+      "id": "dsp_construction_center",
+      "source_id": "construction_center",
+      "name": "建筑制造中心",
+      "description": "巨构级建筑补给设施，从所在行星物资托盘取料并按目标库存持续补足施工设备。",
+      "symbol": "制造中心",
+      "kind": "processor",
+      "power_demand": 12000,
+      "power_generation": 0,
+      "speed": 1,
+      "input_slots": 0,
+      "output_slots": 0,
+      "source_input_capacity": 0,
+      "source_output_capacity": 0,
+      "family": "",
+      "tier": 1,
+      "input_buffer_capacity": 0,
+      "output_buffer_capacity": 0,
+      "required_source_technology": "construction_automation"
+    },
+    "dsp_em_rail_ejector": {
+      "id": "dsp_em_rail_ejector",
+      "source_id": "em_rail_ejector",
+      "name": "电磁轨道弹射器",
+      "description": "消耗太阳帆并将其发射到恒星轨道，持续扩充戴森云。",
+      "symbol": "轨道弹射器",
+      "kind": "processor",
+      "power_demand": 1800,
+      "power_generation": 0,
+      "speed": 1,
+      "input_slots": 4,
+      "output_slots": 0,
+      "source_input_capacity": 180,
+      "source_output_capacity": 0,
+      "family": "",
+      "tier": 1,
+      "input_buffer_capacity": 180,
+      "output_buffer_capacity": 0,
+      "required_source_technology": "dyson_swarm"
+    },
+    "dsp_energy_exchanger": {
+      "id": "dsp_energy_exchanger",
+      "source_id": "energy_exchanger",
+      "name": "能量枢纽",
+      "description": "以 45 MW 功率在空蓄电器与满蓄电器之间转换，形成可运输的跨行星储能闭环。",
+      "symbol": "能量枢纽",
+      "kind": "generator",
+      "power_demand": 0,
+      "power_generation": 45000,
+      "speed": 1,
+      "input_slots": 4,
+      "output_slots": 4,
+      "source_input_capacity": 120,
+      "source_output_capacity": 120,
+      "family": "",
+      "tier": 1,
+      "input_buffer_capacity": 120,
+      "output_buffer_capacity": 120,
+      "energy_capacity_mj": 90,
+      "power_charge": 45000,
+      "required_source_technology": "energy_storage"
+    },
+    "dsp_fractionator": {
+      "id": "dsp_fractionator",
+      "source_id": "fractionator",
+      "name": "分馏塔",
+      "description": "循环处理氢并稳定分离氘，输出剩余氢形成可闭环的分馏物流。",
+      "symbol": "分馏塔",
+      "kind": "processor",
+      "power_demand": 720,
+      "power_generation": 0,
+      "speed": 1,
+      "input_slots": 4,
+      "output_slots": 4,
+      "source_input_capacity": 240,
+      "source_output_capacity": 240,
+      "family": "",
+      "tier": 1,
+      "input_buffer_capacity": 240,
+      "output_buffer_capacity": 240,
+      "required_source_technology": "fractionation"
+    },
+    "dsp_galactic_material_exporter": {
+      "id": "dsp_galactic_material_exporter",
+      "source_id": "galactic_material_exporter",
+      "name": "超大型物资出口",
+      "description": "银河终局工程的实体交付设施，通过四个专用输入端口接收宇宙矩阵、太阳帆、小型运载火箭和反物质燃料棒。",
+      "symbol": "银河出口",
+      "kind": "processor",
+      "power_demand": 24000,
+      "power_generation": 0,
+      "speed": 1,
+      "input_slots": 4,
+      "output_slots": 0,
+      "source_input_capacity": 1000000,
+      "source_output_capacity": 0,
+      "family": "",
+      "tier": 1,
+      "input_buffer_capacity": 1000000,
+      "output_buffer_capacity": 0,
+      "required_source_technology": "universe_matrix"
+    },
+    "dsp_geothermal_power_station": {
+      "id": "dsp_geothermal_power_station",
+      "source_id": "geothermal_power_station",
+      "name": "地热发电站",
+      "description": "只能部署在烬原 II，利用熔岩地热持续提供 4.8 MW 稳定电力。",
+      "symbol": "地热站",
+      "kind": "generator",
+      "power_demand": 0,
+      "power_generation": 4800,
+      "speed": 1,
+      "input_slots": 0,
+      "output_slots": 0,
+      "source_input_capacity": 0,
+      "source_output_capacity": 0,
+      "family": "",
+      "tier": 1,
+      "input_buffer_capacity": 0,
+      "output_buffer_capacity": 0,
+      "required_source_technology": "geothermal_power"
+    },
+    "dsp_interstellar_logistics_station": {
+      "id": "dsp_interstellar_logistics_station",
+      "source_id": "interstellar_logistics_station",
+      "name": "星际物流站",
+      "description": "与另一行星的异向站点自动配对，由需求站调度已装载的运输船执行跨行星货运。",
+      "symbol": "星际站",
+      "kind": "station",
+      "power_demand": 1200,
+      "power_generation": 0,
+      "speed": 1,
+      "input_slots": 4,
+      "output_slots": 4,
+      "source_input_capacity": 1000,
+      "source_output_capacity": 1000,
+      "family": "",
+      "tier": 1,
+      "input_buffer_capacity": 1000,
+      "output_buffer_capacity": 1000,
+      "required_source_technology": "interstellar_logistics"
+    },
+    "dsp_material_delivery_hub": {
+      "id": "dsp_material_delivery_hub",
+      "source_id": "material_delivery_hub",
+      "name": "物资配送枢纽",
+      "description": "提供 3 个独立输入接口，送达的物品会立即进入所在行星的物资托盘。",
+      "symbol": "配送枢纽",
+      "kind": "storage",
+      "power_demand": 0,
+      "power_generation": 0,
+      "speed": 1,
+      "input_slots": 4,
+      "output_slots": 0,
+      "source_input_capacity": 900,
+      "source_output_capacity": 0,
+      "family": "",
+      "tier": 1,
+      "input_buffer_capacity": 900,
+      "output_buffer_capacity": 0,
+      "required_source_technology": "material_delivery_logistics"
+    },
+    "dsp_matrix_lab": {
+      "id": "dsp_matrix_lab",
+      "source_id": "matrix_lab",
+      "name": "矩阵研究站",
+      "description": "生产并研究科学矩阵。",
+      "symbol": "研究站",
+      "kind": "processor",
+      "power_demand": 480,
+      "power_generation": 0,
+      "speed": 1,
+      "input_slots": 4,
+      "output_slots": 4,
+      "source_input_capacity": 120,
+      "source_output_capacity": 120,
+      "family": "",
+      "tier": 1,
+      "input_buffer_capacity": 120,
+      "output_buffer_capacity": 120,
+      "required_source_technology": "electromagnetic_matrix"
+    },
+    "dsp_micro_black_hole_connector": {
+      "id": "dsp_micro_black_hole_connector",
+      "source_id": "micro_black_hole_connector",
+      "name": "微型黑洞连接装置",
+      "description": "通过三个独立通用输入口永久销毁传送带送达的物资，并以十进制精确记录累计销毁量。",
+      "symbol": "黑洞连接器",
+      "kind": "processor",
+      "power_demand": 0,
+      "power_generation": 0,
+      "speed": 1,
+      "input_slots": 0,
+      "output_slots": 0,
+      "source_input_capacity": 0,
+      "source_output_capacity": 0,
+      "family": "",
+      "tier": 1,
+      "input_buffer_capacity": 0,
+      "output_buffer_capacity": 0,
+      "required_source_technology": "micro_black_hole_containment"
+    },
+    "dsp_mini_fusion_power_plant": {
+      "id": "dsp_mini_fusion_power_plant",
+      "source_id": "mini_fusion_power_plant",
+      "name": "微型聚变发电站",
+      "description": "消耗氘核燃料棒按电网缺口提供最高 15 MW 聚变电力。",
+      "symbol": "聚变站",
+      "kind": "generator",
+      "power_demand": 0,
+      "power_generation": 15000,
+      "speed": 1,
+      "input_slots": 4,
+      "output_slots": 0,
+      "source_input_capacity": 120,
+      "source_output_capacity": 0,
+      "family": "",
+      "tier": 1,
+      "input_buffer_capacity": 120,
+      "output_buffer_capacity": 0,
+      "fuel_options": {
+        "deuteron_fuel_rod": 40
+      },
+      "fuel": {
+        "item_id": "deuteron_fuel_rod",
+        "burn_duration": 40
+      },
+      "required_source_technology": "fusion_power"
+    },
+    "dsp_miniature_particle_collider": {
+      "id": "dsp_miniature_particle_collider",
+      "source_id": "miniature_particle_collider",
+      "name": "微型粒子对撞机",
+      "description": "消耗大量电力进行氘富集与奇异物质制造。",
+      "symbol": "对撞机",
+      "kind": "processor",
+      "power_demand": 12000,
+      "power_generation": 0,
+      "speed": 1,
+      "input_slots": 4,
+      "output_slots": 4,
+      "source_input_capacity": 600,
+      "source_output_capacity": 600,
+      "family": "",
+      "tier": 1,
+      "input_buffer_capacity": 600,
+      "output_buffer_capacity": 600,
+      "required_source_technology": "miniature_particle_collider"
+    },
+    "dsp_mining_machine": {
+      "id": "dsp_mining_machine",
+      "source_id": "mining_machine",
+      "name": "采矿机",
+      "description": "安装在矿脉上，持续把矿物送入节点输出缓存。",
+      "symbol": "采矿机",
+      "kind": "extractor",
+      "power_demand": 420,
+      "power_generation": 0,
+      "speed": 0.5,
+      "input_slots": 0,
+      "output_slots": 4,
+      "source_input_capacity": 0,
+      "source_output_capacity": 180,
+      "family": "",
+      "tier": 1,
+      "input_buffer_capacity": 0,
+      "output_buffer_capacity": 180,
+      "extraction": {
+        "item_id": "iron_ore",
+        "rate_per_minute": 60,
+        "items": [
+          "iron_ore",
+          "copper_ore",
+          "coal",
+          "stone",
+          "silicon_ore",
+          "titanium_ore"
+        ]
+      },
+      "required_source_technology": ""
+    },
+    "dsp_oil_extractor": {
+      "id": "dsp_oil_extractor",
+      "source_id": "oil_extractor",
+      "name": "原油萃取站",
+      "description": "安装在原油涌泉上，持续萃取原油。",
+      "symbol": "萃取站",
+      "kind": "extractor",
+      "power_demand": 840,
+      "power_generation": 0,
+      "speed": 1,
+      "input_slots": 0,
+      "output_slots": 4,
+      "source_input_capacity": 0,
+      "source_output_capacity": 300,
+      "family": "",
+      "tier": 1,
+      "input_buffer_capacity": 0,
+      "output_buffer_capacity": 300,
+      "extraction": {
+        "item_id": "crude_oil",
+        "rate_per_minute": 60,
+        "items": [
+          "crude_oil"
+        ]
+      },
+      "required_source_technology": "high_efficiency_plasma_control"
+    },
+    "dsp_oil_refinery": {
+      "id": "dsp_oil_refinery",
+      "source_id": "oil_refinery",
+      "name": "原油精炼厂",
+      "description": "执行原油精炼和 X 射线裂解等多产物配方。",
+      "symbol": "精炼厂",
+      "kind": "processor",
+      "power_demand": 960,
+      "power_generation": 0,
+      "speed": 1,
+      "input_slots": 4,
+      "output_slots": 4,
+      "source_input_capacity": 240,
+      "source_output_capacity": 240,
+      "family": "",
+      "tier": 1,
+      "input_buffer_capacity": 240,
+      "output_buffer_capacity": 240,
+      "required_source_technology": "high_efficiency_plasma_control"
+    },
+    "dsp_orbital_cargo_terminal": {
+      "id": "dsp_orbital_cargo_terminal",
+      "source_id": "orbital_cargo_terminal",
+      "name": "轨道货运终端",
+      "description": "全星系空间站的行星物资入口。四个稳定输入口共享每分钟 20,000 件上传能力，每颗已殖民行星最多一座。",
+      "symbol": "轨道终端",
+      "kind": "storage",
+      "power_demand": 50000,
+      "power_generation": 0,
+      "speed": 1,
+      "input_slots": 4,
+      "output_slots": 0,
+      "source_input_capacity": 1000000,
+      "source_output_capacity": 0,
+      "family": "",
+      "tier": 1,
+      "input_buffer_capacity": 1000000,
+      "output_buffer_capacity": 0,
+      "required_source_technology": "universe_matrix"
+    },
+    "dsp_orbital_collector": {
+      "id": "dsp_orbital_collector",
+      "source_id": "orbital_collector",
+      "name": "轨道采集器",
+      "description": "只能部署在气态巨星，持续采集氢、氘或可燃冰，并作为星际物流系统的远程供应端。",
+      "symbol": "轨道采集器",
+      "kind": "station",
+      "power_demand": 0,
+      "power_generation": 0,
+      "speed": 1,
+      "input_slots": 0,
+      "output_slots": 4,
+      "source_input_capacity": 0,
+      "source_output_capacity": 2000,
+      "family": "",
+      "tier": 1,
+      "input_buffer_capacity": 0,
+      "output_buffer_capacity": 2000,
+      "required_source_technology": "orbital_collection"
+    },
+    "dsp_plane_smelter": {
+      "id": "dsp_plane_smelter",
+      "source_id": "plane_smelter",
+      "name": "位面熔炉",
+      "description": "以双倍配方速度处理全部熔炼配方，适合高吞吐冶金产线。",
+      "symbol": "位面熔炉",
+      "kind": "processor",
+      "power_demand": 1440,
+      "power_generation": 0,
+      "speed": 2,
+      "input_slots": 4,
+      "output_slots": 4,
+      "source_input_capacity": 240,
+      "source_output_capacity": 240,
+      "family": "smelter",
+      "tier": 2,
+      "input_buffer_capacity": 240,
+      "output_buffer_capacity": 240,
+      "required_source_technology": "plane_smelting"
+    },
+    "dsp_planetary_logistics_station": {
+      "id": "dsp_planetary_logistics_station",
+      "source_id": "planetary_logistics_station",
+      "name": "行星物流站",
+      "description": "在同一行星内与异向站点自动配对，由需求站调度物流运输机完成无线货运。",
+      "symbol": "行星站",
+      "kind": "station",
+      "power_demand": 600,
+      "power_generation": 0,
+      "speed": 1,
+      "input_slots": 4,
+      "output_slots": 4,
+      "source_input_capacity": 600,
+      "source_output_capacity": 600,
+      "family": "",
+      "tier": 1,
+      "input_buffer_capacity": 600,
+      "output_buffer_capacity": 600,
+      "required_source_technology": "planetary_logistics"
+    },
+    "dsp_quantum_chemical_plant": {
+      "id": "dsp_quantum_chemical_plant",
+      "source_id": "quantum_chemical_plant",
+      "name": "量子化工厂",
+      "description": "以双倍配方速度执行全部化工配方，可由普通化工厂原地升级。",
+      "symbol": "量子化工厂",
+      "kind": "processor",
+      "power_demand": 2160,
+      "power_generation": 0,
+      "speed": 2,
+      "input_slots": 4,
+      "output_slots": 4,
+      "source_input_capacity": 480,
+      "source_output_capacity": 480,
+      "family": "chemical",
+      "tier": 2,
+      "input_buffer_capacity": 480,
+      "output_buffer_capacity": 480,
+      "required_source_technology": "quantum_chemical_engineering"
+    },
+    "dsp_ray_receiver": {
+      "id": "dsp_ray_receiver",
+      "source_id": "ray_receiver",
+      "name": "射线接收站",
+      "description": "共享戴森云恒星能，可切换电力输出或临界光子生成模式。",
+      "symbol": "接收站",
+      "kind": "processor",
+      "power_demand": 0,
+      "power_generation": 0,
+      "speed": 1,
+      "input_slots": 0,
+      "output_slots": 4,
+      "source_input_capacity": 0,
+      "source_output_capacity": 120,
+      "family": "",
+      "tier": 1,
+      "input_buffer_capacity": 0,
+      "output_buffer_capacity": 120,
+      "required_source_technology": "ray_receiver"
+    },
+    "dsp_solar_panel": {
+      "id": "dsp_solar_panel",
+      "source_id": "solar_panel",
+      "name": "太阳能板",
+      "description": "将恒星辐射直接送入行星电网，烬原 II 的高日照环境可提升 50% 出力。",
+      "symbol": "太阳能板",
+      "kind": "generator",
+      "power_demand": 0,
+      "power_generation": 360,
+      "speed": 1,
+      "input_slots": 0,
+      "output_slots": 0,
+      "source_input_capacity": 0,
+      "source_output_capacity": 0,
+      "family": "",
+      "tier": 1,
+      "input_buffer_capacity": 0,
+      "output_buffer_capacity": 0,
+      "required_source_technology": "solar_energy"
+    },
+    "dsp_space_station_construction_launcher": {
+      "id": "dsp_space_station_construction_launcher",
+      "source_id": "space_station_construction_launcher",
+      "name": "空间站施工发射平台",
+      "description": "将所在行星的终局材料真实送入本恒星系空间站工地。每颗行星最多建设一座。",
+      "symbol": "空间站平台",
+      "kind": "station",
+      "power_demand": 10000,
+      "power_generation": 0,
+      "speed": 1,
+      "input_slots": 4,
+      "output_slots": 0,
+      "source_input_capacity": 4000,
+      "source_output_capacity": 0,
+      "family": "",
+      "tier": 1,
+      "input_buffer_capacity": 4000,
+      "output_buffer_capacity": 0,
+      "required_source_technology": "system_space_station_engineering"
+    },
+    "dsp_splitter_4way": {
+      "id": "dsp_splitter_4way",
+      "source_id": "splitter_4way",
+      "name": "四向分流器",
+      "description": "在多条输出运输线之间均分物资，并支持优先线路。",
+      "symbol": "分流器",
+      "kind": "splitter",
+      "power_demand": 0,
+      "power_generation": 0,
+      "speed": 1,
+      "input_slots": 4,
+      "output_slots": 4,
+      "source_input_capacity": 24,
+      "source_output_capacity": 24,
+      "family": "",
+      "tier": 1,
+      "input_buffer_capacity": 24,
+      "output_buffer_capacity": 24,
+      "required_source_technology": "basic_logistics"
+    },
+    "dsp_spray_coater": {
+      "id": "dsp_spray_coater",
+      "source_id": "spray_coater",
+      "name": "喷涂机",
+      "description": "作为生产节点的内联模块消耗增产剂，为当前配方提供额外产出或生产加速。",
+      "symbol": "喷涂模块",
+      "kind": "processor",
+      "power_demand": 90,
+      "power_generation": 0,
+      "speed": 1,
+      "input_slots": 4,
+      "output_slots": 0,
+      "source_input_capacity": 600,
+      "source_output_capacity": 0,
+      "family": "",
+      "tier": 1,
+      "input_buffer_capacity": 600,
+      "output_buffer_capacity": 0,
+      "required_source_technology": "proliferator_1"
+    },
+    "dsp_storage_mk1": {
+      "id": "dsp_storage_mk1",
+      "source_id": "storage_mk1",
+      "name": "小型储物仓",
+      "description": "缓存一种固体物品，并向后续物流线路持续供货。",
+      "symbol": "储物仓",
+      "kind": "storage",
+      "power_demand": 0,
+      "power_generation": 0,
+      "speed": 1,
+      "input_slots": 4,
+      "output_slots": 4,
+      "source_input_capacity": 600,
+      "source_output_capacity": 600,
+      "family": "",
+      "tier": 1,
+      "input_buffer_capacity": 600,
+      "output_buffer_capacity": 600,
+      "required_source_technology": "basic_logistics"
+    },
+    "dsp_storage_tank": {
+      "id": "dsp_storage_tank",
+      "source_id": "storage_tank",
+      "name": "储液罐",
+      "description": "缓存原油、精炼油、氢或氘等流体资源。",
+      "symbol": "储液罐",
+      "kind": "storage",
+      "power_demand": 0,
+      "power_generation": 0,
+      "speed": 1,
+      "input_slots": 4,
+      "output_slots": 4,
+      "source_input_capacity": 1200,
+      "source_output_capacity": 1200,
+      "family": "",
+      "tier": 1,
+      "input_buffer_capacity": 1200,
+      "output_buffer_capacity": 1200,
+      "required_source_technology": "high_efficiency_plasma_control"
+    },
+    "dsp_thermal_power_plant": {
+      "id": "dsp_thermal_power_plant",
+      "source_id": "thermal_power_plant",
+      "name": "火力发电厂",
+      "description": "按电网缺口燃烧燃料，额定输出 2.16 MW，热能转换效率为 80%。",
+      "symbol": "火电厂",
+      "kind": "generator",
+      "power_demand": 0,
+      "power_generation": 2160,
+      "speed": 1,
+      "input_slots": 4,
+      "output_slots": 0,
+      "source_input_capacity": 120,
+      "source_output_capacity": 0,
+      "family": "",
+      "tier": 1,
+      "input_buffer_capacity": 120,
+      "output_buffer_capacity": 0,
+      "fuel_options": {
+        "coal": 1,
+        "fire_ice": 1.7777777777777777,
+        "crude_oil": 1.4814814814814814,
+        "energetic_graphite": 2.3333333333333335,
+        "refined_oil": 1.6296296296296295,
+        "hydrogen": 2.962962962962963,
+        "hydrogen_fuel_rod": 20,
+        "deuteron_fuel_rod": 222.22222222222223,
+        "antimatter_fuel_rod": 2666.6666666666665
+      },
+      "fuel": {
+        "item_id": "coal",
+        "burn_duration": 1
+      },
+      "required_source_technology": "thermal_power"
+    },
+    "dsp_time_warp_device": {
+      "id": "dsp_time_warp_device",
+      "source_id": "time_warp_device",
+      "name": "时间扭曲装置",
+      "description": "消耗所在电网的剩余功率加速全存档实时模拟；离线收益和活动墙钟不受影响。",
+      "symbol": "时间扭曲",
+      "kind": "processor",
+      "power_demand": 0,
+      "power_generation": 0,
+      "speed": 1,
+      "input_slots": 0,
+      "output_slots": 0,
+      "source_input_capacity": 0,
+      "source_output_capacity": 0,
+      "family": "",
+      "tier": 1,
+      "input_buffer_capacity": 0,
+      "output_buffer_capacity": 0,
+      "required_source_technology": "time_warp_engineering"
+    },
+    "dsp_vertical_launching_silo": {
+      "id": "dsp_vertical_launching_silo",
+      "source_id": "vertical_launching_silo",
+      "name": "垂直发射井",
+      "description": "消耗小型运载火箭，在恒星轨道持续建设戴森球永久结构。",
+      "symbol": "发射井",
+      "kind": "processor",
+      "power_demand": 18000,
+      "power_generation": 0,
+      "speed": 1,
+      "input_slots": 4,
+      "output_slots": 0,
+      "source_input_capacity": 180,
+      "source_output_capacity": 0,
+      "family": "",
+      "tier": 1,
+      "input_buffer_capacity": 180,
+      "output_buffer_capacity": 0,
+      "required_source_technology": "vertical_launching_silo"
+    },
+    "dsp_water_pump": {
+      "id": "dsp_water_pump",
+      "source_id": "water_pump",
+      "name": "抽水站",
+      "description": "部署在水或硫酸海洋上，以每秒 1 单位的基础速度抽取流体。",
+      "symbol": "抽水站",
+      "kind": "extractor",
+      "power_demand": 300,
+      "power_generation": 0,
+      "speed": 1,
+      "input_slots": 0,
+      "output_slots": 4,
+      "source_input_capacity": 0,
+      "source_output_capacity": 300,
+      "family": "",
+      "tier": 1,
+      "input_buffer_capacity": 0,
+      "output_buffer_capacity": 300,
+      "extraction": {
+        "item_id": "water",
+        "rate_per_minute": 60,
+        "items": [
+          "water"
+        ]
+      },
+      "required_source_technology": "basic_chemical_engineering"
+    },
+    "dsp_wind_turbine": {
+      "id": "dsp_wind_turbine",
+      "source_id": "wind_turbine",
+      "name": "风力涡轮机",
+      "description": "向当前星球电网提供 300 kW 电力。",
+      "symbol": "风机",
+      "kind": "generator",
+      "power_demand": 0,
+      "power_generation": 300,
+      "speed": 1,
+      "input_slots": 0,
+      "output_slots": 0,
+      "source_input_capacity": 0,
+      "source_output_capacity": 0,
+      "family": "",
+      "tier": 1,
+      "input_buffer_capacity": 0,
+      "output_buffer_capacity": 0,
+      "required_source_technology": "electromagnetism"
+    }
+  },
+  "recipes": {
+    "dsp_accumulator": {
+      "id": "dsp_accumulator",
+      "source_id": "accumulator",
+      "name": "蓄电器",
+      "building_id": "dsp_assembling_machine_mk1",
+      "building_ids": [
+        "dsp_assembling_machine_mk1",
+        "dsp_assembling_machine_mk2",
+        "dsp_assembling_machine_mk3"
+      ],
+      "duration": 5,
+      "required_source_technology": "energy_storage",
+      "inputs": [
+        {
+          "item_id": "iron_ingot",
+          "amount": 6
+        },
+        {
+          "item_id": "magnetic_coil",
+          "amount": 6
+        },
+        {
+          "item_id": "circuit_board",
+          "amount": 4
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "accumulator",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_accumulator_charge": {
+      "id": "dsp_accumulator_charge",
+      "source_id": "accumulator_charge",
+      "name": "蓄电器充电",
+      "building_id": "dsp_energy_exchanger",
+      "building_ids": [
+        "dsp_energy_exchanger"
+      ],
+      "duration": 2,
+      "required_source_technology": "energy_storage",
+      "inputs": [
+        {
+          "item_id": "accumulator",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "charged_accumulator",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_accumulator_discharge": {
+      "id": "dsp_accumulator_discharge",
+      "source_id": "accumulator_discharge",
+      "name": "蓄电器放电",
+      "building_id": "dsp_energy_exchanger",
+      "building_ids": [
+        "dsp_energy_exchanger"
+      ],
+      "duration": 2,
+      "required_source_technology": "energy_storage",
+      "inputs": [
+        {
+          "item_id": "charged_accumulator",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "accumulator",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_annihilation_constraint_sphere": {
+      "id": "dsp_annihilation_constraint_sphere",
+      "source_id": "annihilation_constraint_sphere",
+      "name": "湮灭约束球",
+      "building_id": "dsp_assembling_machine_mk1",
+      "building_ids": [
+        "dsp_assembling_machine_mk1",
+        "dsp_assembling_machine_mk2",
+        "dsp_assembling_machine_mk3"
+      ],
+      "duration": 20,
+      "required_source_technology": "antimatter",
+      "inputs": [
+        {
+          "item_id": "particle_container",
+          "amount": 1
+        },
+        {
+          "item_id": "processor",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "annihilation_constraint_sphere",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_antimatter": {
+      "id": "dsp_antimatter",
+      "source_id": "antimatter",
+      "name": "质能转换",
+      "building_id": "dsp_miniature_particle_collider",
+      "building_ids": [
+        "dsp_miniature_particle_collider"
+      ],
+      "duration": 2,
+      "required_source_technology": "antimatter",
+      "inputs": [
+        {
+          "item_id": "critical_photon",
+          "amount": 2
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "hydrogen",
+          "amount": 2
+        },
+        {
+          "item_id": "antimatter",
+          "amount": 2
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_antimatter_fuel_rod": {
+      "id": "dsp_antimatter_fuel_rod",
+      "source_id": "antimatter_fuel_rod",
+      "name": "反物质燃料棒",
+      "building_id": "dsp_assembling_machine_mk1",
+      "building_ids": [
+        "dsp_assembling_machine_mk1",
+        "dsp_assembling_machine_mk2",
+        "dsp_assembling_machine_mk3"
+      ],
+      "duration": 12,
+      "required_source_technology": "antimatter",
+      "inputs": [
+        {
+          "item_id": "antimatter",
+          "amount": 10
+        },
+        {
+          "item_id": "hydrogen",
+          "amount": 10
+        },
+        {
+          "item_id": "annihilation_constraint_sphere",
+          "amount": 1
+        },
+        {
+          "item_id": "titanium_alloy",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "antimatter_fuel_rod",
+          "amount": 2
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_carbon_nanotube": {
+      "id": "dsp_carbon_nanotube",
+      "source_id": "carbon_nanotube",
+      "name": "碳纳米管",
+      "building_id": "dsp_chemical_plant",
+      "building_ids": [
+        "dsp_chemical_plant",
+        "dsp_quantum_chemical_plant"
+      ],
+      "duration": 4,
+      "required_source_technology": "nanomaterials",
+      "inputs": [
+        {
+          "item_id": "graphene",
+          "amount": 3
+        },
+        {
+          "item_id": "titanium_ingot",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "carbon_nanotube",
+          "amount": 2
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_carbon_nanotube_from_spiniform": {
+      "id": "dsp_carbon_nanotube_from_spiniform",
+      "source_id": "carbon_nanotube_from_spiniform",
+      "name": "刺笋结晶制碳纳米管",
+      "building_id": "dsp_chemical_plant",
+      "building_ids": [
+        "dsp_chemical_plant",
+        "dsp_quantum_chemical_plant"
+      ],
+      "duration": 4,
+      "required_source_technology": "rare_resource_utilization",
+      "inputs": [
+        {
+          "item_id": "spiniform_stalagmite_crystal",
+          "amount": 6
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "carbon_nanotube",
+          "amount": 2
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_carrier_rocket_launch": {
+      "id": "dsp_carrier_rocket_launch",
+      "source_id": "carrier_rocket_launch",
+      "name": "运载火箭发射",
+      "building_id": "dsp_vertical_launching_silo",
+      "building_ids": [
+        "dsp_vertical_launching_silo"
+      ],
+      "duration": 6,
+      "required_source_technology": "vertical_launching_silo",
+      "inputs": [
+        {
+          "item_id": "small_carrier_rocket",
+          "amount": 1
+        }
+      ],
+      "outputs": [],
+      "operation": "carrier_rocket_launch"
+    },
+    "dsp_casimir_crystal": {
+      "id": "dsp_casimir_crystal",
+      "source_id": "casimir_crystal",
+      "name": "卡西米尔晶体",
+      "building_id": "dsp_assembling_machine_mk1",
+      "building_ids": [
+        "dsp_assembling_machine_mk1",
+        "dsp_assembling_machine_mk2",
+        "dsp_assembling_machine_mk3"
+      ],
+      "duration": 4,
+      "required_source_technology": "quantum_chip",
+      "inputs": [
+        {
+          "item_id": "titanium_crystal",
+          "amount": 1
+        },
+        {
+          "item_id": "graphene",
+          "amount": 2
+        },
+        {
+          "item_id": "hydrogen",
+          "amount": 12
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "casimir_crystal",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_casimir_crystal_advanced": {
+      "id": "dsp_casimir_crystal_advanced",
+      "source_id": "casimir_crystal_advanced",
+      "name": "高效卡西米尔晶体",
+      "building_id": "dsp_assembling_machine_mk1",
+      "building_ids": [
+        "dsp_assembling_machine_mk1",
+        "dsp_assembling_machine_mk2",
+        "dsp_assembling_machine_mk3"
+      ],
+      "duration": 4,
+      "required_source_technology": "rare_resource_utilization",
+      "inputs": [
+        {
+          "item_id": "optical_grating_crystal",
+          "amount": 4
+        },
+        {
+          "item_id": "graphene",
+          "amount": 2
+        },
+        {
+          "item_id": "hydrogen",
+          "amount": 12
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "casimir_crystal",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_circuit_board": {
+      "id": "dsp_circuit_board",
+      "source_id": "circuit_board",
+      "name": "电路板",
+      "building_id": "dsp_assembling_machine_mk1",
+      "building_ids": [
+        "dsp_assembling_machine_mk1",
+        "dsp_assembling_machine_mk2",
+        "dsp_assembling_machine_mk3"
+      ],
+      "duration": 1,
+      "required_source_technology": "",
+      "inputs": [
+        {
+          "item_id": "iron_ingot",
+          "amount": 2
+        },
+        {
+          "item_id": "copper_ingot",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "circuit_board",
+          "amount": 2
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_copper_ingot": {
+      "id": "dsp_copper_ingot",
+      "source_id": "copper_ingot",
+      "name": "铜块",
+      "building_id": "dsp_arc_smelter",
+      "building_ids": [
+        "dsp_arc_smelter",
+        "dsp_plane_smelter"
+      ],
+      "duration": 1,
+      "required_source_technology": "",
+      "inputs": [
+        {
+          "item_id": "copper_ore",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "copper_ingot",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_critical_photon": {
+      "id": "dsp_critical_photon",
+      "source_id": "critical_photon",
+      "name": "临界光子",
+      "building_id": "dsp_ray_receiver",
+      "building_ids": [
+        "dsp_ray_receiver"
+      ],
+      "duration": 10,
+      "required_source_technology": "ray_receiver",
+      "inputs": [],
+      "outputs": [
+        {
+          "item_id": "critical_photon",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_crystal_silicon": {
+      "id": "dsp_crystal_silicon",
+      "source_id": "crystal_silicon",
+      "name": "晶格硅",
+      "building_id": "dsp_arc_smelter",
+      "building_ids": [
+        "dsp_arc_smelter",
+        "dsp_plane_smelter"
+      ],
+      "duration": 2,
+      "required_source_technology": "nanomaterials",
+      "inputs": [
+        {
+          "item_id": "high_purity_silicon",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "crystal_silicon",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_crystal_silicon_from_fractal": {
+      "id": "dsp_crystal_silicon_from_fractal",
+      "source_id": "crystal_silicon_from_fractal",
+      "name": "分形硅晶格化",
+      "building_id": "dsp_arc_smelter",
+      "building_ids": [
+        "dsp_arc_smelter",
+        "dsp_plane_smelter"
+      ],
+      "duration": 1.5,
+      "required_source_technology": "rare_resource_utilization",
+      "inputs": [
+        {
+          "item_id": "fractal_silicon",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "crystal_silicon",
+          "amount": 2
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_deuterium": {
+      "id": "dsp_deuterium",
+      "source_id": "deuterium",
+      "name": "氘富集",
+      "building_id": "dsp_miniature_particle_collider",
+      "building_ids": [
+        "dsp_miniature_particle_collider"
+      ],
+      "duration": 5,
+      "required_source_technology": "miniature_particle_collider",
+      "inputs": [
+        {
+          "item_id": "hydrogen",
+          "amount": 10
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "deuterium",
+          "amount": 5
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_deuterium_fractionation": {
+      "id": "dsp_deuterium_fractionation",
+      "source_id": "deuterium_fractionation",
+      "name": "氢分馏",
+      "building_id": "dsp_fractionator",
+      "building_ids": [
+        "dsp_fractionator"
+      ],
+      "duration": 1,
+      "required_source_technology": "fractionation",
+      "inputs": [
+        {
+          "item_id": "hydrogen",
+          "amount": 10
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "hydrogen",
+          "amount": 9
+        },
+        {
+          "item_id": "deuterium",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_deuteron_fuel_rod": {
+      "id": "dsp_deuteron_fuel_rod",
+      "source_id": "deuteron_fuel_rod",
+      "name": "氘核燃料棒",
+      "building_id": "dsp_assembling_machine_mk1",
+      "building_ids": [
+        "dsp_assembling_machine_mk1",
+        "dsp_assembling_machine_mk2",
+        "dsp_assembling_machine_mk3"
+      ],
+      "duration": 6,
+      "required_source_technology": "miniature_particle_collider",
+      "inputs": [
+        {
+          "item_id": "titanium_alloy",
+          "amount": 1
+        },
+        {
+          "item_id": "deuterium",
+          "amount": 20
+        },
+        {
+          "item_id": "super_magnetic_ring",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "deuteron_fuel_rod",
+          "amount": 2
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_diamond": {
+      "id": "dsp_diamond",
+      "source_id": "diamond",
+      "name": "金刚石",
+      "building_id": "dsp_arc_smelter",
+      "building_ids": [
+        "dsp_arc_smelter",
+        "dsp_plane_smelter"
+      ],
+      "duration": 2,
+      "required_source_technology": "high_strength_crystal",
+      "inputs": [
+        {
+          "item_id": "energetic_graphite",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "diamond",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_diamond_from_kimberlite": {
+      "id": "dsp_diamond_from_kimberlite",
+      "source_id": "diamond_from_kimberlite",
+      "name": "金伯利矿提炼",
+      "building_id": "dsp_arc_smelter",
+      "building_ids": [
+        "dsp_arc_smelter",
+        "dsp_plane_smelter"
+      ],
+      "duration": 1.5,
+      "required_source_technology": "rare_resource_utilization",
+      "inputs": [
+        {
+          "item_id": "kimberlite_ore",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "diamond",
+          "amount": 2
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_dyson_sphere_component": {
+      "id": "dsp_dyson_sphere_component",
+      "source_id": "dyson_sphere_component",
+      "name": "戴森球组件",
+      "building_id": "dsp_assembling_machine_mk1",
+      "building_ids": [
+        "dsp_assembling_machine_mk1",
+        "dsp_assembling_machine_mk2",
+        "dsp_assembling_machine_mk3"
+      ],
+      "duration": 8,
+      "required_source_technology": "dyson_sphere_program",
+      "inputs": [
+        {
+          "item_id": "frame_material",
+          "amount": 3
+        },
+        {
+          "item_id": "solar_sail",
+          "amount": 3
+        },
+        {
+          "item_id": "processor",
+          "amount": 3
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "dyson_sphere_component",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_electric_motor": {
+      "id": "dsp_electric_motor",
+      "source_id": "electric_motor",
+      "name": "电动机",
+      "building_id": "dsp_assembling_machine_mk1",
+      "building_ids": [
+        "dsp_assembling_machine_mk1",
+        "dsp_assembling_machine_mk2",
+        "dsp_assembling_machine_mk3"
+      ],
+      "duration": 2,
+      "required_source_technology": "basic_logistics",
+      "inputs": [
+        {
+          "item_id": "iron_ingot",
+          "amount": 2
+        },
+        {
+          "item_id": "gear",
+          "amount": 1
+        },
+        {
+          "item_id": "magnetic_coil",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "electric_motor",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_electromagnetic_matrix": {
+      "id": "dsp_electromagnetic_matrix",
+      "source_id": "electromagnetic_matrix",
+      "name": "电磁矩阵",
+      "building_id": "dsp_matrix_lab",
+      "building_ids": [
+        "dsp_matrix_lab"
+      ],
+      "duration": 3,
+      "required_source_technology": "",
+      "inputs": [
+        {
+          "item_id": "magnetic_coil",
+          "amount": 1
+        },
+        {
+          "item_id": "circuit_board",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "electromagnetic_matrix",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_electromagnetic_turbine": {
+      "id": "dsp_electromagnetic_turbine",
+      "source_id": "electromagnetic_turbine",
+      "name": "电磁涡轮",
+      "building_id": "dsp_assembling_machine_mk1",
+      "building_ids": [
+        "dsp_assembling_machine_mk1",
+        "dsp_assembling_machine_mk2",
+        "dsp_assembling_machine_mk3"
+      ],
+      "duration": 2,
+      "required_source_technology": "high_speed_logistics",
+      "inputs": [
+        {
+          "item_id": "electric_motor",
+          "amount": 2
+        },
+        {
+          "item_id": "magnetic_coil",
+          "amount": 2
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "electromagnetic_turbine",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_energetic_graphite": {
+      "id": "dsp_energetic_graphite",
+      "source_id": "energetic_graphite",
+      "name": "高能石墨",
+      "building_id": "dsp_arc_smelter",
+      "building_ids": [
+        "dsp_arc_smelter",
+        "dsp_plane_smelter"
+      ],
+      "duration": 2,
+      "required_source_technology": "energy_matrix",
+      "inputs": [
+        {
+          "item_id": "coal",
+          "amount": 2
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "energetic_graphite",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_energy_matrix": {
+      "id": "dsp_energy_matrix",
+      "source_id": "energy_matrix",
+      "name": "能量矩阵",
+      "building_id": "dsp_matrix_lab",
+      "building_ids": [
+        "dsp_matrix_lab"
+      ],
+      "duration": 6,
+      "required_source_technology": "energy_matrix",
+      "inputs": [
+        {
+          "item_id": "energetic_graphite",
+          "amount": 2
+        },
+        {
+          "item_id": "hydrogen",
+          "amount": 2
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "energy_matrix",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_frame_material": {
+      "id": "dsp_frame_material",
+      "source_id": "frame_material",
+      "name": "框架材料",
+      "building_id": "dsp_assembling_machine_mk1",
+      "building_ids": [
+        "dsp_assembling_machine_mk1",
+        "dsp_assembling_machine_mk2",
+        "dsp_assembling_machine_mk3"
+      ],
+      "duration": 6,
+      "required_source_technology": "dyson_sphere_program",
+      "inputs": [
+        {
+          "item_id": "carbon_nanotube",
+          "amount": 4
+        },
+        {
+          "item_id": "titanium_alloy",
+          "amount": 1
+        },
+        {
+          "item_id": "high_purity_silicon",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "frame_material",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_gear": {
+      "id": "dsp_gear",
+      "source_id": "gear",
+      "name": "齿轮",
+      "building_id": "dsp_assembling_machine_mk1",
+      "building_ids": [
+        "dsp_assembling_machine_mk1",
+        "dsp_assembling_machine_mk2",
+        "dsp_assembling_machine_mk3"
+      ],
+      "duration": 1,
+      "required_source_technology": "",
+      "inputs": [
+        {
+          "item_id": "iron_ingot",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "gear",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_glass": {
+      "id": "dsp_glass",
+      "source_id": "glass",
+      "name": "玻璃",
+      "building_id": "dsp_arc_smelter",
+      "building_ids": [
+        "dsp_arc_smelter",
+        "dsp_plane_smelter"
+      ],
+      "duration": 2,
+      "required_source_technology": "",
+      "inputs": [
+        {
+          "item_id": "stone",
+          "amount": 2
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "glass",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_graphene": {
+      "id": "dsp_graphene",
+      "source_id": "graphene",
+      "name": "石墨烯",
+      "building_id": "dsp_chemical_plant",
+      "building_ids": [
+        "dsp_chemical_plant",
+        "dsp_quantum_chemical_plant"
+      ],
+      "duration": 3,
+      "required_source_technology": "nanomaterials",
+      "inputs": [
+        {
+          "item_id": "energetic_graphite",
+          "amount": 3
+        },
+        {
+          "item_id": "sulfuric_acid",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "graphene",
+          "amount": 2
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_graphene_from_fire_ice": {
+      "id": "dsp_graphene_from_fire_ice",
+      "source_id": "graphene_from_fire_ice",
+      "name": "可燃冰裂解",
+      "building_id": "dsp_chemical_plant",
+      "building_ids": [
+        "dsp_chemical_plant",
+        "dsp_quantum_chemical_plant"
+      ],
+      "duration": 2,
+      "required_source_technology": "rare_resource_utilization",
+      "inputs": [
+        {
+          "item_id": "fire_ice",
+          "amount": 2
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "graphene",
+          "amount": 2
+        },
+        {
+          "item_id": "hydrogen",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_graviton_lens": {
+      "id": "dsp_graviton_lens",
+      "source_id": "graviton_lens",
+      "name": "引力透镜",
+      "building_id": "dsp_assembling_machine_mk1",
+      "building_ids": [
+        "dsp_assembling_machine_mk1",
+        "dsp_assembling_machine_mk2",
+        "dsp_assembling_machine_mk3"
+      ],
+      "duration": 6,
+      "required_source_technology": "gravity_matrix",
+      "inputs": [
+        {
+          "item_id": "diamond",
+          "amount": 4
+        },
+        {
+          "item_id": "strange_matter",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "graviton_lens",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_gravity_matrix": {
+      "id": "dsp_gravity_matrix",
+      "source_id": "gravity_matrix",
+      "name": "引力矩阵",
+      "building_id": "dsp_matrix_lab",
+      "building_ids": [
+        "dsp_matrix_lab"
+      ],
+      "duration": 24,
+      "required_source_technology": "gravity_matrix",
+      "inputs": [
+        {
+          "item_id": "graviton_lens",
+          "amount": 1
+        },
+        {
+          "item_id": "quantum_chip",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "gravity_matrix",
+          "amount": 2
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_high_purity_silicon": {
+      "id": "dsp_high_purity_silicon",
+      "source_id": "high_purity_silicon",
+      "name": "高纯硅块",
+      "building_id": "dsp_arc_smelter",
+      "building_ids": [
+        "dsp_arc_smelter",
+        "dsp_plane_smelter"
+      ],
+      "duration": 2,
+      "required_source_technology": "high_strength_crystal",
+      "inputs": [
+        {
+          "item_id": "silicon_ore",
+          "amount": 2
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "high_purity_silicon",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_hydrogen_fuel_rod": {
+      "id": "dsp_hydrogen_fuel_rod",
+      "source_id": "hydrogen_fuel_rod",
+      "name": "氢燃料棒",
+      "building_id": "dsp_assembling_machine_mk1",
+      "building_ids": [
+        "dsp_assembling_machine_mk1",
+        "dsp_assembling_machine_mk2",
+        "dsp_assembling_machine_mk3"
+      ],
+      "duration": 6,
+      "required_source_technology": "fractionation",
+      "inputs": [
+        {
+          "item_id": "titanium_ingot",
+          "amount": 1
+        },
+        {
+          "item_id": "hydrogen",
+          "amount": 10
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "hydrogen_fuel_rod",
+          "amount": 2
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_information_matrix": {
+      "id": "dsp_information_matrix",
+      "source_id": "information_matrix",
+      "name": "信息矩阵",
+      "building_id": "dsp_matrix_lab",
+      "building_ids": [
+        "dsp_matrix_lab"
+      ],
+      "duration": 10,
+      "required_source_technology": "information_matrix",
+      "inputs": [
+        {
+          "item_id": "particle_broadband",
+          "amount": 1
+        },
+        {
+          "item_id": "processor",
+          "amount": 2
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "information_matrix",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_iron_ingot": {
+      "id": "dsp_iron_ingot",
+      "source_id": "iron_ingot",
+      "name": "铁块",
+      "building_id": "dsp_arc_smelter",
+      "building_ids": [
+        "dsp_arc_smelter",
+        "dsp_plane_smelter"
+      ],
+      "duration": 1,
+      "required_source_technology": "",
+      "inputs": [
+        {
+          "item_id": "iron_ore",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "iron_ingot",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_logistics_drone": {
+      "id": "dsp_logistics_drone",
+      "source_id": "logistics_drone",
+      "name": "物流运输机",
+      "building_id": "dsp_assembling_machine_mk1",
+      "building_ids": [
+        "dsp_assembling_machine_mk1",
+        "dsp_assembling_machine_mk2",
+        "dsp_assembling_machine_mk3"
+      ],
+      "duration": 4,
+      "required_source_technology": "planetary_logistics",
+      "inputs": [
+        {
+          "item_id": "steel",
+          "amount": 5
+        },
+        {
+          "item_id": "processor",
+          "amount": 2
+        },
+        {
+          "item_id": "electromagnetic_turbine",
+          "amount": 2
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "logistics_drone",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_logistics_vessel": {
+      "id": "dsp_logistics_vessel",
+      "source_id": "logistics_vessel",
+      "name": "物流运输船",
+      "building_id": "dsp_assembling_machine_mk1",
+      "building_ids": [
+        "dsp_assembling_machine_mk1",
+        "dsp_assembling_machine_mk2",
+        "dsp_assembling_machine_mk3"
+      ],
+      "duration": 8,
+      "required_source_technology": "interstellar_logistics",
+      "inputs": [
+        {
+          "item_id": "titanium_alloy",
+          "amount": 10
+        },
+        {
+          "item_id": "processor",
+          "amount": 10
+        },
+        {
+          "item_id": "plasma_exciter",
+          "amount": 4
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "logistics_vessel",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_magnet": {
+      "id": "dsp_magnet",
+      "source_id": "magnet",
+      "name": "磁铁",
+      "building_id": "dsp_arc_smelter",
+      "building_ids": [
+        "dsp_arc_smelter",
+        "dsp_plane_smelter"
+      ],
+      "duration": 1.5,
+      "required_source_technology": "",
+      "inputs": [
+        {
+          "item_id": "iron_ore",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "magnet",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_magnetic_coil": {
+      "id": "dsp_magnetic_coil",
+      "source_id": "magnetic_coil",
+      "name": "磁线圈",
+      "building_id": "dsp_assembling_machine_mk1",
+      "building_ids": [
+        "dsp_assembling_machine_mk1",
+        "dsp_assembling_machine_mk2",
+        "dsp_assembling_machine_mk3"
+      ],
+      "duration": 1,
+      "required_source_technology": "",
+      "inputs": [
+        {
+          "item_id": "magnet",
+          "amount": 2
+        },
+        {
+          "item_id": "copper_ingot",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "magnetic_coil",
+          "amount": 2
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_matrix_research": {
+      "id": "dsp_matrix_research",
+      "source_id": "matrix_research",
+      "name": "科研模式",
+      "building_id": "dsp_matrix_lab",
+      "building_ids": [
+        "dsp_matrix_lab",
+        "matrix_lab"
+      ],
+      "duration": 3,
+      "required_source_technology": "",
+      "inputs": [],
+      "outputs": [],
+      "operation": "matrix_research"
+    },
+    "dsp_microcrystalline_component": {
+      "id": "dsp_microcrystalline_component",
+      "source_id": "microcrystalline_component",
+      "name": "微晶元件",
+      "building_id": "dsp_assembling_machine_mk1",
+      "building_ids": [
+        "dsp_assembling_machine_mk1",
+        "dsp_assembling_machine_mk2",
+        "dsp_assembling_machine_mk3"
+      ],
+      "duration": 2,
+      "required_source_technology": "processor",
+      "inputs": [
+        {
+          "item_id": "high_purity_silicon",
+          "amount": 2
+        },
+        {
+          "item_id": "copper_ingot",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "microcrystalline_component",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_organic_crystal": {
+      "id": "dsp_organic_crystal",
+      "source_id": "organic_crystal",
+      "name": "有机晶体",
+      "building_id": "dsp_chemical_plant",
+      "building_ids": [
+        "dsp_chemical_plant",
+        "dsp_quantum_chemical_plant"
+      ],
+      "duration": 6,
+      "required_source_technology": "polymer_chemistry",
+      "inputs": [
+        {
+          "item_id": "plastic",
+          "amount": 2
+        },
+        {
+          "item_id": "refined_oil",
+          "amount": 1
+        },
+        {
+          "item_id": "water",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "organic_crystal",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_particle_broadband": {
+      "id": "dsp_particle_broadband",
+      "source_id": "particle_broadband",
+      "name": "粒子宽带",
+      "building_id": "dsp_assembling_machine_mk1",
+      "building_ids": [
+        "dsp_assembling_machine_mk1",
+        "dsp_assembling_machine_mk2",
+        "dsp_assembling_machine_mk3"
+      ],
+      "duration": 8,
+      "required_source_technology": "information_matrix",
+      "inputs": [
+        {
+          "item_id": "carbon_nanotube",
+          "amount": 2
+        },
+        {
+          "item_id": "crystal_silicon",
+          "amount": 2
+        },
+        {
+          "item_id": "plastic",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "particle_broadband",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_particle_container": {
+      "id": "dsp_particle_container",
+      "source_id": "particle_container",
+      "name": "粒子容器",
+      "building_id": "dsp_assembling_machine_mk1",
+      "building_ids": [
+        "dsp_assembling_machine_mk1",
+        "dsp_assembling_machine_mk2",
+        "dsp_assembling_machine_mk3"
+      ],
+      "duration": 4,
+      "required_source_technology": "miniature_particle_collider",
+      "inputs": [
+        {
+          "item_id": "electromagnetic_turbine",
+          "amount": 2
+        },
+        {
+          "item_id": "copper_ingot",
+          "amount": 2
+        },
+        {
+          "item_id": "graphene",
+          "amount": 2
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "particle_container",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_particle_container_from_unipolar": {
+      "id": "dsp_particle_container_from_unipolar",
+      "source_id": "particle_container_from_unipolar",
+      "name": "单极磁石粒子容器",
+      "building_id": "dsp_assembling_machine_mk1",
+      "building_ids": [
+        "dsp_assembling_machine_mk1",
+        "dsp_assembling_machine_mk2",
+        "dsp_assembling_machine_mk3"
+      ],
+      "duration": 4,
+      "required_source_technology": "rare_resource_utilization",
+      "inputs": [
+        {
+          "item_id": "unipolar_magnet",
+          "amount": 10
+        },
+        {
+          "item_id": "copper_ingot",
+          "amount": 2
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "particle_container",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_photon_combiner": {
+      "id": "dsp_photon_combiner",
+      "source_id": "photon_combiner",
+      "name": "光子合并器",
+      "building_id": "dsp_assembling_machine_mk1",
+      "building_ids": [
+        "dsp_assembling_machine_mk1",
+        "dsp_assembling_machine_mk2",
+        "dsp_assembling_machine_mk3"
+      ],
+      "duration": 3,
+      "required_source_technology": "dyson_swarm",
+      "inputs": [
+        {
+          "item_id": "prism",
+          "amount": 2
+        },
+        {
+          "item_id": "circuit_board",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "photon_combiner",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_photon_combiner_from_grating": {
+      "id": "dsp_photon_combiner_from_grating",
+      "source_id": "photon_combiner_from_grating",
+      "name": "光栅石光子合并器",
+      "building_id": "dsp_assembling_machine_mk1",
+      "building_ids": [
+        "dsp_assembling_machine_mk1",
+        "dsp_assembling_machine_mk2",
+        "dsp_assembling_machine_mk3"
+      ],
+      "duration": 3,
+      "required_source_technology": "rare_resource_utilization",
+      "inputs": [
+        {
+          "item_id": "optical_grating_crystal",
+          "amount": 1
+        },
+        {
+          "item_id": "circuit_board",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "photon_combiner",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_plane_filter": {
+      "id": "dsp_plane_filter",
+      "source_id": "plane_filter",
+      "name": "位面过滤器",
+      "building_id": "dsp_assembling_machine_mk1",
+      "building_ids": [
+        "dsp_assembling_machine_mk1",
+        "dsp_assembling_machine_mk2",
+        "dsp_assembling_machine_mk3"
+      ],
+      "duration": 12,
+      "required_source_technology": "quantum_chip",
+      "inputs": [
+        {
+          "item_id": "casimir_crystal",
+          "amount": 1
+        },
+        {
+          "item_id": "titanium_glass",
+          "amount": 2
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "plane_filter",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_plasma_exciter": {
+      "id": "dsp_plasma_exciter",
+      "source_id": "plasma_exciter",
+      "name": "电浆激发器",
+      "building_id": "dsp_assembling_machine_mk1",
+      "building_ids": [
+        "dsp_assembling_machine_mk1",
+        "dsp_assembling_machine_mk2",
+        "dsp_assembling_machine_mk3"
+      ],
+      "duration": 2,
+      "required_source_technology": "high_efficiency_plasma_control",
+      "inputs": [
+        {
+          "item_id": "magnetic_coil",
+          "amount": 4
+        },
+        {
+          "item_id": "prism",
+          "amount": 2
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "plasma_exciter",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_plasma_refining": {
+      "id": "dsp_plasma_refining",
+      "source_id": "plasma_refining",
+      "name": "等离子精炼",
+      "building_id": "dsp_oil_refinery",
+      "building_ids": [
+        "dsp_oil_refinery"
+      ],
+      "duration": 4,
+      "required_source_technology": "high_efficiency_plasma_control",
+      "inputs": [
+        {
+          "item_id": "crude_oil",
+          "amount": 2
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "refined_oil",
+          "amount": 2
+        },
+        {
+          "item_id": "hydrogen",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_plastic": {
+      "id": "dsp_plastic",
+      "source_id": "plastic",
+      "name": "塑料",
+      "building_id": "dsp_chemical_plant",
+      "building_ids": [
+        "dsp_chemical_plant",
+        "dsp_quantum_chemical_plant"
+      ],
+      "duration": 3,
+      "required_source_technology": "basic_chemical_engineering",
+      "inputs": [
+        {
+          "item_id": "refined_oil",
+          "amount": 2
+        },
+        {
+          "item_id": "energetic_graphite",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "plastic",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_prism": {
+      "id": "dsp_prism",
+      "source_id": "prism",
+      "name": "棱镜",
+      "building_id": "dsp_assembling_machine_mk1",
+      "building_ids": [
+        "dsp_assembling_machine_mk1",
+        "dsp_assembling_machine_mk2",
+        "dsp_assembling_machine_mk3"
+      ],
+      "duration": 2,
+      "required_source_technology": "high_efficiency_plasma_control",
+      "inputs": [
+        {
+          "item_id": "glass",
+          "amount": 3
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "prism",
+          "amount": 2
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_processor": {
+      "id": "dsp_processor",
+      "source_id": "processor",
+      "name": "处理器",
+      "building_id": "dsp_assembling_machine_mk1",
+      "building_ids": [
+        "dsp_assembling_machine_mk1",
+        "dsp_assembling_machine_mk2",
+        "dsp_assembling_machine_mk3"
+      ],
+      "duration": 3,
+      "required_source_technology": "processor",
+      "inputs": [
+        {
+          "item_id": "circuit_board",
+          "amount": 2
+        },
+        {
+          "item_id": "microcrystalline_component",
+          "amount": 2
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "processor",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_proliferator_mk1": {
+      "id": "dsp_proliferator_mk1",
+      "source_id": "proliferator_mk1",
+      "name": "增产剂 Mk.I",
+      "building_id": "dsp_assembling_machine_mk1",
+      "building_ids": [
+        "dsp_assembling_machine_mk1",
+        "dsp_assembling_machine_mk2",
+        "dsp_assembling_machine_mk3"
+      ],
+      "duration": 0.5,
+      "required_source_technology": "proliferator_1",
+      "inputs": [
+        {
+          "item_id": "coal",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "proliferator_mk1",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_proliferator_mk2": {
+      "id": "dsp_proliferator_mk2",
+      "source_id": "proliferator_mk2",
+      "name": "增产剂 Mk.II",
+      "building_id": "dsp_assembling_machine_mk1",
+      "building_ids": [
+        "dsp_assembling_machine_mk1",
+        "dsp_assembling_machine_mk2",
+        "dsp_assembling_machine_mk3"
+      ],
+      "duration": 1,
+      "required_source_technology": "proliferator_2",
+      "inputs": [
+        {
+          "item_id": "proliferator_mk1",
+          "amount": 2
+        },
+        {
+          "item_id": "diamond",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "proliferator_mk2",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_proliferator_mk3": {
+      "id": "dsp_proliferator_mk3",
+      "source_id": "proliferator_mk3",
+      "name": "增产剂 Mk.III",
+      "building_id": "dsp_assembling_machine_mk1",
+      "building_ids": [
+        "dsp_assembling_machine_mk1",
+        "dsp_assembling_machine_mk2",
+        "dsp_assembling_machine_mk3"
+      ],
+      "duration": 2,
+      "required_source_technology": "proliferator_3",
+      "inputs": [
+        {
+          "item_id": "proliferator_mk2",
+          "amount": 2
+        },
+        {
+          "item_id": "carbon_nanotube",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "proliferator_mk3",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_quantum_chip": {
+      "id": "dsp_quantum_chip",
+      "source_id": "quantum_chip",
+      "name": "量子芯片",
+      "building_id": "dsp_assembling_machine_mk1",
+      "building_ids": [
+        "dsp_assembling_machine_mk1",
+        "dsp_assembling_machine_mk2",
+        "dsp_assembling_machine_mk3"
+      ],
+      "duration": 6,
+      "required_source_technology": "quantum_chip",
+      "inputs": [
+        {
+          "item_id": "processor",
+          "amount": 2
+        },
+        {
+          "item_id": "plane_filter",
+          "amount": 2
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "quantum_chip",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_ray_power": {
+      "id": "dsp_ray_power",
+      "source_id": "ray_power",
+      "name": "电力接收",
+      "building_id": "dsp_ray_receiver",
+      "building_ids": [
+        "dsp_ray_receiver"
+      ],
+      "duration": 1,
+      "required_source_technology": "ray_receiver",
+      "inputs": [],
+      "outputs": [],
+      "operation": "ray_power"
+    },
+    "dsp_reforming_refine": {
+      "id": "dsp_reforming_refine",
+      "source_id": "reforming_refine",
+      "name": "重整精炼",
+      "building_id": "dsp_oil_refinery",
+      "building_ids": [
+        "dsp_oil_refinery"
+      ],
+      "duration": 4,
+      "required_source_technology": "reforming_refine",
+      "inputs": [
+        {
+          "item_id": "coal",
+          "amount": 1
+        },
+        {
+          "item_id": "hydrogen",
+          "amount": 1
+        },
+        {
+          "item_id": "refined_oil",
+          "amount": 2
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "refined_oil",
+          "amount": 3
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_silicon_ore_from_stone": {
+      "id": "dsp_silicon_ore_from_stone",
+      "source_id": "silicon_ore_from_stone",
+      "name": "石矿提炼硅石",
+      "building_id": "dsp_arc_smelter",
+      "building_ids": [
+        "dsp_arc_smelter",
+        "dsp_plane_smelter"
+      ],
+      "duration": 10,
+      "required_source_technology": "high_strength_crystal",
+      "inputs": [
+        {
+          "item_id": "stone",
+          "amount": 10
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "silicon_ore",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_small_carrier_rocket": {
+      "id": "dsp_small_carrier_rocket",
+      "source_id": "small_carrier_rocket",
+      "name": "小型运载火箭",
+      "building_id": "dsp_assembling_machine_mk1",
+      "building_ids": [
+        "dsp_assembling_machine_mk1",
+        "dsp_assembling_machine_mk2",
+        "dsp_assembling_machine_mk3"
+      ],
+      "duration": 6,
+      "required_source_technology": "vertical_launching_silo",
+      "inputs": [
+        {
+          "item_id": "dyson_sphere_component",
+          "amount": 2
+        },
+        {
+          "item_id": "deuteron_fuel_rod",
+          "amount": 4
+        },
+        {
+          "item_id": "quantum_chip",
+          "amount": 2
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "small_carrier_rocket",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_solar_sail": {
+      "id": "dsp_solar_sail",
+      "source_id": "solar_sail",
+      "name": "太阳帆",
+      "building_id": "dsp_assembling_machine_mk1",
+      "building_ids": [
+        "dsp_assembling_machine_mk1",
+        "dsp_assembling_machine_mk2",
+        "dsp_assembling_machine_mk3"
+      ],
+      "duration": 4,
+      "required_source_technology": "dyson_swarm",
+      "inputs": [
+        {
+          "item_id": "graphene",
+          "amount": 1
+        },
+        {
+          "item_id": "photon_combiner",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "solar_sail",
+          "amount": 2
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_solar_sail_launch": {
+      "id": "dsp_solar_sail_launch",
+      "source_id": "solar_sail_launch",
+      "name": "太阳帆发射",
+      "building_id": "dsp_em_rail_ejector",
+      "building_ids": [
+        "dsp_em_rail_ejector"
+      ],
+      "duration": 12,
+      "required_source_technology": "dyson_swarm",
+      "inputs": [
+        {
+          "item_id": "solar_sail",
+          "amount": 1
+        }
+      ],
+      "outputs": [],
+      "operation": "solar_sail_launch"
+    },
+    "dsp_space_warper": {
+      "id": "dsp_space_warper",
+      "source_id": "space_warper",
+      "name": "空间翘曲器",
+      "building_id": "dsp_assembling_machine_mk1",
+      "building_ids": [
+        "dsp_assembling_machine_mk1",
+        "dsp_assembling_machine_mk2",
+        "dsp_assembling_machine_mk3"
+      ],
+      "duration": 10,
+      "required_source_technology": "space_warp",
+      "inputs": [
+        {
+          "item_id": "graviton_lens",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "space_warper",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_space_warper_from_gravity_matrix": {
+      "id": "dsp_space_warper_from_gravity_matrix",
+      "source_id": "space_warper_from_gravity_matrix",
+      "name": "引力矩阵制空间翘曲器",
+      "building_id": "dsp_assembling_machine_mk1",
+      "building_ids": [
+        "dsp_assembling_machine_mk1",
+        "dsp_assembling_machine_mk2",
+        "dsp_assembling_machine_mk3"
+      ],
+      "duration": 10,
+      "required_source_technology": "space_warp",
+      "inputs": [
+        {
+          "item_id": "gravity_matrix",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "space_warper",
+          "amount": 8
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_steel": {
+      "id": "dsp_steel",
+      "source_id": "steel",
+      "name": "钢材",
+      "building_id": "dsp_arc_smelter",
+      "building_ids": [
+        "dsp_arc_smelter",
+        "dsp_plane_smelter"
+      ],
+      "duration": 3,
+      "required_source_technology": "high_efficiency_plasma_control",
+      "inputs": [
+        {
+          "item_id": "iron_ingot",
+          "amount": 3
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "steel",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_stone_brick": {
+      "id": "dsp_stone_brick",
+      "source_id": "stone_brick",
+      "name": "石材",
+      "building_id": "dsp_arc_smelter",
+      "building_ids": [
+        "dsp_arc_smelter",
+        "dsp_plane_smelter"
+      ],
+      "duration": 1,
+      "required_source_technology": "",
+      "inputs": [
+        {
+          "item_id": "stone",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "stone_brick",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_strange_matter": {
+      "id": "dsp_strange_matter",
+      "source_id": "strange_matter",
+      "name": "奇异物质",
+      "building_id": "dsp_miniature_particle_collider",
+      "building_ids": [
+        "dsp_miniature_particle_collider"
+      ],
+      "duration": 8,
+      "required_source_technology": "gravity_matrix",
+      "inputs": [
+        {
+          "item_id": "particle_container",
+          "amount": 2
+        },
+        {
+          "item_id": "iron_ingot",
+          "amount": 2
+        },
+        {
+          "item_id": "deuterium",
+          "amount": 10
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "strange_matter",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_structure_matrix": {
+      "id": "dsp_structure_matrix",
+      "source_id": "structure_matrix",
+      "name": "结构矩阵",
+      "building_id": "dsp_matrix_lab",
+      "building_ids": [
+        "dsp_matrix_lab"
+      ],
+      "duration": 8,
+      "required_source_technology": "structure_matrix",
+      "inputs": [
+        {
+          "item_id": "diamond",
+          "amount": 1
+        },
+        {
+          "item_id": "titanium_crystal",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "structure_matrix",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_sulfuric_acid": {
+      "id": "dsp_sulfuric_acid",
+      "source_id": "sulfuric_acid",
+      "name": "硫酸",
+      "building_id": "dsp_chemical_plant",
+      "building_ids": [
+        "dsp_chemical_plant",
+        "dsp_quantum_chemical_plant"
+      ],
+      "duration": 6,
+      "required_source_technology": "titanium_alloy",
+      "inputs": [
+        {
+          "item_id": "refined_oil",
+          "amount": 6
+        },
+        {
+          "item_id": "stone",
+          "amount": 8
+        },
+        {
+          "item_id": "water",
+          "amount": 4
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "sulfuric_acid",
+          "amount": 4
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_super_magnetic_ring": {
+      "id": "dsp_super_magnetic_ring",
+      "source_id": "super_magnetic_ring",
+      "name": "超级磁场环",
+      "building_id": "dsp_assembling_machine_mk1",
+      "building_ids": [
+        "dsp_assembling_machine_mk1",
+        "dsp_assembling_machine_mk2",
+        "dsp_assembling_machine_mk3"
+      ],
+      "duration": 3,
+      "required_source_technology": "miniature_particle_collider",
+      "inputs": [
+        {
+          "item_id": "electromagnetic_turbine",
+          "amount": 2
+        },
+        {
+          "item_id": "magnet",
+          "amount": 3
+        },
+        {
+          "item_id": "energetic_graphite",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "super_magnetic_ring",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_titanium_alloy": {
+      "id": "dsp_titanium_alloy",
+      "source_id": "titanium_alloy",
+      "name": "钛合金",
+      "building_id": "dsp_arc_smelter",
+      "building_ids": [
+        "dsp_arc_smelter",
+        "dsp_plane_smelter"
+      ],
+      "duration": 12,
+      "required_source_technology": "titanium_alloy",
+      "inputs": [
+        {
+          "item_id": "titanium_ingot",
+          "amount": 4
+        },
+        {
+          "item_id": "steel",
+          "amount": 4
+        },
+        {
+          "item_id": "sulfuric_acid",
+          "amount": 8
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "titanium_alloy",
+          "amount": 4
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_titanium_crystal": {
+      "id": "dsp_titanium_crystal",
+      "source_id": "titanium_crystal",
+      "name": "钛晶石",
+      "building_id": "dsp_assembling_machine_mk1",
+      "building_ids": [
+        "dsp_assembling_machine_mk1",
+        "dsp_assembling_machine_mk2",
+        "dsp_assembling_machine_mk3"
+      ],
+      "duration": 4,
+      "required_source_technology": "structure_matrix",
+      "inputs": [
+        {
+          "item_id": "titanium_ingot",
+          "amount": 3
+        },
+        {
+          "item_id": "organic_crystal",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "titanium_crystal",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_titanium_glass": {
+      "id": "dsp_titanium_glass",
+      "source_id": "titanium_glass",
+      "name": "钛化玻璃",
+      "building_id": "dsp_assembling_machine_mk1",
+      "building_ids": [
+        "dsp_assembling_machine_mk1",
+        "dsp_assembling_machine_mk2",
+        "dsp_assembling_machine_mk3"
+      ],
+      "duration": 5,
+      "required_source_technology": "quantum_chip",
+      "inputs": [
+        {
+          "item_id": "glass",
+          "amount": 2
+        },
+        {
+          "item_id": "titanium_ingot",
+          "amount": 2
+        },
+        {
+          "item_id": "water",
+          "amount": 2
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "titanium_glass",
+          "amount": 2
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_titanium_ingot": {
+      "id": "dsp_titanium_ingot",
+      "source_id": "titanium_ingot",
+      "name": "钛块",
+      "building_id": "dsp_arc_smelter",
+      "building_ids": [
+        "dsp_arc_smelter",
+        "dsp_plane_smelter"
+      ],
+      "duration": 2,
+      "required_source_technology": "high_strength_crystal",
+      "inputs": [
+        {
+          "item_id": "titanium_ore",
+          "amount": 2
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "titanium_ingot",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_universe_matrix": {
+      "id": "dsp_universe_matrix",
+      "source_id": "universe_matrix",
+      "name": "宇宙矩阵",
+      "building_id": "dsp_matrix_lab",
+      "building_ids": [
+        "dsp_matrix_lab"
+      ],
+      "duration": 15,
+      "required_source_technology": "universe_matrix",
+      "inputs": [
+        {
+          "item_id": "electromagnetic_matrix",
+          "amount": 1
+        },
+        {
+          "item_id": "energy_matrix",
+          "amount": 1
+        },
+        {
+          "item_id": "structure_matrix",
+          "amount": 1
+        },
+        {
+          "item_id": "information_matrix",
+          "amount": 1
+        },
+        {
+          "item_id": "gravity_matrix",
+          "amount": 1
+        },
+        {
+          "item_id": "antimatter",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "universe_matrix",
+          "amount": 1
+        }
+      ],
+      "operation": "production"
+    },
+    "dsp_xray_cracking": {
+      "id": "dsp_xray_cracking",
+      "source_id": "xray_cracking",
+      "name": "X 射线裂解",
+      "building_id": "dsp_oil_refinery",
+      "building_ids": [
+        "dsp_oil_refinery"
+      ],
+      "duration": 4,
+      "required_source_technology": "xray_cracking",
+      "inputs": [
+        {
+          "item_id": "refined_oil",
+          "amount": 2
+        },
+        {
+          "item_id": "hydrogen",
+          "amount": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item_id": "energetic_graphite",
+          "amount": 1
+        },
+        {
+          "item_id": "hydrogen",
+          "amount": 3
+        }
+      ],
+      "operation": "production"
+    }
+  },
+  "construction": {
+    "dsp_accumulator": {
+      "id": "dsp_accumulator",
+      "name": "蓄电器",
+      "output_amount": 1,
+      "required_source_technology": "energy_storage",
+      "costs": {
+        "iron_ingot": 6,
+        "magnetic_coil": 6,
+        "circuit_board": 4
+      }
+    },
+    "dsp_arc_smelter": {
+      "id": "dsp_arc_smelter",
+      "name": "电弧熔炉",
+      "output_amount": 1,
+      "required_source_technology": "",
+      "costs": {
+        "iron_ingot": 4,
+        "stone_brick": 2,
+        "circuit_board": 4,
+        "magnetic_coil": 2
+      }
+    },
+    "dsp_artificial_star": {
+      "id": "dsp_artificial_star",
+      "name": "人造恒星",
+      "output_amount": 1,
+      "required_source_technology": "artificial_star",
+      "costs": {
+        "titanium_alloy": 20,
+        "frame_material": 20,
+        "annihilation_constraint_sphere": 10,
+        "quantum_chip": 10
+      }
+    },
+    "dsp_assembling_machine_mk1": {
+      "id": "dsp_assembling_machine_mk1",
+      "name": "制造台 Mk.I",
+      "output_amount": 1,
+      "required_source_technology": "",
+      "costs": {
+        "iron_ingot": 4,
+        "gear": 8,
+        "circuit_board": 4
+      }
+    },
+    "dsp_assembling_machine_mk2": {
+      "id": "dsp_assembling_machine_mk2",
+      "name": "制造台 Mk.II",
+      "output_amount": 1,
+      "required_source_technology": "high_speed_assembling",
+      "costs": {
+        "steel": 8,
+        "gear": 8,
+        "circuit_board": 8,
+        "magnetic_coil": 4
+      }
+    },
+    "dsp_assembling_machine_mk3": {
+      "id": "dsp_assembling_machine_mk3",
+      "name": "制造台 Mk.III",
+      "output_amount": 1,
+      "required_source_technology": "quantum_printing",
+      "costs": {
+        "titanium_alloy": 8,
+        "particle_broadband": 8,
+        "quantum_chip": 4
+      }
+    },
+    "dsp_chemical_plant": {
+      "id": "dsp_chemical_plant",
+      "name": "化工厂",
+      "output_amount": 1,
+      "required_source_technology": "basic_chemical_engineering",
+      "costs": {
+        "steel": 8,
+        "stone_brick": 8,
+        "glass": 8,
+        "circuit_board": 4
+      }
+    },
+    "dsp_construction_center": {
+      "id": "dsp_construction_center",
+      "name": "建筑制造中心",
+      "output_amount": 1,
+      "required_source_technology": "construction_automation",
+      "costs": {
+        "steel": 5000,
+        "titanium_alloy": 5000,
+        "processor": 5000,
+        "particle_broadband": 5000
+      }
+    },
+    "dsp_conveyor_belt_mk1": {
+      "id": "dsp_conveyor_belt_mk1",
+      "name": "传送带 Mk.I",
+      "output_amount": 3,
+      "required_source_technology": "basic_logistics",
+      "costs": {
+        "iron_ingot": 2,
+        "gear": 1
+      }
+    },
+    "dsp_conveyor_belt_mk2": {
+      "id": "dsp_conveyor_belt_mk2",
+      "name": "传送带 Mk.II",
+      "output_amount": 3,
+      "required_source_technology": "high_speed_logistics",
+      "costs": {
+        "iron_ingot": 2,
+        "gear": 1,
+        "magnetic_coil": 2
+      }
+    },
+    "dsp_conveyor_belt_mk3": {
+      "id": "dsp_conveyor_belt_mk3",
+      "name": "传送带 Mk.III",
+      "output_amount": 3,
+      "required_source_technology": "super_magnetic_logistics",
+      "costs": {
+        "graphene": 2,
+        "electromagnetic_turbine": 2,
+        "super_magnetic_ring": 1
+      }
+    },
+    "dsp_em_rail_ejector": {
+      "id": "dsp_em_rail_ejector",
+      "name": "电磁轨道弹射器",
+      "output_amount": 1,
+      "required_source_technology": "dyson_swarm",
+      "costs": {
+        "steel": 20,
+        "gear": 20,
+        "processor": 5,
+        "super_magnetic_ring": 10
+      }
+    },
+    "dsp_energy_exchanger": {
+      "id": "dsp_energy_exchanger",
+      "name": "能量枢纽",
+      "output_amount": 1,
+      "required_source_technology": "energy_storage",
+      "costs": {
+        "steel": 40,
+        "titanium_alloy": 40,
+        "processor": 40,
+        "particle_container": 8
+      }
+    },
+    "dsp_fractionator": {
+      "id": "dsp_fractionator",
+      "name": "分馏塔",
+      "output_amount": 1,
+      "required_source_technology": "fractionation",
+      "costs": {
+        "steel": 8,
+        "stone_brick": 4,
+        "glass": 4,
+        "processor": 1
+      }
+    },
+    "dsp_galactic_material_exporter": {
+      "id": "dsp_galactic_material_exporter",
+      "name": "超大型物资出口",
+      "output_amount": 1,
+      "required_source_technology": "universe_matrix",
+      "costs": {
+        "universe_matrix": 1000,
+        "small_carrier_rocket": 500,
+        "frame_material": 1000,
+        "quantum_chip": 1000
+      }
+    },
+    "dsp_geothermal_power_station": {
+      "id": "dsp_geothermal_power_station",
+      "name": "地热发电站",
+      "output_amount": 1,
+      "required_source_technology": "geothermal_power",
+      "costs": {
+        "steel": 15,
+        "titanium_alloy": 8,
+        "processor": 4
+      }
+    },
+    "dsp_interstellar_logistics_station": {
+      "id": "dsp_interstellar_logistics_station",
+      "name": "星际物流站",
+      "output_amount": 1,
+      "required_source_technology": "interstellar_logistics",
+      "costs": {
+        "steel": 30,
+        "titanium_alloy": 40,
+        "processor": 20
+      }
+    },
+    "dsp_material_delivery_hub": {
+      "id": "dsp_material_delivery_hub",
+      "name": "物资配送枢纽",
+      "output_amount": 1,
+      "required_source_technology": "material_delivery_logistics",
+      "costs": {
+        "steel": 40,
+        "titanium_ingot": 20,
+        "processor": 10,
+        "electric_motor": 10
+      }
+    },
+    "dsp_matrix_lab": {
+      "id": "dsp_matrix_lab",
+      "name": "矩阵研究站",
+      "output_amount": 1,
+      "required_source_technology": "electromagnetic_matrix",
+      "costs": {
+        "iron_ingot": 8,
+        "glass": 4,
+        "circuit_board": 4,
+        "magnetic_coil": 4
+      }
+    },
+    "dsp_micro_black_hole_connector": {
+      "id": "dsp_micro_black_hole_connector",
+      "name": "微型黑洞连接装置",
+      "output_amount": 1,
+      "required_source_technology": "micro_black_hole_containment",
+      "costs": {
+        "universe_matrix": 12000,
+        "frame_material": 7500,
+        "quantum_chip": 6000,
+        "antimatter_fuel_rod": 4500
+      }
+    },
+    "dsp_mini_fusion_power_plant": {
+      "id": "dsp_mini_fusion_power_plant",
+      "name": "微型聚变发电站",
+      "output_amount": 1,
+      "required_source_technology": "fusion_power",
+      "costs": {
+        "titanium_alloy": 12,
+        "super_magnetic_ring": 10,
+        "carbon_nanotube": 8,
+        "processor": 4
+      }
+    },
+    "dsp_miniature_particle_collider": {
+      "id": "dsp_miniature_particle_collider",
+      "name": "微型粒子对撞机",
+      "output_amount": 1,
+      "required_source_technology": "miniature_particle_collider",
+      "costs": {
+        "titanium_alloy": 20,
+        "processor": 20,
+        "super_magnetic_ring": 20,
+        "graphene": 20
+      }
+    },
+    "dsp_mining_machine": {
+      "id": "dsp_mining_machine",
+      "name": "采矿机",
+      "output_amount": 1,
+      "required_source_technology": "",
+      "costs": {
+        "iron_ingot": 4,
+        "circuit_board": 2,
+        "magnetic_coil": 2,
+        "gear": 2
+      }
+    },
+    "dsp_oil_extractor": {
+      "id": "dsp_oil_extractor",
+      "name": "原油萃取站",
+      "output_amount": 1,
+      "required_source_technology": "high_efficiency_plasma_control",
+      "costs": {
+        "steel": 12,
+        "stone_brick": 12,
+        "circuit_board": 6,
+        "plasma_exciter": 4
+      }
+    },
+    "dsp_oil_refinery": {
+      "id": "dsp_oil_refinery",
+      "name": "原油精炼厂",
+      "output_amount": 1,
+      "required_source_technology": "high_efficiency_plasma_control",
+      "costs": {
+        "steel": 10,
+        "stone_brick": 10,
+        "circuit_board": 6,
+        "plasma_exciter": 6
+      }
+    },
+    "dsp_orbital_cargo_terminal": {
+      "id": "dsp_orbital_cargo_terminal",
+      "name": "轨道货运终端",
+      "output_amount": 1,
+      "required_source_technology": "universe_matrix",
+      "costs": {
+        "titanium_alloy": 500,
+        "frame_material": 200,
+        "quantum_chip": 200,
+        "processor": 500
+      }
+    },
+    "dsp_orbital_collector": {
+      "id": "dsp_orbital_collector",
+      "name": "轨道采集器",
+      "output_amount": 1,
+      "required_source_technology": "orbital_collection",
+      "costs": {
+        "titanium_alloy": 40,
+        "super_magnetic_ring": 20,
+        "graphene": 20
+      }
+    },
+    "dsp_plane_smelter": {
+      "id": "dsp_plane_smelter",
+      "name": "位面熔炉",
+      "output_amount": 1,
+      "required_source_technology": "plane_smelting",
+      "costs": {
+        "titanium_alloy": 15,
+        "processor": 8,
+        "super_magnetic_ring": 4,
+        "plane_filter": 4
+      }
+    },
+    "dsp_planetary_logistics_station": {
+      "id": "dsp_planetary_logistics_station",
+      "name": "行星物流站",
+      "output_amount": 1,
+      "required_source_technology": "planetary_logistics",
+      "costs": {
+        "steel": 20,
+        "titanium_ingot": 20,
+        "processor": 10
+      }
+    },
+    "dsp_quantum_chemical_plant": {
+      "id": "dsp_quantum_chemical_plant",
+      "name": "量子化工厂",
+      "output_amount": 1,
+      "required_source_technology": "quantum_chemical_engineering",
+      "costs": {
+        "titanium_alloy": 10,
+        "graphene": 20,
+        "processor": 10,
+        "plane_filter": 4
+      }
+    },
+    "dsp_ray_receiver": {
+      "id": "dsp_ray_receiver",
+      "name": "射线接收站",
+      "output_amount": 1,
+      "required_source_technology": "ray_receiver",
+      "costs": {
+        "steel": 20,
+        "high_purity_silicon": 20,
+        "photon_combiner": 10,
+        "processor": 5
+      }
+    },
+    "dsp_solar_panel": {
+      "id": "dsp_solar_panel",
+      "name": "太阳能板",
+      "output_amount": 1,
+      "required_source_technology": "solar_energy",
+      "costs": {
+        "copper_ingot": 10,
+        "high_purity_silicon": 10,
+        "circuit_board": 5
+      }
+    },
+    "dsp_space_station_construction_launcher": {
+      "id": "dsp_space_station_construction_launcher",
+      "name": "空间站施工发射平台",
+      "output_amount": 1,
+      "required_source_technology": "system_space_station_engineering",
+      "costs": {
+        "titanium_alloy": 2000,
+        "frame_material": 1000,
+        "quantum_chip": 1000,
+        "processor": 2000
+      }
+    },
+    "dsp_splitter_4way": {
+      "id": "dsp_splitter_4way",
+      "name": "四向分流器",
+      "output_amount": 1,
+      "required_source_technology": "basic_logistics",
+      "costs": {
+        "iron_ingot": 3,
+        "gear": 2,
+        "circuit_board": 1
+      }
+    },
+    "dsp_spray_coater": {
+      "id": "dsp_spray_coater",
+      "name": "喷涂机",
+      "output_amount": 1,
+      "required_source_technology": "proliferator_1",
+      "costs": {
+        "steel": 4,
+        "circuit_board": 4,
+        "plasma_exciter": 2
+      }
+    },
+    "dsp_storage_mk1": {
+      "id": "dsp_storage_mk1",
+      "name": "小型储物仓",
+      "output_amount": 1,
+      "required_source_technology": "basic_logistics",
+      "costs": {
+        "iron_ingot": 4,
+        "stone_brick": 4
+      }
+    },
+    "dsp_storage_tank": {
+      "id": "dsp_storage_tank",
+      "name": "储液罐",
+      "output_amount": 1,
+      "required_source_technology": "high_efficiency_plasma_control",
+      "costs": {
+        "iron_ingot": 8,
+        "stone_brick": 4,
+        "glass": 4
+      }
+    },
+    "dsp_thermal_power_plant": {
+      "id": "dsp_thermal_power_plant",
+      "name": "火力发电厂",
+      "output_amount": 1,
+      "required_source_technology": "thermal_power",
+      "costs": {
+        "iron_ingot": 10,
+        "stone_brick": 4,
+        "gear": 4,
+        "magnetic_coil": 4
+      }
+    },
+    "dsp_time_warp_device": {
+      "id": "dsp_time_warp_device",
+      "name": "时间扭曲装置",
+      "output_amount": 1,
+      "required_source_technology": "time_warp_engineering",
+      "costs": {
+        "universe_matrix": 60000,
+        "frame_material": 36000,
+        "quantum_chip": 30000,
+        "antimatter_fuel_rod": 24000
+      }
+    },
+    "dsp_vertical_launching_silo": {
+      "id": "dsp_vertical_launching_silo",
+      "name": "垂直发射井",
+      "output_amount": 1,
+      "required_source_technology": "vertical_launching_silo",
+      "costs": {
+        "steel": 80,
+        "titanium_alloy": 80,
+        "frame_material": 30,
+        "graviton_lens": 20,
+        "quantum_chip": 10
+      }
+    },
+    "dsp_water_pump": {
+      "id": "dsp_water_pump",
+      "name": "抽水站",
+      "output_amount": 1,
+      "required_source_technology": "basic_chemical_engineering",
+      "costs": {
+        "iron_ingot": 4,
+        "stone_brick": 8,
+        "circuit_board": 2,
+        "magnetic_coil": 2
+      }
+    },
+    "dsp_wind_turbine": {
+      "id": "dsp_wind_turbine",
+      "name": "风力涡轮机",
+      "output_amount": 1,
+      "required_source_technology": "electromagnetism",
+      "costs": {
+        "iron_ingot": 6,
+        "gear": 1,
+        "magnetic_coil": 3
+      }
+    }
+  },
+  "proliferators": {
+    "proliferator_mk1": {
+      "id": "proliferator_mk1",
+      "tier": 1,
+      "spray_points": 12,
+      "extra_bonus": 0.125,
+      "speed_bonus": 0.25,
+      "power_multiplier": 1.3,
+      "required_source_technology": "proliferator_1"
+    },
+    "proliferator_mk2": {
+      "id": "proliferator_mk2",
+      "tier": 2,
+      "spray_points": 24,
+      "extra_bonus": 0.2,
+      "speed_bonus": 0.5,
+      "power_multiplier": 1.7,
+      "required_source_technology": "proliferator_2"
+    },
+    "proliferator_mk3": {
+      "id": "proliferator_mk3",
+      "tier": 3,
+      "spray_points": 60,
+      "extra_bonus": 0.25,
+      "speed_bonus": 1,
+      "power_multiplier": 2.5,
+      "required_source_technology": "proliferator_3"
+    }
+  },
+  "technologies": {
+    "dsp_antimatter": {
+      "id": "dsp_antimatter",
+      "source_id": "antimatter",
+      "name": "质能储存",
+      "description": "在粒子对撞机中拆分临界光子，并将反物质封装为高密度可调度燃料。",
+      "tier": "dyson",
+      "cost": {
+        "electromagnetic_matrix": 80,
+        "energy_matrix": 80,
+        "structure_matrix": 80,
+        "information_matrix": 80,
+        "gravity_matrix": 80
+      },
+      "duration": 1200,
+      "prerequisites": [
+        "dsp_ray_receiver"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "recipe",
+          "id": "dsp_annihilation_constraint_sphere"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_antimatter"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_antimatter_fuel_rod"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_artificial_star": {
+      "id": "dsp_artificial_star",
+      "source_id": "artificial_star",
+      "name": "人造恒星",
+      "description": "在强约束场中持续湮灭反物质燃料，将终局燃料链转化为超高功率电源。",
+      "tier": "dyson",
+      "cost": {
+        "electromagnetic_matrix": 100,
+        "energy_matrix": 100,
+        "structure_matrix": 100,
+        "information_matrix": 100,
+        "gravity_matrix": 100
+      },
+      "duration": 1500,
+      "prerequisites": [
+        "dsp_antimatter",
+        "dsp_fusion_power"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_artificial_star"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_basic_chemical_engineering": {
+      "id": "dsp_basic_chemical_engineering",
+      "source_id": "basic_chemical_engineering",
+      "name": "基础化工",
+      "description": "建立水资源输送与高分子反应设备，开始生产塑料。",
+      "tier": "planetary",
+      "cost": {
+        "electromagnetic_matrix": 10,
+        "energy_matrix": 10
+      },
+      "duration": 60,
+      "prerequisites": [
+        "dsp_energy_matrix"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_chemical_plant"
+        },
+        {
+          "kind": "building",
+          "id": "dsp_water_pump"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_plastic"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_basic_logistics": {
+      "id": "dsp_basic_logistics",
+      "source_id": "basic_logistics",
+      "name": "基础物流系统",
+      "description": "建立可持续扩建的标准化物料运输线路。",
+      "tier": "planetary",
+      "cost": {
+        "electromagnetic_matrix": 8
+      },
+      "duration": 24,
+      "prerequisites": [
+        "dsp_electromagnetism"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_splitter_4way"
+        },
+        {
+          "kind": "building",
+          "id": "dsp_storage_mk1"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_electric_motor"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_construction_automation": {
+      "id": "dsp_construction_automation",
+      "source_id": "construction_automation",
+      "name": "巨构建筑制造",
+      "description": "建立巨构级建筑制造中心，按玩家设定的施工库存目标自动取料并持续补足。",
+      "tier": "interstellar",
+      "cost": {
+        "electromagnetic_matrix": 100,
+        "energy_matrix": 100,
+        "structure_matrix": 100,
+        "information_matrix": 100
+      },
+      "duration": 1200,
+      "prerequisites": [
+        "dsp_information_matrix",
+        "dsp_high_speed_assembling"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_construction_center"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_dyson_sphere_program": {
+      "id": "dsp_dyson_sphere_program",
+      "source_id": "dyson_sphere_program",
+      "name": "戴森球计划",
+      "description": "以框架材料和戴森球组件建立可永久存在的恒星级能源结构。",
+      "tier": "dyson",
+      "cost": {
+        "electromagnetic_matrix": 100,
+        "energy_matrix": 100,
+        "structure_matrix": 100,
+        "information_matrix": 100,
+        "gravity_matrix": 100,
+        "universe_matrix": 100
+      },
+      "duration": 1800,
+      "prerequisites": [
+        "dsp_universe_matrix"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "recipe",
+          "id": "dsp_dyson_sphere_component"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_frame_material"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_dyson_swarm": {
+      "id": "dsp_dyson_swarm",
+      "source_id": "dyson_swarm",
+      "name": "戴森云",
+      "description": "以电磁轨道弹射器将太阳帆持续送入恒星轨道，建立可扩张但会衰减的戴森云。",
+      "tier": "interstellar",
+      "cost": {
+        "electromagnetic_matrix": 50,
+        "energy_matrix": 50,
+        "structure_matrix": 50,
+        "information_matrix": 50,
+        "gravity_matrix": 50
+      },
+      "duration": 750,
+      "prerequisites": [
+        "dsp_gravity_matrix"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_em_rail_ejector"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_photon_combiner"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_solar_sail"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_solar_sail_launch"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_electromagnetic_matrix": {
+      "id": "dsp_electromagnetic_matrix",
+      "source_id": "electromagnetic_matrix",
+      "name": "电磁矩阵",
+      "description": "建立以电磁矩阵承载研究数据的基础科研体系。",
+      "tier": "planetary",
+      "cost": {
+        "electromagnetic_matrix": 3
+      },
+      "duration": 9,
+      "prerequisites": [],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_matrix_lab"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_electromagnetism": {
+      "id": "dsp_electromagnetism",
+      "source_id": "electromagnetism",
+      "name": "电磁学",
+      "description": "掌握稳定电磁场与基础风力发电设备的批量制造。",
+      "tier": "planetary",
+      "cost": {
+        "electromagnetic_matrix": 5
+      },
+      "duration": 15,
+      "prerequisites": [
+        "dsp_electromagnetic_matrix"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_wind_turbine"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_energy_matrix": {
+      "id": "dsp_energy_matrix",
+      "source_id": "energy_matrix",
+      "name": "能量矩阵",
+      "description": "把氢的能级结构和高能石墨编码为第二种科学矩阵。",
+      "tier": "planetary",
+      "cost": {
+        "electromagnetic_matrix": 15
+      },
+      "duration": 45,
+      "prerequisites": [
+        "dsp_high_efficiency_plasma_control"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "recipe",
+          "id": "dsp_energetic_graphite"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_energy_matrix"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_energy_storage": {
+      "id": "dsp_energy_storage",
+      "source_id": "energy_storage",
+      "name": "能量储存",
+      "description": "把电网富余能量封装进可运输蓄电器，并通过能量枢纽在行星间调配电力。",
+      "tier": "planetary",
+      "cost": {
+        "electromagnetic_matrix": 15,
+        "energy_matrix": 15
+      },
+      "duration": 90,
+      "prerequisites": [
+        "dsp_energy_matrix",
+        "dsp_basic_logistics"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_accumulator"
+        },
+        {
+          "kind": "building",
+          "id": "dsp_energy_exchanger"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_accumulator"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_accumulator_charge"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_accumulator_discharge"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_fractionation": {
+      "id": "dsp_fractionation",
+      "source_id": "fractionation",
+      "name": "流体分馏",
+      "description": "让氢在闭环物流中反复通过分馏塔，稳定分离氘并制造便于运输的氢燃料棒。",
+      "tier": "planetary",
+      "cost": {
+        "electromagnetic_matrix": 15,
+        "energy_matrix": 15
+      },
+      "duration": 90,
+      "prerequisites": [
+        "dsp_energy_matrix",
+        "dsp_high_efficiency_plasma_control"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_fractionator"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_deuterium_fractionation"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_hydrogen_fuel_rod"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_fusion_power": {
+      "id": "dsp_fusion_power",
+      "source_id": "fusion_power",
+      "name": "可控核聚变",
+      "description": "以氘核燃料棒维持稳定聚变反应，为中后期工业提供高密度可调度电力。",
+      "tier": "interstellar",
+      "cost": {
+        "electromagnetic_matrix": 40,
+        "energy_matrix": 40,
+        "structure_matrix": 40,
+        "information_matrix": 40
+      },
+      "duration": 480,
+      "prerequisites": [
+        "dsp_miniature_particle_collider",
+        "dsp_energy_storage"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_mini_fusion_power_plant"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_geothermal_power": {
+      "id": "dsp_geothermal_power",
+      "source_id": "geothermal_power",
+      "name": "地热发电",
+      "description": "利用熔岩行星的高温地幔建立不受日照影响的稳定基础电源。",
+      "tier": "planetary",
+      "cost": {
+        "electromagnetic_matrix": 18,
+        "energy_matrix": 18
+      },
+      "duration": 108,
+      "prerequisites": [
+        "dsp_energy_storage",
+        "dsp_high_efficiency_plasma_control"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_geothermal_power_station"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_gravity_matrix": {
+      "id": "dsp_gravity_matrix",
+      "source_id": "gravity_matrix",
+      "name": "引力矩阵",
+      "description": "将奇异物质、引力透镜与量子芯片组合为第五阶段科研矩阵。",
+      "tier": "interstellar",
+      "cost": {
+        "electromagnetic_matrix": 40,
+        "energy_matrix": 40,
+        "structure_matrix": 40,
+        "information_matrix": 40
+      },
+      "duration": 480,
+      "prerequisites": [
+        "dsp_miniature_particle_collider",
+        "dsp_quantum_chip"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "recipe",
+          "id": "dsp_graviton_lens"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_gravity_matrix"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_strange_matter"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_high_efficiency_plasma_control": {
+      "id": "dsp_high_efficiency_plasma_control",
+      "source_id": "high_efficiency_plasma_control",
+      "name": "高效电浆控制",
+      "description": "为原油萃取、等离子精炼与能源矩阵研究建立控制基础。",
+      "tier": "planetary",
+      "cost": {
+        "electromagnetic_matrix": 12
+      },
+      "duration": 36,
+      "prerequisites": [
+        "dsp_basic_logistics",
+        "dsp_thermal_power"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_oil_extractor"
+        },
+        {
+          "kind": "building",
+          "id": "dsp_oil_refinery"
+        },
+        {
+          "kind": "building",
+          "id": "dsp_storage_tank"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_plasma_exciter"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_plasma_refining"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_prism"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_steel"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_high_speed_assembling": {
+      "id": "dsp_high_speed_assembling",
+      "source_id": "high_speed_assembling",
+      "name": "高速装配工艺",
+      "description": "改进装配设备的定位与驱动机构，让生产节点在原有配方上获得更高吞吐。",
+      "tier": "planetary",
+      "cost": {
+        "electromagnetic_matrix": 15,
+        "energy_matrix": 15
+      },
+      "duration": 90,
+      "prerequisites": [
+        "dsp_energy_matrix"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_assembling_machine_mk2"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_high_speed_logistics": {
+      "id": "dsp_high_speed_logistics",
+      "source_id": "high_speed_logistics",
+      "name": "高速物流系统",
+      "description": "以电磁涡轮提高运输线路驱动频率，在相同线路数量下提升物流上限。",
+      "tier": "planetary",
+      "cost": {
+        "electromagnetic_matrix": 15,
+        "energy_matrix": 15
+      },
+      "duration": 90,
+      "prerequisites": [
+        "dsp_energy_matrix",
+        "dsp_basic_logistics"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "recipe",
+          "id": "dsp_electromagnetic_turbine"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_high_strength_crystal": {
+      "id": "dsp_high_strength_crystal",
+      "source_id": "high_strength_crystal",
+      "name": "高强度晶体",
+      "description": "建立硅、钛与碳晶体的高温精炼流程，为结构材料提供基础。",
+      "tier": "planetary",
+      "cost": {
+        "electromagnetic_matrix": 10,
+        "energy_matrix": 10
+      },
+      "duration": 60,
+      "prerequisites": [
+        "dsp_energy_matrix"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "recipe",
+          "id": "dsp_diamond"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_high_purity_silicon"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_silicon_ore_from_stone"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_titanium_ingot"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_information_matrix": {
+      "id": "dsp_information_matrix",
+      "source_id": "information_matrix",
+      "name": "信息矩阵",
+      "description": "将粒子宽带与处理器编码为高密度信息模型，建立第四阶段科研矩阵。",
+      "tier": "interstellar",
+      "cost": {
+        "electromagnetic_matrix": 30,
+        "energy_matrix": 30,
+        "structure_matrix": 30
+      },
+      "duration": 270,
+      "prerequisites": [
+        "dsp_interstellar_logistics",
+        "dsp_nanomaterials"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "recipe",
+          "id": "dsp_information_matrix"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_particle_broadband"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_interstellar_logistics": {
+      "id": "dsp_interstellar_logistics",
+      "source_id": "interstellar_logistics",
+      "name": "星际物流系统",
+      "description": "建立恒星系内导航与运输协议，开放母恒星系后两颗行星并解锁跨行星物流设施。",
+      "tier": "planetary",
+      "cost": {
+        "electromagnetic_matrix": 20,
+        "energy_matrix": 20
+      },
+      "duration": 120,
+      "prerequisites": [
+        "dsp_energy_matrix",
+        "dsp_high_speed_logistics"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_interstellar_logistics_station"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_logistics_vessel"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_material_delivery_logistics": {
+      "id": "dsp_material_delivery_logistics",
+      "source_id": "material_delivery_logistics",
+      "name": "物资直送物流",
+      "description": "将三路传送带输入直接写入所在行星的物资托盘，减少重复搬运与仓储操作。",
+      "tier": "planetary",
+      "cost": {
+        "electromagnetic_matrix": 30,
+        "energy_matrix": 30,
+        "structure_matrix": 30
+      },
+      "duration": 270,
+      "prerequisites": [
+        "dsp_structure_matrix",
+        "dsp_basic_logistics"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_material_delivery_hub"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_micro_black_hole_containment": {
+      "id": "dsp_micro_black_hole_containment",
+      "source_id": "micro_black_hole_containment",
+      "name": "微型黑洞约束工程",
+      "description": "建立可控微型事件视界，以三个独立接口永久处理任意传送带物资。",
+      "tier": "dyson",
+      "cost": {
+        "electromagnetic_matrix": 500,
+        "energy_matrix": 500,
+        "structure_matrix": 500,
+        "information_matrix": 500,
+        "gravity_matrix": 500,
+        "universe_matrix": 500
+      },
+      "duration": 9000,
+      "prerequisites": [
+        "dsp_universe_matrix"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_micro_black_hole_connector"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_miniature_particle_collider": {
+      "id": "dsp_miniature_particle_collider",
+      "source_id": "miniature_particle_collider",
+      "name": "微型粒子对撞机",
+      "description": "以强磁场约束高能粒子，实现氘富集并为奇异物质生产建立设备基础。",
+      "tier": "interstellar",
+      "cost": {
+        "electromagnetic_matrix": 30,
+        "energy_matrix": 30,
+        "structure_matrix": 30,
+        "information_matrix": 30
+      },
+      "duration": 360,
+      "prerequisites": [
+        "dsp_information_matrix"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_miniature_particle_collider"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_deuterium"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_deuteron_fuel_rod"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_particle_container"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_super_magnetic_ring"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_nanomaterials": {
+      "id": "dsp_nanomaterials",
+      "source_id": "nanomaterials",
+      "name": "纳米材料",
+      "description": "把碳与硅材料推进到纳米尺度，为高密度信息载体建立材料基础。",
+      "tier": "interstellar",
+      "cost": {
+        "electromagnetic_matrix": 20,
+        "energy_matrix": 20,
+        "structure_matrix": 20
+      },
+      "duration": 180,
+      "prerequisites": [
+        "dsp_titanium_alloy",
+        "dsp_processor"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "recipe",
+          "id": "dsp_carbon_nanotube"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_crystal_silicon"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_graphene"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_orbital_collection": {
+      "id": "dsp_orbital_collection",
+      "source_id": "orbital_collection",
+      "name": "气态行星开采",
+      "description": "将采集与星际供应整合到气态巨星轨道，持续获取氢和少量氘。",
+      "tier": "interstellar",
+      "cost": {
+        "electromagnetic_matrix": 25,
+        "energy_matrix": 25,
+        "structure_matrix": 25
+      },
+      "duration": 225,
+      "prerequisites": [
+        "dsp_interstellar_logistics",
+        "dsp_nanomaterials"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_orbital_collector"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_plane_smelting": {
+      "id": "dsp_plane_smelting",
+      "source_id": "plane_smelting",
+      "name": "位面冶金",
+      "description": "利用强磁约束与位面过滤结构重构熔炼腔体，在相同节点规模下实现双倍冶金吞吐。",
+      "tier": "interstellar",
+      "cost": {
+        "electromagnetic_matrix": 30,
+        "energy_matrix": 30,
+        "structure_matrix": 30,
+        "information_matrix": 30
+      },
+      "duration": 360,
+      "prerequisites": [
+        "dsp_miniature_particle_collider",
+        "dsp_quantum_chip",
+        "dsp_titanium_alloy"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_plane_smelter"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_planetary_logistics": {
+      "id": "dsp_planetary_logistics",
+      "source_id": "planetary_logistics",
+      "name": "行星物流系统",
+      "description": "以物流运输机连接同一行星内的供需站，跨越画布完成无线物资调度。",
+      "tier": "planetary",
+      "cost": {
+        "electromagnetic_matrix": 10,
+        "energy_matrix": 10,
+        "structure_matrix": 10
+      },
+      "duration": 90,
+      "prerequisites": [
+        "dsp_structure_matrix",
+        "dsp_processor",
+        "dsp_high_speed_logistics"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_planetary_logistics_station"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_logistics_drone"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_polymer_chemistry": {
+      "id": "dsp_polymer_chemistry",
+      "source_id": "polymer_chemistry",
+      "name": "高分子化工",
+      "description": "把塑料、精炼油与水重组为稳定的有机晶体。",
+      "tier": "planetary",
+      "cost": {
+        "electromagnetic_matrix": 15,
+        "energy_matrix": 15
+      },
+      "duration": 90,
+      "prerequisites": [
+        "dsp_basic_chemical_engineering",
+        "dsp_xray_cracking"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "recipe",
+          "id": "dsp_organic_crystal"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_processor": {
+      "id": "dsp_processor",
+      "source_id": "processor",
+      "name": "处理器",
+      "description": "以高纯硅制造微晶元件和处理器，为远程物流调度建立计算基础。",
+      "tier": "planetary",
+      "cost": {
+        "electromagnetic_matrix": 20,
+        "energy_matrix": 20,
+        "structure_matrix": 10
+      },
+      "duration": 150,
+      "prerequisites": [
+        "dsp_structure_matrix"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "recipe",
+          "id": "dsp_microcrystalline_component"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_processor"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_proliferator_1": {
+      "id": "dsp_proliferator_1",
+      "source_id": "proliferator_1",
+      "name": "增产剂 Mk.I",
+      "description": "将煤加工为可控喷涂介质，并建立生产节点的内联喷涂模块。",
+      "tier": "planetary",
+      "cost": {
+        "electromagnetic_matrix": 20,
+        "energy_matrix": 20
+      },
+      "duration": 120,
+      "prerequisites": [
+        "dsp_energy_matrix",
+        "dsp_high_speed_assembling",
+        "dsp_high_speed_logistics"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_spray_coater"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_proliferator_mk1"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_proliferator_2": {
+      "id": "dsp_proliferator_2",
+      "source_id": "proliferator_2",
+      "name": "增产剂 Mk.II",
+      "description": "利用金刚石稳定喷涂颗粒，在更高耗电下提升增产或加速收益。",
+      "tier": "planetary",
+      "cost": {
+        "electromagnetic_matrix": 25,
+        "energy_matrix": 25,
+        "structure_matrix": 20
+      },
+      "duration": 210,
+      "prerequisites": [
+        "dsp_structure_matrix",
+        "dsp_high_strength_crystal",
+        "dsp_proliferator_1"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "recipe",
+          "id": "dsp_proliferator_mk2"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_proliferator_3": {
+      "id": "dsp_proliferator_3",
+      "source_id": "proliferator_3",
+      "name": "增产剂 Mk.III",
+      "description": "以碳纳米管维持高密度喷涂结构，获得最高增产与生产加速效果。",
+      "tier": "interstellar",
+      "cost": {
+        "electromagnetic_matrix": 30,
+        "energy_matrix": 30,
+        "structure_matrix": 30,
+        "information_matrix": 30
+      },
+      "duration": 360,
+      "prerequisites": [
+        "dsp_information_matrix",
+        "dsp_nanomaterials",
+        "dsp_proliferator_2"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "recipe",
+          "id": "dsp_proliferator_mk3"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_quantum_chemical_engineering": {
+      "id": "dsp_quantum_chemical_engineering",
+      "source_id": "quantum_chemical_engineering",
+      "name": "量子化工",
+      "description": "以量子芯片控制高压反应腔，将全部化工配方速度提升到普通化工厂的两倍。",
+      "tier": "interstellar",
+      "cost": {
+        "electromagnetic_matrix": 50,
+        "energy_matrix": 50,
+        "structure_matrix": 50,
+        "information_matrix": 50,
+        "gravity_matrix": 50
+      },
+      "duration": 750,
+      "prerequisites": [
+        "dsp_gravity_matrix",
+        "dsp_rare_resource_utilization"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_quantum_chemical_plant"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_quantum_chip": {
+      "id": "dsp_quantum_chip",
+      "source_id": "quantum_chip",
+      "name": "量子芯片",
+      "description": "利用卡西米尔晶体和位面过滤器构建高密度量子运算核心。",
+      "tier": "interstellar",
+      "cost": {
+        "electromagnetic_matrix": 30,
+        "energy_matrix": 30,
+        "structure_matrix": 30,
+        "information_matrix": 30
+      },
+      "duration": 360,
+      "prerequisites": [
+        "dsp_information_matrix",
+        "dsp_nanomaterials"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "recipe",
+          "id": "dsp_casimir_crystal"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_plane_filter"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_quantum_chip"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_titanium_glass"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_quantum_printing": {
+      "id": "dsp_quantum_printing",
+      "source_id": "quantum_printing",
+      "name": "量子打印技术",
+      "description": "用量子芯片和粒子宽带控制精密装配过程，进一步压缩高阶物品生产周期。",
+      "tier": "interstellar",
+      "cost": {
+        "electromagnetic_matrix": 30,
+        "energy_matrix": 30,
+        "structure_matrix": 30,
+        "information_matrix": 30,
+        "gravity_matrix": 30
+      },
+      "duration": 450,
+      "prerequisites": [
+        "dsp_gravity_matrix",
+        "dsp_high_speed_assembling"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_assembling_machine_mk3"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_rare_resource_utilization": {
+      "id": "dsp_rare_resource_utilization",
+      "source_id": "rare_resource_utilization",
+      "name": "稀有资源利用",
+      "description": "识别稀有矿物的天然微观结构，以替代配方显著缩短六条高阶材料生产链。",
+      "tier": "interstellar",
+      "cost": {
+        "electromagnetic_matrix": 35,
+        "energy_matrix": 35,
+        "structure_matrix": 35,
+        "information_matrix": 35
+      },
+      "duration": 420,
+      "prerequisites": [
+        "dsp_quantum_chip",
+        "dsp_interstellar_logistics",
+        "dsp_nanomaterials"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "recipe",
+          "id": "dsp_carbon_nanotube_from_spiniform"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_casimir_crystal_advanced"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_crystal_silicon_from_fractal"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_diamond_from_kimberlite"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_graphene_from_fire_ice"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_particle_container_from_unipolar"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_photon_combiner_from_grating"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_ray_receiver": {
+      "id": "dsp_ray_receiver",
+      "source_id": "ray_receiver",
+      "name": "射线接收站",
+      "description": "跨行星共享戴森云输出，并在直接发电和临界光子生成之间分配恒星能。",
+      "tier": "interstellar",
+      "cost": {
+        "electromagnetic_matrix": 60,
+        "energy_matrix": 60,
+        "structure_matrix": 60,
+        "information_matrix": 60,
+        "gravity_matrix": 60
+      },
+      "duration": 900,
+      "prerequisites": [
+        "dsp_dyson_swarm"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_ray_receiver"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_critical_photon"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_ray_power"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_reforming_refine": {
+      "id": "dsp_reforming_refine",
+      "source_id": "reforming_refine",
+      "name": "重整精炼",
+      "description": "消耗 2 份精炼油、1 份煤和 1 份氢，重整产出 3 份精炼油，每轮额外获得 1 份精炼油。",
+      "tier": "planetary",
+      "cost": {
+        "electromagnetic_matrix": 15,
+        "energy_matrix": 15
+      },
+      "duration": 90,
+      "prerequisites": [
+        "dsp_xray_cracking",
+        "dsp_basic_chemical_engineering"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "recipe",
+          "id": "dsp_reforming_refine"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_solar_energy": {
+      "id": "dsp_solar_energy",
+      "source_id": "solar_energy",
+      "name": "太阳能收集",
+      "description": "将高纯硅光伏阵列接入行星电网，建立无需燃料的日照发电能力。",
+      "tier": "planetary",
+      "cost": {
+        "electromagnetic_matrix": 8
+      },
+      "duration": 24,
+      "prerequisites": [
+        "dsp_electromagnetism"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_solar_panel"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_space_warp": {
+      "id": "dsp_space_warp",
+      "source_id": "space_warp",
+      "name": "空间翘曲",
+      "description": "以引力透镜折叠航线距离，为跨恒星物流运输船提供曲率航行能力。",
+      "tier": "interstellar",
+      "cost": {
+        "electromagnetic_matrix": 30,
+        "energy_matrix": 30,
+        "structure_matrix": 30,
+        "information_matrix": 30,
+        "gravity_matrix": 30
+      },
+      "duration": 450,
+      "prerequisites": [
+        "dsp_gravity_matrix",
+        "dsp_interstellar_logistics"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "recipe",
+          "id": "dsp_space_warper"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_space_warper_from_gravity_matrix"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_structure_matrix": {
+      "id": "dsp_structure_matrix",
+      "source_id": "structure_matrix",
+      "name": "结构矩阵",
+      "description": "以钛晶石和金刚石编码物质结构，建立第三阶段科研矩阵。",
+      "tier": "planetary",
+      "cost": {
+        "electromagnetic_matrix": 20,
+        "energy_matrix": 20
+      },
+      "duration": 120,
+      "prerequisites": [
+        "dsp_high_strength_crystal",
+        "dsp_polymer_chemistry"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "recipe",
+          "id": "dsp_structure_matrix"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_titanium_crystal"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_super_magnetic_logistics": {
+      "id": "dsp_super_magnetic_logistics",
+      "source_id": "super_magnetic_logistics",
+      "name": "超级磁场物流",
+      "description": "以超级磁场环稳定高速运输线路，使单线路吞吐提升至基础传送带的五倍。",
+      "tier": "interstellar",
+      "cost": {
+        "electromagnetic_matrix": 30,
+        "energy_matrix": 30,
+        "structure_matrix": 30,
+        "information_matrix": 30,
+        "gravity_matrix": 30
+      },
+      "duration": 450,
+      "prerequisites": [
+        "dsp_gravity_matrix",
+        "dsp_high_speed_logistics"
+      ],
+      "effects": {},
+      "unlocks": [],
+      "source_research_bridge": true
+    },
+    "dsp_system_space_station_engineering": {
+      "id": "dsp_system_space_station_engineering",
+      "source_id": "system_space_station_engineering",
+      "name": "恒星系空间站工程",
+      "description": "解锁每个已探索恒星系独立建设一座联合空间站的施工工地。",
+      "tier": "dyson",
+      "cost": {
+        "universe_matrix": 1000000
+      },
+      "duration": 3000000,
+      "prerequisites": [
+        "dsp_universe_matrix",
+        "dsp_dyson_sphere_program",
+        "dsp_vertical_launching_silo"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_space_station_construction_launcher"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_thermal_power": {
+      "id": "dsp_thermal_power",
+      "source_id": "thermal_power",
+      "name": "火力发电",
+      "description": "把煤与化工燃料转换为可调度电力，为高耗能工业提供稳定能源。",
+      "tier": "planetary",
+      "cost": {
+        "electromagnetic_matrix": 8
+      },
+      "duration": 24,
+      "prerequisites": [
+        "dsp_electromagnetism"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_thermal_power_plant"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_time_warp_engineering": {
+      "id": "dsp_time_warp_engineering",
+      "source_id": "time_warp_engineering",
+      "name": "时间扭曲工程",
+      "description": "以指数级电力维持全局时间加速，同时保持离线收益和活动时钟使用真实时间。",
+      "tier": "dyson",
+      "cost": {
+        "electromagnetic_matrix": 1000,
+        "energy_matrix": 1000,
+        "structure_matrix": 1000,
+        "information_matrix": 1000,
+        "gravity_matrix": 1000,
+        "universe_matrix": 1000
+      },
+      "duration": 18000,
+      "prerequisites": [
+        "dsp_universe_matrix",
+        "dsp_artificial_star"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_time_warp_device"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_titanium_alloy": {
+      "id": "dsp_titanium_alloy",
+      "source_id": "titanium_alloy",
+      "name": "钛合金",
+      "description": "利用硫酸改善钛与钢材的晶格结构，制造可承受星际航行环境的结构材料。",
+      "tier": "planetary",
+      "cost": {
+        "electromagnetic_matrix": 20,
+        "energy_matrix": 20,
+        "structure_matrix": 10
+      },
+      "duration": 150,
+      "prerequisites": [
+        "dsp_structure_matrix"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "recipe",
+          "id": "dsp_sulfuric_acid"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_titanium_alloy"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_universe_matrix": {
+      "id": "dsp_universe_matrix",
+      "source_id": "universe_matrix",
+      "name": "宇宙矩阵",
+      "description": "把五色矩阵的研究数据与反物质统一编码，形成最终阶段的白色科研矩阵。",
+      "tier": "dyson",
+      "cost": {
+        "electromagnetic_matrix": 100,
+        "energy_matrix": 100,
+        "structure_matrix": 100,
+        "information_matrix": 100,
+        "gravity_matrix": 100
+      },
+      "duration": 1500,
+      "prerequisites": [
+        "dsp_antimatter"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_galactic_material_exporter"
+        },
+        {
+          "kind": "building",
+          "id": "dsp_orbital_cargo_terminal"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_universe_matrix"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_vertical_launching_silo": {
+      "id": "dsp_vertical_launching_silo",
+      "source_id": "vertical_launching_silo",
+      "name": "垂直发射井",
+      "description": "制造小型运载火箭并通过高功率垂直发射井建设戴森球结构节点。",
+      "tier": "dyson",
+      "cost": {
+        "electromagnetic_matrix": 120,
+        "energy_matrix": 120,
+        "structure_matrix": 120,
+        "information_matrix": 120,
+        "gravity_matrix": 120,
+        "universe_matrix": 120
+      },
+      "duration": 2160,
+      "prerequisites": [
+        "dsp_dyson_sphere_program"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_vertical_launching_silo"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_carrier_rocket_launch"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_small_carrier_rocket"
+        }
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_xray_cracking": {
+      "id": "dsp_xray_cracking",
+      "source_id": "xray_cracking",
+      "name": "X 射线裂解",
+      "description": "利用高能光子裂解精炼油，重新分配氢与碳材料产出。",
+      "tier": "planetary",
+      "cost": {
+        "electromagnetic_matrix": 10,
+        "energy_matrix": 10
+      },
+      "duration": 60,
+      "prerequisites": [
+        "dsp_energy_matrix"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "recipe",
+          "id": "dsp_xray_cracking"
+        }
+      ],
+      "source_research_bridge": true
+    }
+  }
+}

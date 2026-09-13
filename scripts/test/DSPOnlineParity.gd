@@ -92,4 +92,4 @@ static func _target_catalogs() -> Dictionary:
 	var achievements := {}
 	for row in progress.get("objectives", []): objectives[row.id] = row
 	for row in progress.get("achievements", []): achievements[row.id] = row
-	return {"items": DataManager.get_all_items(), "recipes": DataManager.get_all_recipes(), "buildings": DataManager.get_all_buildings(), "technologies": DataManager.get_all_technologies(), "campaign": objectives, "achievements": achievements}
+	return {"items": DataManager.get_all_items(), "recipes": DataManager.get_all_recipes(), "buildings": DataManager.get_all_buildings(), "technologies": DataManager.get_all_technologies(), "campaign": objectives, "achievements": achievements, "construction": DataManager.construction, "proliferators": DataManager.proliferators}

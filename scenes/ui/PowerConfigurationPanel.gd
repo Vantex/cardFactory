@@ -42,7 +42,7 @@ func refresh(ids: Array) -> void:
 	use_priority.select(int(building.get("power_priority", 2)) - 1)
 	generation.select(PowerGridSystem.generation_priority(building) - 1)
 	mode.select(["charge", "discharge", "idle"].find(String(building.get("energy_mode", "charge"))))
-	mode.disabled = selected_ids.any(func(id): return state.buildings[id].get("type") != "energy_exchanger")
+	mode.disabled = selected_ids.any(func(id): return PowerGridSystem.kind_id(state.buildings[id]) != "energy_exchanger")
 	var info := GameManager.simulation_engine.power_system.get_grid_info(String(building.get("planet_id", "home")), PowerGridSystem.grid_id(building))
 	status.text = "选中 %d 台 · 配置应用到全部\n%s\n获得 %.1f / 需求 %.1f kW\n本机储能 %.3f MJ\n电网充电 %.1f / 放电 %.1f kW" % [selected_ids.size(), "已接入电网" if building.get("power_covered", false) else "电网无电源", building.get("power_input", 0), building.get("power_requested", 0), building.get("stored_energy_mj", 0), info.get("storage_charge", 0), info.get("storage_discharge", 0)]
 	if float(building.get("power_efficiency", 1)) < 1: status.text += "\n供电不足：检查优先级、燃料和电网"

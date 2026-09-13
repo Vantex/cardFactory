@@ -948,6 +948,8 @@ git commit -m "feat: match DSPONLINE power grids and storage"
 
 ### 任务 22：对齐完整生产目录、递归制造与喷涂
 
+2026-09-13：本轮生产/制造实现与门禁完成，详见 [验收](TASK22_ACCEPTANCE.md)。目录包含后续任务的高级设备；其专用运行与源行为金标继续按任务 24～27 接续，不据此标记全部玩法完成。
+
 **文件：**
 
 - 修改：`data/*.json`
@@ -960,27 +962,27 @@ git commit -m "feat: match DSPONLINE power grids and storage"
 - 创建：`scripts/test/TestContentParity.gd`
 - 创建：`scenes/test/TestContentParity.tscn`
 
-- [ ] **步骤 1：写目录和规则差距测试**
+- [x] **步骤 1：写目录和规则差距测试**
 
 逐项断言冻结 manifest 中全部物品、配方和建筑都有对应数据、设备约束、科技前置、输入输出、时间、功率、缓存和施工成本；缺一项即失败。
 
-- [ ] **步骤 2：迁移完整单机目录**
+- [x] **步骤 2：迁移完整单机目录**
 
 把 DSPONLINE 冻结基线的 78 个物品、80 条配方和 39 类建筑及其数值迁入 Godot 数据文件，保留稳定映射并接入正式建造、生产和资料库入口。所有源项目后续新增内容必须通过新的基线更新进入，不静默改变本阶段目标。
 
-- [ ] **步骤 3：实现递归材料规划**
+- [x] **步骤 3：实现递归材料规划**
 
 从目标数量构建完整无环依赖图，按已解锁配方优先级选择路线；输入不足、输出容量不足、副产物堵塞或配方锁定时返回确定缺口。确认后一次性保留材料，失败不产生半成品状态。
 
-- [ ] **步骤 4：实现建筑制造中心和自动补货**
+- [x] **步骤 4：实现建筑制造中心和自动补货**
 
 持续目标库存、阶段 WIP、缺料、预计时间、暂停和保存恢复均进入权威状态；物流载具和复杂建筑可以一键递归制造。
 
-- [ ] **步骤 5：实现三级喷涂规则**
+- [x] **步骤 5：实现三级喷涂规则**
 
 按冻结基线实现喷涂点、额外产物、加速、功耗倍率、配方资格和拆卸返还；生产、科研、统计、蓝图和保存共用同一规则源。
 
-- [ ] **步骤 6：提交**
+- [x] **步骤 6：提交**
 
 ```powershell
 git add data scripts/game/CraftingPlanner.gd scripts/game/ConstructionAutomationSystem.gd scripts/game/ProliferatorSystem.gd scripts/game/ProductionSystem.gd scripts/game/HandcraftSystem.gd autoload/DataManager.gd scripts/test/TestContentParity.gd scenes/test/TestContentParity.tscn

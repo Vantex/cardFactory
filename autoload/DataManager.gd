@@ -1,6 +1,8 @@
 # autoload/DataManager.gd
 extends Node
 
+var construction: Dictionary = {}
+var proliferators: Dictionary = {}
 var all_items: Dictionary = {}
 var all_buildings: Dictionary = {}
 var all_recipes: Dictionary = {}
@@ -21,6 +23,8 @@ func _ready():
     print("DataManager loaded: ", all_items.size(), " items, ", all_buildings.size(), " buildings, ", all_recipes.size(), " recipes")
 
 func _load_all_data():
+    construction.clear()
+    proliferators.clear()
     all_items.clear()
     all_buildings.clear()
     all_recipes.clear()
@@ -79,6 +83,8 @@ func _load_data_file(path: String):
                 print("Error parsing JSON root: ", path)
                 return
 
+            construction.merge(data.get("construction", {}))
+            proliferators.merge(data.get("proliferators", {}))
             _load_entries(data.get("items", {}), all_items, _item_sources, "items", path)
             _load_entries(data.get("buildings", {}), all_buildings, _building_sources, "buildings", path)
             _load_entries(data.get("recipes", {}), all_recipes, _recipe_sources, "recipes", path)
@@ -139,7 +145,10 @@ func validate_catalog(catalog: Dictionary) -> Array:
         _validate_nonnegative_number(errors, building.get("power_generation", 0.0), "invalid_power", source, building_id, "Building power generation must be nonnegative")
         for capacity_key in ["input_buffer_capacity", "output_buffer_capacity"]:
             if building.has(capacity_key):
-                _validate_positive_number(errors, building[capacity_key], "invalid_buffer_capacity", source, building_id, "%s must be positive" % capacity_key)
+                if building.has("source_id"):
+                    _validate_nonnegative_number(errors, building[capacity_key], "invalid_buffer_capacity", source, building_id, "%s must be nonnegative" % capacity_key)
+                else:
+                    _validate_positive_number(errors, building[capacity_key], "invalid_buffer_capacity", source, building_id, "%s must be positive" % capacity_key)
         var extraction: Dictionary = building.get("extraction", {})
         if building.get("kind", "") == "extractor":
             var resource_id := String(extraction.get("item_id", ""))
@@ -170,7 +179,7 @@ func validate_catalog(catalog: Dictionary) -> Array:
         _validate_positive_number(errors, recipe.get("duration", 0.0), "invalid_duration", source, recipe_id, "Recipe duration must be positive")
         for list_name in ["inputs", "outputs"]:
             var references: Array = recipe.get(list_name, [])
-            if list_name == "outputs" and references.is_empty():
+            if list_name == "outputs" and references.is_empty() and recipe.get("operation", "") not in ["matrix_research", "ray_power", "solar_sail_launch", "carrier_rocket_launch"]:
                 errors.append(_make_error("missing_recipe_output", source, recipe_id, "Recipe '%s' must declare at least one output" % recipe_id))
             var seen_items: Dictionary = {}
             for item_reference_value in references:
@@ -216,7 +225,7 @@ func validate_catalog(catalog: Dictionary) -> Array:
                     errors.append(_make_error("missing_item_reference", source, "%s/%s" % [technology_id, item_id], "Technology '%s' references undefined cost item '%s'" % [technology_id, item_id]))
                 _validate_positive_number(errors, cost[cost_key], "invalid_technology_cost_amount", source, "%s/%s" % [technology_id, item_id], "Technology cost must be finite and positive")
         var effects_value: Variant = technology.get("effects")
-        if not effects_value is Dictionary or effects_value.is_empty():
+        if not effects_value is Dictionary or (effects_value.is_empty() and not technology.get("source_research_bridge", false)):
             errors.append(_make_error("invalid_technology_effects", source, technology_id, "Technology effects must be a non-empty Dictionary"))
         else:
             var effects: Dictionary = effects_value
@@ -391,3 +400,22 @@ func get_recipes_for_building(building_id: String) -> Array:
 func is_recipe_supported_by_building(recipe: Dictionary, building_id: String) -> bool:
     var building_ids: Array = recipe.get("building_ids", [recipe.get("building_id", "")])
     return building_ids.has(building_id)
+
+func source_technology_unlocked(state: GameState, source_id: String) -> bool:
+    return source_id.is_empty() or state.completed_technologies.has(source_id) or state.completed_technologies.has("dsp_" + source_id)
+
+func building_pending_reason(building_id: String) -> String:
+    var definition := get_building(building_id)
+    if not definition.has("source_id"): return ""
+    var source_id := String(definition.source_id)
+    if source_id == "spray_coater": return "喷涂机作为模块安装：选中生产设备，在喷涂配置中安装"
+    if source_id in ["em_rail_ejector", "vertical_launching_silo", "ray_receiver", "space_station_construction_launcher", "orbital_cargo_terminal", "stellar_mining_station", "micro_black_hole_connector", "time_warp_device"]:
+        return "当前版本暂不支持该设备运行，施工件可保留；暂不能放置"
+    if definition.get("kind") in ["station", "storage", "splitter"]:
+        return "当前版本暂不支持该设备的运输功能，施工件可保留；暂不能放置"
+    return ""
+
+func is_source_research_item(item_id: String) -> bool:
+    for technology in all_technologies.values():
+        if technology.get("source_research_bridge", false) and technology.get("cost", {}).has(item_id): return true
+    return false

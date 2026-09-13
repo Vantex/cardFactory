@@ -217,6 +217,8 @@ func _create_technology_row(tech_id: String, technology: Dictionary, status: Str
 		_format_cost(technology.get("cost", {})), _format_unlocks(technology.get("unlocks", [])),
 		_format_effects(technology.get("effects", {})), String(technology.get("description", "")),
 	]
+	if technology.get("source_research_bridge", false):
+		detail.text += "\n在矩阵实验室切换科研模式并投放材料；已有实验室也可使用。"
 	row.add_child(detail)
 	var action := Button.new()
 	action.text = "排队" if not game_state.research_current_id.is_empty() or not game_state.research_queue.is_empty() else "研究"
