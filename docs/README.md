@@ -48,3 +48,5 @@
 任务 19 的 [逐项对齐清单](CONTENT_PARITY.md)、[验收边界](current/TASK19_ACCEPTANCE.md)与[冻结文件说明](../tests/fixtures/parity/README.md)是任务 20～27 的内容依据。登记门通过不代表玩法已经完全对齐。
 
 任务 21：[电网与储能验收](current/TASK21_ACCEPTANCE.md)。
+
+任务 23：[实施计划](current/TASK23_PLAN.md) · [验收边界](current/TASK23_ACCEPTANCE.md)。

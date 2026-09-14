@@ -113,7 +113,8 @@ const BELT_RATED_THROUGHPUT := {
 const BELT_STACK_SIZES := [1, 2, 4]
 const BELT_PRIORITIES := [0, 1, 2]
 const BELT_ROUTE_MODES := ["bezier", "auto", "upper", "lower", "manual"]
-const BELT_MAX_INVENTORY := 99.0
+const BELT_MAX_PARALLEL := 4096
+const BELT_MAX_INVENTORY := 9007199254740991.0
 const BELT_LEGACY_INVENTORY_DEFAULTS := {
     "conveyor_belt_mk1": 1.0,
     "conveyor_belt_mk2": 0.0,
@@ -126,6 +127,9 @@ var sorter_speed_config: Dictionary = {
     "sorter_mk2": 2.0,
     "sorter_mk3": 3.0
 }
+
+var emit_canvas_events := true
+var command_history := CommandHistory.new()
 
 func _init() -> void:
     sync_active_planet_inventory()
@@ -174,12 +178,18 @@ func add_building(building_data: Dictionary) -> String:
     return id
 
 func try_place_building(building_type: String, position: Vector2) -> Dictionary:
+    return command_history.execute(self, "建造", _try_place_building_command.bind(building_type, position))
+
+func _try_place_building_command(building_type: String, position: Vector2) -> Dictionary:
     return ConstructionSystem.new(self).try_place_building(building_type, position)
 
 func capture_blueprint(selected_entity_ids: Array) -> Dictionary:
     return BlueprintSystem.new(self).capture_selection(selected_entity_ids)
 
 func try_deploy_blueprint(blueprint: Dictionary, position: Vector2, rotation_quarters: int = 0, mirrored: bool = false) -> Dictionary:
+    return command_history.execute(self, "部署蓝图", _try_deploy_blueprint_command.bind(blueprint, position, rotation_quarters, mirrored))
+
+func _try_deploy_blueprint_command(blueprint: Dictionary, position: Vector2, rotation_quarters: int = 0, mirrored: bool = false) -> Dictionary:
     return BlueprintSystem.new(self).deploy(blueprint, position, rotation_quarters, mirrored)
 
 func remove_building(building_id: String) -> Dictionary:
@@ -196,10 +206,13 @@ func add_connection(connection_data: Dictionary) -> String:
     connection_data["planet_id"] = String(connection_data.get("planet_id", active_planet_id))
     _normalize_belt_connection(connection_data)
     connections[id] = connection_data
-    EventBus.connection_created.emit(id, connection_data.source_id, connection_data.target_id)
+    if emit_canvas_events: EventBus.connection_created.emit(id, connection_data.source_id, connection_data.target_id)
     return id
 
 func try_add_connection(source_id: String, target_id: String, requested_output_item: String = "") -> Dictionary:
+    return command_history.execute(self, "连接", _try_add_connection_command.bind(source_id, target_id, requested_output_item))
+
+func _try_add_connection_command(source_id: String, target_id: String, requested_output_item: String = "") -> Dictionary:
     if not buildings.has(source_id) or not buildings.has(target_id):
         return {"ok": false, "message": "连接建筑不存在"}
     if source_id == target_id:
@@ -337,6 +350,9 @@ func get_building_display_name(building_id: String) -> String:
     return DataManager.get_building(building_type).get("name", building_type)
 
 func try_remove_connection(connection_id: String) -> Dictionary:
+    return command_history.execute(self, "回收线路", _try_remove_connection_command.bind(connection_id))
+
+func _try_remove_connection_command(connection_id: String) -> Dictionary:
     if not connections.has(connection_id):
         return {"ok": false, "message": "线路不存在", "reason": "connection_not_found"}
     var connection: Dictionary = connections[connection_id]
@@ -372,6 +388,9 @@ func get_connections_for_building(building_id: String) -> Array:
     return result
 
 func move_entity(entity_id: String, new_position: Vector2) -> bool:
+    return bool(command_history.execute(self, "移动", _move_entity_command.bind(entity_id, new_position)))
+
+func _move_entity_command(entity_id: String, new_position: Vector2) -> bool:
     if not buildings.has(entity_id):
         print("ERROR: Entity not found: ", entity_id)
         return false
@@ -385,6 +404,9 @@ func move_entity(entity_id: String, new_position: Vector2) -> bool:
     return true
 
 func try_move_entities(positions: Array) -> Dictionary:
+    return command_history.execute(self, "批量移动", _try_move_entities_command.bind(positions))
+
+func _try_move_entities_command(positions: Array) -> Dictionary:
     var normalized: Array[Dictionary] = []
     var seen: Dictionary = {}
     for value in positions:
@@ -411,6 +433,9 @@ func move_entities(positions: Array) -> int:
     return int(result.get("success", 0)) if result.get("ok", false) else 0
 
 func try_remove_entities(entity_ids: Array) -> Dictionary:
+    return command_history.execute(self, "拆除", _try_remove_entities_command.bind(entity_ids))
+
+func _try_remove_entities_command(entity_ids: Array) -> Dictionary:
     var normalized: Array[String] = []
     var seen: Dictionary = {}
     var construction_refund: Dictionary = {}
@@ -457,7 +482,7 @@ func try_remove_entities(entity_ids: Array) -> Dictionary:
             var tier := _belt_tier(connection)
             construction_refund[tier] = float(construction_refund.get(tier, 0.0)) + float(_belt_parallel_count(connection))
     for item_id in construction_refund:
-        if _construction_inventory_count(construction_inventory, String(item_id)) + float(construction_refund[item_id]) > BELT_MAX_INVENTORY:
+        if _construction_inventory_count(construction_inventory, String(item_id)) + float(construction_refund[item_id]) > construction_capacity(String(item_id)):
             return _batch_failure("施工库存容量不足", "construction_inventory_full")
     var inventory := InventorySystem.new(self)
     if not material_refund.is_empty() and not inventory.can_add_batch(material_refund):
@@ -487,6 +512,9 @@ func remove_entities(entity_ids: Array) -> int:
 
 # 功能4: 设置实体配方
 func set_entity_recipe(entity_id: String, recipe_id: String) -> bool:
+    return bool(command_history.execute(self, "设置配方", _set_entity_recipe_command.bind(entity_id, recipe_id)))
+
+func _set_entity_recipe_command(entity_id: String, recipe_id: String) -> bool:
     if not buildings.has(entity_id):
         print("ERROR: Entity not found: ", entity_id)
         return false
@@ -512,6 +540,9 @@ func set_entity_recipe(entity_id: String, recipe_id: String) -> bool:
     return true
 
 func set_entity_extraction_item(entity_id: String, item_id: String) -> bool:
+    return bool(command_history.execute(self, "设置采集物品", _set_entity_extraction_item_command.bind(entity_id, item_id)))
+
+func _set_entity_extraction_item_command(entity_id: String, item_id: String) -> bool:
     if not buildings.has(entity_id):
         return false
     var building: Dictionary = buildings[entity_id]
@@ -531,6 +562,9 @@ func set_entity_extraction_item(entity_id: String, item_id: String) -> bool:
     return true
 
 func set_entity_output_item(entity_id: String, item_id: String) -> bool:
+    return bool(command_history.execute(self, "设置输出物品", _set_entity_output_item_command.bind(entity_id, item_id)))
+
+func _set_entity_output_item_command(entity_id: String, item_id: String) -> bool:
     if not get_building_output_items(entity_id).has(item_id):
         return false
     buildings[entity_id]["output_item"] = item_id
@@ -538,6 +572,9 @@ func set_entity_output_item(entity_id: String, item_id: String) -> bool:
 
 # 功能5: 批量设置实体配方
 func set_entities_recipe(entity_ids: Array, recipe_id: String) -> int:
+    return int(command_history.execute(self, "批量配方", _set_entities_recipe_command.bind(entity_ids, recipe_id)))
+
+func _set_entities_recipe_command(entity_ids: Array, recipe_id: String) -> int:
     var set_count = 0
     for entity_id in entity_ids:
         if set_entity_recipe(entity_id, recipe_id):
@@ -546,6 +583,9 @@ func set_entities_recipe(entity_ids: Array, recipe_id: String) -> int:
 
 # 功能6: 设置实体交互锁定
 func set_entities_interaction_locked(entity_ids: Array, locked: bool) -> int:
+    return int(command_history.execute(self, "锁定配置", _set_entities_interaction_locked_command.bind(entity_ids, locked)))
+
+func _set_entities_interaction_locked_command(entity_ids: Array, locked: bool) -> int:
     var set_count = 0
     for entity_id in entity_ids:
         if buildings.has(entity_id):
@@ -555,6 +595,9 @@ func set_entities_interaction_locked(entity_ids: Array, locked: bool) -> int:
 
 # 功能7: 升级单个实体
 func upgrade_entity(entity_id: String) -> bool:
+    return bool(command_history.execute(self, "升级设备", _upgrade_entity_command.bind(entity_id)))
+
+func _upgrade_entity_command(entity_id: String) -> bool:
     if not buildings.has(entity_id):
         print("ERROR: Entity not found: ", entity_id)
         return false
@@ -573,6 +616,9 @@ func upgrade_entity(entity_id: String) -> bool:
 
 # 功能8: 批量升级实体
 func upgrade_entities(entity_ids: Array) -> int:
+    return int(command_history.execute(self, "批量升级", _upgrade_entities_command.bind(entity_ids)))
+
+func _upgrade_entities_command(entity_ids: Array) -> int:
     var upgraded_count = 0
     for entity_id in entity_ids:
         if upgrade_entity(entity_id):
@@ -607,6 +653,9 @@ func upgrade_sorter(sorter_id: String) -> bool:
     return true
 
 func upgrade_belt_network(template_belt_id: String) -> Dictionary:
+    return command_history.execute(self, "升级线路网络", _upgrade_belt_network_command.bind(template_belt_id))
+
+func _upgrade_belt_network_command(template_belt_id: String) -> Dictionary:
     var template := get_belt_configuration(template_belt_id)
     if template.is_empty():
         return _network_failure(template_belt_id, "template_not_found")
@@ -672,6 +721,9 @@ func set_belt_route_offset_y(belt_id: String, offset_y: float) -> bool:
 
 # 功能20: 设置传送带网络路由模式
 func set_belt_network_route_mode(template_belt_id: String, route_mode: String) -> Dictionary:
+    return command_history.execute(self, "网络路由", _set_belt_network_route_mode_command.bind(template_belt_id, route_mode))
+
+func _set_belt_network_route_mode_command(template_belt_id: String, route_mode: String) -> Dictionary:
     if get_belt_configuration(template_belt_id).is_empty():
         return _network_failure(template_belt_id, "template_not_found")
     var results: Array[Dictionary] = []
@@ -689,6 +741,9 @@ func apply_belt_configuration(source_belt_id: String, target_belt_id: String) ->
 
 # 功能22: 应用传送带配置到网络
 func apply_belt_configuration_to_network(template_belt_id: String) -> Dictionary:
+    return command_history.execute(self, "同步线路网络", _apply_belt_configuration_to_network_command.bind(template_belt_id))
+
+func _apply_belt_configuration_to_network_command(template_belt_id: String) -> Dictionary:
     var template := get_belt_configuration(template_belt_id)
     if template.is_empty():
         return _network_failure(template_belt_id, "template_not_found")
@@ -730,6 +785,9 @@ func get_belt_configuration(belt_id: String) -> Dictionary:
     }
 
 func try_configure_belt(belt_id: String, requested: Dictionary, emit_change: bool = true) -> Dictionary:
+    return command_history.execute(self, "配置线路", _try_configure_belt_command.bind(belt_id, requested, emit_change))
+
+func _try_configure_belt_command(belt_id: String, requested: Dictionary, emit_change: bool = true) -> Dictionary:
     var current := get_belt_configuration(belt_id)
     if current.is_empty():
         return {"ok": false, "message": "线路不存在", "reason": "belt_not_found"}
@@ -739,8 +797,8 @@ func try_configure_belt(belt_id: String, requested: Dictionary, emit_change: boo
             target[key] = requested[key]
     if not target.tier is String or not BELT_RATED_THROUGHPUT.has(String(target.tier)):
         return {"ok": false, "message": "线路等级无效", "reason": "invalid_tier"}
-    if not _is_integral_value(target.parallel_count) or int(target.parallel_count) < 1 or int(target.parallel_count) > 4:
-        return {"ok": false, "message": "并联数必须为 1..4", "reason": "invalid_parallel_count"}
+    if not _is_integral_value(target.parallel_count) or int(target.parallel_count) < 1 or int(target.parallel_count) > BELT_MAX_PARALLEL:
+        return {"ok": false, "message": "并联数必须为 1..4096", "reason": "invalid_parallel_count"}
     if not _is_integral_value(target.stack_size) or int(target.stack_size) not in BELT_STACK_SIZES:
         return {"ok": false, "message": "堆叠只支持 1/2/4", "reason": "invalid_stack_size"}
     if not _is_integral_value(target.priority) or int(target.priority) not in BELT_PRIORITIES:
@@ -781,6 +839,9 @@ func try_configure_belt(belt_id: String, requested: Dictionary, emit_change: boo
     return {"ok": true, "message": "线路配置已更新", "reason": "", "configuration": configuration}
 
 func try_configure_belts(belt_ids: Array, requested: Dictionary) -> Dictionary:
+    return command_history.execute(self, "批量配置线路", _try_configure_belts_command.bind(belt_ids, requested))
+
+func _try_configure_belts_command(belt_ids: Array, requested: Dictionary) -> Dictionary:
     var normalized: Array[String] = []
     var seen: Dictionary = {}
     for id_value in belt_ids:
@@ -883,7 +944,7 @@ func _belt_tier(connection: Dictionary) -> String:
 
 func _belt_parallel_count(connection: Dictionary) -> int:
     var value: Variant = connection.get("parallel_count", connection.get("lanes", 1))
-    return int(value) if _is_integral_value(value) and int(value) >= 1 and int(value) <= 4 else 1
+    return int(value) if _is_integral_value(value) and int(value) >= 1 and int(value) <= BELT_MAX_PARALLEL else 1
 
 func _belt_stack_size(connection: Dictionary) -> int:
     var value: Variant = connection.get("stack_size", 1)
@@ -943,6 +1004,9 @@ func _is_finite_number(value: Variant) -> bool:
 
 # 功能23: 设置分拣器方向
 func set_sorter_direction(sorter_id: String, direction: String) -> bool:
+    return command_history.execute(self, "分拣方向", _set_sorter_direction_command.bind(sorter_id, direction))
+
+func _set_sorter_direction_command(sorter_id: String, direction: String) -> bool:
     if not connections.has(sorter_id):
         print("ERROR: Sorter not found: ", sorter_id)
         return false
@@ -958,6 +1022,9 @@ func set_sorter_direction(sorter_id: String, direction: String) -> bool:
 
 # 功能24: 设置分拣器过滤
 func set_sorter_filter(sorter_id: String, item_id: String) -> bool:
+    return command_history.execute(self, "分拣过滤", _set_sorter_filter_command.bind(sorter_id, item_id))
+
+func _set_sorter_filter_command(sorter_id: String, item_id: String) -> bool:
     if not connections.has(sorter_id):
         print("ERROR: Sorter not found: ", sorter_id)
         return false
@@ -1043,6 +1110,7 @@ func copy_from(source: GameState) -> void:
 func install_state(source: GameState) -> void:
     if source == null:
         return
+    command_history.clear()
     buildings = source.buildings.duplicate(true)
     connections = source.connections.duplicate(true)
     logistics_routes = source.logistics_routes.duplicate(true)
@@ -1068,6 +1136,7 @@ func install_state(source: GameState) -> void:
     construction_inventory = source.construction_inventory.duplicate(true)
     cursor_payload = source.cursor_payload.duplicate(true)
     handcraft_queue = source.handcraft_queue.duplicate(true)
+    production_orders = source.production_orders.duplicate(true)
     completed_technologies = source.completed_technologies.duplicate(true)
     research_current_id = source.research_current_id
     research_queue = source.research_queue.duplicate(true)
@@ -1528,12 +1597,18 @@ func set_quantum_bandwidth(network_id: String, bandwidth: float) -> bool:
     return true
 
 func try_configure_power_entities(ids: Array, changes: Dictionary) -> Dictionary:
+    return command_history.execute(self, "配置电网", _try_configure_power_entities_command.bind(ids, changes))
+
+func _try_configure_power_entities_command(ids: Array, changes: Dictionary) -> Dictionary:
     return PowerGridSystem.new(self).configure(ids, changes)
 
 func set_energy_mode(entity_id: String, mode: String) -> bool:
     return try_configure_power_entities([entity_id], {"energy_mode": mode}).get("ok", false)
 
 func set_fuel_item(entity_id: String, item: String) -> Dictionary:
+    return command_history.execute(self, "切换燃料", _set_fuel_item_command.bind(entity_id, item))
+
+func _set_fuel_item_command(entity_id: String, item: String) -> Dictionary:
     var building: Dictionary = buildings.get(entity_id, {})
     var definition := DataManager.get_building(String(building.get("type", "")))
     if building.is_empty() or building.get("interaction_locked", false) or not definition.get("fuel_options", {}).has(item):
@@ -1542,3 +1617,43 @@ func set_fuel_item(entity_id: String, item: String) -> Dictionary:
         return {"ok": false, "message": "请先用完当前燃料再切换"}
     building.fuel_item = item
     return {"ok": true, "message": "燃料已切换"}
+
+static func construction_capacity(item_id: String) -> float:
+    return BELT_MAX_INVENTORY if BELT_RATED_THROUGHPUT.has(item_id) else 99.0
+
+func try_adjust_belt_lanes(ids: Array, delta: int) -> Dictionary:
+    return command_history.execute(self, "调整并联线路", _adjust_belt_lanes_command.bind(ids, delta))
+
+func _adjust_belt_lanes_command(ids: Array, delta: int) -> Dictionary:
+    if ids.is_empty(): return {"ok": false, "message": "请选择线路"}
+    var probe := copy_state()
+    probe.command_history.enabled = false
+    var seen := {}
+    for id in ids:
+        if seen.has(id) or get_belt_configuration(id).is_empty(): return {"ok": false, "message": "线路选择无效"}
+        seen[id] = true
+        var result := probe.try_configure_belt(id, {"parallel_count": _belt_parallel_count(connections[id]) + delta}, false)
+        if not result.ok: return result
+    connections = probe.connections
+    construction_inventory = probe.construction_inventory
+    for id in ids: EventBus.connection_configuration_changed.emit(id, get_belt_configuration(id))
+    return {"ok": true, "message": "已调整 %d 条线路" % ids.size()}
+
+func preview_connections(pairs: Array) -> Dictionary:
+    if pairs.is_empty(): return {"ok": false, "message": "没有待确认的连接"}
+    var probe := copy_state()
+    probe.command_history.enabled = false
+    probe.emit_canvas_events = false
+    for pair in pairs:
+        var result := probe.try_add_connection(String(pair.get("source_id", "")), String(pair.get("target_id", "")))
+        if not result.ok: return result
+    return {"ok": true, "message": "已预览 %d 条连接，按 Enter 确认；Backspace 回退；Escape 取消" % pairs.size()}
+
+func try_add_connections(pairs: Array) -> Dictionary:
+    return command_history.execute(self, "连续连接", _add_connections_command.bind(pairs))
+
+func _add_connections_command(pairs: Array) -> Dictionary:
+    var preview := preview_connections(pairs)
+    if not preview.ok: return preview
+    for pair in pairs: try_add_connection(pair.source_id, pair.target_id)
+    return {"ok": true, "message": "已确认 %d 条连接" % pairs.size()}

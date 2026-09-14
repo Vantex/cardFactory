@@ -99,7 +99,7 @@ func validate_and_normalize(value: Dictionary) -> Dictionary:
 				configuration[integer_key] = int(configuration[integer_key])
 		if configuration.has("route_offset_y"):
 			configuration["route_offset_y"] = float(configuration.route_offset_y)
-		if configuration.has("parallel_count") and (not _is_integer_number(configuration.parallel_count) or int(configuration.parallel_count) < 1 or int(configuration.parallel_count) > 4):
+		if configuration.has("parallel_count") and (not _is_integer_number(configuration.parallel_count) or int(configuration.parallel_count) < 1 or int(configuration.parallel_count) > GameState.BELT_MAX_PARALLEL):
 			return _failure("invalid_configuration", "蓝图并行线路数量无效")
 		if configuration.has("stack_size") and (not _is_integer_number(configuration.stack_size) or not [1, 2, 4].has(int(configuration.stack_size))):
 			return _failure("invalid_configuration", "蓝图线路堆叠数量无效")

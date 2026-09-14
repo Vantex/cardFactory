@@ -212,7 +212,7 @@ func _can_reserve_output(recipe: Dictionary, quantity: int, planet_id: String = 
 		var resolved_planet_id := game_state.active_planet_id if planet_id.is_empty() else planet_id
 		var current := float(game_state.construction_inventory.get(item_id, 0.0)) if target == "construction" else float(game_state.get_planet_inventory(resolved_planet_id).get(item_id, 0.0))
 		var reserved := _reserved_output(target, item_id, resolved_planet_id)
-		var limit := MAX_CONSTRUCTION_STACK if target == "construction" else InventorySystem.MAX_PLANET_STACK
+		var limit := GameState.construction_capacity(item_id) if target == "construction" else InventorySystem.MAX_PLANET_STACK
 		if current + reserved + float(outputs[item_key]) * quantity > limit + AMOUNT_EPSILON:
 			return false
 	return true
@@ -235,7 +235,7 @@ func _can_deliver_one(recipe: Dictionary, planet_id: String) -> bool:
 	if target == "planet":
 		return InventorySystem.new(game_state).can_add_batch(outputs, planet_id)
 	for item_key in outputs:
-		if float(game_state.construction_inventory.get(item_key, 0.0)) + float(outputs[item_key]) > MAX_CONSTRUCTION_STACK + AMOUNT_EPSILON:
+		if float(game_state.construction_inventory.get(item_key, 0.0)) + float(outputs[item_key]) > GameState.construction_capacity(String(item_key)) + AMOUNT_EPSILON:
 			return false
 	return true
 

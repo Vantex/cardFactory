@@ -4,11 +4,13 @@
 
 任务 22 已登记正式源目录及制造/喷涂候选，仍保留跨系统运行缺口；详见 [任务 22 验收](current/TASK22_ACCEPTANCE.md)。
 
+任务 23 新增会话历史、布局与桌面命令入口，更新 15 项候选映射（14 项从未实现转入实现中）；详见 [任务 23 验收](current/TASK23_ACCEPTANCE.md)。
+
 ## 如何阅读
 
 此表是任务 19 的差距登记，不是玩法已经对齐的证明。现有系统仍可使用；“实现中”只表示存在候选映射，未逐项验证原版数值和行为。登记门允许明确登记的缺口，最终发布门必须清零未实现/实现中。
 
-状态统计：{"实现中":326,"未实现":750,"在线排除":23}。没有把同名条目自动标为已验证。
+状态统计：{"实现中":340,"未实现":736,"在线排除":23}。没有把同名条目自动标为已验证。
 
 完整来源定义保存输入输出、数值、前置、解锁、奖励和目录规则；成就判定等代码规则记录源文件及哈希，行为验证仍待任务 25/27。每行的自动规则编号为 rule:类别:源ID，人工编号为 manual:类别:源ID；规则规格见 [rule_cases.json](../tests/fixtures/parity/rule_cases.json)，规格登记不等于已执行行为测试。UI 栏为原版入口/定义来源，当前候选路径和缺口见 [机器清单](../tests/fixtures/parity/dsponline_single_player_manifest.json)。
 
@@ -556,11 +558,11 @@
 | CodexSections.onSelectItem | onSelectItem | 待映射 | 未实现 | 23 | src/components/CodexSections.tsx |
 | CodexSections.onSelectPlanet | onSelectPlanet | 待映射 | 未实现 | 26 | src/components/CodexSections.tsx |
 | CodexSections.onSelectTechnology | onSelectTechnology | 待映射 | 未实现 | 25 | src/components/CodexSections.tsx |
-| CommandPalette.onAutoLayout | onAutoLayout | 待映射 | 未实现 | 23 | src/components/CommandPalette.tsx |
-| CommandPalette.onClose | onClose | 待映射 | 未实现 | 23 | src/components/CommandPalette.tsx |
-| CommandPalette.onFocusEntity | onFocusEntity | 待映射 | 未实现 | 23 | src/components/CommandPalette.tsx |
+| CommandPalette.onAutoLayout | onAutoLayout | scripts/game/FactoryAutoLayout.gd::apply | 实现中 | 23 | src/components/CommandPalette.tsx |
+| CommandPalette.onClose | onClose | scenes/ui/CommandPalette.gd::_input | 实现中 | 23 | src/components/CommandPalette.tsx |
+| CommandPalette.onFocusEntity | onFocusEntity | scenes/ui/FactoryWorkspaceUI.gd::_locate_entity | 实现中 | 23 | src/components/CommandPalette.tsx |
 | CommandPalette.onFocusRecipe | onFocusRecipe | 待映射 | 未实现 | 23 | src/components/CommandPalette.tsx |
-| CommandPalette.onOpenWorkspace | onOpenWorkspace | 待映射 | 未实现 | 23 | src/components/CommandPalette.tsx |
+| CommandPalette.onOpenWorkspace | onOpenWorkspace | scenes/ui/FactoryWorkspaceUI.gd::open_command_palette | 实现中 | 23 | src/components/CommandPalette.tsx |
 | CommandPalette.onPauseToggle | onPauseToggle | 待映射 | 未实现 | 23 | src/components/CommandPalette.tsx |
 | CommandPalette.onTogglePerformance | onTogglePerformance | 待映射 | 未实现 | 23 | src/components/CommandPalette.tsx |
 | CommandPalette.onToggleReducedMotion | onToggleReducedMotion | 待映射 | 未实现 | 23 | src/components/CommandPalette.tsx |
@@ -604,9 +606,9 @@
 | engine.advanceSimulation | advanceSimulation | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.advanceSimulationBudget | advanceSimulationBudget | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.applyBeltConfiguration | applyBeltConfiguration | scripts/game/GameState.gd::apply_belt_configuration | 实现中 | 23 | src/game/engine.ts |
-| engine.applyBeltConfigurationToBelts | applyBeltConfigurationToBelts | 待映射 | 未实现 | 23 | src/game/engine.ts |
+| engine.applyBeltConfigurationToBelts | applyBeltConfigurationToBelts | scripts/game/GameState.gd::try_configure_belts | 实现中 | 23 | src/game/engine.ts |
 | engine.applyBeltConfigurationToNetwork | applyBeltConfigurationToNetwork | scripts/game/GameState.gd::apply_belt_configuration_to_network | 实现中 | 23 | src/game/engine.ts |
-| engine.applyBeltConfigurationToNetworkResult | applyBeltConfigurationToNetworkResult | 待映射 | 未实现 | 23 | src/game/engine.ts |
+| engine.applyBeltConfigurationToNetworkResult | applyBeltConfigurationToNetworkResult | scripts/game/GameState.gd::apply_belt_configuration_to_network | 实现中 | 23 | src/game/engine.ts |
 | engine.applyStationSlotTemplateToEntities | applyStationSlotTemplateToEntities | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.attachAllInterstellarStationsToQuantumNetwork | attachAllInterstellarStationsToQuantumNetwork | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.attachInterstellarStationToQuantumNetwork | attachInterstellarStationToQuantumNetwork | 待映射 | 未实现 | 26 | src/game/engine.ts |
@@ -638,8 +640,8 @@
 | engine.colonizePlanet | colonizePlanet | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.completeSimulationStep | completeSimulationStep | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.connectBelt | connectBelt | 待映射 | 未实现 | 23 | src/game/engine.ts |
-| engine.connectBeltsAtomically | connectBeltsAtomically | 待映射 | 未实现 | 23 | src/game/engine.ts |
-| engine.connectBeltWithResult | connectBeltWithResult | 待映射 | 未实现 | 23 | src/game/engine.ts |
+| engine.connectBeltsAtomically | connectBeltsAtomically | scripts/game/GameState.gd::try_add_connections | 实现中 | 23 | src/game/engine.ts |
+| engine.connectBeltWithResult | connectBeltWithResult | scripts/game/GameState.gd::try_add_connection | 实现中 | 23 | src/game/engine.ts |
 | engine.connectDysonNodes | connectDysonNodes | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.craftConstruction | craftConstruction | scripts/game/ConstructionAutomationSystem.gd::queue | 实现中 | 22 | src/game/engine.ts |
 | engine.craftConstructionWithUpstream | craftConstructionWithUpstream | scripts/game/ConstructionAutomationSystem.gd::queue | 实现中 | 22 | src/game/engine.ts |
@@ -663,8 +665,8 @@
 | engine.findStationSlotPeers | findStationSlotPeers | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.fundAllConstructionQueueEntries | fundAllConstructionQueueEntries | 待映射 | 未实现 | 24 | src/game/engine.ts |
 | engine.fundConstructionQueueEntry | fundConstructionQueueEntry | 待映射 | 未实现 | 24 | src/game/engine.ts |
-| engine.getBeltConnectionCheck | getBeltConnectionCheck | 待映射 | 未实现 | 23 | src/game/engine.ts |
-| engine.getBeltLaneAdjustmentCheck | getBeltLaneAdjustmentCheck | 待映射 | 未实现 | 23 | src/game/engine.ts |
+| engine.getBeltConnectionCheck | getBeltConnectionCheck | scripts/game/GameState.gd::preview_connections | 实现中 | 23 | src/game/engine.ts |
+| engine.getBeltLaneAdjustmentCheck | getBeltLaneAdjustmentCheck | scripts/game/GameState.gd::try_adjust_belt_lanes | 实现中 | 23 | src/game/engine.ts |
 | engine.getBeltNetworkIds | getBeltNetworkIds | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.getBlueprintEligibleEntityIds | getBlueprintEligibleEntityIds | 待映射 | 未实现 | 24 | src/game/engine.ts |
 | engine.getBlueprintFleetLoadPreview | getBlueprintFleetLoadPreview | 待映射 | 未实现 | 24 | src/game/engine.ts |
@@ -902,7 +904,7 @@
 | GamePanels.onBatchInstallSprayCoater | onBatchInstallSprayCoater | 待映射 | 未实现 | 22 | src/components/GamePanels.tsx |
 | GamePanels.onBatchProliferatorConfiguration | onBatchProliferatorConfiguration | 待映射 | 未实现 | 22 | src/components/GamePanels.tsx |
 | GamePanels.onBatchRecipeChange | onBatchRecipeChange | 待映射 | 未实现 | 23 | src/components/GamePanels.tsx |
-| GamePanels.onBeltLaneCountChange | onBeltLaneCountChange | 待映射 | 未实现 | 23 | src/components/GamePanels.tsx |
+| GamePanels.onBeltLaneCountChange | onBeltLaneCountChange | scenes/ui/FactoryWorkspaceUI.gd::_on_belt_config_pressed | 实现中 | 23 | src/components/GamePanels.tsx |
 | GamePanels.onBeltMonitorChange | onBeltMonitorChange | 待映射 | 未实现 | 23 | src/components/GamePanels.tsx |
 | GamePanels.onBeltPriorityChange | onBeltPriorityChange | 待映射 | 未实现 | 23 | src/components/GamePanels.tsx |
 | GamePanels.onBeltRouteModeChange | onBeltRouteModeChange | 待映射 | 未实现 | 23 | src/components/GamePanels.tsx |
@@ -934,13 +936,13 @@
 | GamePanels.onGridChange | onGridChange | scripts/game/GameState.gd::set_entity_power_grid | 实现中 | 21 | src/components/GamePanels.tsx |
 | GamePanels.onInstall | onInstall | 待映射 | 未实现 | 23 | src/components/GamePanels.tsx |
 | GamePanels.onInstallSprayCoater | onInstallSprayCoater | 待映射 | 未实现 | 22 | src/components/GamePanels.tsx |
-| GamePanels.onLaneCountChange | onLaneCountChange | 待映射 | 未实现 | 23 | src/components/GamePanels.tsx |
+| GamePanels.onLaneCountChange | onLaneCountChange | scenes/ui/FactoryWorkspaceUI.gd::_on_belt_config_pressed | 实现中 | 23 | src/components/GamePanels.tsx |
 | GamePanels.onLogisticsItemChange | onLogisticsItemChange | 待映射 | 未实现 | 23 | src/components/GamePanels.tsx |
 | GamePanels.onMaterialDeliverySlotChange | onMaterialDeliverySlotChange | 待映射 | 未实现 | 23 | src/components/GamePanels.tsx |
 | GamePanels.onMissingCraftNavigate | onMissingCraftNavigate | 待映射 | 未实现 | 22 | src/components/GamePanels.tsx |
 | GamePanels.onMonitorChange | onMonitorChange | 待映射 | 未实现 | 23 | src/components/GamePanels.tsx |
 | GamePanels.onOpenCampaign | onOpenCampaign | 待映射 | 未实现 | 25 | src/components/GamePanels.tsx |
-| GamePanels.onOpenCommandPalette | onOpenCommandPalette | 待映射 | 未实现 | 23 | src/components/GamePanels.tsx |
+| GamePanels.onOpenCommandPalette | onOpenCommandPalette | scenes/ui/FactoryWorkspaceUI.gd::open_command_palette | 实现中 | 23 | src/components/GamePanels.tsx |
 | GamePanels.onOpenConstructionCenter | onOpenConstructionCenter | 待映射 | 未实现 | 22 | src/components/GamePanels.tsx |
 | GamePanels.onOpenDysonPlanner | onOpenDysonPlanner | 待映射 | 未实现 | 26 | src/components/GamePanels.tsx |
 | GamePanels.onOpenFabricator | onOpenFabricator | 待映射 | 未实现 | 23 | src/components/GamePanels.tsx |
@@ -1094,7 +1096,7 @@
 | OperationsWorkspace.onValidateMod | onValidateMod | 待映射 | 未实现 | 26 | src/components/OperationsWorkspace.tsx |
 | OrbitalStationWorkspace.onClose | onClose | 待映射 | 未实现 | 26 | src/components/OrbitalStationWorkspace.tsx |
 | OrbitalStationWorkspace.onGameChange | onGameChange | 待映射 | 未实现 | 26 | src/components/OrbitalStationWorkspace.tsx |
-| palette.entity:{entity_id} | entity:{entity_id} | 待映射 | 未实现 | 23 | src/components/CommandPalette.tsx |
+| palette.entity:{entity_id} | entity:{entity_id} | scenes/ui/FactoryWorkspaceUI.gd::_locate_entity | 实现中 | 23 | src/components/CommandPalette.tsx |
 | palette.recipe:{item_id} | recipe:{item_id} | 待映射 | 未实现 | 23 | src/components/CommandPalette.tsx |
 | ProductionManagement.onBulkRecipeChange | onBulkRecipeChange | 待映射 | 未实现 | 23 | src/components/ProductionManagement.tsx |
 | ProductionManagement.onBulkStationSlotApply | onBulkStationSlotApply | 待映射 | 未实现 | 26 | src/components/ProductionManagement.tsx |

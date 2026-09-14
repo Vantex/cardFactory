@@ -43,7 +43,7 @@ func _button(text: String, action: Callable) -> void:
 		if selected_ids.size() != 1 and text != "安装 / 应用喷涂":
 			_show_result({"ok": false, "message": "投料和拆卸时请只选择一台设备"})
 			return
-		action.call())
+		GameManager.game_state.command_history.execute(GameManager.game_state, text, action))
 	add_child(button)
 
 func refresh(ids: Array) -> void:

@@ -29,6 +29,8 @@ const CANVAS_MARGIN_BOTTOM := 92.0
 
 var current_mode: Mode = Mode.IDLE
 var placing_building_type := ""
+var continuous_connect := false
+var connection_candidates: Array = []
 var connecting_source_id := ""
 var selected_entity_ids: Array[String] = []
 var selected_building_id := "":
@@ -172,6 +174,8 @@ func start_placing_card(building_type: String) -> void:
 	queue_redraw()
 
 func start_connection(source_id: String) -> bool:
+	continuous_connect = false
+	connection_candidates.clear()
 	var state := GameManager.get_game_state()
 	if source_id.is_empty() or not state.buildings.has(source_id) or not _is_active_entity(source_id):
 		return false
@@ -191,6 +195,7 @@ func complete_connection(target_id: String) -> bool:
 		cancel_operation()
 		return false
 	var state := GameManager.get_game_state()
+	if continuous_connect: return append_connection_candidate(target_id)
 	var engine := GameManager.get_simulation_engine()
 	var belts := engine.belt_system if engine != null and engine.game_state == state else BeltSystem.new(state)
 	var result: Dictionary = belts.try_create_belt(connecting_source_id, target_id)
@@ -199,6 +204,9 @@ func complete_connection(target_id: String) -> bool:
 	return result.get("ok", false)
 
 func cancel_operation() -> void:
+	GameManager.get_game_state().command_history.end_group(GameManager.get_game_state())
+	continuous_connect = false
+	connection_candidates.clear()
 	current_mode = Mode.IDLE
 	placing_building_type = ""
 	connecting_source_id = ""
@@ -248,6 +256,18 @@ func _has_pending_pointer_release(button_index: MouseButton) -> bool:
 	return false
 
 func _handle_key_press(event: InputEventKey) -> void:
+	if event.ctrl_pressed and event.keycode == KEY_Z:
+		var state := GameManager.get_game_state()
+		_publish_command_result(state.command_history.redo(state) if event.shift_pressed else state.command_history.undo(state))
+		get_viewport().set_input_as_handled()
+		return
+	if continuous_connect and event.keycode == KEY_ENTER:
+		confirm_connection_candidates()
+		return
+	if continuous_connect and event.keycode == KEY_BACKSPACE:
+		if not connection_candidates.is_empty(): connection_candidates.pop_back()
+		queue_redraw()
+		return
 	if event.ctrl_pressed and event.keycode == KEY_C:
 		request_blueprint_capture()
 		return
@@ -419,6 +439,7 @@ func _place_card(world_position: Vector2) -> void:
 func _update_drag(world_position: Vector2) -> void:
 	if dragging_building_id.is_empty():
 		return
+	GameManager.get_game_state().command_history.begin_group(GameManager.get_game_state(), "拖动建筑")
 	var primary_start: Vector2 = drag_start_positions.get(dragging_building_id, GameManager.get_game_state().get_building(dragging_building_id).get("position", Vector2.ZERO))
 	var delta := world_position - drag_offset - primary_start
 	var positions: Array = []
@@ -428,6 +449,7 @@ func _update_drag(world_position: Vector2) -> void:
 	queue_redraw()
 
 func _finish_drag() -> void:
+	GameManager.get_game_state().command_history.end_group(GameManager.get_game_state())
 	current_mode = Mode.IDLE
 	dragging_building_id = ""
 	press_candidate_building_id = ""
@@ -576,6 +598,10 @@ func _zoom_at_pointer(screen_position: Vector2, factor: float) -> void:
 	camera.force_update_scroll()
 
 func _draw() -> void:
+	for candidate in connection_candidates:
+		var state := GameManager.get_game_state()
+		if state.buildings.has(candidate.source_id) and state.buildings.has(candidate.target_id):
+			draw_line(state.buildings[candidate.source_id].position + CARD_SIZE / 2, state.buildings[candidate.target_id].position + CARD_SIZE / 2, Color("e1b452"), 3)
 	if canvas_focused:
 		var point := _screen_to_world(cursor_screen)
 		draw_circle(point, 12, Color.BLACK, false, 5)
@@ -640,6 +666,9 @@ func _activate_cursor() -> void:
 		_handle_left_release(cursor_screen)
 
 func _accessible_input(event: InputEvent) -> bool:
+	var focus := get_viewport().gui_get_focus_owner()
+	if focus is LineEdit or focus is TextEdit: return false
+	if event is InputEventKey and event.ctrl_pressed and event.keycode == KEY_K: return false
 	for dialog in get_parent().find_children("*", "Window", true, false):
 		if dialog.visible: return false
 	if event is InputEventMouseButton and event.pressed:
@@ -683,7 +712,9 @@ func _accessible_input(event: InputEvent) -> bool:
 			KEY_RIGHT: _move_cursor(Vector2(24, 0))
 			KEY_UP: _move_cursor(Vector2(0, -24))
 			KEY_DOWN: _move_cursor(Vector2(0, 24))
-			KEY_ENTER: _activate_cursor()
+			KEY_ENTER:
+				if continuous_connect: confirm_connection_candidates()
+				else: _activate_cursor()
 			KEY_ESCAPE:
 				if current_mode != Mode.IDLE: cancel_operation()
 				else: focus_interface()
@@ -711,3 +742,25 @@ func reset_device_input() -> void:
 	_stick = Vector2.ZERO
 	_pan_stick = Vector2.ZERO
 	cancel_operation()
+
+func start_continuous_connection(source_id: String) -> bool:
+	if not start_connection(source_id): return false
+	continuous_connect = true
+	connection_candidates.clear()
+	_publish_command_result({"ok": true, "message": "点击目标输入端口加入候选；Enter 确认，Backspace 回退，Escape 取消"})
+	return true
+
+func append_connection_candidate(target_id: String) -> bool:
+	var next := connection_candidates.duplicate(true)
+	next.append({"source_id": connecting_source_id, "target_id": target_id})
+	var result := GameManager.get_game_state().preview_connections(next)
+	if result.ok: connection_candidates = next
+	_publish_command_result(result)
+	queue_redraw()
+	return result.ok
+
+func confirm_connection_candidates() -> bool:
+	var result := GameManager.get_game_state().try_add_connections(connection_candidates)
+	_publish_command_result(result)
+	if result.ok: cancel_operation()
+	return result.ok

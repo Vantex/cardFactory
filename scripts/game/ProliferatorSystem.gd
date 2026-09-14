@@ -84,7 +84,7 @@ func _refund(id: String, uninstall: bool) -> Dictionary:
 			var type := state._belt_tier(connection)
 			kits[type] = float(kits.get(type, 0)) + state._belt_parallel_count(connection)
 	for type in kits:
-		if float(state.construction_inventory.get(type, 0)) + float(kits[type]) > 99: return _failure("施工库存不足以返还模块和线路")
+		if float(state.construction_inventory.get(type, 0)) + float(kits[type]) > GameState.construction_capacity(String(type)): return _failure("施工库存不足以返还模块和线路")
 	if returned > 0 and not inventory.can_add_batch({item: returned}, building.planet_id): return _failure("托盘不足以返还增产剂")
 	if returned > 0: inventory.try_add(item, returned, building.planet_id)
 	for type in kits: state.construction_inventory[type] = float(state.construction_inventory.get(type, 0)) + kits[type]

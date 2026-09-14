@@ -991,6 +991,8 @@ git commit -m "feat: match DSPONLINE production content and crafting"
 
 ### 任务 23：对齐画布历史、自动布局与高效命令
 
+2026-09-14：本轮实现及 19 场景/1080p 门禁通过，见 [任务 23 验收](TASK23_ACCEPTANCE.md)。
+
 **文件：**
 
 - 创建：`scripts/game/CommandHistory.gd`
@@ -1001,27 +1003,27 @@ git commit -m "feat: match DSPONLINE production content and crafting"
 - 修改：`scripts/game/BeltSystem.gd`
 - 修改：`scripts/test/TestAdvancedCanvas.gd`
 
-- [ ] **步骤 1：写可逆命令和批量交互失败测试**
+- [x] **步骤 1：写可逆命令和批量交互失败测试**
 
 覆盖建造、移动、删除、连接、线路配置、配方修改、自动布局的撤销/重做；覆盖连续拉线候选、确认、撤销最近候选和取消。历史操作前后资源、稳定 ID、在途货物和累计统计必须守恒。
 
-- [ ] **步骤 2：实现会话命令历史**
+- [x] **步骤 2：实现会话命令历史**
 
 所有玩家画布修改封装为可验证命令，保存提交前后摘要；`Ctrl+Z`、`Ctrl+Shift+Z` 和 UI 按钮共享同一历史。加载、新游戏和明确清空历史不会修改 GameState。
 
-- [ ] **步骤 3：实现确定性自动布局**
+- [x] **步骤 3：实现确定性自动布局**
 
 按生产拓扑、稳定 ID 和卡片尺寸生成布局，保留锁定建筑并避免重叠；自动布局作为单一可撤销命令提交。
 
-- [ ] **步骤 4：实现命令面板和连续拉线**
+- [x] **步骤 4：实现命令面板和连续拉线**
 
 命令面板提供工作区导航、建造、实体定位和批量命令；连续拉线支持候选预览、兼容性原因、确认和取消，不允许 UI 释放穿透。
 
-- [ ] **步骤 5：对齐线路规模与批量配置**
+- [x] **步骤 5：对齐线路规模与批量配置**
 
 把并联上限、直接输入、增减、整网同步、批量减堆和施工库存扣除对齐冻结基线；扩大上限不能改变既有线路设置或在途货物。
 
-- [ ] **步骤 6：提交**
+- [x] **步骤 6：提交**
 
 ```powershell
 git add scripts/game/CommandHistory.gd scripts/game/FactoryAutoLayout.gd scenes/ui/CommandPalette.gd scripts/input/InputHandler.gd scenes/ui/FactoryWorkspaceUI.gd scripts/game/BeltSystem.gd scripts/test/TestAdvancedCanvas.gd

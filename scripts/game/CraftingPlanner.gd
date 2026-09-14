@@ -31,7 +31,7 @@ func plan(target: String, quantity: int, construction: bool = false) -> Dictiona
 	for item in final_items:
 		if float(state.get_planet_inventory(planet_id).get(item, 0)) - float(context.reserved.get(item, 0)) + final_items[item] + float(pending.items.get(item, 0)) > InventorySystem.MAX_PLANET_STACK:
 			return _failure("副产物或目标物品库存容量不足：" + String(item))
-	if construction and float(state.construction_inventory.get(construction_stock_id(target), 0)) + float(outputs[target]) + float(pending.kits.get(construction_stock_id(target), 0)) > 99: return _failure("施工件容量不足")
+	if construction and float(state.construction_inventory.get(construction_stock_id(target), 0)) + float(outputs[target]) + float(pending.kits.get(construction_stock_id(target), 0)) > GameState.construction_capacity(construction_stock_id(target)): return _failure("施工件容量不足")
 	var duration := 0.0
 	for step in context.steps: duration += float(step.duration)
 	return {"ok": true, "target": target, "quantity": quantity, "construction": construction, "planet_id": planet_id, "reserved": context.reserved, "steps": context.steps, "duration": duration, "final_items": final_items}

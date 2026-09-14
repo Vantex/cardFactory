@@ -7,6 +7,13 @@ $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $testCases = @(
     @{
+        Name = "Editing history"
+        ScenePath = Join-Path $repoRoot "scenes\test\TestEditingHistory.tscn"
+        ResourcePath = "res://scenes/test/TestEditingHistory.tscn"
+        SuccessMarker = "EDITING HISTORY TESTS PASSED"
+        FailureMarker = "EDITING HISTORY TESTS FAILED"
+    },
+    @{
         Name = "Content parity"
         ScenePath = Join-Path $repoRoot "scenes\test\TestContentParity.tscn"
         ResourcePath = "res://scenes/test/TestContentParity.tscn"

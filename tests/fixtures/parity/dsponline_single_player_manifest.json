@@ -9471,17 +9471,23 @@
       "category": "commands",
       "source_id": "CommandPalette.onAutoLayout",
       "name": "onAutoLayout",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/FactoryAutoLayout.gd::apply"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 23 已接入会话历史、桌面命令/连续拉线及 1～4096 并联候选；TestEditingHistory 与产品界面回归覆盖本地行为。源实现同输入金标仍由任务 27 验证，不以候选映射代替完整一致性。",
       "owner_task": 23,
       "rule_test": "rule:commands:CommandPalette.onAutoLayout",
       "manual_acceptance": "manual:commands:CommandPalette.onAutoLayout",
       "ui_entry": "src/components/CommandPalette.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestEditingHistory.tscn",
+        "res://scenes/test/TestAdvancedCanvas.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:CommandPalette.onAutoLayout"
     },
     {
@@ -9489,17 +9495,23 @@
       "category": "commands",
       "source_id": "CommandPalette.onClose",
       "name": "onClose",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scenes/ui/CommandPalette.gd::_input"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 23 已接入会话历史、桌面命令/连续拉线及 1～4096 并联候选；TestEditingHistory 与产品界面回归覆盖本地行为。源实现同输入金标仍由任务 27 验证，不以候选映射代替完整一致性。",
       "owner_task": 23,
       "rule_test": "rule:commands:CommandPalette.onClose",
       "manual_acceptance": "manual:commands:CommandPalette.onClose",
       "ui_entry": "src/components/CommandPalette.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestEditingHistory.tscn",
+        "res://scenes/test/TestAdvancedCanvas.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:CommandPalette.onClose"
     },
     {
@@ -9507,17 +9519,23 @@
       "category": "commands",
       "source_id": "CommandPalette.onFocusEntity",
       "name": "onFocusEntity",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scenes/ui/FactoryWorkspaceUI.gd::_locate_entity"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 23 已接入会话历史、桌面命令/连续拉线及 1～4096 并联候选；TestEditingHistory 与产品界面回归覆盖本地行为。源实现同输入金标仍由任务 27 验证，不以候选映射代替完整一致性。",
       "owner_task": 23,
       "rule_test": "rule:commands:CommandPalette.onFocusEntity",
       "manual_acceptance": "manual:commands:CommandPalette.onFocusEntity",
       "ui_entry": "src/components/CommandPalette.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestEditingHistory.tscn",
+        "res://scenes/test/TestAdvancedCanvas.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:CommandPalette.onFocusEntity"
     },
     {
@@ -9543,17 +9561,23 @@
       "category": "commands",
       "source_id": "CommandPalette.onOpenWorkspace",
       "name": "onOpenWorkspace",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scenes/ui/FactoryWorkspaceUI.gd::open_command_palette"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 23 已接入会话历史、桌面命令/连续拉线及 1～4096 并联候选；TestEditingHistory 与产品界面回归覆盖本地行为。源实现同输入金标仍由任务 27 验证，不以候选映射代替完整一致性。",
       "owner_task": 23,
       "rule_test": "rule:commands:CommandPalette.onOpenWorkspace",
       "manual_acceptance": "manual:commands:CommandPalette.onOpenWorkspace",
       "ui_entry": "src/components/CommandPalette.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestEditingHistory.tscn",
+        "res://scenes/test/TestAdvancedCanvas.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:CommandPalette.onOpenWorkspace"
     },
     {
@@ -10337,17 +10361,23 @@
       "category": "commands",
       "source_id": "engine.applyBeltConfigurationToBelts",
       "name": "applyBeltConfigurationToBelts",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/GameState.gd::try_configure_belts"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 23 已接入会话历史、桌面命令/连续拉线及 1～4096 并联候选；TestEditingHistory 与产品界面回归覆盖本地行为。源实现同输入金标仍由任务 27 验证，不以候选映射代替完整一致性。",
       "owner_task": 23,
       "rule_test": "rule:commands:engine.applyBeltConfigurationToBelts",
       "manual_acceptance": "manual:commands:engine.applyBeltConfigurationToBelts",
       "ui_entry": "src/game/engine.ts",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestEditingHistory.tscn",
+        "res://scenes/test/TestAdvancedCanvas.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:engine.applyBeltConfigurationToBelts"
     },
     {
@@ -10375,17 +10405,23 @@
       "category": "commands",
       "source_id": "engine.applyBeltConfigurationToNetworkResult",
       "name": "applyBeltConfigurationToNetworkResult",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/GameState.gd::apply_belt_configuration_to_network"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 23 已接入会话历史、桌面命令/连续拉线及 1～4096 并联候选；TestEditingHistory 与产品界面回归覆盖本地行为。源实现同输入金标仍由任务 27 验证，不以候选映射代替完整一致性。",
       "owner_task": 23,
       "rule_test": "rule:commands:engine.applyBeltConfigurationToNetworkResult",
       "manual_acceptance": "manual:commands:engine.applyBeltConfigurationToNetworkResult",
       "ui_entry": "src/game/engine.ts",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestEditingHistory.tscn",
+        "res://scenes/test/TestAdvancedCanvas.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:engine.applyBeltConfigurationToNetworkResult"
     },
     {
@@ -10976,17 +11012,23 @@
       "category": "commands",
       "source_id": "engine.connectBeltsAtomically",
       "name": "connectBeltsAtomically",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/GameState.gd::try_add_connections"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 23 已接入会话历史、桌面命令/连续拉线及 1～4096 并联候选；TestEditingHistory 与产品界面回归覆盖本地行为。源实现同输入金标仍由任务 27 验证，不以候选映射代替完整一致性。",
       "owner_task": 23,
       "rule_test": "rule:commands:engine.connectBeltsAtomically",
       "manual_acceptance": "manual:commands:engine.connectBeltsAtomically",
       "ui_entry": "src/game/engine.ts",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestEditingHistory.tscn",
+        "res://scenes/test/TestAdvancedCanvas.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:engine.connectBeltsAtomically"
     },
     {
@@ -10994,17 +11036,23 @@
       "category": "commands",
       "source_id": "engine.connectBeltWithResult",
       "name": "connectBeltWithResult",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/GameState.gd::try_add_connection"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 23 已接入会话历史、桌面命令/连续拉线及 1～4096 并联候选；TestEditingHistory 与产品界面回归覆盖本地行为。源实现同输入金标仍由任务 27 验证，不以候选映射代替完整一致性。",
       "owner_task": 23,
       "rule_test": "rule:commands:engine.connectBeltWithResult",
       "manual_acceptance": "manual:commands:engine.connectBeltWithResult",
       "ui_entry": "src/game/engine.ts",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestEditingHistory.tscn",
+        "res://scenes/test/TestAdvancedCanvas.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:engine.connectBeltWithResult"
     },
     {
@@ -11436,17 +11484,23 @@
       "category": "commands",
       "source_id": "engine.getBeltConnectionCheck",
       "name": "getBeltConnectionCheck",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/GameState.gd::preview_connections"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 23 已接入会话历史、桌面命令/连续拉线及 1～4096 并联候选；TestEditingHistory 与产品界面回归覆盖本地行为。源实现同输入金标仍由任务 27 验证，不以候选映射代替完整一致性。",
       "owner_task": 23,
       "rule_test": "rule:commands:engine.getBeltConnectionCheck",
       "manual_acceptance": "manual:commands:engine.getBeltConnectionCheck",
       "ui_entry": "src/game/engine.ts",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestEditingHistory.tscn",
+        "res://scenes/test/TestAdvancedCanvas.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:engine.getBeltConnectionCheck"
     },
     {
@@ -11454,17 +11508,23 @@
       "category": "commands",
       "source_id": "engine.getBeltLaneAdjustmentCheck",
       "name": "getBeltLaneAdjustmentCheck",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/GameState.gd::try_adjust_belt_lanes"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 23 已接入会话历史、桌面命令/连续拉线及 1～4096 并联候选；TestEditingHistory 与产品界面回归覆盖本地行为。源实现同输入金标仍由任务 27 验证，不以候选映射代替完整一致性。",
       "owner_task": 23,
       "rule_test": "rule:commands:engine.getBeltLaneAdjustmentCheck",
       "manual_acceptance": "manual:commands:engine.getBeltLaneAdjustmentCheck",
       "ui_entry": "src/game/engine.ts",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestEditingHistory.tscn",
+        "res://scenes/test/TestAdvancedCanvas.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:engine.getBeltLaneAdjustmentCheck"
     },
     {
@@ -13879,12 +13939,16 @@
           "scripts/game/GameState.gd::set_belt_lane_count"
         ]
       },
-      "gap": "已有候选；源数值、约束、效果和操作尚未逐项对比验证",
+      "gap": "任务 23 已接入会话历史、桌面命令/连续拉线及 1～4096 并联候选；TestEditingHistory 与产品界面回归覆盖本地行为。源实现同输入金标仍由任务 27 验证，不以候选映射代替完整一致性。",
       "owner_task": 23,
       "rule_test": "rule:commands:engine.setBeltLaneCount",
       "manual_acceptance": "manual:commands:engine.setBeltLaneCount",
       "ui_entry": "src/game/engine.ts",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestEditingHistory.tscn",
+        "res://scenes/test/TestAdvancedCanvas.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:engine.setBeltLaneCount"
     },
     {
@@ -15880,17 +15944,23 @@
       "category": "commands",
       "source_id": "GamePanels.onBeltLaneCountChange",
       "name": "onBeltLaneCountChange",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scenes/ui/FactoryWorkspaceUI.gd::_on_belt_config_pressed"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 23 已接入会话历史、桌面命令/连续拉线及 1～4096 并联候选；TestEditingHistory 与产品界面回归覆盖本地行为。源实现同输入金标仍由任务 27 验证，不以候选映射代替完整一致性。",
       "owner_task": 23,
       "rule_test": "rule:commands:GamePanels.onBeltLaneCountChange",
       "manual_acceptance": "manual:commands:GamePanels.onBeltLaneCountChange",
       "ui_entry": "src/components/GamePanels.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestEditingHistory.tscn",
+        "res://scenes/test/TestAdvancedCanvas.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:GamePanels.onBeltLaneCountChange"
     },
     {
@@ -16471,17 +16541,23 @@
       "category": "commands",
       "source_id": "GamePanels.onLaneCountChange",
       "name": "onLaneCountChange",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scenes/ui/FactoryWorkspaceUI.gd::_on_belt_config_pressed"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 23 已接入会话历史、桌面命令/连续拉线及 1～4096 并联候选；TestEditingHistory 与产品界面回归覆盖本地行为。源实现同输入金标仍由任务 27 验证，不以候选映射代替完整一致性。",
       "owner_task": 23,
       "rule_test": "rule:commands:GamePanels.onLaneCountChange",
       "manual_acceptance": "manual:commands:GamePanels.onLaneCountChange",
       "ui_entry": "src/components/GamePanels.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestEditingHistory.tscn",
+        "res://scenes/test/TestAdvancedCanvas.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:GamePanels.onLaneCountChange"
     },
     {
@@ -16579,17 +16655,23 @@
       "category": "commands",
       "source_id": "GamePanels.onOpenCommandPalette",
       "name": "onOpenCommandPalette",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scenes/ui/FactoryWorkspaceUI.gd::open_command_palette"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 23 已接入会话历史、桌面命令/连续拉线及 1～4096 并联候选；TestEditingHistory 与产品界面回归覆盖本地行为。源实现同输入金标仍由任务 27 验证，不以候选映射代替完整一致性。",
       "owner_task": 23,
       "rule_test": "rule:commands:GamePanels.onOpenCommandPalette",
       "manual_acceptance": "manual:commands:GamePanels.onOpenCommandPalette",
       "ui_entry": "src/components/GamePanels.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestEditingHistory.tscn",
+        "res://scenes/test/TestAdvancedCanvas.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:GamePanels.onOpenCommandPalette"
     },
     {
@@ -19403,17 +19485,23 @@
       "category": "commands",
       "source_id": "palette.entity:{entity_id}",
       "name": "entity:{entity_id}",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scenes/ui/FactoryWorkspaceUI.gd::_locate_entity"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 23 已接入会话历史、桌面命令/连续拉线及 1～4096 并联候选；TestEditingHistory 与产品界面回归覆盖本地行为。源实现同输入金标仍由任务 27 验证，不以候选映射代替完整一致性。",
       "owner_task": 23,
       "rule_test": "rule:commands:palette.entity:{entity_id}",
       "manual_acceptance": "manual:commands:palette.entity:{entity_id}",
       "ui_entry": "src/components/CommandPalette.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestEditingHistory.tscn",
+        "res://scenes/test/TestAdvancedCanvas.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:palette.entity:{entity_id}"
     },
     {

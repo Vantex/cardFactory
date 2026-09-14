@@ -78,6 +78,9 @@ static func validate_persistent_dict(payload: Variant) -> Array:
 		var connection: Dictionary = connection_value
 		if connection.get("id") != connection_id:
 			_add_error(errors, "connection_id_mismatch", "connection", connection_id, "连接 ID 必须与字典键一致")
+		var lanes: Variant = connection.get("parallel_count", 1)
+		if not _is_integral_number(lanes) or float(lanes) < 1 or float(lanes) > GameState.BELT_MAX_PARALLEL:
+			_add_error(errors, "invalid_parallel_count", "connection", connection_id, "线路并联数必须是 1～4096 的整数")
 		var source_id := String(connection.get("source_id", ""))
 		var target_id := String(connection.get("target_id", ""))
 		if not buildings.has(source_id):
@@ -491,7 +494,7 @@ static func _validate_root_inventory(errors: Array, inventory_name: String, inve
 			_add_error(errors, "invalid_inventory_amount", "inventory", "%s:%s" % [inventory_name, item_id], "库存数量必须是有限数字")
 		elif float(amount) < 0.0:
 			_add_error(errors, "negative_inventory", "inventory", "%s:%s" % [inventory_name, item_id], "库存数量不能为负数")
-		elif not (allow_legacy_credit and item_id == "legacy_credit") and float(amount) > max_amount:
+		elif not (allow_legacy_credit and item_id == "legacy_credit") and float(amount) > (GameState.construction_capacity(item_id) if inventory_name == "construction_inventory" else max_amount):
 			_add_error(errors, "inventory_overflow", "inventory", "%s:%s" % [inventory_name, item_id], "库存数量超过容量上限")
 
 static func _validate_cursor_payload(errors: Array, cursor: Variant) -> void:

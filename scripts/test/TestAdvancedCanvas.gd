@@ -180,12 +180,12 @@ func _test_connection_removal_transactions() -> void:
 	state.buildings[source_id]["output_item"] = "iron_ore"
 	var add_result := state.try_add_connection(source_id, target_id)
 	var belt_id := String(add_result.get("id", ""))
-	state.construction_inventory["conveyor_belt_mk1"] = 99.0
+	state.construction_inventory["conveyor_belt_mk1"] = GameState.BELT_MAX_INVENTORY
 	var has_transaction := state.has_method("try_remove_connection")
 	var remove_result: Dictionary = state.call("try_remove_connection", belt_id) if has_transaction else {}
-	_expect(has_transaction and not remove_result.get("ok", true) and remove_result.get("reason", "") == "construction_inventory_full" and state.connections.has(belt_id) and state.construction_inventory.conveyor_belt_mk1 == 99.0, "economic line removal preflights a full construction inventory without mutation")
+	_expect(has_transaction and not remove_result.get("ok", true) and remove_result.get("reason", "") == "construction_inventory_full" and state.connections.has(belt_id) and state.construction_inventory.conveyor_belt_mk1 == GameState.BELT_MAX_INVENTORY, "economic line removal preflights a full construction inventory without mutation")
 	var building_result := state.remove_building(source_id)
-	_expect(not building_result.get("ok", true) and state.buildings.has(source_id) and state.connections.has(belt_id) and state.construction_inventory.conveyor_belt_mk1 == 99.0, "single-building removal includes connected line refunds in one atomic preflight")
+	_expect(not building_result.get("ok", true) and state.buildings.has(source_id) and state.connections.has(belt_id) and state.construction_inventory.conveyor_belt_mk1 == GameState.BELT_MAX_INVENTORY, "single-building removal includes connected line refunds in one atomic preflight")
 
 	var raw_state := GameState.new()
 	raw_state.construction_inventory = {"conveyor_belt_mk1": 0.0}
@@ -426,7 +426,7 @@ func _test_advanced_inspector_and_renderer_contract() -> void:
 				break
 	if enabled_button != null:
 		enabled_button.pressed.emit()
-	_expect(belt_controls != null and belt_controls.visible and belt_controls.get_child_count() == 9 and enabled_button != null and state.connections[belt_id].enabled, "single-line inspector routes its nine editing commands through authoritative belt state")
+	_expect(belt_controls != null and belt_controls.visible and belt_controls.get_node_or_null("ParallelCount") != null and enabled_button != null and state.connections[belt_id].enabled, "single-line inspector exposes direct parallel input and routes commands through authoritative state")
 	_expect(connection_renderer.has_method("is_connection_selected") and connection_renderer.call("is_connection_selected", belt_id), "connection renderer consumes the same selection collection")
 	if input_handler.has_method("set_selected_entities"):
 		input_handler.call("set_selected_entities", [])

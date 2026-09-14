@@ -56,7 +56,7 @@ var _dock_buttons: Dictionary = {}
 var _toast_label: Label
 var _toast_timer: Timer
 var _recipe_signature := ""
-const WORKSPACES := ["BlueprintWorkspace", "CampaignWorkspace", "TechnologyPanel", "CodexWorkspace", "GalaxyMap", "StationPanel", "DysonPanel", "EndgameWorkspace", "ProductionCatalogWorkspace"]
+const WORKSPACES := ["BlueprintWorkspace", "CampaignWorkspace", "TechnologyPanel", "CodexWorkspace", "GalaxyMap", "StationPanel", "DysonPanel", "EndgameWorkspace", "ProductionCatalogWorkspace", "CommandPalette"]
 
 func _ready() -> void:
 	_create_workspace()
@@ -128,6 +128,7 @@ func _ready() -> void:
 	EventBus.connection_removed.connect(_on_state_changed)
 	refresh_now()
 	_create_settings_entry()
+	_create_editing_entry()
 	get_viewport().size_changed.connect(apply_device_layout)
 	apply_device_layout.call_deferred()
 
@@ -201,7 +202,7 @@ func show_notice(message: String, tone: String = "info") -> void:
 		_toast_timer.start()
 
 func is_pointer_over_ui(viewport_position: Vector2) -> bool:
-	for node_name in ["TopBar", "ResourceRail", "InspectorPanel", "ConstructionDock", "BlueprintWorkspace", "CampaignWorkspace", "MiniMap", "TechnologyPanel", "CodexWorkspace", "GalaxyMap", "StationPanel", "DysonPanel", "EndgameWorkspace", "ProductionCatalogWorkspace"]:
+	for node_name in ["TopBar", "ResourceRail", "InspectorPanel", "ConstructionDock", "BlueprintWorkspace", "CampaignWorkspace", "MiniMap", "TechnologyPanel", "CodexWorkspace", "GalaxyMap", "StationPanel", "DysonPanel", "EndgameWorkspace", "ProductionCatalogWorkspace", "CommandPalette"]:
 		var region := get_node_or_null(node_name) as Control
 		if region != null and region.visible and Rect2(Vector2.ZERO, region.size).has_point(region.get_global_transform_with_canvas().affine_inverse() * viewport_position):
 			return true
@@ -267,8 +268,10 @@ func _on_belt_config_pressed(action: String, belt_id: String) -> void:
 			var ok := state.upgrade_belt(belt_id)
 			result = {"ok": ok, "message": "线路等级已升级" if ok else "线路升级失败"}
 		"parallel":
-			var next_parallel := int(config.parallel_count) % 4 + 1
+			var next_parallel := int(config.parallel_count) + 1
 			result = state.try_configure_belt(belt_id, {"parallel_count": next_parallel})
+		"parallel_down":
+			result = state.try_adjust_belt_lanes([belt_id], -1)
 		"stack":
 			var stack_values: Array[int] = [1, 2, 4]
 			var next_stack: int = stack_values[(stack_values.find(int(config.stack_size)) + 1) % stack_values.size()]
@@ -382,6 +385,12 @@ func _on_batch_belt_config_pressed(action: String) -> void:
 		if state.get_belt_configuration(belt_id).is_empty():
 			show_notice("当前选择没有共同的线路命令", "warning")
 			return
+	if action in ["parallel_up", "parallel_down"]:
+		var result := state.try_adjust_belt_lanes(selected_ids, 1 if action == "parallel_up" else -1)
+		show_notice(result.message, "success" if result.ok else "error")
+		_recipe_signature = ""
+		refresh_now()
+		return
 	var config := state.get_belt_configuration(selected_ids[0])
 	var requested: Dictionary = {}
 	match action:
@@ -433,11 +442,11 @@ func _toggle_galaxy_workspace() -> void:
 			show_exclusive_workspace("GalaxyMap")
 
 func show_exclusive_workspace(workspace_name: String) -> void:
-	for candidate_name in ["TechnologyPanel", "CampaignWorkspace", "BlueprintWorkspace", "CodexWorkspace", "GalaxyMap", "StationPanel", "DysonPanel", "EndgameWorkspace", "ProductionCatalogWorkspace"]:
+	for candidate_name in ["TechnologyPanel", "CampaignWorkspace", "BlueprintWorkspace", "CodexWorkspace", "GalaxyMap", "StationPanel", "DysonPanel", "EndgameWorkspace", "ProductionCatalogWorkspace", "CommandPalette"]:
 		var workspace := get_node_or_null(candidate_name) as Control
 		if workspace != null:
 			workspace.visible = candidate_name == workspace_name
-			if workspace.visible: get_parent().get_node("AppShell")._focus_first.call_deferred(workspace)
+			if workspace.visible and candidate_name != "CommandPalette": get_parent().get_node("AppShell")._focus_first.call_deferred(workspace)
 
 func _on_notice_timeout() -> void:
 	get_node("Toast").hide()
@@ -831,6 +840,7 @@ func _refresh_belt_controls(belt_id: String, config: Dictionary) -> void:
 	var actions := [
 		["upgrade", "等级 +"],
 		["parallel", "并联 +"],
+		["parallel_down", "并联 −"],
 		["stack", "堆叠切换"],
 		["priority", "优先级"],
 		["route", "路由切换"],
@@ -845,6 +855,22 @@ func _refresh_belt_controls(belt_id: String, config: Dictionary) -> void:
 		button.custom_minimum_size = Vector2(78, 34)
 		button.pressed.connect(_on_belt_config_pressed.bind(action[0], belt_id))
 		_recipe_list.add_child(button)
+
+	var lanes := SpinBox.new()
+	lanes.name = "ParallelCount"
+	lanes.min_value = 1
+	lanes.max_value = GameState.BELT_MAX_PARALLEL
+	lanes.value = config.parallel_count
+	lanes.custom_minimum_size.x = 110
+	_recipe_list.add_child(lanes)
+	var apply := Button.new()
+	apply.text = "应用并联数"
+	apply.pressed.connect(func():
+		var result := _get_game_state().try_configure_belt(belt_id, {"parallel_count": int(lanes.value)})
+		show_notice(result.message, "success" if result.ok else "error")
+		_recipe_signature = ""
+		refresh_now())
+	_recipe_list.add_child(apply)
 
 func _refresh_multi_inspector(state: GameState, selected_ids: Array[String]) -> void:
 	var building_count := 0
@@ -919,7 +945,7 @@ func _refresh_multi_belt_controls(state: GameState, selected_ids: Array[String])
 	for child in _recipe_list.get_children():
 		_recipe_list.remove_child(child)
 		child.queue_free()
-	for action in [["stack", "堆叠切换"], ["priority", "优先级"], ["route", "路由切换"], ["monitor", "监控开关"], ["enabled", "启停"]]:
+	for action in [["parallel_up", "并联 +"], ["parallel_down", "并联 −"], ["stack", "堆叠切换"], ["priority", "优先级"], ["route", "路由切换"], ["monitor", "监控开关"], ["enabled", "启停"]]:
 		var button := Button.new()
 		button.text = action[1]
 		button.custom_minimum_size = Vector2(78, 34)
@@ -1322,3 +1348,76 @@ func _on_save_status_changed(status: Dictionary) -> void:
 	if label == null: return
 	label.text = status.message
 	label.tooltip_text = status.message
+
+func _create_editing_entry() -> void:
+	var palette := preload("res://scenes/ui/CommandPalette.gd").new()
+	palette.name = "CommandPalette"
+	add_child(palette)
+	var dock := get_node("ConstructionDock")
+	var index := 0
+	for definition in [["UndoEdit", "撤销", _undo_edit], ["RedoEdit", "重做", _redo_edit], ["AutoLayout", "自动布局", _auto_layout], ["CommandMenu", "命令 Ctrl+K", open_command_palette], ["ContinuousConnect", "连续连接", _continuous_connect]]:
+		var button := Button.new()
+		button.name = definition[0]
+		button.text = definition[1]
+		button.position = Vector2(950 + index * 105, 13)
+		button.size = Vector2(100, 64)
+		button.pressed.connect(definition[2])
+		dock.add_child(button)
+		index += 1
+
+func _undo_edit() -> void:
+	var result := _get_game_state().command_history.undo(_get_game_state())
+	show_notice(result.message, "success" if result.ok else "error")
+	_recipe_signature = ""
+	refresh_now()
+
+func _redo_edit() -> void:
+	var result := _get_game_state().command_history.redo(_get_game_state())
+	show_notice(result.message, "success" if result.ok else "error")
+	_recipe_signature = ""
+	refresh_now()
+
+func _auto_layout() -> void:
+	var result := FactoryAutoLayout.apply(_get_game_state(), _current_selected_building_ids())
+	show_notice(result.message, "success" if result.ok else "error")
+	refresh_now()
+
+func _continuous_connect() -> void:
+	var ids := _current_selected_building_ids()
+	if ids.size() != 1:
+		show_notice("请选择一台源建筑，再开始连续连接", "error")
+		return
+	_get_input_handler().start_continuous_connection(ids[0])
+
+func open_command_palette() -> void:
+	var commands: Array = [
+		{"label": "撤销 · Ctrl+Z", "action": _undo_edit}, {"label": "重做 · Ctrl+Shift+Z", "action": _redo_edit},
+		{"label": "自动布局所选建筑（空选布局全厂）", "action": _auto_layout}, {"label": "连续连接所选源建筑", "action": _continuous_connect},
+		{"label": "清空会话编辑历史", "action": func(): _get_game_state().command_history.clear()},
+		{"label": "锁定所选建筑", "action": _on_batch_lock_pressed.bind(true)}, {"label": "解锁所选建筑", "action": _on_batch_lock_pressed.bind(false)}]
+	for pair in [["完整生产", "ProductionCatalogWorkspace"], ["科技", "TechnologyPanel"], ["生产资料", "CodexWorkspace"], ["蓝图", "BlueprintWorkspace"], ["星图", "GalaxyMap"]]:
+		commands.append({"label": "打开 " + pair[0], "action": show_exclusive_workspace.bind(pair[1])})
+	var ids := DataManager.all_buildings.keys()
+	ids.sort()
+	for id in ids:
+		if not DataManager.construction.has(id) and not ConstructionSystem.LEGACY_COSTS.has(id): continue
+		if not DataManager.building_pending_reason(id).is_empty(): continue
+		commands.append({"label": "建造 " + String(DataManager.get_building(id).name), "action": _on_building_pressed.bind(id)})
+	for id in _get_game_state().buildings:
+		if _get_game_state().buildings[id].planet_id != _get_game_state().active_planet_id: continue
+		commands.append({"label": "定位 " + _get_game_state().get_building_display_name(id) + " · " + id, "action": _locate_entity.bind(id)})
+	show_exclusive_workspace("CommandPalette")
+	get_node("CommandPalette").open(commands)
+
+func _locate_entity(id: String) -> void:
+	var handler := _get_input_handler()
+	handler.set_selected_entities([id])
+	var camera := handler._get_camera() as Camera2D
+	if camera != null:
+		camera.global_position = _get_game_state().buildings[id].position + FactoryGeometry.CARD_SIZE / 2
+		camera.force_update_scroll()
+
+func _unhandled_key_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo and event.ctrl_pressed and event.keycode == KEY_K:
+		open_command_palette()
+		get_viewport().set_input_as_handled()

@@ -88,7 +88,7 @@ func _deliver(job: Dictionary) -> void:
 	if not inventory.can_add_batch(items, job.planet_id):
 		job.status = "output_full"
 		return
-	if job.construction and float(state.construction_inventory.get(CraftingPlanner.construction_stock_id(job.target), 0)) + float(outputs[job.target]) > 99:
+	if job.construction and float(state.construction_inventory.get(CraftingPlanner.construction_stock_id(job.target), 0)) + float(outputs[job.target]) > GameState.construction_capacity(CraftingPlanner.construction_stock_id(job.target)):
 		job.status = "output_full"
 		return
 	inventory.try_add_batch(items, job.planet_id)
