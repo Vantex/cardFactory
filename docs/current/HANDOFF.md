@@ -2,6 +2,14 @@
 
 任务 24 的持久蓝图库、独立施工队列、部分预留/退款、载具补足、精确重叠复用及区域/书签已接入正式桌面入口。20 场景全量门禁与 1080p OpenGL 图形门通过，正式边界见 [任务 24 验收](TASK24_ACCEPTANCE.md)。本地 main 提交，不推送；下一项任务 25。
 
+## 会话切换快照（2026-09-21）
+
+- 最新功能提交：`4fd00fa feat: add persistent blueprints construction queues and navigation`，已在本地 `main`。任务 24 本批交付结束，任务 25 尚未开始。
+- 已同步路线图完成勾选、项目状态、README、任务 24 验收与候选对齐矩阵。任务 22、23、24 均已有独立验收记录；源高级设备运行与完整行为一致性仍按任务 26/27 接续。
+- 工作区仅保留用户的 `project.godot` 修改：删除固定 `viewport_width=1152` / `viewport_height=648`。该改动未纳入任务提交，不要还原或顺手提交。
+- 没有待处理的任务 24 测试失败、临时分支或待合并工作；未推送。`.godot/` 下的测试日志与截图为本地忽略产物，后续运行可能覆盖。
+- 新会话先读本文件、[项目状态](../PROJECT_STATUS.md)和[路线图任务 25](SINGLE_PLAYER_ROADMAP.md)，按用户下一条指令开展科技、战役、成就及完整内容推进。本轮仅交接，不提前启动任务 25。
+
 ## 任务 21 交付（2026-09-10）
 
 稳定 A/B/C 电网、分级调度、90 MJ 储能和能量枢纽、原子批量配置及检查器入口已实现。十七场景全量门禁和 OpenGL 产品界面门通过。完整边界及最终验证见 [任务 21 验收](TASK21_ACCEPTANCE.md)。仍采用 schema v9，不将候选映射当作完整玩法验证。
@@ -26,9 +34,13 @@
 
 登记门允许明确登记的后续工作，但拒绝未登记缺失、无规则规格、错误映射和伪造“已验证”。发布模式 `-RequireComplete` 当前按预期失败；本任务没有声称原版玩法已逐项通过。任务 20～26 完成对应功能，任务 27 完成行为金标与人工旅程。
 
-## 验证
+## 当前验证（任务 24）
 
-十五场景全量门禁退出 0：`.godot/task19-final-gate.log`，成功标记各一次，无脚本/解析错误或生命周期泄漏。更新任务归属后的独立登记及源哈希复核：`.godot/task19-parity-final.log`，退出 0。负向用例和发布模式预期拒绝见 [任务 19 验收](TASK19_ACCEPTANCE.md)。本次未改变游戏运行逻辑或数据目录，因此复用任务 18 的图形验证，不宣称新增人工通关验证。
+- 最终 20 场景全量门禁退出 0：`.godot/task24-final-gate.log`；成功标记齐全，无脚本/解析错误或生命周期泄漏。
+- 1920×1080 OpenGL 产品界面测试通过：`.godot/task20-TestProductShell.log`（辅助脚本沿用旧文件名前缀），截图 `.godot/task17-task24-blueprint-library-1920x1080.png` 已查看。覆盖正式按钮与滚动面板，不等同于完整人工通关。
+- `tools/check_dsponline_parity.ps1 -SourcePath D:/AI_Program/CardGame/DSPONLINE` 与 `node tools/test_parity_task_ownership.mjs` 均通过；冻结源哈希一致。发布模式仍按预期拒绝未完成的源行为对齐。
+- 日志可能出现 sandbox 下 user:// 日志/着色器缓存不可写、系统证书读取失败；本次无对应业务断言失败。不要把环境提示当作测试通过，也不要只看退出码。
+- 尚未验证 100 个非空施工订单的性能规模基线；大型工厂 60 FPS 不在已证明结论内。完整验证边界见 [任务 24 验收](TASK24_ACCEPTANCE.md)。
 
 ## 下一项与维护方式
 
@@ -39,7 +51,7 @@
 ## 工作区保留事项
 
 - 仓库 `D:\AI_Program\CardGame\card-factory`，分支 main；本轮没有创建分支或 worktree，没有 fetch/push。
-- 任务 19 原提交只包含基线登记；本轮按用户后续规划复核要求，在保留原路线图扩展内容的基础上修订并纳入本地提交（包括任务 20～27）。
+- 任务 19 的路线图扩展及后续规划复核已纳入历史提交；不要以旧交接中的“本轮”描述覆盖当前任务 24 状态。
 - 2026-09-10 用户指定开发默认 1920×1080；窗口 override 和常规产品截图已改为 1080p、常规字号。原 viewport_width / viewport_height 删除继续保留，使用实际窗口尺寸自适应；低分辨率/大字号仍是专项回归。
 - 不操作 `.worktrees/recovery-baseline`，任务 12 备份仍在 `D:\AI_Program\CardGame\task12-premerge-backup-20260905`。
 - DSPONLINE 参考仓库只读。来源目录数据保留原许可与署名，见 `tests/fixtures/parity/NOTICE.md`。
