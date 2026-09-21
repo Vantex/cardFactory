@@ -72,9 +72,21 @@ func capture_selection(selected_entity_ids: Array) -> Dictionary:
 			"type": String(connection.get("type", "conveyor_belt_mk1")),
 			"configuration": _capture_connection_configuration(connection),
 		})
-	return BlueprintCodecScript.new().validate_and_normalize({"version": 1, "entities": entities, "connections": connections})
+	var result := BlueprintCodecScript.new().validate_and_normalize({"version": 1, "entities": entities, "connections": connections})
+	if result.ok:
+		result.fleet_targets = {}
+		for id in building_ids:
+			if not game_state.buildings[id].has("station"): continue
+			var targets := {}
+			for item in game_state.buildings[id].station.fleet:
+				var count := int(game_state.buildings[id].station.fleet[item])
+				for route in game_state.logistics_routes.values():
+					if route.source_id == id and route.vehicle == item: count += 1
+				if count > 0: targets[item] = count
+			if not targets.is_empty(): result.fleet_targets[local_refs[id]] = targets
+	return result
 
-func deploy(blueprint: Dictionary, offset: Vector2, rotation_quarters: int = 0, mirrored: bool = false, commit_guard: Callable = Callable()) -> Dictionary:
+func deploy(blueprint: Dictionary, offset: Vector2, rotation_quarters: int = 0, mirrored: bool = false, commit_guard: Callable = Callable(), allow_exact_overlap: bool = false) -> Dictionary:
 	var normalized_result := BlueprintCodecScript.new().validate_and_normalize(blueprint)
 	if not normalized_result.get("ok", false):
 		return normalized_result
@@ -108,6 +120,19 @@ func deploy(blueprint: Dictionary, offset: Vector2, rotation_quarters: int = 0, 
 			building_items.append("dsp_spray_coater")
 			cost["dsp_spray_coater"] = float(cost.get("dsp_spray_coater", 0)) + 1
 
+	var reused := {}
+	if allow_exact_overlap:
+		for plan in plans:
+			for id in game_state.buildings:
+				var live: Dictionary = game_state.buildings[id]
+				if live.get("planet_id") == game_state.active_planet_id and live.get("position") == plan.position and live.get("type") == plan.type and _capture_entity_configuration(live) == plan.configuration:
+					reused[plan.ref] = id
+					building_items.erase(plan.type)
+					cost[plan.type] -= 1
+					if plan.configuration.get("spray_coater_installed", false):
+						building_items.erase("dsp_spray_coater")
+						cost.dsp_spray_coater -= 1
+					break
 	var connection_plans: Array = []
 	var connection_items: Array[String] = []
 	var planned_edges: Dictionary = {}
@@ -127,13 +152,20 @@ func deploy(blueprint: Dictionary, offset: Vector2, rotation_quarters: int = 0, 
 		var semantic_result := _validate_planned_connection(local_refs[connection.source], local_refs[connection.target], item_id)
 		if not semantic_result.get("ok", false):
 			return semantic_result
+		var existing_link := false
+		if reused.has(connection.source) and reused.has(connection.target):
+			for link in game_state.connections.values():
+				if link.source_id == reused[connection.source] and link.target_id == reused[connection.target]:
+					if link.type != connection.type or _capture_connection_configuration(link) != connection.configuration: return _failure("overlap", "现有连接配置不匹配")
+					existing_link = true
+		if existing_link: continue
 		var parallel_count := int(connection.configuration.get("parallel_count", 1))
 		cost[connection_type] = float(cost.get(connection_type, 0.0)) + parallel_count
 		for _index in range(parallel_count):
 			connection_items.append(connection_type)
 		connection_plans.append(connection)
 
-	var overlap_result := _validate_space(plans)
+	var overlap_result := _validate_space(plans, reused)
 	if not overlap_result.get("ok", false):
 		return overlap_result
 	var deduction_result := _plan_inventory_deduction(building_items, connection_items)
@@ -150,7 +182,7 @@ func deploy(blueprint: Dictionary, offset: Vector2, rotation_quarters: int = 0, 
 			return _failure("invalid_resource_site", "蓝图采集器附近没有可用资源点")
 		plan["resource_site_id"] = String(site.get("id", ""))
 
-	var ref_to_id: Dictionary = {}
+	var ref_to_id: Dictionary = reused.duplicate()
 	var entity_ids: Array[String] = []
 	var buildings_before := game_state.buildings.duplicate(true)
 	var connections_before := game_state.connections.duplicate(true)
@@ -158,6 +190,7 @@ func deploy(blueprint: Dictionary, offset: Vector2, rotation_quarters: int = 0, 
 	var next_id_before := game_state._next_id
 	for plan_index in range(plans.size()):
 		var plan: Dictionary = plans[plan_index]
+		if reused.has(plan.ref): continue
 		var entity_id := game_state.generate_id("building")
 		ref_to_id[plan.ref] = entity_id
 		entity_ids.append(entity_id)
@@ -181,12 +214,12 @@ func deploy(blueprint: Dictionary, offset: Vector2, rotation_quarters: int = 0, 
 			return _failure("commit_failed", "蓝图部署提交失败并已回滚")
 	game_state.construction_inventory = deduction_result.inventory
 
-	for entity_id in entity_ids:
+	for entity_id in entity_ids if game_state.emit_canvas_events else []:
 		EventBus.card_placed.emit(entity_id, game_state.buildings[entity_id].position)
-	for connection_id in connection_ids:
+	for connection_id in connection_ids if game_state.emit_canvas_events else []:
 		var connection: Dictionary = game_state.connections[connection_id]
 		EventBus.connection_created.emit(connection_id, connection.source_id, connection.target_id)
-	return {"ok": true, "message": "蓝图已部署", "entity_ids": entity_ids, "connection_ids": connection_ids, "cost": cost}
+	return {"ok": true, "message": "蓝图已部署", "entity_ids": entity_ids, "connection_ids": connection_ids, "ref_to_id": ref_to_id, "cost": cost}
 
 func _capture_entity_configuration(building: Dictionary) -> Dictionary:
 	var configuration: Dictionary = {}
@@ -319,10 +352,11 @@ func _is_catalog_entry_unlocked(kind: String, entry_id: String) -> bool:
 			return true
 	return false
 
-func _validate_space(plans: Array) -> Dictionary:
+func _validate_space(plans: Array, reused: Dictionary = {}) -> Dictionary:
 	for index in range(plans.size()):
 		var target_rect := FactoryGeometryScript.card_rect(plans[index].position)
 		for existing in game_state.buildings.values():
+			if reused.get(plans[index].ref, "") == existing.get("id", ""): continue
 			if String(existing.get("planet_id", "")) != game_state.active_planet_id:
 				continue
 			if target_rect.intersects(FactoryGeometryScript.card_rect(existing.get("position", Vector2.ZERO)), false):

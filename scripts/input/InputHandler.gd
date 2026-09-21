@@ -30,6 +30,8 @@ const CANVAS_MARGIN_BOTTOM := 92.0
 var current_mode: Mode = Mode.IDLE
 var placing_building_type := ""
 var continuous_connect := false
+var _ghost_signature := 0
+var _ghost_rects: Array[Rect2] = []
 var connection_candidates: Array = []
 var connecting_source_id := ""
 var selected_entity_ids: Array[String] = []
@@ -597,7 +599,31 @@ func _zoom_at_pointer(screen_position: Vector2, factor: float) -> void:
 	camera.global_position += world_before_zoom - _screen_to_world(screen_position)
 	camera.force_update_scroll()
 
+func _ready() -> void:
+	EventBus.simulation_updated.connect(queue_redraw)
+
+func _update_ghosts() -> void:
+	var live := GameManager.get_game_state()
+	var signature := hash([live.active_planet_id, live.construction_queue])
+	if signature == _ghost_signature: return
+	_ghost_signature = signature
+	_ghost_rects.clear()
+	for order in live.construction_queue:
+		if order.planet_id != live.active_planet_id or not order.placed.is_empty(): continue
+		var decoded := BlueprintCodec.new().decode(order.text)
+		if not decoded.ok: continue
+		for entity in decoded.blueprint.entities:
+			var position: Vector2 = entity.position
+			for _turn in range(int(order.rotation)): position = Vector2(-position.y, position.x)
+			if order.mirrored: position.x = -position.x
+			position += Vector2(order.position[0], order.position[1])
+			_ghost_rects.append(Rect2(position, CARD_SIZE))
+
 func _draw() -> void:
+	_update_ghosts()
+	for rect in _ghost_rects:
+		draw_rect(rect, Color(0.6, 0.65, 0.7, 0.18), true)
+		draw_rect(rect, Color(0.6, 0.65, 0.7, 0.7), false, 2)
 	for candidate in connection_candidates:
 		var state := GameManager.get_game_state()
 		if state.buildings.has(candidate.source_id) and state.buildings.has(candidate.target_id):

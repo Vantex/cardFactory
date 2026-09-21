@@ -8,9 +8,11 @@
 
 ## 如何阅读
 
+任务 24 更新 36 项蓝图库、施工和导航候选映射（35 项从未实现转入实现中），本地回归与边界见 [任务 24 验收](current/TASK24_ACCEPTANCE.md)。
+
 此表是任务 19 的差距登记，不是玩法已经对齐的证明。现有系统仍可使用；“实现中”只表示存在候选映射，未逐项验证原版数值和行为。登记门允许明确登记的缺口，最终发布门必须清零未实现/实现中。
 
-状态统计：{"实现中":340,"未实现":736,"在线排除":23}。没有把同名条目自动标为已验证。
+状态统计：{"实现中":375,"未实现":701,"在线排除":23}。没有把同名条目自动标为已验证。
 
 完整来源定义保存输入输出、数值、前置、解锁、奖励和目录规则；成就判定等代码规则记录源文件及哈希，行为验证仍待任务 25/27。每行的自动规则编号为 rule:类别:源ID，人工编号为 manual:类别:源ID；规则规格见 [rule_cases.json](../tests/fixtures/parity/rule_cases.json)，规格登记不等于已执行行为测试。UI 栏为原版入口/定义来源，当前候选路径和缺口见 [机器清单](../tests/fixtures/parity/dsponline_single_player_manifest.json)。
 
@@ -473,7 +475,7 @@
 
 | 源 ID | 名称 | 当前候选 ID/文件 | 状态 | 后续任务 | 来源/UI |
 |---|---|---|---|---:|---|
-| BlueprintWorkspace | BlueprintWorkspace | scenes/ui/BlueprintWorkspace.gd | 实现中 | 24 | src/components/BlueprintWorkspace.tsx |
+| BlueprintWorkspace | BlueprintWorkspace | scenes/ui/BlueprintWorkspace.gd::_ready | 实现中 | 24 | src/components/BlueprintWorkspace.tsx |
 | CampaignWorkspace | CampaignWorkspace | scenes/ui/CampaignWorkspace.gd | 实现中 | 25 | src/components/CampaignWorkspace.tsx |
 | ConstructionCenterWorkspace | ConstructionCenterWorkspace | scenes/ui/ProductionCatalogWorkspace.gd | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
 | DysonPlannerWorkspace | DysonPlannerWorkspace | 待映射 | 未实现 | 26 | src/components/DysonPlannerWorkspace.tsx |
@@ -496,33 +498,33 @@
 | BlueprintWorkspace.onAutoLayout | onAutoLayout | 待映射 | 未实现 | 24 | src/components/BlueprintWorkspace.tsx |
 | BlueprintWorkspace.onBatchConnectionModeChange | onBatchConnectionModeChange | 待映射 | 未实现 | 24 | src/components/BlueprintWorkspace.tsx |
 | BlueprintWorkspace.onBatchIncrease | onBatchIncrease | 待映射 | 未实现 | 24 | src/components/BlueprintWorkspace.tsx |
-| BlueprintWorkspace.onCancelQueue | onCancelQueue | 待映射 | 未实现 | 24 | src/components/BlueprintWorkspace.tsx |
+| BlueprintWorkspace.onCancelQueue | onCancelQueue | scenes/ui/BlueprintLibraryControls.gd::_cancel | 实现中 | 24 | src/components/BlueprintWorkspace.tsx |
 | BlueprintWorkspace.onChange | onChange | 待映射 | 未实现 | 24 | src/components/BlueprintWorkspace.tsx |
-| BlueprintWorkspace.onClear | onClear | 待映射 | 未实现 | 24 | src/components/BlueprintWorkspace.tsx |
-| BlueprintWorkspace.onClose | onClose | 待映射 | 未实现 | 24 | src/components/BlueprintWorkspace.tsx |
-| BlueprintWorkspace.onCopy | onCopy | 待映射 | 未实现 | 24 | src/components/BlueprintWorkspace.tsx |
-| BlueprintWorkspace.onDeploy | onDeploy | 待映射 | 未实现 | 24 | src/components/BlueprintWorkspace.tsx |
+| BlueprintWorkspace.onClear | onClear | scenes/ui/BlueprintWorkspace.gd::clear_draft | 实现中 | 24 | src/components/BlueprintWorkspace.tsx |
+| BlueprintWorkspace.onClose | onClose | scenes/ui/BlueprintWorkspace.gd::_hide_workspace | 实现中 | 24 | src/components/BlueprintWorkspace.tsx |
+| BlueprintWorkspace.onCopy | onCopy | scenes/ui/BlueprintWorkspace.gd::capture_selection | 实现中 | 24 | src/components/BlueprintWorkspace.tsx |
+| BlueprintWorkspace.onDeploy | onDeploy | scenes/ui/BlueprintWorkspace.gd::request_deployment | 实现中 | 24 | src/components/BlueprintWorkspace.tsx |
 | BlueprintWorkspace.onDone | onDone | 待映射 | 未实现 | 24 | src/components/BlueprintWorkspace.tsx |
-| BlueprintWorkspace.onExport | onExport | 待映射 | 未实现 | 24 | src/components/BlueprintWorkspace.tsx |
+| BlueprintWorkspace.onExport | onExport | scenes/ui/BlueprintWorkspace.gd::export_to_clipboard | 实现中 | 24 | src/components/BlueprintWorkspace.tsx |
 | BlueprintWorkspace.onFocus | onFocus | 待映射 | 未实现 | 24 | src/components/BlueprintWorkspace.tsx |
-| BlueprintWorkspace.onFundAllQueues | onFundAllQueues | 待映射 | 未实现 | 24 | src/components/BlueprintWorkspace.tsx |
-| BlueprintWorkspace.onFundQueue | onFundQueue | 待映射 | 未实现 | 24 | src/components/BlueprintWorkspace.tsx |
-| BlueprintWorkspace.onImport | onImport | 待映射 | 未实现 | 24 | src/components/BlueprintWorkspace.tsx |
+| BlueprintWorkspace.onFundAllQueues | onFundAllQueues | scenes/ui/BlueprintLibraryControls.gd::_ready | 实现中 | 24 | src/components/BlueprintWorkspace.tsx |
+| BlueprintWorkspace.onFundQueue | onFundQueue | scenes/ui/BlueprintLibraryControls.gd::_fund | 实现中 | 24 | src/components/BlueprintWorkspace.tsx |
+| BlueprintWorkspace.onImport | onImport | scenes/ui/BlueprintWorkspace.gd::import_from_clipboard | 实现中 | 24 | src/components/BlueprintWorkspace.tsx |
 | BlueprintWorkspace.onLock | onLock | 待映射 | 未实现 | 24 | src/components/BlueprintWorkspace.tsx |
 | BlueprintWorkspace.onModeChange | onModeChange | 待映射 | 未实现 | 24 | src/components/BlueprintWorkspace.tsx |
 | BlueprintWorkspace.onOpenBlueprints | onOpenBlueprints | 待映射 | 未实现 | 24 | src/components/BlueprintWorkspace.tsx |
 | BlueprintWorkspace.onOpenNetworks | onOpenNetworks | 待映射 | 未实现 | 24 | src/components/BlueprintWorkspace.tsx |
-| BlueprintWorkspace.onRecipeOverride | onRecipeOverride | 待映射 | 未实现 | 24 | src/components/BlueprintWorkspace.tsx |
+| BlueprintWorkspace.onRecipeOverride | onRecipeOverride | scenes/ui/BlueprintLibraryControls.gd::_replace_recipe | 实现中 | 24 | src/components/BlueprintWorkspace.tsx |
 | BlueprintWorkspace.onRedo | onRedo | 待映射 | 未实现 | 24 | src/components/BlueprintWorkspace.tsx |
 | BlueprintWorkspace.onRegionModeChange | onRegionModeChange | 待映射 | 未实现 | 24 | src/components/BlueprintWorkspace.tsx |
-| BlueprintWorkspace.onRemove | onRemove | 待映射 | 未实现 | 24 | src/components/BlueprintWorkspace.tsx |
-| BlueprintWorkspace.onRename | onRename | 待映射 | 未实现 | 24 | src/components/BlueprintWorkspace.tsx |
+| BlueprintWorkspace.onRemove | onRemove | scenes/ui/BlueprintLibraryControls.gd::_remove | 实现中 | 24 | src/components/BlueprintWorkspace.tsx |
+| BlueprintWorkspace.onRename | onRename | scenes/ui/BlueprintLibraryControls.gd::_save | 实现中 | 24 | src/components/BlueprintWorkspace.tsx |
 | BlueprintWorkspace.onResizeStart | onResizeStart | 待映射 | 未实现 | 24 | src/components/BlueprintWorkspace.tsx |
-| BlueprintWorkspace.onSelect | onSelect | 待映射 | 未实现 | 24 | src/components/BlueprintWorkspace.tsx |
+| BlueprintWorkspace.onSelect | onSelect | scenes/ui/BlueprintLibraryControls.gd::_load_selected | 实现中 | 24 | src/components/BlueprintWorkspace.tsx |
 | BlueprintWorkspace.onToggleLeftSidebar | onToggleLeftSidebar | 待映射 | 未实现 | 24 | src/components/BlueprintWorkspace.tsx |
 | BlueprintWorkspace.onToggleLineFindMode | onToggleLineFindMode | 待映射 | 未实现 | 24 | src/components/BlueprintWorkspace.tsx |
 | BlueprintWorkspace.onToggleRightSidebar | onToggleRightSidebar | 待映射 | 未实现 | 24 | src/components/BlueprintWorkspace.tsx |
-| BlueprintWorkspace.onTransform | onTransform | 待映射 | 未实现 | 24 | src/components/BlueprintWorkspace.tsx |
+| BlueprintWorkspace.onTransform | onTransform | scenes/ui/BlueprintWorkspace.gd::rotate_preview | 实现中 | 24 | src/components/BlueprintWorkspace.tsx |
 | BlueprintWorkspace.onUndo | onUndo | 待映射 | 未实现 | 24 | src/components/BlueprintWorkspace.tsx |
 | BlueprintWorkspace.onUndoAutoLayout | onUndoAutoLayout | 待映射 | 未实现 | 24 | src/components/BlueprintWorkspace.tsx |
 | BlueprintWorkspace.onUnlock | onUnlock | 待映射 | 未实现 | 24 | src/components/BlueprintWorkspace.tsx |
@@ -593,8 +595,8 @@
 | DysonPlannerWorkspace.onSelectSwarmOrbit | onSelectSwarmOrbit | 待映射 | 未实现 | 26 | src/components/DysonPlannerWorkspace.tsx |
 | DysonPlannerWorkspace.onSwarmOrbitChange | onSwarmOrbitChange | 待映射 | 未实现 | 26 | src/components/DysonPlannerWorkspace.tsx |
 | engine.addBuildingToGroup | addBuildingToGroup | 待映射 | 未实现 | 23 | src/game/engine.ts |
-| engine.addCanvasBookmark | addCanvasBookmark | 待映射 | 未实现 | 24 | src/game/engine.ts |
-| engine.addCanvasRegion | addCanvasRegion | 待映射 | 未实现 | 24 | src/game/engine.ts |
+| engine.addCanvasBookmark | addCanvasBookmark | scripts/game/CanvasNavigation.gd::save_bookmark | 实现中 | 24 | src/game/engine.ts |
+| engine.addCanvasRegion | addCanvasRegion | scripts/game/CanvasNavigation.gd::save_region | 实现中 | 24 | src/game/engine.ts |
 | engine.addDysonLayer | addDysonLayer | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.addDysonNode | addDysonNode | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.addDysonSwarmOrbit | addDysonSwarmOrbit | 待映射 | 未实现 | 26 | src/game/engine.ts |
@@ -614,7 +616,7 @@
 | engine.attachInterstellarStationToQuantumNetwork | attachInterstellarStationToQuantumNetwork | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.autoConnectDysonLayer | autoConnectDysonLayer | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.batchIncreaseSelection | batchIncreaseSelection | 待映射 | 未实现 | 23 | src/game/engine.ts |
-| engine.cancelConstructionQueueEntry | cancelConstructionQueueEntry | 待映射 | 未实现 | 24 | src/game/engine.ts |
+| engine.cancelConstructionQueueEntry | cancelConstructionQueueEntry | scripts/game/ConstructionQueueSystem.gd::cancel | 实现中 | 24 | src/game/engine.ts |
 | engine.cancelCurrentResearch | cancelCurrentResearch | 待映射 | 未实现 | 25 | src/game/engine.ts |
 | engine.cancelHandcraftQueueEntry | cancelHandcraftQueueEntry | scripts/game/ConstructionAutomationSystem.gd::cancel | 实现中 | 22 | src/game/engine.ts |
 | engine.cancelQuantumStationAttachment | cancelQuantumStationAttachment | 待映射 | 未实现 | 26 | src/game/engine.ts |
@@ -626,7 +628,7 @@
 | engine.canHandcraftRecipe | canHandcraftRecipe | scripts/game/CraftingPlanner.gd::plan | 实现中 | 22 | src/game/engine.ts |
 | engine.canInstallSprayCoater | canInstallSprayCoater | scripts/game/ProliferatorSystem.gd::eligible | 实现中 | 22 | src/game/engine.ts |
 | engine.canPlaceBlueprint | canPlaceBlueprint | 待映射 | 未实现 | 24 | src/game/engine.ts |
-| engine.canQueueBlueprint | canQueueBlueprint | 待映射 | 未实现 | 24 | src/game/engine.ts |
+| engine.canQueueBlueprint | canQueueBlueprint | scripts/game/ConstructionQueueSystem.gd::_preview | 实现中 | 24 | src/game/engine.ts |
 | engine.canQueueHandcraftRecipe | canQueueHandcraftRecipe | scripts/game/CraftingPlanner.gd::plan | 实现中 | 22 | src/game/engine.ts |
 | engine.canQueueTechnology | canQueueTechnology | 待映射 | 未实现 | 25 | src/game/engine.ts |
 | engine.canSelectTechnology | canSelectTechnology | 待映射 | 未实现 | 25 | src/game/engine.ts |
@@ -645,7 +647,7 @@
 | engine.connectDysonNodes | connectDysonNodes | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.craftConstruction | craftConstruction | scripts/game/ConstructionAutomationSystem.gd::queue | 实现中 | 22 | src/game/engine.ts |
 | engine.craftConstructionWithUpstream | craftConstructionWithUpstream | scripts/game/ConstructionAutomationSystem.gd::queue | 实现中 | 22 | src/game/engine.ts |
-| engine.createBlueprint | createBlueprint | 待映射 | 未实现 | 24 | src/game/engine.ts |
+| engine.createBlueprint | createBlueprint | scripts/game/BlueprintLibrary.gd::save_definition | 实现中 | 24 | src/game/engine.ts |
 | engine.createPersistentSimulationRuntime | createPersistentSimulationRuntime | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.createSimulationAdvanceSession | createSimulationAdvanceSession | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.createSimulationLookupContext | createSimulationLookupContext | 待映射 | 未实现 | 26 | src/game/engine.ts |
@@ -663,8 +665,8 @@
 | engine.findPlanetaryPeer | findPlanetaryPeer | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.findStationSlotPeer | findStationSlotPeer | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.findStationSlotPeers | findStationSlotPeers | 待映射 | 未实现 | 26 | src/game/engine.ts |
-| engine.fundAllConstructionQueueEntries | fundAllConstructionQueueEntries | 待映射 | 未实现 | 24 | src/game/engine.ts |
-| engine.fundConstructionQueueEntry | fundConstructionQueueEntry | 待映射 | 未实现 | 24 | src/game/engine.ts |
+| engine.fundAllConstructionQueueEntries | fundAllConstructionQueueEntries | scripts/game/ConstructionQueueSystem.gd::fund_all | 实现中 | 24 | src/game/engine.ts |
+| engine.fundConstructionQueueEntry | fundConstructionQueueEntry | scripts/game/ConstructionQueueSystem.gd::fund | 实现中 | 24 | src/game/engine.ts |
 | engine.getBeltConnectionCheck | getBeltConnectionCheck | scripts/game/GameState.gd::preview_connections | 实现中 | 23 | src/game/engine.ts |
 | engine.getBeltLaneAdjustmentCheck | getBeltLaneAdjustmentCheck | scripts/game/GameState.gd::try_adjust_belt_lanes | 实现中 | 23 | src/game/engine.ts |
 | engine.getBeltNetworkIds | getBeltNetworkIds | 待映射 | 未实现 | 23 | src/game/engine.ts |
@@ -762,12 +764,12 @@
 | engine.pickFromEntity | pickFromEntity | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.pickFromEntityInput | pickFromEntityInput | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.pickFromTray | pickFromTray | 待映射 | 未实现 | 23 | src/game/engine.ts |
-| engine.placeBlueprint | placeBlueprint | 待映射 | 未实现 | 24 | src/game/engine.ts |
+| engine.placeBlueprint | placeBlueprint | scripts/game/ConstructionQueueSystem.gd::deploy_immediately | 实现中 | 24 | src/game/engine.ts |
 | engine.placeBuilding | placeBuilding | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.planDysonShell | planDysonShell | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.prepareSimulationStep | prepareSimulationStep | 待映射 | 未实现 | 26 | src/game/engine.ts |
-| engine.processConstructionQueue | processConstructionQueue | 待映射 | 未实现 | 24 | src/game/engine.ts |
-| engine.queueBlueprint | queueBlueprint | 待映射 | 未实现 | 24 | src/game/engine.ts |
+| engine.processConstructionQueue | processConstructionQueue | scripts/game/ConstructionQueueSystem.gd::fund_all | 实现中 | 24 | src/game/engine.ts |
+| engine.queueBlueprint | queueBlueprint | scripts/game/ConstructionQueueSystem.gd::enqueue | 实现中 | 24 | src/game/engine.ts |
 | engine.queueHandcraftRecipe | queueHandcraftRecipe | scripts/game/ConstructionAutomationSystem.gd::queue | 实现中 | 22 | src/game/engine.ts |
 | engine.refillStationWarpers | refillStationWarpers | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.refreshDysonGenerationSnapshot | refreshDysonGenerationSnapshot | 待映射 | 未实现 | 26 | src/game/engine.ts |
@@ -775,9 +777,9 @@
 | engine.refreshTimeWarpPowerSnapshotInPlace | refreshTimeWarpPowerSnapshotInPlace | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.removeBelt | removeBelt | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.removeBeltNetwork | removeBeltNetwork | 待映射 | 未实现 | 23 | src/game/engine.ts |
-| engine.removeBlueprint | removeBlueprint | 待映射 | 未实现 | 24 | src/game/engine.ts |
-| engine.removeCanvasBookmark | removeCanvasBookmark | 待映射 | 未实现 | 24 | src/game/engine.ts |
-| engine.removeCanvasRegion | removeCanvasRegion | 待映射 | 未实现 | 24 | src/game/engine.ts |
+| engine.removeBlueprint | removeBlueprint | scripts/game/BlueprintLibrary.gd::remove | 实现中 | 24 | src/game/engine.ts |
+| engine.removeCanvasBookmark | removeCanvasBookmark | scripts/game/CanvasNavigation.gd::remove | 实现中 | 24 | src/game/engine.ts |
+| engine.removeCanvasRegion | removeCanvasRegion | scripts/game/CanvasNavigation.gd::remove | 实现中 | 24 | src/game/engine.ts |
 | engine.removeDysonLayer | removeDysonLayer | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.removeDysonNode | removeDysonNode | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.removeDysonSwarmOrbit | removeDysonSwarmOrbit | 待映射 | 未实现 | 26 | src/game/engine.ts |
@@ -785,9 +787,9 @@
 | engine.removeEntity | removeEntity | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.removeQueuedTechnology | removeQueuedTechnology | 待映射 | 未实现 | 25 | src/game/engine.ts |
 | engine.removeSprayCoater | removeSprayCoater | scripts/game/ProliferatorSystem.gd::remove | 实现中 | 22 | src/game/engine.ts |
-| engine.renameBlueprint | renameBlueprint | 待映射 | 未实现 | 24 | src/game/engine.ts |
-| engine.renameCanvasBookmark | renameCanvasBookmark | 待映射 | 未实现 | 24 | src/game/engine.ts |
-| engine.resizeCanvasRegion | resizeCanvasRegion | 待映射 | 未实现 | 24 | src/game/engine.ts |
+| engine.renameBlueprint | renameBlueprint | scripts/game/BlueprintLibrary.gd::rename | 实现中 | 24 | src/game/engine.ts |
+| engine.renameCanvasBookmark | renameCanvasBookmark | scripts/game/CanvasNavigation.gd::rename | 实现中 | 24 | src/game/engine.ts |
+| engine.resizeCanvasRegion | resizeCanvasRegion | scripts/game/CanvasNavigation.gd::save_region | 实现中 | 24 | src/game/engine.ts |
 | engine.resumePausedResearch | resumePausedResearch | 待映射 | 未实现 | 25 | src/game/engine.ts |
 | engine.runPlanetSimulationPhase | runPlanetSimulationPhase | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.selectInfiniteResearch | selectInfiniteResearch | 待映射 | 未实现 | 25 | src/game/engine.ts |
@@ -804,8 +806,8 @@
 | engine.setBeltRouteOffsetY | setBeltRouteOffsetY | scripts/game/GameState.gd::set_belt_route_offset_y | 实现中 | 23 | src/game/engine.ts |
 | engine.setBeltStackSize | setBeltStackSize | scripts/game/GameState.gd::set_belt_stack_size | 实现中 | 23 | src/game/engine.ts |
 | engine.setBlackHolePaused | setBlackHolePaused | 待映射 | 未实现 | 26 | src/game/engine.ts |
-| engine.setBlueprintRecipeOverride | setBlueprintRecipeOverride | 待映射 | 未实现 | 24 | src/game/engine.ts |
-| engine.setBlueprintTransform | setBlueprintTransform | 待映射 | 未实现 | 24 | src/game/engine.ts |
+| engine.setBlueprintRecipeOverride | setBlueprintRecipeOverride | scripts/game/BlueprintLibrary.gd::save_definition | 实现中 | 24 | src/game/engine.ts |
+| engine.setBlueprintTransform | setBlueprintTransform | scripts/game/BlueprintLibrary.gd::save_definition | 实现中 | 24 | src/game/engine.ts |
 | engine.setConstructionAutomationEnabled | setConstructionAutomationEnabled | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.setConstructionAutomationTarget | setConstructionAutomationTarget | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.setConstructionAutomationTargetsForBuildings | setConstructionAutomationTargetsForBuildings | 待映射 | 未实现 | 23 | src/game/engine.ts |
@@ -868,7 +870,7 @@
 | engine.setTimeWarpRequestedMultiplier | setTimeWarpRequestedMultiplier | 待映射 | 未实现 | 26 | src/game/engine.ts |
 | engine.settleCompletedResearchBoundaries | settleCompletedResearchBoundaries | 待映射 | 未实现 | 25 | src/game/engine.ts |
 | engine.settleCompletedResearchBoundariesInPlace | settleCompletedResearchBoundariesInPlace | 待映射 | 未实现 | 25 | src/game/engine.ts |
-| engine.updateCanvasRegion | updateCanvasRegion | 待映射 | 未实现 | 24 | src/game/engine.ts |
+| engine.updateCanvasRegion | updateCanvasRegion | scripts/game/CanvasNavigation.gd::save_region | 实现中 | 24 | src/game/engine.ts |
 | engine.upgradeBelt | upgradeBelt | scripts/game/GameState.gd::upgrade_belt | 实现中 | 23 | src/game/engine.ts |
 | engine.upgradeBeltNetwork | upgradeBeltNetwork | scripts/game/GameState.gd::upgrade_belt_network | 实现中 | 23 | src/game/engine.ts |
 | engine.upgradeEntities | upgradeEntities | scripts/game/GameState.gd::upgrade_entities | 实现中 | 23 | src/game/engine.ts |
@@ -1146,7 +1148,7 @@
 | StationCanvasRenderer.onMovePlacement | onMovePlacement | 待映射 | 未实现 | 26 | src/components/StationCanvasRenderer.tsx |
 | StationCanvasRenderer.onSelectPlacement | onSelectPlacement | 待映射 | 未实现 | 26 | src/components/StationCanvasRenderer.tsx |
 | StationCanvasRenderer.onViewportChange | onViewportChange | 待映射 | 未实现 | 26 | src/components/StationCanvasRenderer.tsx |
-| StatisticsWorkspace.onAddCanvasBookmark | onAddCanvasBookmark | 待映射 | 未实现 | 24 | src/components/StatisticsWorkspace.tsx |
+| StatisticsWorkspace.onAddCanvasBookmark | onAddCanvasBookmark | scenes/ui/CanvasNavigationControls.gd::_bookmark | 实现中 | 24 | src/components/StatisticsWorkspace.tsx |
 | StatisticsWorkspace.onBeltHeatmapChange | onBeltHeatmapChange | 待映射 | 未实现 | 23 | src/components/StatisticsWorkspace.tsx |
 | StatisticsWorkspace.onBulkBeltConfiguration | onBulkBeltConfiguration | 待映射 | 未实现 | 23 | src/components/StatisticsWorkspace.tsx |
 | StatisticsWorkspace.onBulkBeltRemove | onBulkBeltRemove | 待映射 | 未实现 | 23 | src/components/StatisticsWorkspace.tsx |
@@ -1165,7 +1167,7 @@
 | StatisticsWorkspace.onGalacticExporterPausedChange | onGalacticExporterPausedChange | 待映射 | 未实现 | 26 | src/components/StatisticsWorkspace.tsx |
 | StatisticsWorkspace.onGalacticExportPriority | onGalacticExportPriority | 待映射 | 未实现 | 26 | src/components/StatisticsWorkspace.tsx |
 | StatisticsWorkspace.onInfiniteResearchAutomation | onInfiniteResearchAutomation | 待映射 | 未实现 | 25 | src/components/StatisticsWorkspace.tsx |
-| StatisticsWorkspace.onOpenCanvasBookmark | onOpenCanvasBookmark | 待映射 | 未实现 | 24 | src/components/StatisticsWorkspace.tsx |
+| StatisticsWorkspace.onOpenCanvasBookmark | onOpenCanvasBookmark | scenes/ui/CanvasNavigationControls.gd::_navigate | 实现中 | 24 | src/components/StatisticsWorkspace.tsx |
 | StatisticsWorkspace.onRemoveCanvasBookmark | onRemoveCanvasBookmark | 待映射 | 未实现 | 24 | src/components/StatisticsWorkspace.tsx |
 | StatisticsWorkspace.onRemovePlan | onRemovePlan | 待映射 | 未实现 | 23 | src/components/StatisticsWorkspace.tsx |
 | StatisticsWorkspace.onRenameCanvasBookmark | onRenameCanvasBookmark | 待映射 | 未实现 | 24 | src/components/StatisticsWorkspace.tsx |

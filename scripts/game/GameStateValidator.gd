@@ -44,6 +44,7 @@ static func validate_persistent_dict(payload: Variant) -> Array:
 
 	var buildings: Dictionary = buildings_value
 	var connections: Dictionary = connections_value
+	errors.append_array(BlueprintStateValidator.validate(data))
 	errors.append_array(LogisticsStateValidator.validate(data))
 	errors.append_array(DysonStateValidator.validate(data))
 	errors.append_array(EndgameStateValidator.validate(data))

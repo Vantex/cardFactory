@@ -14,6 +14,28 @@ const CONNECTION_KEYS := ["source", "target", "type", "configuration"]
 const ENTITY_CONFIGURATION_KEYS := ["recipe_id", "output_item", "spray_coater_installed", "proliferator_tier", "proliferator_mode"]
 const CONNECTION_CONFIGURATION_KEYS := ["item_id", "parallel_count", "stack_size", "priority", "route_mode", "route_offset_y", "monitor_enabled", "enabled"]
 
+func encode_library_entry(entry: Dictionary) -> Dictionary:
+	if not BlueprintStateValidator._definition(entry): return _failure("invalid_definition", "蓝图库配置无效")
+	var portable := {}
+	for key in ["name", "text", "rotation", "mirrored", "overrides", "fleet_targets"]:
+		portable[key] = entry.get(key, {})
+	var text := JSON.stringify({"format": "cardfactory-blueprint-library", "version": 1, "entry": portable})
+	if text.length() > MAX_TEXT_LENGTH * 2: return _failure("text_too_long", "蓝图库文本超过长度限制")
+	return {"ok": true, "text": text}
+
+func decode_library_entry(text: String) -> Dictionary:
+	if text.length() > MAX_TEXT_LENGTH * 2: return _failure("text_too_long", "蓝图库文本超过长度限制")
+	var parsed: Variant = JSON.parse_string(text)
+	if parsed is Dictionary and parsed.get("format") == "cardfactory-blueprint-library":
+		if not _has_exact_keys(parsed, ["format", "version", "entry"]) or parsed.version != 1 or not parsed.entry is Dictionary: return _failure("invalid_definition", "蓝图库格式无效")
+		if not _has_exact_keys(parsed.entry, ["name", "text", "rotation", "mirrored", "overrides", "fleet_targets"]) or not BlueprintStateValidator._definition(parsed.entry): return _failure("invalid_definition", "蓝图库引用或配置无效")
+		return {"ok": true, "entry": parsed.entry, "blueprint": BlueprintLibrary.resolve(parsed.entry).blueprint}
+	var legacy := decode(text)
+	if not legacy.ok: return legacy
+	var entry := {"name": "导入蓝图", "text": text, "rotation": 0, "mirrored": false, "overrides": {}, "fleet_targets": {}}
+	if not BlueprintStateValidator._definition(entry): return _failure("invalid_reference", "蓝图引用无效")
+	return {"ok": true, "entry": entry, "blueprint": legacy.blueprint}
+
 func encode(blueprint: Dictionary) -> Dictionary:
 	var normalized := validate_and_normalize(blueprint)
 	if not normalized.get("ok", false):

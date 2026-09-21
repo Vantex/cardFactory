@@ -141,6 +141,7 @@ func _test_product_ui() -> void:
 	workspace.show_exclusive_workspace("TechnologyPanel")
 	_expect(not palette.visible, "workspace navigation closes command palette")
 	workspace.get_node("TechnologyPanel").hide()
+	await _test_blueprint_persistence_ui(viewport, workspace)
 	handler.set_selected_entities([])
 	var station_id := GameManager.get_game_state().add_building({"type": "planetary_logistics_station", "position": Vector2(3000, 3000), "station": StationSystem.empty_station()})
 	await _frames()
@@ -268,6 +269,46 @@ func _test_desktop_commands(main: Node, handler: Node) -> void:
 	button.button_index = JOY_BUTTON_A
 	handler._accessible_input(button)
 	_expect(state.connections.size() == 1, "gamepad connection invokes compatible belt command")
+
+func _test_blueprint_persistence_ui(viewport: SubViewport, workspace: FactoryWorkspaceUI) -> void:
+	workspace.show_exclusive_workspace("BlueprintWorkspace")
+	var blueprint: BlueprintWorkspace = workspace.get_node("BlueprintWorkspace")
+	var state := GameManager.game_state
+	var definition := {"version": 1, "entities": [{"ref": "entity_0", "type": "smelter", "position": Vector2.ZERO, "configuration": {"recipe_id": "iron_ingot_recipe"}}], "connections": []}
+	blueprint.accept_capture_result({"ok": true, "blueprint": definition})
+	var controls: Control = blueprint.library_controls
+	controls.title.text = "桌面冶炼蓝图"
+	_click_named_action(controls, "保存为新蓝图")
+	_expect(state.blueprint_library.size() == 1, "formal library save writes authoritative definition")
+	blueprint.rotate_preview()
+	_click_named_action(controls, "更新所选蓝图（含名称与变换）")
+	_expect(state.blueprint_library.values()[0].rotation == 1, "formal update persists preview transform")
+	var camera: Camera2D = viewport.get_camera_2d()
+	camera.global_position = Vector2(7000, 0)
+	state.construction_inventory.smelter = 0.0
+	_click_named_action(controls, "排队部署到相机")
+	_expect(state.construction_queue.size() == 1, "formal queue action creates a ghost order")
+	state.construction_inventory.smelter = 1.0
+	_click_named_action(controls, "资助所选订单")
+	_expect(state.construction_queue.is_empty() and state.buildings.values().any(func(b): return b.position == Vector2(7000, 0)), "formal fund action places paid building")
+	var navigation: Control = blueprint.get_node("Panel/NavigationControls")
+	navigation.title.text = "主厂书签"
+	_click_named_action(navigation, "保存当前镜头书签")
+	camera.global_position = Vector2.ZERO
+	_click_named_action(navigation, "定位标记（可跨行星）")
+	_expect(camera.global_position == Vector2(7000, 0) and state.canvas_bookmarks.size() == 1, "formal bookmark restores camera")
+	await _frames()
+	controls.title.grab_focus()
+	await _frames()
+	await _capture(viewport, "task24-blueprint-library-1920x1080")
+	blueprint.hide()
+
+func _click_named_action(root: Node, text: String) -> void:
+	for button in root.find_children("*", "Button", true, false):
+		if button.text == text:
+			button.pressed.emit()
+			return
+	_expect(false, "missing formal action " + text)
 
 func _capture(viewport: SubViewport, label: String) -> void:
 	if not OS.get_cmdline_user_args().has("--capture"): return

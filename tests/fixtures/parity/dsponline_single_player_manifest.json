@@ -8009,17 +8009,21 @@
       "name": "BlueprintWorkspace",
       "status": "实现中",
       "target": {
-        "category": "file",
+        "category": "symbol",
         "ids": [
-          "scenes/ui/BlueprintWorkspace.gd"
+          "scenes/ui/BlueprintWorkspace.gd::_ready"
         ]
       },
-      "gap": "已有候选；源数值、约束、效果和操作尚未逐项对比验证",
+      "gap": "任务 24 已接入持久蓝图库、独立施工订单、唯一预留及导航入口并通过本地回归；受限蓝图格式与当前原生物流站适用。完整源配置及跨实现行为金标仍按任务 26/27 验收。",
       "owner_task": 24,
       "rule_test": "rule:workspaces:BlueprintWorkspace",
       "manual_acceptance": "manual:workspaces:BlueprintWorkspace",
       "ui_entry": "src/components/BlueprintWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestBlueprintPersistence.tscn",
+        "res://scenes/test/TestBlueprints.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "workspaces:BlueprintWorkspace"
     },
     {
@@ -8355,17 +8359,23 @@
       "category": "commands",
       "source_id": "BlueprintWorkspace.onCancelQueue",
       "name": "onCancelQueue",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scenes/ui/BlueprintLibraryControls.gd::_cancel"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 24 已接入持久蓝图库、独立施工订单、唯一预留及导航入口并通过本地回归；受限蓝图格式与当前原生物流站适用。完整源配置及跨实现行为金标仍按任务 26/27 验收。",
       "owner_task": 24,
       "rule_test": "rule:commands:BlueprintWorkspace.onCancelQueue",
       "manual_acceptance": "manual:commands:BlueprintWorkspace.onCancelQueue",
       "ui_entry": "src/components/BlueprintWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestBlueprintPersistence.tscn",
+        "res://scenes/test/TestBlueprints.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:BlueprintWorkspace.onCancelQueue"
     },
     {
@@ -8391,17 +8401,23 @@
       "category": "commands",
       "source_id": "BlueprintWorkspace.onClear",
       "name": "onClear",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scenes/ui/BlueprintWorkspace.gd::clear_draft"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 24 已接入持久蓝图库、独立施工订单、唯一预留及导航入口并通过本地回归；受限蓝图格式与当前原生物流站适用。完整源配置及跨实现行为金标仍按任务 26/27 验收。",
       "owner_task": 24,
       "rule_test": "rule:commands:BlueprintWorkspace.onClear",
       "manual_acceptance": "manual:commands:BlueprintWorkspace.onClear",
       "ui_entry": "src/components/BlueprintWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestBlueprintPersistence.tscn",
+        "res://scenes/test/TestBlueprints.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:BlueprintWorkspace.onClear"
     },
     {
@@ -8409,17 +8425,23 @@
       "category": "commands",
       "source_id": "BlueprintWorkspace.onClose",
       "name": "onClose",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scenes/ui/BlueprintWorkspace.gd::_hide_workspace"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 24 已接入持久蓝图库、独立施工订单、唯一预留及导航入口并通过本地回归；受限蓝图格式与当前原生物流站适用。完整源配置及跨实现行为金标仍按任务 26/27 验收。",
       "owner_task": 24,
       "rule_test": "rule:commands:BlueprintWorkspace.onClose",
       "manual_acceptance": "manual:commands:BlueprintWorkspace.onClose",
       "ui_entry": "src/components/BlueprintWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestBlueprintPersistence.tscn",
+        "res://scenes/test/TestBlueprints.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:BlueprintWorkspace.onClose"
     },
     {
@@ -8427,17 +8449,23 @@
       "category": "commands",
       "source_id": "BlueprintWorkspace.onCopy",
       "name": "onCopy",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scenes/ui/BlueprintWorkspace.gd::capture_selection"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 24 已接入持久蓝图库、独立施工订单、唯一预留及导航入口并通过本地回归；受限蓝图格式与当前原生物流站适用。完整源配置及跨实现行为金标仍按任务 26/27 验收。",
       "owner_task": 24,
       "rule_test": "rule:commands:BlueprintWorkspace.onCopy",
       "manual_acceptance": "manual:commands:BlueprintWorkspace.onCopy",
       "ui_entry": "src/components/BlueprintWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestBlueprintPersistence.tscn",
+        "res://scenes/test/TestBlueprints.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:BlueprintWorkspace.onCopy"
     },
     {
@@ -8445,17 +8473,23 @@
       "category": "commands",
       "source_id": "BlueprintWorkspace.onDeploy",
       "name": "onDeploy",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scenes/ui/BlueprintWorkspace.gd::request_deployment"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 24 已接入持久蓝图库、独立施工订单、唯一预留及导航入口并通过本地回归；受限蓝图格式与当前原生物流站适用。完整源配置及跨实现行为金标仍按任务 26/27 验收。",
       "owner_task": 24,
       "rule_test": "rule:commands:BlueprintWorkspace.onDeploy",
       "manual_acceptance": "manual:commands:BlueprintWorkspace.onDeploy",
       "ui_entry": "src/components/BlueprintWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestBlueprintPersistence.tscn",
+        "res://scenes/test/TestBlueprints.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:BlueprintWorkspace.onDeploy"
     },
     {
@@ -8481,17 +8515,23 @@
       "category": "commands",
       "source_id": "BlueprintWorkspace.onExport",
       "name": "onExport",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scenes/ui/BlueprintWorkspace.gd::export_to_clipboard"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 24 已接入持久蓝图库、独立施工订单、唯一预留及导航入口并通过本地回归；受限蓝图格式与当前原生物流站适用。完整源配置及跨实现行为金标仍按任务 26/27 验收。",
       "owner_task": 24,
       "rule_test": "rule:commands:BlueprintWorkspace.onExport",
       "manual_acceptance": "manual:commands:BlueprintWorkspace.onExport",
       "ui_entry": "src/components/BlueprintWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestBlueprintPersistence.tscn",
+        "res://scenes/test/TestBlueprints.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:BlueprintWorkspace.onExport"
     },
     {
@@ -8517,17 +8557,23 @@
       "category": "commands",
       "source_id": "BlueprintWorkspace.onFundAllQueues",
       "name": "onFundAllQueues",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scenes/ui/BlueprintLibraryControls.gd::_ready"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 24 已接入持久蓝图库、独立施工订单、唯一预留及导航入口并通过本地回归；受限蓝图格式与当前原生物流站适用。完整源配置及跨实现行为金标仍按任务 26/27 验收。",
       "owner_task": 24,
       "rule_test": "rule:commands:BlueprintWorkspace.onFundAllQueues",
       "manual_acceptance": "manual:commands:BlueprintWorkspace.onFundAllQueues",
       "ui_entry": "src/components/BlueprintWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestBlueprintPersistence.tscn",
+        "res://scenes/test/TestBlueprints.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:BlueprintWorkspace.onFundAllQueues"
     },
     {
@@ -8535,17 +8581,23 @@
       "category": "commands",
       "source_id": "BlueprintWorkspace.onFundQueue",
       "name": "onFundQueue",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scenes/ui/BlueprintLibraryControls.gd::_fund"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 24 已接入持久蓝图库、独立施工订单、唯一预留及导航入口并通过本地回归；受限蓝图格式与当前原生物流站适用。完整源配置及跨实现行为金标仍按任务 26/27 验收。",
       "owner_task": 24,
       "rule_test": "rule:commands:BlueprintWorkspace.onFundQueue",
       "manual_acceptance": "manual:commands:BlueprintWorkspace.onFundQueue",
       "ui_entry": "src/components/BlueprintWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestBlueprintPersistence.tscn",
+        "res://scenes/test/TestBlueprints.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:BlueprintWorkspace.onFundQueue"
     },
     {
@@ -8553,17 +8605,23 @@
       "category": "commands",
       "source_id": "BlueprintWorkspace.onImport",
       "name": "onImport",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scenes/ui/BlueprintWorkspace.gd::import_from_clipboard"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 24 已接入持久蓝图库、独立施工订单、唯一预留及导航入口并通过本地回归；受限蓝图格式与当前原生物流站适用。完整源配置及跨实现行为金标仍按任务 26/27 验收。",
       "owner_task": 24,
       "rule_test": "rule:commands:BlueprintWorkspace.onImport",
       "manual_acceptance": "manual:commands:BlueprintWorkspace.onImport",
       "ui_entry": "src/components/BlueprintWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestBlueprintPersistence.tscn",
+        "res://scenes/test/TestBlueprints.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:BlueprintWorkspace.onImport"
     },
     {
@@ -8643,17 +8701,23 @@
       "category": "commands",
       "source_id": "BlueprintWorkspace.onRecipeOverride",
       "name": "onRecipeOverride",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scenes/ui/BlueprintLibraryControls.gd::_replace_recipe"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 24 已接入持久蓝图库、独立施工订单、唯一预留及导航入口并通过本地回归；受限蓝图格式与当前原生物流站适用。完整源配置及跨实现行为金标仍按任务 26/27 验收。",
       "owner_task": 24,
       "rule_test": "rule:commands:BlueprintWorkspace.onRecipeOverride",
       "manual_acceptance": "manual:commands:BlueprintWorkspace.onRecipeOverride",
       "ui_entry": "src/components/BlueprintWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestBlueprintPersistence.tscn",
+        "res://scenes/test/TestBlueprints.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:BlueprintWorkspace.onRecipeOverride"
     },
     {
@@ -8697,17 +8761,23 @@
       "category": "commands",
       "source_id": "BlueprintWorkspace.onRemove",
       "name": "onRemove",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scenes/ui/BlueprintLibraryControls.gd::_remove"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 24 已接入持久蓝图库、独立施工订单、唯一预留及导航入口并通过本地回归；受限蓝图格式与当前原生物流站适用。完整源配置及跨实现行为金标仍按任务 26/27 验收。",
       "owner_task": 24,
       "rule_test": "rule:commands:BlueprintWorkspace.onRemove",
       "manual_acceptance": "manual:commands:BlueprintWorkspace.onRemove",
       "ui_entry": "src/components/BlueprintWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestBlueprintPersistence.tscn",
+        "res://scenes/test/TestBlueprints.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:BlueprintWorkspace.onRemove"
     },
     {
@@ -8715,17 +8785,23 @@
       "category": "commands",
       "source_id": "BlueprintWorkspace.onRename",
       "name": "onRename",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scenes/ui/BlueprintLibraryControls.gd::_save"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 24 已接入持久蓝图库、独立施工订单、唯一预留及导航入口并通过本地回归；受限蓝图格式与当前原生物流站适用。完整源配置及跨实现行为金标仍按任务 26/27 验收。",
       "owner_task": 24,
       "rule_test": "rule:commands:BlueprintWorkspace.onRename",
       "manual_acceptance": "manual:commands:BlueprintWorkspace.onRename",
       "ui_entry": "src/components/BlueprintWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestBlueprintPersistence.tscn",
+        "res://scenes/test/TestBlueprints.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:BlueprintWorkspace.onRename"
     },
     {
@@ -8751,17 +8827,23 @@
       "category": "commands",
       "source_id": "BlueprintWorkspace.onSelect",
       "name": "onSelect",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scenes/ui/BlueprintLibraryControls.gd::_load_selected"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 24 已接入持久蓝图库、独立施工订单、唯一预留及导航入口并通过本地回归；受限蓝图格式与当前原生物流站适用。完整源配置及跨实现行为金标仍按任务 26/27 验收。",
       "owner_task": 24,
       "rule_test": "rule:commands:BlueprintWorkspace.onSelect",
       "manual_acceptance": "manual:commands:BlueprintWorkspace.onSelect",
       "ui_entry": "src/components/BlueprintWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestBlueprintPersistence.tscn",
+        "res://scenes/test/TestBlueprints.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:BlueprintWorkspace.onSelect"
     },
     {
@@ -8823,17 +8905,23 @@
       "category": "commands",
       "source_id": "BlueprintWorkspace.onTransform",
       "name": "onTransform",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scenes/ui/BlueprintWorkspace.gd::rotate_preview"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 24 已接入持久蓝图库、独立施工订单、唯一预留及导航入口并通过本地回归；受限蓝图格式与当前原生物流站适用。完整源配置及跨实现行为金标仍按任务 26/27 验收。",
       "owner_task": 24,
       "rule_test": "rule:commands:BlueprintWorkspace.onTransform",
       "manual_acceptance": "manual:commands:BlueprintWorkspace.onTransform",
       "ui_entry": "src/components/BlueprintWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestBlueprintPersistence.tscn",
+        "res://scenes/test/TestBlueprints.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:BlueprintWorkspace.onTransform"
     },
     {
@@ -10125,17 +10213,23 @@
       "category": "commands",
       "source_id": "engine.addCanvasBookmark",
       "name": "addCanvasBookmark",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/CanvasNavigation.gd::save_bookmark"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 24 已接入持久蓝图库、独立施工订单、唯一预留及导航入口并通过本地回归；受限蓝图格式与当前原生物流站适用。完整源配置及跨实现行为金标仍按任务 26/27 验收。",
       "owner_task": 24,
       "rule_test": "rule:commands:engine.addCanvasBookmark",
       "manual_acceptance": "manual:commands:engine.addCanvasBookmark",
       "ui_entry": "src/game/engine.ts",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestBlueprintPersistence.tscn",
+        "res://scenes/test/TestBlueprints.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:engine.addCanvasBookmark"
     },
     {
@@ -10143,17 +10237,23 @@
       "category": "commands",
       "source_id": "engine.addCanvasRegion",
       "name": "addCanvasRegion",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/CanvasNavigation.gd::save_region"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 24 已接入持久蓝图库、独立施工订单、唯一预留及导航入口并通过本地回归；受限蓝图格式与当前原生物流站适用。完整源配置及跨实现行为金标仍按任务 26/27 验收。",
       "owner_task": 24,
       "rule_test": "rule:commands:engine.addCanvasRegion",
       "manual_acceptance": "manual:commands:engine.addCanvasRegion",
       "ui_entry": "src/game/engine.ts",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestBlueprintPersistence.tscn",
+        "res://scenes/test/TestBlueprints.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:engine.addCanvasRegion"
     },
     {
@@ -10519,17 +10619,23 @@
       "category": "commands",
       "source_id": "engine.cancelConstructionQueueEntry",
       "name": "cancelConstructionQueueEntry",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/ConstructionQueueSystem.gd::cancel"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 24 已接入持久蓝图库、独立施工订单、唯一预留及导航入口并通过本地回归；受限蓝图格式与当前原生物流站适用。完整源配置及跨实现行为金标仍按任务 26/27 验收。",
       "owner_task": 24,
       "rule_test": "rule:commands:engine.cancelConstructionQueueEntry",
       "manual_acceptance": "manual:commands:engine.cancelConstructionQueueEntry",
       "ui_entry": "src/game/engine.ts",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestBlueprintPersistence.tscn",
+        "res://scenes/test/TestBlueprints.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:engine.cancelConstructionQueueEntry"
     },
     {
@@ -10755,17 +10861,23 @@
       "category": "commands",
       "source_id": "engine.canQueueBlueprint",
       "name": "canQueueBlueprint",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/ConstructionQueueSystem.gd::_preview"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 24 已接入持久蓝图库、独立施工订单、唯一预留及导航入口并通过本地回归；受限蓝图格式与当前原生物流站适用。完整源配置及跨实现行为金标仍按任务 26/27 验收。",
       "owner_task": 24,
       "rule_test": "rule:commands:engine.canQueueBlueprint",
       "manual_acceptance": "manual:commands:engine.canQueueBlueprint",
       "ui_entry": "src/game/engine.ts",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestBlueprintPersistence.tscn",
+        "res://scenes/test/TestBlueprints.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:engine.canQueueBlueprint"
     },
     {
@@ -11124,17 +11236,23 @@
       "category": "commands",
       "source_id": "engine.createBlueprint",
       "name": "createBlueprint",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/BlueprintLibrary.gd::save_definition"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 24 已接入持久蓝图库、独立施工订单、唯一预留及导航入口并通过本地回归；受限蓝图格式与当前原生物流站适用。完整源配置及跨实现行为金标仍按任务 26/27 验收。",
       "owner_task": 24,
       "rule_test": "rule:commands:engine.createBlueprint",
       "manual_acceptance": "manual:commands:engine.createBlueprint",
       "ui_entry": "src/game/engine.ts",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestBlueprintPersistence.tscn",
+        "res://scenes/test/TestBlueprints.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:engine.createBlueprint"
     },
     {
@@ -11448,17 +11566,23 @@
       "category": "commands",
       "source_id": "engine.fundAllConstructionQueueEntries",
       "name": "fundAllConstructionQueueEntries",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/ConstructionQueueSystem.gd::fund_all"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 24 已接入持久蓝图库、独立施工订单、唯一预留及导航入口并通过本地回归；受限蓝图格式与当前原生物流站适用。完整源配置及跨实现行为金标仍按任务 26/27 验收。",
       "owner_task": 24,
       "rule_test": "rule:commands:engine.fundAllConstructionQueueEntries",
       "manual_acceptance": "manual:commands:engine.fundAllConstructionQueueEntries",
       "ui_entry": "src/game/engine.ts",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestBlueprintPersistence.tscn",
+        "res://scenes/test/TestBlueprints.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:engine.fundAllConstructionQueueEntries"
     },
     {
@@ -11466,17 +11590,23 @@
       "category": "commands",
       "source_id": "engine.fundConstructionQueueEntry",
       "name": "fundConstructionQueueEntry",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/ConstructionQueueSystem.gd::fund"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 24 已接入持久蓝图库、独立施工订单、唯一预留及导航入口并通过本地回归；受限蓝图格式与当前原生物流站适用。完整源配置及跨实现行为金标仍按任务 26/27 验收。",
       "owner_task": 24,
       "rule_test": "rule:commands:engine.fundConstructionQueueEntry",
       "manual_acceptance": "manual:commands:engine.fundConstructionQueueEntry",
       "ui_entry": "src/game/engine.ts",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestBlueprintPersistence.tscn",
+        "res://scenes/test/TestBlueprints.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:engine.fundConstructionQueueEntry"
     },
     {
@@ -13306,17 +13436,23 @@
       "category": "commands",
       "source_id": "engine.placeBlueprint",
       "name": "placeBlueprint",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/ConstructionQueueSystem.gd::deploy_immediately"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 24 已接入持久蓝图库、独立施工订单、唯一预留及导航入口并通过本地回归；受限蓝图格式与当前原生物流站适用。完整源配置及跨实现行为金标仍按任务 26/27 验收。",
       "owner_task": 24,
       "rule_test": "rule:commands:engine.placeBlueprint",
       "manual_acceptance": "manual:commands:engine.placeBlueprint",
       "ui_entry": "src/game/engine.ts",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestBlueprintPersistence.tscn",
+        "res://scenes/test/TestBlueprints.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:engine.placeBlueprint"
     },
     {
@@ -13378,17 +13514,23 @@
       "category": "commands",
       "source_id": "engine.processConstructionQueue",
       "name": "processConstructionQueue",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/ConstructionQueueSystem.gd::fund_all"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 24 已接入持久蓝图库、独立施工订单、唯一预留及导航入口并通过本地回归；受限蓝图格式与当前原生物流站适用。完整源配置及跨实现行为金标仍按任务 26/27 验收。",
       "owner_task": 24,
       "rule_test": "rule:commands:engine.processConstructionQueue",
       "manual_acceptance": "manual:commands:engine.processConstructionQueue",
       "ui_entry": "src/game/engine.ts",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestBlueprintPersistence.tscn",
+        "res://scenes/test/TestBlueprints.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:engine.processConstructionQueue"
     },
     {
@@ -13396,17 +13538,23 @@
       "category": "commands",
       "source_id": "engine.queueBlueprint",
       "name": "queueBlueprint",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/ConstructionQueueSystem.gd::enqueue"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 24 已接入持久蓝图库、独立施工订单、唯一预留及导航入口并通过本地回归；受限蓝图格式与当前原生物流站适用。完整源配置及跨实现行为金标仍按任务 26/27 验收。",
       "owner_task": 24,
       "rule_test": "rule:commands:engine.queueBlueprint",
       "manual_acceptance": "manual:commands:engine.queueBlueprint",
       "ui_entry": "src/game/engine.ts",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestBlueprintPersistence.tscn",
+        "res://scenes/test/TestBlueprints.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:engine.queueBlueprint"
     },
     {
@@ -13545,17 +13693,23 @@
       "category": "commands",
       "source_id": "engine.removeBlueprint",
       "name": "removeBlueprint",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/BlueprintLibrary.gd::remove"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 24 已接入持久蓝图库、独立施工订单、唯一预留及导航入口并通过本地回归；受限蓝图格式与当前原生物流站适用。完整源配置及跨实现行为金标仍按任务 26/27 验收。",
       "owner_task": 24,
       "rule_test": "rule:commands:engine.removeBlueprint",
       "manual_acceptance": "manual:commands:engine.removeBlueprint",
       "ui_entry": "src/game/engine.ts",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestBlueprintPersistence.tscn",
+        "res://scenes/test/TestBlueprints.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:engine.removeBlueprint"
     },
     {
@@ -13563,17 +13717,23 @@
       "category": "commands",
       "source_id": "engine.removeCanvasBookmark",
       "name": "removeCanvasBookmark",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/CanvasNavigation.gd::remove"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 24 已接入持久蓝图库、独立施工订单、唯一预留及导航入口并通过本地回归；受限蓝图格式与当前原生物流站适用。完整源配置及跨实现行为金标仍按任务 26/27 验收。",
       "owner_task": 24,
       "rule_test": "rule:commands:engine.removeCanvasBookmark",
       "manual_acceptance": "manual:commands:engine.removeCanvasBookmark",
       "ui_entry": "src/game/engine.ts",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestBlueprintPersistence.tscn",
+        "res://scenes/test/TestBlueprints.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:engine.removeCanvasBookmark"
     },
     {
@@ -13581,17 +13741,23 @@
       "category": "commands",
       "source_id": "engine.removeCanvasRegion",
       "name": "removeCanvasRegion",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/CanvasNavigation.gd::remove"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 24 已接入持久蓝图库、独立施工订单、唯一预留及导航入口并通过本地回归；受限蓝图格式与当前原生物流站适用。完整源配置及跨实现行为金标仍按任务 26/27 验收。",
       "owner_task": 24,
       "rule_test": "rule:commands:engine.removeCanvasRegion",
       "manual_acceptance": "manual:commands:engine.removeCanvasRegion",
       "ui_entry": "src/game/engine.ts",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestBlueprintPersistence.tscn",
+        "res://scenes/test/TestBlueprints.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:engine.removeCanvasRegion"
     },
     {
@@ -13732,17 +13898,23 @@
       "category": "commands",
       "source_id": "engine.renameBlueprint",
       "name": "renameBlueprint",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/BlueprintLibrary.gd::rename"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 24 已接入持久蓝图库、独立施工订单、唯一预留及导航入口并通过本地回归；受限蓝图格式与当前原生物流站适用。完整源配置及跨实现行为金标仍按任务 26/27 验收。",
       "owner_task": 24,
       "rule_test": "rule:commands:engine.renameBlueprint",
       "manual_acceptance": "manual:commands:engine.renameBlueprint",
       "ui_entry": "src/game/engine.ts",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestBlueprintPersistence.tscn",
+        "res://scenes/test/TestBlueprints.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:engine.renameBlueprint"
     },
     {
@@ -13750,17 +13922,23 @@
       "category": "commands",
       "source_id": "engine.renameCanvasBookmark",
       "name": "renameCanvasBookmark",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/CanvasNavigation.gd::rename"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 24 已接入持久蓝图库、独立施工订单、唯一预留及导航入口并通过本地回归；受限蓝图格式与当前原生物流站适用。完整源配置及跨实现行为金标仍按任务 26/27 验收。",
       "owner_task": 24,
       "rule_test": "rule:commands:engine.renameCanvasBookmark",
       "manual_acceptance": "manual:commands:engine.renameCanvasBookmark",
       "ui_entry": "src/game/engine.ts",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestBlueprintPersistence.tscn",
+        "res://scenes/test/TestBlueprints.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:engine.renameCanvasBookmark"
     },
     {
@@ -13768,17 +13946,23 @@
       "category": "commands",
       "source_id": "engine.resizeCanvasRegion",
       "name": "resizeCanvasRegion",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/CanvasNavigation.gd::save_region"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 24 已接入持久蓝图库、独立施工订单、唯一预留及导航入口并通过本地回归；受限蓝图格式与当前原生物流站适用。完整源配置及跨实现行为金标仍按任务 26/27 验收。",
       "owner_task": 24,
       "rule_test": "rule:commands:engine.resizeCanvasRegion",
       "manual_acceptance": "manual:commands:engine.resizeCanvasRegion",
       "ui_entry": "src/game/engine.ts",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestBlueprintPersistence.tscn",
+        "res://scenes/test/TestBlueprints.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:engine.resizeCanvasRegion"
     },
     {
@@ -14094,17 +14278,23 @@
       "category": "commands",
       "source_id": "engine.setBlueprintRecipeOverride",
       "name": "setBlueprintRecipeOverride",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/BlueprintLibrary.gd::save_definition"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 24 已接入持久蓝图库、独立施工订单、唯一预留及导航入口并通过本地回归；受限蓝图格式与当前原生物流站适用。完整源配置及跨实现行为金标仍按任务 26/27 验收。",
       "owner_task": 24,
       "rule_test": "rule:commands:engine.setBlueprintRecipeOverride",
       "manual_acceptance": "manual:commands:engine.setBlueprintRecipeOverride",
       "ui_entry": "src/game/engine.ts",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestBlueprintPersistence.tscn",
+        "res://scenes/test/TestBlueprints.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:engine.setBlueprintRecipeOverride"
     },
     {
@@ -14112,17 +14302,23 @@
       "category": "commands",
       "source_id": "engine.setBlueprintTransform",
       "name": "setBlueprintTransform",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/BlueprintLibrary.gd::save_definition"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 24 已接入持久蓝图库、独立施工订单、唯一预留及导航入口并通过本地回归；受限蓝图格式与当前原生物流站适用。完整源配置及跨实现行为金标仍按任务 26/27 验收。",
       "owner_task": 24,
       "rule_test": "rule:commands:engine.setBlueprintTransform",
       "manual_acceptance": "manual:commands:engine.setBlueprintTransform",
       "ui_entry": "src/game/engine.ts",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestBlueprintPersistence.tscn",
+        "res://scenes/test/TestBlueprints.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:engine.setBlueprintTransform"
     },
     {
@@ -15279,17 +15475,23 @@
       "category": "commands",
       "source_id": "engine.updateCanvasRegion",
       "name": "updateCanvasRegion",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/CanvasNavigation.gd::save_region"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 24 已接入持久蓝图库、独立施工订单、唯一预留及导航入口并通过本地回归；受限蓝图格式与当前原生物流站适用。完整源配置及跨实现行为金标仍按任务 26/27 验收。",
       "owner_task": 24,
       "rule_test": "rule:commands:engine.updateCanvasRegion",
       "manual_acceptance": "manual:commands:engine.updateCanvasRegion",
       "ui_entry": "src/game/engine.ts",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestBlueprintPersistence.tscn",
+        "res://scenes/test/TestBlueprints.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:engine.updateCanvasRegion"
     },
     {
@@ -20403,17 +20605,23 @@
       "category": "commands",
       "source_id": "StatisticsWorkspace.onAddCanvasBookmark",
       "name": "onAddCanvasBookmark",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scenes/ui/CanvasNavigationControls.gd::_bookmark"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 24 已接入持久蓝图库、独立施工订单、唯一预留及导航入口并通过本地回归；受限蓝图格式与当前原生物流站适用。完整源配置及跨实现行为金标仍按任务 26/27 验收。",
       "owner_task": 24,
       "rule_test": "rule:commands:StatisticsWorkspace.onAddCanvasBookmark",
       "manual_acceptance": "manual:commands:StatisticsWorkspace.onAddCanvasBookmark",
       "ui_entry": "src/components/StatisticsWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestBlueprintPersistence.tscn",
+        "res://scenes/test/TestBlueprints.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:StatisticsWorkspace.onAddCanvasBookmark"
     },
     {
@@ -20745,17 +20953,23 @@
       "category": "commands",
       "source_id": "StatisticsWorkspace.onOpenCanvasBookmark",
       "name": "onOpenCanvasBookmark",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scenes/ui/CanvasNavigationControls.gd::_navigate"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "任务 24 已接入持久蓝图库、独立施工订单、唯一预留及导航入口并通过本地回归；受限蓝图格式与当前原生物流站适用。完整源配置及跨实现行为金标仍按任务 26/27 验收。",
       "owner_task": 24,
       "rule_test": "rule:commands:StatisticsWorkspace.onOpenCanvasBookmark",
       "manual_acceptance": "manual:commands:StatisticsWorkspace.onOpenCanvasBookmark",
       "ui_entry": "src/components/StatisticsWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestBlueprintPersistence.tscn",
+        "res://scenes/test/TestBlueprints.tscn",
+        "res://scenes/test/TestProductShell.tscn"
+      ],
       "source_definition": "commands:StatisticsWorkspace.onOpenCanvasBookmark"
     },
     {

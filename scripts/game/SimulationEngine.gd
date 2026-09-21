@@ -23,6 +23,7 @@ var progression_system: ProgressionSystem
 
 var _accumulator := 0.0
 var _last_step_count := 0
+var _construction_ticks := 0
 
 func _init(state: GameState) -> void:
 	game_state = state
@@ -73,6 +74,10 @@ func _run_fixed_tick() -> void:
 		phase_started = performance_monitor.begin()
 	ConstructionAutomationSystem.new(game_state).update(FIXED_DELTA)
 	handcraft_system.update(FIXED_DELTA)
+	_construction_ticks += 1
+	if _construction_ticks >= 60:
+		_construction_ticks = 0
+		if not game_state.construction_queue.is_empty(): ConstructionQueueSystem.new(game_state).fund_all()
 	if performance_monitor != null and performance_monitor.enabled:
 		performance_monitor.finish("phase_handcraft_ms", phase_started)
 		phase_started = performance_monitor.begin()

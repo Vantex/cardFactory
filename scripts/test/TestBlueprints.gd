@@ -54,6 +54,8 @@ func _test_capture_and_schema(blueprint_script: Script) -> void:
 	if not result.get("ok", false):
 		return
 	var blueprint: Dictionary = result.blueprint
+	state.emit_canvas_events = false
+	_expect(blueprint_script.new(state).capture_selection([target_id, source_id]).blueprint == blueprint, "capture graph is independent of event delivery")
 	_expect(blueprint.get("version", 0) == 1 and blueprint.entities.size() == 2 and blueprint.connections.size() == 1, "blueprint v1 captures selected entities and only internal connections")
 	_expect(blueprint.entities[0].position == Vector2.ZERO and blueprint.entities[1].position == Vector2(400, 200), "captured positions are relative to the selection origin")
 	_expect(blueprint.entities[0].configuration == {"output_item": "iron_ore"} and blueprint.entities[1].configuration == {"recipe_id": "iron_ingot_recipe"}, "capture preserves only production configuration")
@@ -396,8 +398,8 @@ func _test_workspace_intents_and_import(codec_script: Script) -> void:
 	workspace.queue_free()
 	input_handler.queue_free()
 	await get_tree().process_frame
-	var decoded: Dictionary = codec_script.new().decode(exported.get("text", ""))
-	_expect(decoded.get("ok", false), "workspace export remains valid restricted blueprint JSON")
+	var decoded: Dictionary = codec_script.new().decode_library_entry(exported.get("text", ""))
+	_expect(decoded.get("ok", false), "workspace export remains valid restricted blueprint library JSON")
 
 func _test_minimap_navigation_is_presentational() -> void:
 	var minimap_script := load("res://scenes/ui/MiniMap.gd")

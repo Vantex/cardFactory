@@ -1042,28 +1042,30 @@ git commit -m "feat: match DSPONLINE factory editing workflow"
 - 修改：`scenes/ui/MiniMap.gd`
 - 修改：`scripts/test/TestBlueprints.gd`
 
-- [ ] **步骤 1：写蓝图库持久化和施工队列失败测试**
+- [x] **步骤 1：写蓝图库持久化和施工队列失败测试**
 
 覆盖命名、重命名、删除、旋转、镜像、配方替换、导入导出、排队部署、部分资助、全部资助、取消、重叠策略、载具目标和保存加载。
 
-- [ ] **步骤 2：把蓝图库迁入权威状态**
+- [x] **步骤 2：把蓝图库迁入权威状态**
 
 蓝图定义、变换和配方替换持久化；运行缓存、临时进度、选中态和来源建筑稳定 ID 不复制。导入继续使用受限格式和完整引用校验。
 
-- [ ] **步骤 3：实现待建与补足队列**
+- [x] **步骤 3：实现待建与补足队列**
 
 部署可选择立即原子完成或生成灰模队列；材料、建筑、线路和载具逐项资助并保持唯一所有权，取消按真实未消耗数量返还。
 
-- [ ] **步骤 4：持久化区域和书签**
+- [x] **步骤 4：持久化区域和书签**
 
 区域名称、矩形、颜色和书签视口进入 GameState；支持重命名、调整、删除、跨行星导航和保存加载，数量上限与冻结基线一致。
 
-- [ ] **步骤 5：提交**
+- [x] **步骤 5：提交**
 
 ```powershell
 git add scripts/game/BlueprintSystem.gd scripts/game/BlueprintCodec.gd scripts/game/ConstructionQueueSystem.gd scripts/game/GameState.gd scenes/ui/BlueprintWorkspace.gd scenes/ui/MiniMap.gd scripts/test/TestBlueprints.gd
 git commit -m "feat: match DSPONLINE blueprint and navigation persistence"
 ```
+
+**完成记录（2026-09-21）：** 持久蓝图库、部分预留/退款、载具补足、精确复用及区域/书签桌面入口已交付；20 场景门禁和 1080p 图形门通过，受限格式及后续配置边界见 [任务 24 验收](TASK24_ACCEPTANCE.md)。
 
 ### 任务 25：对齐科技、战役、成就和完整内容推进
 

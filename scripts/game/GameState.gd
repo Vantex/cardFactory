@@ -28,6 +28,10 @@ var planet_inventories := {HOME_PLANET_ID: {}}
 var planet_viewports := {HOME_PLANET_ID: {"position": Vector2.ZERO, "zoom": Vector2.ONE}}
 var planet_metrics := {HOME_PLANET_ID: {}}
 var portable_fleet := {"logistics_drone": 0, "logistics_vessel": 0}
+var blueprint_library: Dictionary = {}
+var construction_queue: Array = []
+var canvas_regions: Array = []
+var canvas_bookmarks: Array = []
 var resource_sites: Dictionary = {}
 var construction_inventory: Dictionary = {
     "miner": 1.0,
@@ -1137,6 +1141,10 @@ func install_state(source: GameState) -> void:
     cursor_payload = source.cursor_payload.duplicate(true)
     handcraft_queue = source.handcraft_queue.duplicate(true)
     production_orders = source.production_orders.duplicate(true)
+    blueprint_library = source.blueprint_library.duplicate(true)
+    construction_queue = source.construction_queue.duplicate(true)
+    canvas_regions = source.canvas_regions.duplicate(true)
+    canvas_bookmarks = source.canvas_bookmarks.duplicate(true)
     completed_technologies = source.completed_technologies.duplicate(true)
     research_current_id = source.research_current_id
     research_queue = source.research_queue.duplicate(true)

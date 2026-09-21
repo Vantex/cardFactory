@@ -12,6 +12,7 @@ var _rotation_quarters := 0
 var _mirrored := false
 var _clipboard_fallback := ""
 var _toggle_button: Button
+var library_controls: Control
 
 func _ready() -> void:
 	set_anchors_preset(Control.PRESET_TOP_RIGHT)
@@ -43,20 +44,28 @@ func accept_capture_result(result: Dictionary) -> void:
 		_draft = result.blueprint.duplicate(true)
 		_rotation_quarters = 0
 		_mirrored = false
+		if library_controls != null:
+			library_controls.selected_id = ""
+			library_controls.fleet_targets = result.get("fleet_targets", {}).duplicate(true)
 		queue_redraw()
 
 func import_text(text: String) -> Dictionary:
-	var result := BlueprintCodecScript.new().decode(text)
+	var result := BlueprintCodecScript.new().decode_library_entry(text)
 	if result.get("ok", false):
 		_draft = result.blueprint.duplicate(true)
-		_rotation_quarters = 0
-		_mirrored = false
+		_rotation_quarters = int(result.entry.rotation)
+		_mirrored = result.entry.mirrored
+		if library_controls != null:
+			library_controls.selected_id = ""
+			library_controls.title.text = result.entry.name
+			library_controls.fleet_targets = result.entry.fleet_targets.duplicate(true)
 		queue_redraw()
 	return result
 
 func export_text() -> Dictionary:
 	if _draft.is_empty():
 		return _failure("empty_blueprint", "没有可导出的蓝图")
+	if library_controls != null: return BlueprintCodecScript.new().encode_library_entry(library_controls._entry())
 	return BlueprintCodecScript.new().encode(_draft)
 
 func request_deployment(position: Vector2) -> Dictionary:
@@ -85,6 +94,9 @@ func get_draft() -> Dictionary:
 
 func clear_draft() -> void:
 	_draft.clear()
+	if library_controls != null:
+		library_controls.selected_id = ""
+		library_controls.fleet_targets = {}
 	_rotation_quarters = 0
 	_mirrored = false
 	queue_redraw()
@@ -144,6 +156,13 @@ func _build_controls() -> void:
 	_add_button(controls, "Export", "导出剪贴板", export_to_clipboard)
 	_add_button(controls, "Deploy", "部署到相机", _deploy_at_camera)
 	_add_button(controls, "Close", "收起", _hide_workspace)
+	library_controls = preload("res://scenes/ui/BlueprintLibraryControls.gd").new()
+	library_controls.name = "LibraryControls"
+	library_controls.workspace = self
+	panel.add_child(library_controls)
+	var navigation := preload("res://scenes/ui/CanvasNavigationControls.gd").new()
+	navigation.name = "NavigationControls"
+	panel.add_child(navigation)
 
 func _install_toggle() -> void:
 	if _toggle_button != null:

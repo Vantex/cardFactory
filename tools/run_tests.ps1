@@ -7,6 +7,13 @@ $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $testCases = @(
     @{
+        Name = "Blueprint persistence"
+        ScenePath = Join-Path $repoRoot "scenes\test\TestBlueprintPersistence.tscn"
+        ResourcePath = "res://scenes/test/TestBlueprintPersistence.tscn"
+        SuccessMarker = "BLUEPRINT PERSISTENCE TESTS PASSED"
+        FailureMarker = "BLUEPRINT PERSISTENCE TESTS FAILED"
+    },
+    @{
         Name = "Editing history"
         ScenePath = Join-Path $repoRoot "scenes\test\TestEditingHistory.tscn"
         ResourcePath = "res://scenes/test/TestEditingHistory.tscn"

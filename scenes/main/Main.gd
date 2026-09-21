@@ -181,7 +181,11 @@ func _on_blueprint_capture_intent(entity_ids: Array) -> void:
 	blueprint_workspace.accept_capture_result(GameManager.get_game_state().capture_blueprint(entity_ids))
 
 func _on_blueprint_deployment_intent(position: Vector2, rotation_quarters: int, mirrored: bool) -> void:
-	var result := GameManager.get_game_state().try_deploy_blueprint(blueprint_workspace.get_draft(), position, rotation_quarters, mirrored)
+	var controls: Control = blueprint_workspace.library_controls
+	var entry: Dictionary = controls._entry()
+	entry.rotation = rotation_quarters
+	entry.mirrored = mirrored
+	var result := ConstructionQueueSystem.new(GameManager.get_game_state()).deploy_immediately(entry, position, controls.overlap.button_pressed)
 	blueprint_workspace.accept_deployment_result(result)
 
 func _on_galaxy_explore_requested(system_id: String) -> void:

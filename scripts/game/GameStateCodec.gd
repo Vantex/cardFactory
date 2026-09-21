@@ -77,6 +77,8 @@ static func to_persistent_dict(state: GameState) -> Dictionary:
 		"connections": _encode_connections(state),
 	}
 	if not state.production_orders.is_empty(): payload["production_orders"] = state.production_orders.duplicate(true)
+	for field in ["blueprint_library", "construction_queue", "canvas_regions", "canvas_bookmarks"]:
+		if not state.get(field).is_empty(): payload[field] = state.get(field).duplicate(true)
 	return _encode_dictionary(payload, ROOT_RUNTIME_FIELDS)
 
 static func from_persistent_dict(payload: Variant) -> GameState:
@@ -110,6 +112,10 @@ static func from_persistent_dict(payload: Variant) -> GameState:
 	state.cursor_payload = data["cursor_payload"].duplicate(true)
 	state.handcraft_queue = data["handcraft_queue"].duplicate(true)
 	state.production_orders = data.get("production_orders", []).duplicate(true)
+	state.blueprint_library = data.get("blueprint_library", {}).duplicate(true)
+	state.construction_queue = data.get("construction_queue", []).duplicate(true)
+	state.canvas_regions = data.get("canvas_regions", []).duplicate(true)
+	state.canvas_bookmarks = data.get("canvas_bookmarks", []).duplicate(true)
 	state.completed_technologies = data["completed_technologies"].duplicate(true)
 	state.research_current_id = String(data["research_current_id"])
 	state.research_queue = data["research_queue"].duplicate(true)

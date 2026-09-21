@@ -123,6 +123,12 @@ func _draw() -> void:
 		draw_rect(mini_rect, region.color, true)
 		draw_rect(mini_rect, Color(region.color).lightened(0.25), false, 1.0)
 	var state := GameManager.get_game_state()
+	for region in state.canvas_regions:
+		if region.planet_id != state.active_planet_id: continue
+		var rect := Rect2(region.rect[0], region.rect[1], region.rect[2], region.rect[3])
+		draw_rect(Rect2(_world_to_local(rect.position), rect.size / world_rect.size * size), Color.html(region.color), true)
+	for bookmark in state.canvas_bookmarks:
+		if bookmark.planet_id == state.active_planet_id: draw_circle(_world_to_local(Vector2(bookmark.position[0], bookmark.position[1])), 3, Color.GOLD)
 	for entity_id in get_visible_entity_ids():
 		if not state.buildings.has(entity_id):
 			continue
