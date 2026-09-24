@@ -3,6 +3,14 @@ extends Control
 
 signal locate_requested(building_id: String, world_position: Vector2)
 
+var _source_search: LineEdit
+var _source_chapter: OptionButton
+var _source_status: OptionButton
+var _source_tasks: OptionButton
+var _source_detail: Label
+var _source_ids: Array[String] = []
+var _source_rows: Array = []
+var _source_achievements: Label
 var _objective_label: Label
 var _progress_label: Label
 var _chapter_label: Label
@@ -37,6 +45,7 @@ func refresh_now(_arg = null) -> void:
 		_objective_label.text = "当前目标：%s" % String(objective.get("title", objective.get("id", "")))
 		_progress_label.text = "%s\n进度 %.0f / %.0f" % [String(objective.get("description", "")), float(progress.get("current", 0.0)), float(progress.get("required", 1.0))]
 	_achievement_label.text = "已完成目标 %d  ·  本地成就 %d" % [snapshot.get("completed_objective_ids", []).size(), snapshot.get("completed_achievement_ids", []).size()]
+	_refresh_source_tasks()
 	if not _blocked_reward_ids.is_empty():
 		_achievement_label.text += "\n奖励待领取：请先腾出库存空间"
 
@@ -79,6 +88,7 @@ func _build_controls() -> void:
 	close.size = Vector2(136, 42)
 	close.pressed.connect(hide)
 	panel.add_child(close)
+	_build_source_controls(panel)
 
 func _install_toggle() -> void:
 	if _toggle_button != null:
@@ -121,3 +131,135 @@ func _make_label(node_name: String, text_value: String, position_value: Vector2,
 	label.size = size_value
 	label.add_theme_font_size_override("font_size", font_size)
 	return label
+
+func _build_source_controls(panel: Control) -> void:
+	_source_search = LineEdit.new()
+	_source_search.name = "SourceSearch"
+	_source_search.placeholder_text = "搜索完整战役任务"
+	_source_search.text_changed.connect(func(_text): _refresh_source_tasks())
+	panel.add_child(_source_search)
+	_source_chapter = OptionButton.new()
+	_source_chapter.name = "SourceChapter"
+	_source_chapter.add_item("全部章节")
+	_source_chapter.set_item_metadata(0, "")
+	for chapter in ObjectiveSystem.load_catalog().chapters:
+		if chapter.has("source_id"):
+			_source_chapter.add_item(chapter.title)
+			_source_chapter.set_item_metadata(_source_chapter.item_count - 1, chapter.id)
+	_source_chapter.item_selected.connect(func(_index): _refresh_source_tasks())
+	panel.add_child(_source_chapter)
+	_source_status = OptionButton.new()
+	_source_status.name = "SourceStatus"
+	for label in ["全部状态", "可推进", "前置锁定", "已完成"]: _source_status.add_item(label)
+	_source_status.item_selected.connect(func(_index): _refresh_source_tasks())
+	panel.add_child(_source_status)
+	_source_tasks = OptionButton.new()
+	_source_tasks.name = "SourceTasks"
+	_source_tasks.item_selected.connect(func(_index): _refresh_source_detail())
+	panel.add_child(_source_tasks)
+	_source_detail = Label.new()
+	_source_detail.name = "SourceDetails"
+	_source_detail.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	panel.add_child(_source_detail)
+	for label in ["跟踪所选任务", "前往目标", "手动采集一份铁矿", "重试待领任务奖励"]:
+		var button := Button.new()
+		button.text = label
+		button.pressed.connect(_source_action.bind(label))
+		panel.add_child(button)
+	_source_achievements = Label.new()
+	_source_achievements.name = "SourceAchievements"
+	_source_achievements.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	panel.add_child(_source_achievements)
+
+func _refresh_source_tasks() -> void:
+	if _source_tasks == null: return
+	var previous := _source_ids[_source_tasks.selected] if _source_tasks.selected >= 0 and _source_tasks.selected < _source_ids.size() else ""
+	_source_ids.clear()
+	_source_tasks.clear()
+	var state := GameManager.get_game_state()
+	_source_rows = ProgressionSystem.new(state).get_source_objectives()
+	var chapter := String(_source_chapter.get_item_metadata(_source_chapter.selected))
+	var status: String = ["", "available", "locked", "completed"][_source_status.selected]
+	for row in _source_rows:
+		if not chapter.is_empty() and row.chapter_id != chapter: continue
+		if not status.is_empty() and row.status != status: continue
+		if not _source_search.text.strip_edges().is_empty() and not (String(row.title) + String(row.description)).to_lower().contains(_source_search.text.strip_edges().to_lower()): continue
+		_source_ids.append(row.id)
+		_source_tasks.add_item(("✓ " if row.status == "completed" else "") + String(row.title))
+	if _source_ids.has(previous): _source_tasks.select(_source_ids.find(previous))
+	_refresh_source_detail()
+	var names: Array[String] = []
+	for achievement in ObjectiveSystem.load_catalog().achievements:
+		if achievement.has("source_id"):
+			names.append(("✓ " if state.completed_achievement_ids.has(achievement.id) else "○ ") + String(achievement.title))
+	_source_achievements.text = "本地成就\n" + " · ".join(names)
+
+func _selected_source_row() -> Dictionary:
+	if _source_tasks.selected < 0 or _source_tasks.selected >= _source_ids.size(): return {}
+	for row in _source_rows:
+		if row.id == _source_ids[_source_tasks.selected]: return row
+	return {}
+
+func _refresh_source_detail() -> void:
+	var row := _selected_source_row()
+	if row.is_empty():
+		_source_detail.text = "没有匹配任务"
+		return
+	var state := GameManager.get_game_state()
+	var details: Array[String] = [String(row.description), "进度 %.0f / %.0f" % [row.progress.current, row.progress.required]]
+	if row.status == "locked": details.append("前置任务尚未完成")
+	var requirements: Array = row.get("requirements", []).duplicate(true)
+	var navigation: Dictionary = row.get("navigation", {})
+	if requirements.is_empty() and navigation.get("kind") == "technology":
+		for item in DataManager.get_technology("dsp_" + String(navigation.techId)).get("cost", {}): requirements.append({"itemId": item, "amount": DataManager.get_technology("dsp_" + String(navigation.techId)).cost[item]})
+	if requirements.is_empty() and navigation.get("kind") == "recipe":
+		for recipe in DataManager.all_recipes.values():
+			if not recipe.has("source_id"): continue
+			if recipe.get("outputs", []).any(func(output): return output.item_id == navigation.itemId):
+				for item in recipe.inputs: requirements.append({"itemId": item.item_id, "amount": item.amount})
+				break
+	for requirement in requirements:
+		var item := String(requirement.itemId)
+		var stock := SourceProgressionFacts.network_stock(state, item)
+		details.append("%s：需要 %.0f，缺少 %.0f" % [DataManager.get_item(item).get("name", item), float(requirement.amount), maxf(0, float(requirement.amount) - stock)])
+	var reward: Dictionary = row.get("reward", {})
+	for item in reward.get("planet_inventory", {}): details.append("奖励 %s ×%s" % [DataManager.get_item(item).get("name", item), reward.planet_inventory[item]])
+	for item in reward.get("construction_inventory", {}): details.append("奖励 %s ×%s" % [DataManager.get_building(item).get("name", item), reward.construction_inventory[item]])
+	if state.completed_objective_ids.has(row.id) and not state.claimed_progression_reward_ids.has("objective:" + String(row.id)): details.append("奖励待领取：库存空间不足")
+	_source_detail.text = "\n".join(details)
+
+func _source_action(action: String) -> void:
+	var state := GameManager.get_game_state()
+	var row := _selected_source_row()
+	if action == "跟踪所选任务":
+		if row.is_empty() or not ProgressionSystem.new(state).select_objective(row.id): EventBus.notice_requested.emit("只能跟踪前置已完成的未完成任务", "warning")
+	elif action == "前往目标":
+		if not row.is_empty(): _navigate_source(row.get("navigation", {}))
+	elif action == "手动采集一份铁矿":
+		var found := false
+		for site in state.resource_sites.values():
+			if site.planet_id == state.active_planet_id and site.item_id == "iron_ore":
+				var result := SourceProgressionFacts.mine(state, site.id)
+				EventBus.notice_requested.emit(result.message, "info" if result.ok else "warning")
+				found = true
+				break
+		if not found: EventBus.notice_requested.emit("当前行星没有可采集的铁矿脉", "warning")
+	_blocked_reward_ids = ProgressionSystem.new(state).evaluate().blocked_reward_ids
+	refresh_now()
+
+func _navigate_source(navigation: Dictionary) -> void:
+	var shell := get_parent()
+	var target := "ProductionCatalogWorkspace"
+	match String(navigation.get("kind", "")):
+		"technology":
+			target = "TechnologyPanel"
+			var panel := shell.get_node(target)
+			panel.navigate_to("dsp_" + String(navigation.techId))
+		"planet", "system": target = "GalaxyMap"
+		"dyson": target = "DysonPanel"
+		"galactic": target = "EndgameWorkspace"
+		"recipe", "building", "construction":
+			var catalog := shell.get_node(target)
+			catalog.navigate_to(navigation)
+		_: return
+	if shell.has_method("show_exclusive_workspace"): shell.show_exclusive_workspace(target)

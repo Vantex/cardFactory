@@ -7,6 +7,13 @@ $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $testCases = @(
     @{
+        Name = "Progression parity"
+        ScenePath = Join-Path $repoRoot "scenes\test\TestProgressionParity.tscn"
+        ResourcePath = "res://scenes/test/TestProgressionParity.tscn"
+        SuccessMarker = "PROGRESSION PARITY TESTS PASSED"
+        FailureMarker = "PROGRESSION PARITY TESTS FAILED"
+    },
+    @{
         Name = "Blueprint persistence"
         ScenePath = Join-Path $repoRoot "scenes\test\TestBlueprintPersistence.tscn"
         ResourcePath = "res://scenes/test/TestBlueprintPersistence.tscn"

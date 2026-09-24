@@ -1079,28 +1079,30 @@ git commit -m "feat: match DSPONLINE blueprint and navigation persistence"
 - 修改：`scenes/ui/CampaignWorkspace.gd`
 - 修改：`scripts/test/TestProgression.gd`
 
-- [ ] **步骤 1：写完整推进目录失败测试**
+- [x] **步骤 1：写完整推进目录失败测试**
 
 断言冻结基线全部有限/无限科技、战役任务和成就均有稳定映射、真实领域条件、矩阵成本、前置、效果、导航和奖励；UI 点击本身不得完成目标。
 
-- [ ] **步骤 2：对齐 69 项有效科技、7 项弃用定义处理和完整矩阵层级**
+- [x] **步骤 2：对齐 69 项有效科技、7 项弃用定义处理和完整矩阵层级**
 
 对齐电磁、能量、结构、信息、引力和宇宙矩阵成本，接入生产、采矿、物流、电力、储量利用、建筑和无限研究效果。队列、暂停、取消、层数、投入和保存规则继续保持原子。
 
-- [ ] **步骤 3：迁移 32 个战役任务和 13 项成就**
+- [x] **步骤 3：迁移 32 个战役任务和 13 项成就**
 
 覆盖基础工业、六色矩阵、行星/星际物流、稀有资源、喷涂、蓝图、戴森工程和银河终局；旧 CardFactory 存档依据已有领域事实补齐进度，不重复发放奖励。
 
-- [ ] **步骤 4：对齐工作区操作**
+- [x] **步骤 4：对齐工作区操作**
 
 科技和战役工作区提供冻结基线中的搜索、筛选、层级导航、任务选择、缺口、定位、奖励和无限研究操作；桌面键鼠和已有手柄入口等价。
 
-- [ ] **步骤 5：提交**
+- [x] **步骤 5：提交**
 
 ```powershell
 git add data/technologies.json data/progression.json scripts/game/TechnologySystem.gd scripts/game/ProgressionSystem.gd scenes/ui/TechnologyPanel.gd scenes/ui/CampaignWorkspace.gd scripts/test/TestProgression.gd
 git commit -m "feat: match DSPONLINE technology and progression content"
 ```
+
+**完成记录（2026-09-24）：** 源有限科技 69 项、弃用兼容定义 7 项、32 项战役任务、13 项成就与 5 种精确无限研究已接入。21 场景门禁、1080p OpenGL 产品界面与冻结源登记通过。高级终局条件和科技在模式/特殊设备中的集成由任务 26 接续；逐条原版行为金标仍由任务 27 收口。详见 [任务 25 验收](TASK25_ACCEPTANCE.md)。
 
 ### 任务 26：对齐单机模式、本地空间站与剩余特殊规则
 

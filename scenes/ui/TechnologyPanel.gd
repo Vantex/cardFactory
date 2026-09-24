@@ -38,6 +38,8 @@ var _progress: ProgressBar
 var _scroll: ScrollContainer
 var _pause_button: Button
 var _resume_button: Button
+var _infinite_labels: Dictionary = {}
+var _infinite_elapsed := 0.0
 var _cancel_button: Button
 
 func _ready() -> void:
@@ -107,6 +109,7 @@ func _build_ui() -> void:
 	_wait_reason.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	layout.add_child(_wait_reason)
 
+	_build_infinite_controls(layout)
 	_scroll = ScrollContainer.new()
 	_scroll.name = "CatalogScroll"
 	_scroll.custom_minimum_size = Vector2(0, 190)
@@ -159,6 +162,7 @@ func _refresh(_arg_1 = null, _arg_2 = null, _arg_3 = null) -> void:
 	if game_state == null or _list == null:
 		return
 	var desired_scroll := _scroll_offset
+	_refresh_infinite()
 	_refresh_current()
 	_refresh_queue()
 	_clear_container(_list)
@@ -167,6 +171,8 @@ func _refresh(_arg_1 = null, _arg_2 = null, _arg_3 = null) -> void:
 	for id_value in ids:
 		var tech_id := String(id_value)
 		var technology := DataManager.get_technology(tech_id)
+		if technology.get("deprecated", false):
+			continue
 		var status := _technology_status(tech_id, technology)
 		if _matches_filters(tech_id, technology, status):
 			_list.add_child(_create_technology_row(tech_id, technology, status))
@@ -218,7 +224,10 @@ func _create_technology_row(tech_id: String, technology: Dictionary, status: Str
 		_format_effects(technology.get("effects", {})), String(technology.get("description", "")),
 	]
 	if technology.get("source_research_bridge", false):
+		detail.text += "\n" + "、".join(technology.get("unlock_descriptions", []))
 		detail.text += "\n在矩阵实验室切换科研模式并投放材料；已有实验室也可使用。"
+		var paid: Dictionary = game_state.research_invested_costs.get(tech_id, {})
+		if not paid.is_empty(): detail.text += "\n已投入：" + _format_cost(paid)
 	row.add_child(detail)
 	var action := Button.new()
 	action.text = "排队" if not game_state.research_current_id.is_empty() or not game_state.research_queue.is_empty() else "研究"
@@ -227,6 +236,11 @@ func _create_technology_row(tech_id: String, technology: Dictionary, status: Str
 	action.disabled = status == "researching" or status == "queued" or (status == "completed" and not technology.has("repeatable"))
 	action.pressed.connect(_on_technology_intent.bind(tech_id))
 	row.add_child(action)
+	if not technology.get("prerequisites", []).is_empty():
+		var prerequisites := Button.new()
+		prerequisites.text = "查看前置"
+		prerequisites.pressed.connect(func(): navigate_to(String(technology.prerequisites[0])))
+		row.add_child(prerequisites)
 	return row
 
 func _matches_filters(tech_id: String, technology: Dictionary, status: String) -> bool:
@@ -333,3 +347,67 @@ func set_scroll_offset(value: float) -> void:
 
 func get_scroll_offset() -> float:
 	return float(_scroll.scroll_vertical) if _scroll != null else 0.0
+
+func _build_infinite_controls(layout: VBoxContainer) -> void:
+	var toggle := Button.new()
+	toggle.name = "InfiniteToggle"
+	toggle.text = "无限研究 · 展开 / 收起"
+	layout.add_child(toggle)
+	var content := VBoxContainer.new()
+	content.name = "InfiniteResearch"
+	content.hide()
+	layout.add_child(content)
+	toggle.pressed.connect(func(): content.visible = not content.visible; _refresh_infinite())
+	var automatic := CheckBox.new()
+	automatic.name = "Automatic"
+	automatic.text = "完成后自动研究下一层"
+	content.add_child(automatic)
+	for id in InfiniteResearchSystem.definitions():
+		var row := HBoxContainer.new()
+		content.add_child(row)
+		var label := Label.new()
+		label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		row.add_child(label)
+		_infinite_labels[id] = label
+		var button := Button.new()
+		button.name = "Research_" + id
+		button.text = "研究"
+		button.pressed.connect(func():
+			if not InfiniteResearchSystem.new(game_state).select(id, automatic.button_pressed): EventBus.notice_requested.emit("需要宇宙矩阵科技、空闲研究队列，且研究尚未满级", "warning")
+			_refresh_infinite())
+		row.add_child(button)
+	var actions := HBoxContainer.new()
+	content.add_child(actions)
+	for action in ["暂停 / 恢复无限研究", "取消并保留投入"]:
+		var button := Button.new()
+		button.text = action
+		button.pressed.connect(func():
+			var service := InfiniteResearchSystem.new(game_state)
+			if action.begins_with("暂停"): service.pause(not game_state.progression_facts.get("infinite_paused", false))
+			else: service.cancel()
+			_refresh_infinite())
+		actions.add_child(button)
+
+func _refresh_infinite() -> void:
+	if game_state == null: return
+	var infinite := InfiniteResearchSystem.new(game_state)
+	for id in _infinite_labels:
+		var definition: Dictionary = InfiniteResearchSystem.definitions()[id]
+		var status := "（已暂停）" if game_state.progression_facts.get("infinite_paused", false) else "（研究中）"
+		_infinite_labels[id].text = "%s · Lv.%d / %d %s\n宇宙矩阵：%s / %s" % [definition.name, infinite.level(id), int(definition.maximum), status if infinite.active() == id else "", infinite.invested(id), infinite.cost(id)]
+
+func _process(delta: float) -> void:
+	if not is_visible_in_tree(): return
+	_infinite_elapsed += delta
+	if _infinite_elapsed >= 0.5:
+		_infinite_elapsed = 0
+		_refresh_infinite()
+
+func navigate_to(id: String) -> void:
+	_tier_filter = "all"
+	_status_filter = "all"
+	get_node("Layout/Filters/TierFilter").select(0)
+	get_node("Layout/Filters/StatusFilter").select(0)
+	get_node("Layout/Search").text = id
+	_on_search_changed(id)

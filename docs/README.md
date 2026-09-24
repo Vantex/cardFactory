@@ -20,7 +20,7 @@
 
 ## 历史文档
 
-任务 24：[实施计划](current/TASK24_PLAN.md) · [蓝图库、施工与导航验收](current/TASK24_ACCEPTANCE.md)。
+任务 25：[实施计划](current/TASK25_PLAN.md) · [科技、战役与成就验收](current/TASK25_ACCEPTANCE.md)。任务 24：[实施计划](current/TASK24_PLAN.md) · [蓝图库、施工与导航验收](current/TASK24_ACCEPTANCE.md)。
 
 [历史归档](history/README.md)保存已经结束的设计、计划、审计、测试说明和架构工件。它们用于追溯当时为什么这样做，不证明当前功能状态，也不能作为新的实施入口。
 

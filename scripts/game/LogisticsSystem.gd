@@ -90,7 +90,7 @@ func _dispatch(source: Dictionary, target: Dictionary) -> String:
 	var free := float(target.slot.capacity) - float(target.slot.amount) - stations.reserved(target.id, target.index)
 	if free <= 0:
 		return "需求槽容量不足"
-	var load_capacity := 100.0 if interplanetary else 20.0
+	var load_capacity := roundf((100.0 if interplanetary else 20.0) * game_state.get_technology_effect_multiplier("logistics_capacity"))
 	var amount := minf(load_capacity, minf(float(source.slot.amount), free))
 	if amount < load_capacity * maxf(float(source.slot.min_load), float(target.slot.min_load)):
 		return "库存或空余容量未达到最低装载"
@@ -103,6 +103,7 @@ func _dispatch(source: Dictionary, target: Dictionary) -> String:
 	var id := game_state.generate_id("route")
 	source.slot.amount -= amount
 	a.station.fleet[vehicle] -= 1
+	duration /= game_state.get_technology_effect_multiplier("logistics_speed")
 	game_state.logistics_routes[id] = {"id": id, "source_id": source.id, "target_id": target.id, "source_slot": source.index, "target_slot": target.index, "vehicle": vehicle, "item_id": source.slot.item_id, "amount": amount, "phase": "outbound", "remaining": duration, "duration": duration, "interplanetary": interplanetary}
 	return "已派遣"
 
@@ -128,6 +129,9 @@ func _advance_routes(delta: float) -> void:
 			diagnostics[route.target_id] = "到达等待：容量不足"
 			continue
 		slot.amount += float(route.amount)
+		if not game_state.progression_facts.has("station_trips"): game_state.progression_facts["station_trips"] = {}
+		var trips: Dictionary = game_state.progression_facts.station_trips
+		trips[source.id] = float(trips.get(source.id, 0)) + 1
 		if route.interplanetary:
 			game_state.interplanetary_delivered += float(route.amount)
 		if statistics != null:

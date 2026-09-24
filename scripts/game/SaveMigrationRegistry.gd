@@ -88,6 +88,12 @@ static func migrate_to_current(payload: Variant) -> Dictionary:
 			if _is_integral_number(fleet_amount):
 				portable_fleet_value[fleet_item_id] = int(fleet_amount)
 
+	var current_tech: Variant = migrated.get("research_current_id", "")
+	if current_tech is String and DataManager.get_technology(current_tech).get("deprecated", false):
+		migrated["research_current_id"] = ""
+		migrated["research_paused"] = false
+	if migrated.get("research_queue") is Array:
+		migrated["research_queue"] = migrated.research_queue.filter(func(id): return not id is String or not DataManager.get_technology(id).get("deprecated", false))
 	LogisticsStateValidator.normalize_integer_fields(migrated)
 	DysonStateValidator.normalize_integer_fields(migrated)
 	EndgameStateValidator.normalize_integer_fields(migrated)

@@ -41,6 +41,10 @@ func get_condition_progress(state: GameState, condition: Dictionary) -> Dictiona
 	var required := float(condition.get("at_least", 1.0))
 	var current := 0.0
 	match fact:
+		"source_metric":
+			var metric: Dictionary = condition.get("metric", {})
+			required = maxf(1, float(metric.get("target", 1)))
+			current = clampf(floorf(SourceProgressionFacts.value(state, metric)), 0, required)
 		"interplanetary_delivered":
 			current = state.interplanetary_delivered
 		"building_count":

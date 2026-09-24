@@ -18,7 +18,7 @@ func is_technology_completed(tech_id: String) -> bool:
 
 func can_research_technology(tech_id: String) -> bool:
 	var technology := get_technology(tech_id)
-	if technology.is_empty() or (is_technology_completed(tech_id) and not technology.has("repeatable")):
+	if technology.is_empty() or technology.get("deprecated", false) or (is_technology_completed(tech_id) and not technology.has("repeatable")):
 		return false
 	for prerequisite_value in get_technology_prerequisites(tech_id):
 		if not is_technology_completed(String(prerequisite_value)):
@@ -29,10 +29,11 @@ func start_research(tech_id: String) -> bool:
 	return _start_research_transaction(tech_id, false)
 
 func add_to_queue(tech_id: String) -> bool:
+	if not InfiniteResearchSystem.new(game_state).active().is_empty(): return false
 	var technology := get_technology(tech_id)
 	if tech_id.is_empty() or (is_technology_completed(tech_id) and not technology.has("repeatable")) or game_state.research_queue.has(tech_id) or tech_id == game_state.research_current_id:
 		return false
-	if technology.is_empty() or not _queue_prerequisites_are_scheduled(tech_id):
+	if technology.is_empty() or technology.get("deprecated", false) or not _queue_prerequisites_are_scheduled(tech_id):
 		return false
 	game_state.research_queue.append(tech_id)
 	EventBus.technology_research_queue_changed.emit(game_state.research_queue.duplicate())
@@ -118,7 +119,7 @@ func _start_next_queued_research() -> void:
 	EventBus.technology_research_queue_changed.emit(game_state.research_queue.duplicate(true))
 
 func _start_research_transaction(tech_id: String, from_queue: bool) -> bool:
-	if not game_state.research_current_id.is_empty():
+	if not game_state.research_current_id.is_empty() or not InfiniteResearchSystem.new(game_state).active().is_empty():
 		return false
 	if from_queue:
 		if game_state.research_queue.is_empty() or String(game_state.research_queue[0]) != tech_id:
@@ -239,6 +240,9 @@ func get_available_technologies() -> Array:
 	return result
 
 func remaining_source_cost() -> Dictionary:
+	var infinite := InfiniteResearchSystem.new(game_state)
+	if infinite.can_work():
+		return {"universe_matrix": minf(1000000, float(DecimalCount.subtract(infinite.cost(infinite.active()), infinite.invested(infinite.active()))))}
 	var tech := game_state.research_current_id
 	if not get_technology(tech).get("source_research_bridge", false): return {}
 	var result := {}
@@ -282,7 +286,7 @@ func update_source_labs(delta: float, statistics: StatisticsSystem = null) -> vo
 			if float(lab.get("power_requested", 0)) <= 0 or efficiency <= 0: break
 			var recipe := DataManager.get_recipe("dsp_matrix_research")
 			var effect := ProliferatorSystem.profile(lab, recipe)
-			var rate := maxf(float(lab.get("speed", 1)), 0) * efficiency * float(effect.speed)
+			var rate := maxf(float(lab.get("speed", 1)), 0) * efficiency * float(effect.speed) * game_state.get_technology_effect_multiplier("research_speed")
 			if rate <= 0: break
 			var duration := float(recipe.duration)
 			var progress := minf(float(lab.get("progress", 0)), duration)
@@ -292,6 +296,14 @@ func update_source_labs(delta: float, statistics: StatisticsSystem = null) -> vo
 			lab.progress = progress
 			lab.status = "running"
 			if progress + 0.0000001 < duration: break
+			var infinite := InfiniteResearchSystem.new(game_state)
+			if infinite.can_work():
+				if infinite.invest_one():
+					lab.input_buffer["universe_matrix"] -= 1.0
+					if statistics != null: statistics.record_consumed("universe_matrix", 1, lab.id, lab.planet_id)
+					ProliferatorSystem.consume(lab, recipe, effect, statistics)
+				lab.progress = 0.0
+				continue
 			var tech := game_state.research_current_id
 			var costs := remaining_source_cost()
 			for item in costs:

@@ -21,6 +21,8 @@ static func validate_persistent_dict(payload: Variant) -> Array:
 
 	_validate_stable_id_array(errors, "completed_technologies", data.get("completed_technologies"))
 	_validate_research_state(errors, data)
+	for message in SourceProgressionFacts.validate(data):
+		_add_error(errors, "invalid_progression_facts", "state", "", message)
 	for progression_field in ["completed_objective_ids", "claimed_progression_reward_ids", "completed_achievement_ids", "unlocked_progression_ids"]:
 		_validate_stable_id_array(errors, progression_field, data.get(progression_field))
 	var galaxy := GalaxySystem.new(GameState.new())
@@ -566,7 +568,7 @@ static func _validate_power_state(errors: Array, building_id: String, building: 
 		else:
 			for target in building.construction_targets:
 				var count: Variant = building.construction_targets[target]
-				if not DataManager.construction.has(target) or not _is_integral_number(count) or float(count) < 1 or float(count) > 99:
+				if not DataManager.construction.has(target) or not _is_integral_number(count) or float(count) < 1 or float(count) > 100000000:
 					_add_error(errors, "invalid_construction_targets", "building", building_id, "制造目标数量无效")
 	if building.has("automation_paused") and not building.automation_paused is bool:
 		_add_error(errors, "invalid_automation_pause", "building", building_id, "制造暂停状态无效")

@@ -3,34 +3,2649 @@
   "name": "数据驱动科技目录",
   "technologies": {
     "factory_foundations": {
-      "id": "factory_foundations", "name": "工厂基础理论", "description": "提升全厂生产节拍并解锁分流器。", "tier": "planetary",
-      "cost": {"matrix_science_1": 5}, "duration": 10.0, "prerequisites": [],
-      "unlocks": [{"kind": "building", "id": "splitter"}], "effects": {"production_speed": 1.1}
+      "id": "factory_foundations",
+      "name": "工厂基础理论",
+      "description": "提升全厂生产节拍并解锁分流器。",
+      "tier": "planetary",
+      "cost": {
+        "matrix_science_1": 5
+      },
+      "duration": 10,
+      "prerequisites": [],
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "splitter"
+        }
+      ],
+      "effects": {
+        "production_speed": 1.1
+      }
     },
     "fluid_handling": {
-      "id": "fluid_handling", "name": "流体处理", "description": "解锁原油采集和精炼。", "tier": "planetary",
-      "cost": {"matrix_science_1": 10}, "duration": 20.0, "prerequisites": ["factory_foundations"],
-      "unlocks": [{"kind": "building", "id": "oil_extractor"}, {"kind": "building", "id": "oil_refinery"}], "effects": {"production_speed": 1.05}
+      "id": "fluid_handling",
+      "name": "流体处理",
+      "description": "解锁原油采集和精炼。",
+      "tier": "planetary",
+      "cost": {
+        "matrix_science_1": 10
+      },
+      "duration": 20,
+      "prerequisites": [
+        "factory_foundations"
+      ],
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "oil_extractor"
+        },
+        {
+          "kind": "building",
+          "id": "oil_refinery"
+        }
+      ],
+      "effects": {
+        "production_speed": 1.05
+      }
     },
     "advanced_materials": {
-      "id": "advanced_materials", "name": "进阶材料学", "description": "解锁石墨烯配方。", "tier": "planetary",
-      "cost": {"matrix_science_1": 20}, "duration": 30.0, "prerequisites": ["fluid_handling"],
-      "unlocks": [{"kind": "recipe", "id": "graphene_recipe"}], "effects": {"production_speed": 1.05}
+      "id": "advanced_materials",
+      "name": "进阶材料学",
+      "description": "解锁石墨烯配方。",
+      "tier": "planetary",
+      "cost": {
+        "matrix_science_1": 20
+      },
+      "duration": 30,
+      "prerequisites": [
+        "fluid_handling"
+      ],
+      "unlocks": [
+        {
+          "kind": "recipe",
+          "id": "graphene_recipe"
+        }
+      ],
+      "effects": {
+        "production_speed": 1.05
+      }
     },
     "interstellar_logistics": {
-      "id": "interstellar_logistics", "name": "星际物流", "description": "解锁星际物流站。", "tier": "interstellar",
-      "cost": {"matrix_science_1": 30}, "duration": 40.0, "prerequisites": ["advanced_materials"],
-      "unlocks": [{"kind": "building", "id": "interstellar_logistics_station"}], "effects": {"production_speed": 1.05}
+      "id": "interstellar_logistics",
+      "name": "星际物流",
+      "description": "解锁星际物流站。",
+      "tier": "interstellar",
+      "cost": {
+        "matrix_science_1": 30
+      },
+      "duration": 40,
+      "prerequisites": [
+        "advanced_materials"
+      ],
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "interstellar_logistics_station"
+        }
+      ],
+      "effects": {
+        "production_speed": 1.05
+      }
     },
     "dyson_engineering": {
-      "id": "dyson_engineering", "name": "戴森工程", "description": "解锁太阳帆弹射器、戴森球发射器和射线接收站。", "tier": "dyson",
-      "cost": {"matrix_science_1": 40}, "duration": 50.0, "prerequisites": ["interstellar_logistics"],
-      "unlocks": [{"kind": "building", "id": "dyson_sphere_launcher"}, {"kind": "building", "id": "solar_sail_ejector"}, {"kind": "building", "id": "ray_receiver"}], "effects": {"production_speed": 1.05}
+      "id": "dyson_engineering",
+      "name": "戴森工程",
+      "description": "解锁太阳帆弹射器、戴森球发射器和射线接收站。",
+      "tier": "dyson",
+      "cost": {
+        "matrix_science_1": 40
+      },
+      "duration": 50,
+      "prerequisites": [
+        "interstellar_logistics"
+      ],
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dyson_sphere_launcher"
+        },
+        {
+          "kind": "building",
+          "id": "solar_sail_ejector"
+        },
+        {
+          "kind": "building",
+          "id": "ray_receiver"
+        }
+      ],
+      "effects": {
+        "production_speed": 1.05
+      }
     },
     "infinite_optimization": {
-      "id": "infinite_optimization", "name": "无限优化", "description": "可重复的工厂节拍优化。", "tier": "infinite", "repeatable": {"cost_rule": "fixed"},
-      "cost": {"matrix_science_1": 50}, "duration": 60.0, "prerequisites": ["dyson_engineering"],
-      "unlocks": [], "effects": {"production_speed": 1.02}
+      "id": "infinite_optimization",
+      "name": "无限优化",
+      "description": "可重复的工厂节拍优化。",
+      "tier": "infinite",
+      "repeatable": {
+        "cost_rule": "fixed"
+      },
+      "cost": {
+        "matrix_science_1": 50
+      },
+      "duration": 60,
+      "prerequisites": [
+        "dyson_engineering"
+      ],
+      "unlocks": [],
+      "effects": {
+        "production_speed": 1.02
+      }
+    },
+    "dsp_antimatter": {
+      "id": "dsp_antimatter",
+      "source_id": "antimatter",
+      "name": "质能储存",
+      "description": "在粒子对撞机中拆分临界光子，并将反物质封装为高密度可调度燃料。",
+      "tier": "dyson",
+      "source_tier": 18,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 80,
+        "energy_matrix": 80,
+        "structure_matrix": 80,
+        "information_matrix": 80,
+        "gravity_matrix": 80
+      },
+      "duration": 1200,
+      "prerequisites": [
+        "dsp_ray_receiver"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "recipe",
+          "id": "dsp_annihilation_constraint_sphere"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_antimatter"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_antimatter_fuel_rod"
+        }
+      ],
+      "unlock_descriptions": [
+        "质能转换",
+        "湮灭约束球",
+        "反物质燃料棒"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_artificial_star": {
+      "id": "dsp_artificial_star",
+      "source_id": "artificial_star",
+      "name": "人造恒星",
+      "description": "在强约束场中持续湮灭反物质燃料，将终局燃料链转化为超高功率电源。",
+      "tier": "dyson",
+      "source_tier": 19,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 100,
+        "energy_matrix": 100,
+        "structure_matrix": 100,
+        "information_matrix": 100,
+        "gravity_matrix": 100
+      },
+      "duration": 1500,
+      "prerequisites": [
+        "dsp_antimatter",
+        "dsp_fusion_power"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_artificial_star"
+        }
+      ],
+      "unlock_descriptions": [
+        "人造恒星",
+        "72 MW 反物质电力"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_autonomous_station_construction": {
+      "id": "dsp_autonomous_station_construction",
+      "source_id": "autonomous_station_construction",
+      "name": "自律空间站建造",
+      "description": "以自律施工机器人把新空间站材料需求降至 80%，并开放能源与星际运输模块。",
+      "tier": "dyson",
+      "source_tier": 26,
+      "deprecated": true,
+      "cost": {
+        "universe_matrix": 100000000
+      },
+      "duration": 300000000,
+      "prerequisites": [
+        "dsp_orbital_modular_assembly",
+        "dsp_orbital_energy_recovery"
+      ],
+      "effects": {},
+      "unlocks": [],
+      "unlock_descriptions": [
+        "空间站 80% 成本",
+        "能源核心模块",
+        "星际运输模块"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_basic_chemical_engineering": {
+      "id": "dsp_basic_chemical_engineering",
+      "source_id": "basic_chemical_engineering",
+      "name": "基础化工",
+      "description": "建立水资源输送与高分子反应设备，开始生产塑料。",
+      "tier": "planetary",
+      "source_tier": 5,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 10,
+        "energy_matrix": 10
+      },
+      "duration": 60,
+      "prerequisites": [
+        "dsp_energy_matrix"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_chemical_plant"
+        },
+        {
+          "kind": "building",
+          "id": "dsp_water_pump"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_plastic"
+        }
+      ],
+      "unlock_descriptions": [
+        "抽水站",
+        "化工厂",
+        "塑料配方"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_basic_logistics": {
+      "id": "dsp_basic_logistics",
+      "source_id": "basic_logistics",
+      "name": "基础物流系统",
+      "description": "建立可持续扩建的标准化物料运输线路。",
+      "tier": "planetary",
+      "source_tier": 2,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 8
+      },
+      "duration": 24,
+      "prerequisites": [
+        "dsp_electromagnetism"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_splitter_4way"
+        },
+        {
+          "kind": "building",
+          "id": "dsp_storage_mk1"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_electric_motor"
+        }
+      ],
+      "unlock_descriptions": [
+        "传送带 Mk.I 制造",
+        "小型储物仓",
+        "四向分流器",
+        "电动机"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_construction_automation": {
+      "id": "dsp_construction_automation",
+      "source_id": "construction_automation",
+      "name": "巨构建筑制造",
+      "description": "建立巨构级建筑制造中心，按玩家设定的施工库存目标自动取料并持续补足。",
+      "tier": "interstellar",
+      "source_tier": 13,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 100,
+        "energy_matrix": 100,
+        "structure_matrix": 100,
+        "information_matrix": 100
+      },
+      "duration": 1200,
+      "prerequisites": [
+        "dsp_information_matrix",
+        "dsp_high_speed_assembling"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_construction_center"
+        }
+      ],
+      "unlock_descriptions": [
+        "建筑制造中心",
+        "目标库存 100",
+        "5 秒自动制造周期"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_construction_capacity_1": {
+      "id": "dsp_construction_capacity_1",
+      "source_id": "construction_capacity_1",
+      "name": "建筑仓储扩容 I",
+      "description": "以引力矩阵压缩施工仓储与调度队列，提高自动补货上限和制造速度。",
+      "tier": "interstellar",
+      "source_tier": 16,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 150,
+        "energy_matrix": 150,
+        "structure_matrix": 150,
+        "information_matrix": 150,
+        "gravity_matrix": 150
+      },
+      "duration": 2250,
+      "prerequisites": [
+        "dsp_construction_automation",
+        "dsp_gravity_matrix"
+      ],
+      "effects": {},
+      "unlocks": [],
+      "unlock_descriptions": [
+        "目标库存上限 500",
+        "自动制造周期 2.5 秒"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_construction_capacity_2": {
+      "id": "dsp_construction_capacity_2",
+      "source_id": "construction_capacity_2",
+      "name": "建筑仓储扩容 II",
+      "description": "使用宇宙矩阵统一建筑制造协议，将库存与制造吞吐提升到终局规模。",
+      "tier": "dyson",
+      "source_tier": 20,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 300,
+        "energy_matrix": 300,
+        "structure_matrix": 300,
+        "information_matrix": 300,
+        "gravity_matrix": 300,
+        "universe_matrix": 300
+      },
+      "duration": 5400,
+      "prerequisites": [
+        "dsp_construction_capacity_1",
+        "dsp_universe_matrix"
+      ],
+      "effects": {},
+      "unlocks": [],
+      "unlock_descriptions": [
+        "目标库存上限 10万",
+        "自动制造周期 1 秒"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_dyson_absorption_1": {
+      "id": "dsp_dyson_absorption_1",
+      "source_id": "dyson_absorption_1",
+      "name": "壳面吸附效率",
+      "description": "同步壳面框架与太阳帆姿态控制，使永久结构吸附轨道太阳帆的速度提高一倍。",
+      "tier": "dyson",
+      "source_tier": 24,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 150,
+        "energy_matrix": 150,
+        "structure_matrix": 150,
+        "information_matrix": 150,
+        "gravity_matrix": 150,
+        "universe_matrix": 200
+      },
+      "duration": 2850,
+      "prerequisites": [
+        "dsp_dyson_shell",
+        "dsp_ray_transmission_2"
+      ],
+      "effects": {},
+      "unlocks": [],
+      "unlock_descriptions": [
+        "壳面太阳帆吸附速度 2.00×"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_dyson_shell": {
+      "id": "dsp_dyson_shell",
+      "source_id": "dyson_shell",
+      "name": "戴森壳面",
+      "description": "让戴森球结构自动吸附轨道太阳帆，将临时戴森云转化为永久发电壳面。",
+      "tier": "dyson",
+      "source_tier": 23,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 150,
+        "energy_matrix": 150,
+        "structure_matrix": 150,
+        "information_matrix": 150,
+        "gravity_matrix": 150,
+        "universe_matrix": 200
+      },
+      "duration": 2850,
+      "prerequisites": [
+        "dsp_vertical_launching_silo"
+      ],
+      "effects": {},
+      "unlocks": [],
+      "unlock_descriptions": [
+        "太阳帆自动吸附",
+        "永久壳面发电",
+        "结构容量扩张"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_dyson_sphere_program": {
+      "id": "dsp_dyson_sphere_program",
+      "source_id": "dyson_sphere_program",
+      "name": "戴森球计划",
+      "description": "以框架材料和戴森球组件建立可永久存在的恒星级能源结构。",
+      "tier": "dyson",
+      "source_tier": 21,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 100,
+        "energy_matrix": 100,
+        "structure_matrix": 100,
+        "information_matrix": 100,
+        "gravity_matrix": 100,
+        "universe_matrix": 100
+      },
+      "duration": 1800,
+      "prerequisites": [
+        "dsp_universe_matrix"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "recipe",
+          "id": "dsp_dyson_sphere_component"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_frame_material"
+        }
+      ],
+      "unlock_descriptions": [
+        "框架材料",
+        "戴森球组件",
+        "戴森球结构规划"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_dyson_swarm": {
+      "id": "dsp_dyson_swarm",
+      "source_id": "dyson_swarm",
+      "name": "戴森云",
+      "description": "以电磁轨道弹射器将太阳帆持续送入恒星轨道，建立可扩张但会衰减的戴森云。",
+      "tier": "interstellar",
+      "source_tier": 16,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 50,
+        "energy_matrix": 50,
+        "structure_matrix": 50,
+        "information_matrix": 50,
+        "gravity_matrix": 50
+      },
+      "duration": 750,
+      "prerequisites": [
+        "dsp_gravity_matrix"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_em_rail_ejector"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_photon_combiner"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_solar_sail"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_solar_sail_launch"
+        }
+      ],
+      "unlock_descriptions": [
+        "光子合并器",
+        "太阳帆",
+        "电磁轨道弹射器",
+        "戴森云发电"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_electromagnetic_matrix": {
+      "id": "dsp_electromagnetic_matrix",
+      "source_id": "electromagnetic_matrix",
+      "name": "电磁矩阵",
+      "description": "建立以电磁矩阵承载研究数据的基础科研体系。",
+      "tier": "planetary",
+      "source_tier": 0,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 3
+      },
+      "duration": 9,
+      "prerequisites": [],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_matrix_lab"
+        }
+      ],
+      "unlock_descriptions": [
+        "矩阵研究站制造",
+        "蓝色矩阵科研"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_electromagnetism": {
+      "id": "dsp_electromagnetism",
+      "source_id": "electromagnetism",
+      "name": "电磁学",
+      "description": "掌握稳定电磁场与基础风力发电设备的批量制造。",
+      "tier": "planetary",
+      "source_tier": 1,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 5
+      },
+      "duration": 15,
+      "prerequisites": [
+        "dsp_electromagnetic_matrix"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_wind_turbine"
+        }
+      ],
+      "unlock_descriptions": [
+        "风力涡轮机制造"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_energy_matrix": {
+      "id": "dsp_energy_matrix",
+      "source_id": "energy_matrix",
+      "name": "能量矩阵",
+      "description": "把氢的能级结构和高能石墨编码为第二种科学矩阵。",
+      "tier": "planetary",
+      "source_tier": 4,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 15
+      },
+      "duration": 45,
+      "prerequisites": [
+        "dsp_high_efficiency_plasma_control"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "recipe",
+          "id": "dsp_energetic_graphite"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_energy_matrix"
+        }
+      ],
+      "unlock_descriptions": [
+        "高能石墨",
+        "能量矩阵生产",
+        "红色矩阵科研"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_energy_storage": {
+      "id": "dsp_energy_storage",
+      "source_id": "energy_storage",
+      "name": "能量储存",
+      "description": "把电网富余能量封装进可运输蓄电器，并通过能量枢纽在行星间调配电力。",
+      "tier": "planetary",
+      "source_tier": 5,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 15,
+        "energy_matrix": 15
+      },
+      "duration": 90,
+      "prerequisites": [
+        "dsp_energy_matrix",
+        "dsp_basic_logistics"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_accumulator"
+        },
+        {
+          "kind": "building",
+          "id": "dsp_energy_exchanger"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_accumulator"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_accumulator_charge"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_accumulator_discharge"
+        }
+      ],
+      "unlock_descriptions": [
+        "蓄电器",
+        "能量枢纽",
+        "满蓄电器",
+        "自动削峰填谷"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_fractionation": {
+      "id": "dsp_fractionation",
+      "source_id": "fractionation",
+      "name": "流体分馏",
+      "description": "让氢在闭环物流中反复通过分馏塔，稳定分离氘并制造便于运输的氢燃料棒。",
+      "tier": "planetary",
+      "source_tier": 5,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 15,
+        "energy_matrix": 15
+      },
+      "duration": 90,
+      "prerequisites": [
+        "dsp_energy_matrix",
+        "dsp_high_efficiency_plasma_control"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_fractionator"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_deuterium_fractionation"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_hydrogen_fuel_rod"
+        }
+      ],
+      "unlock_descriptions": [
+        "分馏塔",
+        "氢分馏",
+        "氢燃料棒"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_fusion_power": {
+      "id": "dsp_fusion_power",
+      "source_id": "fusion_power",
+      "name": "可控核聚变",
+      "description": "以氘核燃料棒维持稳定聚变反应，为中后期工业提供高密度可调度电力。",
+      "tier": "interstellar",
+      "source_tier": 14,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 40,
+        "energy_matrix": 40,
+        "structure_matrix": 40,
+        "information_matrix": 40
+      },
+      "duration": 480,
+      "prerequisites": [
+        "dsp_miniature_particle_collider",
+        "dsp_energy_storage"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_mini_fusion_power_plant"
+        }
+      ],
+      "unlock_descriptions": [
+        "微型聚变发电站",
+        "15 MW 聚变电力"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_geothermal_power": {
+      "id": "dsp_geothermal_power",
+      "source_id": "geothermal_power",
+      "name": "地热发电",
+      "description": "利用熔岩行星的高温地幔建立不受日照影响的稳定基础电源。",
+      "tier": "planetary",
+      "source_tier": 6,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 18,
+        "energy_matrix": 18
+      },
+      "duration": 108,
+      "prerequisites": [
+        "dsp_energy_storage",
+        "dsp_high_efficiency_plasma_control"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_geothermal_power_station"
+        }
+      ],
+      "unlock_descriptions": [
+        "地热发电站",
+        "烬原 II 熔岩电力"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_gravity_matrix": {
+      "id": "dsp_gravity_matrix",
+      "source_id": "gravity_matrix",
+      "name": "引力矩阵",
+      "description": "将奇异物质、引力透镜与量子芯片组合为第五阶段科研矩阵。",
+      "tier": "interstellar",
+      "source_tier": 14,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 40,
+        "energy_matrix": 40,
+        "structure_matrix": 40,
+        "information_matrix": 40
+      },
+      "duration": 480,
+      "prerequisites": [
+        "dsp_miniature_particle_collider",
+        "dsp_quantum_chip"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "recipe",
+          "id": "dsp_graviton_lens"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_gravity_matrix"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_strange_matter"
+        }
+      ],
+      "unlock_descriptions": [
+        "奇异物质",
+        "引力透镜",
+        "引力矩阵生产",
+        "绿色矩阵科研"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_high_efficiency_plasma_control": {
+      "id": "dsp_high_efficiency_plasma_control",
+      "source_id": "high_efficiency_plasma_control",
+      "name": "高效电浆控制",
+      "description": "为原油萃取、等离子精炼与能源矩阵研究建立控制基础。",
+      "tier": "planetary",
+      "source_tier": 3,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 12
+      },
+      "duration": 36,
+      "prerequisites": [
+        "dsp_basic_logistics",
+        "dsp_thermal_power"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_oil_extractor"
+        },
+        {
+          "kind": "building",
+          "id": "dsp_oil_refinery"
+        },
+        {
+          "kind": "building",
+          "id": "dsp_storage_tank"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_plasma_exciter"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_plasma_refining"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_prism"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_steel"
+        }
+      ],
+      "unlock_descriptions": [
+        "原油萃取站",
+        "原油精炼厂",
+        "储液罐",
+        "钢材与电浆部件"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_high_speed_assembling": {
+      "id": "dsp_high_speed_assembling",
+      "source_id": "high_speed_assembling",
+      "name": "高速装配工艺",
+      "description": "改进装配设备的定位与驱动机构，让生产节点在原有配方上获得更高吞吐。",
+      "tier": "planetary",
+      "source_tier": 5,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 15,
+        "energy_matrix": 15
+      },
+      "duration": 90,
+      "prerequisites": [
+        "dsp_energy_matrix"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_assembling_machine_mk2"
+        }
+      ],
+      "unlock_descriptions": [
+        "制造台 Mk.II",
+        "制造台原地升级"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_high_speed_logistics": {
+      "id": "dsp_high_speed_logistics",
+      "source_id": "high_speed_logistics",
+      "name": "高速物流系统",
+      "description": "以电磁涡轮提高运输线路驱动频率，在相同线路数量下提升物流上限。",
+      "tier": "planetary",
+      "source_tier": 5,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 15,
+        "energy_matrix": 15
+      },
+      "duration": 90,
+      "prerequisites": [
+        "dsp_energy_matrix",
+        "dsp_basic_logistics"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "recipe",
+          "id": "dsp_electromagnetic_turbine"
+        }
+      ],
+      "unlock_descriptions": [
+        "传送带 Mk.II",
+        "运输线原地升级",
+        "电磁涡轮"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_high_strength_crystal": {
+      "id": "dsp_high_strength_crystal",
+      "source_id": "high_strength_crystal",
+      "name": "高强度晶体",
+      "description": "建立硅、钛与碳晶体的高温精炼流程，为结构材料提供基础。",
+      "tier": "planetary",
+      "source_tier": 5,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 10,
+        "energy_matrix": 10
+      },
+      "duration": 60,
+      "prerequisites": [
+        "dsp_energy_matrix"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "recipe",
+          "id": "dsp_diamond"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_high_purity_silicon"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_silicon_ore_from_stone"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_titanium_ingot"
+        }
+      ],
+      "unlock_descriptions": [
+        "高纯硅块",
+        "钛块",
+        "金刚石",
+        "石矿提炼硅石"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_information_matrix": {
+      "id": "dsp_information_matrix",
+      "source_id": "information_matrix",
+      "name": "信息矩阵",
+      "description": "将粒子宽带与处理器编码为高密度信息模型，建立第四阶段科研矩阵。",
+      "tier": "interstellar",
+      "source_tier": 11,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 30,
+        "energy_matrix": 30,
+        "structure_matrix": 30
+      },
+      "duration": 270,
+      "prerequisites": [
+        "dsp_interstellar_logistics",
+        "dsp_nanomaterials"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "recipe",
+          "id": "dsp_information_matrix"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_particle_broadband"
+        }
+      ],
+      "unlock_descriptions": [
+        "粒子宽带",
+        "信息矩阵生产",
+        "紫色矩阵科研"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_interstellar_logistics": {
+      "id": "dsp_interstellar_logistics",
+      "source_id": "interstellar_logistics",
+      "name": "星际物流系统",
+      "description": "建立恒星系内导航与运输协议，开放母恒星系后两颗行星并解锁跨行星物流设施。",
+      "tier": "planetary",
+      "source_tier": 6,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 20,
+        "energy_matrix": 20
+      },
+      "duration": 120,
+      "prerequisites": [
+        "dsp_energy_matrix",
+        "dsp_high_speed_logistics"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_interstellar_logistics_station"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_logistics_vessel"
+        }
+      ],
+      "unlock_descriptions": [
+        "烬原 II 与苍穹 III",
+        "星际物流站",
+        "物流运输船",
+        "跨行星跳转与运输调度"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_logistics_capacity_1": {
+      "id": "dsp_logistics_capacity_1",
+      "source_id": "logistics_capacity_1",
+      "name": "物流载荷扩容 I",
+      "description": "优化货舱结构与装载算法，使每架运输机和每艘运输船的单次载荷提高 50%。",
+      "tier": "interstellar",
+      "source_tier": 11,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 30,
+        "energy_matrix": 30,
+        "structure_matrix": 30,
+        "information_matrix": 30
+      },
+      "duration": 360,
+      "prerequisites": [
+        "dsp_information_matrix",
+        "dsp_interstellar_logistics"
+      ],
+      "effects": {},
+      "unlocks": [],
+      "unlock_descriptions": [
+        "运输机载荷 38",
+        "运输船载荷 150"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_logistics_capacity_2": {
+      "id": "dsp_logistics_capacity_2",
+      "source_id": "logistics_capacity_2",
+      "name": "物流载荷扩容 II",
+      "description": "以引力约束稳定满载货舱，使物流载荷累计提升至基础容量的两倍。",
+      "tier": "interstellar",
+      "source_tier": 16,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 45,
+        "energy_matrix": 45,
+        "structure_matrix": 45,
+        "information_matrix": 45,
+        "gravity_matrix": 45
+      },
+      "duration": 675,
+      "prerequisites": [
+        "dsp_gravity_matrix",
+        "dsp_logistics_capacity_1"
+      ],
+      "effects": {},
+      "unlocks": [],
+      "unlock_descriptions": [
+        "运输机载荷 50",
+        "运输船载荷 200"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_logistics_engine_1": {
+      "id": "dsp_logistics_engine_1",
+      "source_id": "logistics_engine_1",
+      "name": "物流运输引擎 I",
+      "description": "升级运输机和运输船推进系统，将全部常规物流航程速度提升 50%。",
+      "tier": "interstellar",
+      "source_tier": 10,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 25,
+        "energy_matrix": 25,
+        "structure_matrix": 25
+      },
+      "duration": 225,
+      "prerequisites": [
+        "dsp_interstellar_logistics"
+      ],
+      "effects": {},
+      "unlocks": [],
+      "unlock_descriptions": [
+        "物流航行速度 1.50×",
+        "行星航程 5.3 秒",
+        "星际航程 20 秒"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_logistics_engine_2": {
+      "id": "dsp_logistics_engine_2",
+      "source_id": "logistics_engine_2",
+      "name": "物流运输引擎 II",
+      "description": "把引力透镜导航并入物流推进器，使全部物流航程速度累计提升至两倍。",
+      "tier": "interstellar",
+      "source_tier": 16,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 45,
+        "energy_matrix": 45,
+        "structure_matrix": 45,
+        "information_matrix": 45,
+        "gravity_matrix": 45
+      },
+      "duration": 675,
+      "prerequisites": [
+        "dsp_space_warp",
+        "dsp_logistics_engine_1"
+      ],
+      "effects": {},
+      "unlocks": [],
+      "unlock_descriptions": [
+        "物流航行速度累计 2.00×",
+        "行星航程 4 秒",
+        "翘曲航程 6 秒"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_material_delivery_logistics": {
+      "id": "dsp_material_delivery_logistics",
+      "source_id": "material_delivery_logistics",
+      "name": "物资直送物流",
+      "description": "将三路传送带输入直接写入所在行星的物资托盘，减少重复搬运与仓储操作。",
+      "tier": "planetary",
+      "source_tier": 9,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 30,
+        "energy_matrix": 30,
+        "structure_matrix": 30
+      },
+      "duration": 270,
+      "prerequisites": [
+        "dsp_structure_matrix",
+        "dsp_basic_logistics"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_material_delivery_hub"
+        }
+      ],
+      "unlock_descriptions": [
+        "物资配送枢纽",
+        "3 个自动匹配输入接口",
+        "物资托盘直送"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_micro_black_hole_containment": {
+      "id": "dsp_micro_black_hole_containment",
+      "source_id": "micro_black_hole_containment",
+      "name": "微型黑洞约束工程",
+      "description": "建立可控微型事件视界，以三个独立接口永久处理任意传送带物资。",
+      "tier": "dyson",
+      "source_tier": 20,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 500,
+        "energy_matrix": 500,
+        "structure_matrix": 500,
+        "information_matrix": 500,
+        "gravity_matrix": 500,
+        "universe_matrix": 500
+      },
+      "duration": 9000,
+      "prerequisites": [
+        "dsp_universe_matrix"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_micro_black_hole_connector"
+        }
+      ],
+      "unlock_descriptions": [
+        "微型黑洞连接装置"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_miniature_particle_collider": {
+      "id": "dsp_miniature_particle_collider",
+      "source_id": "miniature_particle_collider",
+      "name": "微型粒子对撞机",
+      "description": "以强磁场约束高能粒子，实现氘富集并为奇异物质生产建立设备基础。",
+      "tier": "interstellar",
+      "source_tier": 13,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 30,
+        "energy_matrix": 30,
+        "structure_matrix": 30,
+        "information_matrix": 30
+      },
+      "duration": 360,
+      "prerequisites": [
+        "dsp_information_matrix"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_miniature_particle_collider"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_deuterium"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_deuteron_fuel_rod"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_particle_container"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_super_magnetic_ring"
+        }
+      ],
+      "unlock_descriptions": [
+        "微型粒子对撞机",
+        "超级磁场环",
+        "氘",
+        "氘核燃料棒",
+        "粒子容器"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_mining_speed_1": {
+      "id": "dsp_mining_speed_1",
+      "source_id": "mining_speed_1",
+      "name": "高效采矿 I",
+      "description": "优化采矿机切削轨迹和矿脉覆盖，使全部固体采矿节点持续增产。",
+      "tier": "planetary",
+      "source_tier": 5,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 15,
+        "energy_matrix": 15
+      },
+      "duration": 90,
+      "prerequisites": [
+        "dsp_energy_matrix"
+      ],
+      "effects": {},
+      "unlocks": [],
+      "unlock_descriptions": [
+        "固体矿物开采速度 +50%"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_mining_speed_2": {
+      "id": "dsp_mining_speed_2",
+      "source_id": "mining_speed_2",
+      "name": "高效采矿 II",
+      "description": "以结构矩阵重算矿脉覆盖与设备间距，使固体采矿吞吐累计提升至基础速度的两倍。",
+      "tier": "interstellar",
+      "source_tier": 10,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 25,
+        "energy_matrix": 25,
+        "structure_matrix": 25
+      },
+      "duration": 225,
+      "prerequisites": [
+        "dsp_structure_matrix",
+        "dsp_mining_speed_1"
+      ],
+      "effects": {},
+      "unlocks": [],
+      "unlock_descriptions": [
+        "固体矿物开采速度累计 2.00×"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_mining_speed_3": {
+      "id": "dsp_mining_speed_3",
+      "source_id": "mining_speed_3",
+      "name": "高效采矿 III",
+      "description": "利用引力场稳定高密度开采阵列，使固体矿物吞吐达到基础速度的三倍。",
+      "tier": "interstellar",
+      "source_tier": 15,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 40,
+        "energy_matrix": 40,
+        "structure_matrix": 40,
+        "information_matrix": 40,
+        "gravity_matrix": 40
+      },
+      "duration": 600,
+      "prerequisites": [
+        "dsp_gravity_matrix",
+        "dsp_mining_speed_2"
+      ],
+      "effects": {},
+      "unlocks": [],
+      "unlock_descriptions": [
+        "固体矿物开采速度累计 3.00×"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_nanomaterials": {
+      "id": "dsp_nanomaterials",
+      "source_id": "nanomaterials",
+      "name": "纳米材料",
+      "description": "把碳与硅材料推进到纳米尺度，为高密度信息载体建立材料基础。",
+      "tier": "interstellar",
+      "source_tier": 10,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 20,
+        "energy_matrix": 20,
+        "structure_matrix": 20
+      },
+      "duration": 180,
+      "prerequisites": [
+        "dsp_titanium_alloy",
+        "dsp_processor"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "recipe",
+          "id": "dsp_carbon_nanotube"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_crystal_silicon"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_graphene"
+        }
+      ],
+      "unlock_descriptions": [
+        "石墨烯",
+        "碳纳米管",
+        "晶格硅"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_orbital_collection": {
+      "id": "dsp_orbital_collection",
+      "source_id": "orbital_collection",
+      "name": "气态行星开采",
+      "description": "将采集与星际供应整合到气态巨星轨道，持续获取氢和少量氘。",
+      "tier": "interstellar",
+      "source_tier": 11,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 25,
+        "energy_matrix": 25,
+        "structure_matrix": 25
+      },
+      "duration": 225,
+      "prerequisites": [
+        "dsp_interstellar_logistics",
+        "dsp_nanomaterials"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_orbital_collector"
+        }
+      ],
+      "unlock_descriptions": [
+        "轨道采集器",
+        "苍岚 III 轨道部署",
+        "氢与氘自动采集"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_orbital_elevator_engineering": {
+      "id": "dsp_orbital_elevator_engineering",
+      "source_id": "orbital_elevator_engineering",
+      "name": "轨道升降工程",
+      "description": "以轨道升降结构改造星际物流站，使其可以原地升级为保留传统功能的 Mk.II。",
+      "tier": "dyson",
+      "source_tier": 24,
+      "deprecated": true,
+      "cost": {
+        "universe_matrix": 100000
+      },
+      "duration": 300000,
+      "prerequisites": [
+        "dsp_universe_matrix",
+        "dsp_interstellar_logistics"
+      ],
+      "effects": {},
+      "unlocks": [],
+      "unlock_descriptions": [
+        "星际物流站 Mk.II",
+        "太空电梯模式切换"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_orbital_energy_recovery": {
+      "id": "dsp_orbital_energy_recovery",
+      "source_id": "orbital_energy_recovery",
+      "name": "轨道升降能量回收",
+      "description": "回收电梯升降过程中的能量，使太空电梯动态物流能耗降低 50%。",
+      "tier": "dyson",
+      "source_tier": 26,
+      "deprecated": true,
+      "cost": {
+        "universe_matrix": 10000000
+      },
+      "duration": 30000000,
+      "prerequisites": [
+        "dsp_orbital_multi_cargo_bus",
+        "dsp_dyson_shell"
+      ],
+      "effects": {},
+      "unlocks": [],
+      "unlock_descriptions": [
+        "太空电梯能耗 -50%",
+        "联合协议前置"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_orbital_modular_assembly": {
+      "id": "dsp_orbital_modular_assembly",
+      "source_id": "orbital_modular_assembly",
+      "name": "轨道模块化装配",
+      "description": "把空间站施工材料需求降至 90%，并让施工平台吞吐翻倍。",
+      "tier": "dyson",
+      "source_tier": 25,
+      "deprecated": true,
+      "cost": {
+        "universe_matrix": 10000000
+      },
+      "duration": 30000000,
+      "prerequisites": [
+        "dsp_system_space_station_engineering",
+        "dsp_orbital_multi_cargo_bus"
+      ],
+      "effects": {},
+      "unlocks": [],
+      "unlock_descriptions": [
+        "空间站 90% 成本",
+        "物流主干模块"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_orbital_multi_cargo_bus": {
+      "id": "dsp_orbital_multi_cargo_bus",
+      "source_id": "orbital_multi_cargo_bus",
+      "name": "多物质轨道汇流",
+      "description": "把五个传统输入汇合为一个通用入口，并为太空电梯开放五路独立输出。",
+      "tier": "dyson",
+      "source_tier": 25,
+      "deprecated": true,
+      "cost": {
+        "universe_matrix": 1000000
+      },
+      "duration": 3000000,
+      "prerequisites": [
+        "dsp_orbital_elevator_engineering",
+        "dsp_universe_matrix"
+      ],
+      "effects": {},
+      "unlocks": [],
+      "unlock_descriptions": [
+        "通用输入口",
+        "五路电梯输出口",
+        "恒星系共享仓库"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_plane_smelting": {
+      "id": "dsp_plane_smelting",
+      "source_id": "plane_smelting",
+      "name": "位面冶金",
+      "description": "利用强磁约束与位面过滤结构重构熔炼腔体，在相同节点规模下实现双倍冶金吞吐。",
+      "tier": "interstellar",
+      "source_tier": 14,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 30,
+        "energy_matrix": 30,
+        "structure_matrix": 30,
+        "information_matrix": 30
+      },
+      "duration": 360,
+      "prerequisites": [
+        "dsp_miniature_particle_collider",
+        "dsp_quantum_chip",
+        "dsp_titanium_alloy"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_plane_smelter"
+        }
+      ],
+      "unlock_descriptions": [
+        "位面熔炉",
+        "熔炉原地升级",
+        "熔炼速度 2.00×"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_planetary_logistics": {
+      "id": "dsp_planetary_logistics",
+      "source_id": "planetary_logistics",
+      "name": "行星物流系统",
+      "description": "以物流运输机连接同一行星内的供需站，跨越画布完成无线物资调度。",
+      "tier": "planetary",
+      "source_tier": 9,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 10,
+        "energy_matrix": 10,
+        "structure_matrix": 10
+      },
+      "duration": 90,
+      "prerequisites": [
+        "dsp_structure_matrix",
+        "dsp_processor",
+        "dsp_high_speed_logistics"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_planetary_logistics_station"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_logistics_drone"
+        }
+      ],
+      "unlock_descriptions": [
+        "行星物流站",
+        "物流运输机",
+        "同星球无线运输"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_polymer_chemistry": {
+      "id": "dsp_polymer_chemistry",
+      "source_id": "polymer_chemistry",
+      "name": "高分子化工",
+      "description": "把塑料、精炼油与水重组为稳定的有机晶体。",
+      "tier": "planetary",
+      "source_tier": 6,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 15,
+        "energy_matrix": 15
+      },
+      "duration": 90,
+      "prerequisites": [
+        "dsp_basic_chemical_engineering",
+        "dsp_xray_cracking"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "recipe",
+          "id": "dsp_organic_crystal"
+        }
+      ],
+      "unlock_descriptions": [
+        "有机晶体配方"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_processor": {
+      "id": "dsp_processor",
+      "source_id": "processor",
+      "name": "处理器",
+      "description": "以高纯硅制造微晶元件和处理器，为远程物流调度建立计算基础。",
+      "tier": "planetary",
+      "source_tier": 8,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 20,
+        "energy_matrix": 20,
+        "structure_matrix": 10
+      },
+      "duration": 150,
+      "prerequisites": [
+        "dsp_structure_matrix"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "recipe",
+          "id": "dsp_microcrystalline_component"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_processor"
+        }
+      ],
+      "unlock_descriptions": [
+        "微晶元件",
+        "处理器配方"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_proliferator_1": {
+      "id": "dsp_proliferator_1",
+      "source_id": "proliferator_1",
+      "name": "增产剂 Mk.I",
+      "description": "将煤加工为可控喷涂介质，并建立生产节点的内联喷涂模块。",
+      "tier": "planetary",
+      "source_tier": 6,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 20,
+        "energy_matrix": 20
+      },
+      "duration": 120,
+      "prerequisites": [
+        "dsp_energy_matrix",
+        "dsp_high_speed_assembling",
+        "dsp_high_speed_logistics"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_spray_coater"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_proliferator_mk1"
+        }
+      ],
+      "unlock_descriptions": [
+        "增产剂 Mk.I",
+        "喷涂机",
+        "额外产出与加速模式"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_proliferator_2": {
+      "id": "dsp_proliferator_2",
+      "source_id": "proliferator_2",
+      "name": "增产剂 Mk.II",
+      "description": "利用金刚石稳定喷涂颗粒，在更高耗电下提升增产或加速收益。",
+      "tier": "planetary",
+      "source_tier": 8,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 25,
+        "energy_matrix": 25,
+        "structure_matrix": 20
+      },
+      "duration": 210,
+      "prerequisites": [
+        "dsp_structure_matrix",
+        "dsp_high_strength_crystal",
+        "dsp_proliferator_1"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "recipe",
+          "id": "dsp_proliferator_mk2"
+        }
+      ],
+      "unlock_descriptions": [
+        "增产剂 Mk.II",
+        "额外产出 +20%",
+        "生产加速 +50%"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_proliferator_3": {
+      "id": "dsp_proliferator_3",
+      "source_id": "proliferator_3",
+      "name": "增产剂 Mk.III",
+      "description": "以碳纳米管维持高密度喷涂结构，获得最高增产与生产加速效果。",
+      "tier": "interstellar",
+      "source_tier": 12,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 30,
+        "energy_matrix": 30,
+        "structure_matrix": 30,
+        "information_matrix": 30
+      },
+      "duration": 360,
+      "prerequisites": [
+        "dsp_information_matrix",
+        "dsp_nanomaterials",
+        "dsp_proliferator_2"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "recipe",
+          "id": "dsp_proliferator_mk3"
+        }
+      ],
+      "unlock_descriptions": [
+        "增产剂 Mk.III",
+        "额外产出 +25%",
+        "生产加速 +100%"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_quantum_chemical_engineering": {
+      "id": "dsp_quantum_chemical_engineering",
+      "source_id": "quantum_chemical_engineering",
+      "name": "量子化工",
+      "description": "以量子芯片控制高压反应腔，将全部化工配方速度提升到普通化工厂的两倍。",
+      "tier": "interstellar",
+      "source_tier": 16,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 50,
+        "energy_matrix": 50,
+        "structure_matrix": 50,
+        "information_matrix": 50,
+        "gravity_matrix": 50
+      },
+      "duration": 750,
+      "prerequisites": [
+        "dsp_gravity_matrix",
+        "dsp_rare_resource_utilization"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_quantum_chemical_plant"
+        }
+      ],
+      "unlock_descriptions": [
+        "量子化工厂",
+        "化工厂原地升级",
+        "化工速度 2.00×"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_quantum_chip": {
+      "id": "dsp_quantum_chip",
+      "source_id": "quantum_chip",
+      "name": "量子芯片",
+      "description": "利用卡西米尔晶体和位面过滤器构建高密度量子运算核心。",
+      "tier": "interstellar",
+      "source_tier": 13,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 30,
+        "energy_matrix": 30,
+        "structure_matrix": 30,
+        "information_matrix": 30
+      },
+      "duration": 360,
+      "prerequisites": [
+        "dsp_information_matrix",
+        "dsp_nanomaterials"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "recipe",
+          "id": "dsp_casimir_crystal"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_plane_filter"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_quantum_chip"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_titanium_glass"
+        }
+      ],
+      "unlock_descriptions": [
+        "钛化玻璃",
+        "卡西米尔晶体",
+        "位面过滤器",
+        "量子芯片"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_quantum_logistics_network": {
+      "id": "dsp_quantum_logistics_network",
+      "source_id": "quantum_logistics_network",
+      "name": "量子物流网络",
+      "description": "把已升级的星际物流塔接入一份全宇宙共享物资池；供应物资送达时优先直接入池，下载与溢出缓存仍在五秒边界结算。",
+      "tier": "dyson",
+      "source_tier": 24,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 500,
+        "energy_matrix": 500,
+        "structure_matrix": 500,
+        "information_matrix": 500,
+        "gravity_matrix": 500,
+        "universe_matrix": 1000
+      },
+      "duration": 10500,
+      "prerequisites": [
+        "dsp_interstellar_logistics",
+        "dsp_space_warp",
+        "dsp_universe_matrix"
+      ],
+      "effects": {},
+      "unlocks": [],
+      "unlock_descriptions": [
+        "量子物流塔接入",
+        "全宇宙共享库存",
+        "量子网络全局吞吐"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_quantum_printing": {
+      "id": "dsp_quantum_printing",
+      "source_id": "quantum_printing",
+      "name": "量子打印技术",
+      "description": "用量子芯片和粒子宽带控制精密装配过程，进一步压缩高阶物品生产周期。",
+      "tier": "interstellar",
+      "source_tier": 15,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 30,
+        "energy_matrix": 30,
+        "structure_matrix": 30,
+        "information_matrix": 30,
+        "gravity_matrix": 30
+      },
+      "duration": 450,
+      "prerequisites": [
+        "dsp_gravity_matrix",
+        "dsp_high_speed_assembling"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_assembling_machine_mk3"
+        }
+      ],
+      "unlock_descriptions": [
+        "制造台 Mk.III",
+        "装配速度 1.50×"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_rare_resource_utilization": {
+      "id": "dsp_rare_resource_utilization",
+      "source_id": "rare_resource_utilization",
+      "name": "稀有资源利用",
+      "description": "识别稀有矿物的天然微观结构，以替代配方显著缩短六条高阶材料生产链。",
+      "tier": "interstellar",
+      "source_tier": 14,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 35,
+        "energy_matrix": 35,
+        "structure_matrix": 35,
+        "information_matrix": 35
+      },
+      "duration": 420,
+      "prerequisites": [
+        "dsp_quantum_chip",
+        "dsp_interstellar_logistics",
+        "dsp_nanomaterials"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "recipe",
+          "id": "dsp_carbon_nanotube_from_spiniform"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_casimir_crystal_advanced"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_crystal_silicon_from_fractal"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_diamond_from_kimberlite"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_graphene_from_fire_ice"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_particle_container_from_unipolar"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_photon_combiner_from_grating"
+        }
+      ],
+      "unlock_descriptions": [
+        "可燃冰裂解",
+        "金伯利矿提炼",
+        "分形硅晶格化",
+        "光栅石光学配方",
+        "刺笋结晶纳米管",
+        "单极磁石粒子容器"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_ray_receiver": {
+      "id": "dsp_ray_receiver",
+      "source_id": "ray_receiver",
+      "name": "射线接收站",
+      "description": "跨行星共享戴森云输出，并在直接发电和临界光子生成之间分配恒星能。",
+      "tier": "interstellar",
+      "source_tier": 17,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 60,
+        "energy_matrix": 60,
+        "structure_matrix": 60,
+        "information_matrix": 60,
+        "gravity_matrix": 60
+      },
+      "duration": 900,
+      "prerequisites": [
+        "dsp_dyson_swarm"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_ray_receiver"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_critical_photon"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_ray_power"
+        }
+      ],
+      "unlock_descriptions": [
+        "射线接收站",
+        "电力接收模式",
+        "临界光子模式"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_ray_transmission_1": {
+      "id": "dsp_ray_transmission_1",
+      "source_id": "ray_transmission_1",
+      "name": "射线传输效率 I",
+      "description": "校准恒星射线相位与接收阵列，使每台射线接收站额定功率提升至 9 MW。",
+      "tier": "dyson",
+      "source_tier": 18,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 60,
+        "energy_matrix": 60,
+        "structure_matrix": 60,
+        "information_matrix": 60,
+        "gravity_matrix": 60
+      },
+      "duration": 900,
+      "prerequisites": [
+        "dsp_ray_receiver",
+        "dsp_solar_sail_life_1"
+      ],
+      "effects": {},
+      "unlocks": [],
+      "unlock_descriptions": [
+        "射线接收上限 9 MW/台"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_ray_transmission_2": {
+      "id": "dsp_ray_transmission_2",
+      "source_id": "ray_transmission_2",
+      "name": "射线传输效率 II",
+      "description": "用宇宙矩阵统一发射与接收模型，使每台接收站额定功率累计提升至 12 MW。",
+      "tier": "dyson",
+      "source_tier": 20,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 80,
+        "energy_matrix": 80,
+        "structure_matrix": 80,
+        "information_matrix": 80,
+        "gravity_matrix": 80,
+        "universe_matrix": 80
+      },
+      "duration": 1440,
+      "prerequisites": [
+        "dsp_universe_matrix",
+        "dsp_ray_transmission_1"
+      ],
+      "effects": {},
+      "unlocks": [],
+      "unlock_descriptions": [
+        "射线接收上限累计 12 MW/台"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_reforming_refine": {
+      "id": "dsp_reforming_refine",
+      "source_id": "reforming_refine",
+      "name": "重整精炼",
+      "description": "消耗 2 份精炼油、1 份煤和 1 份氢，重整产出 3 份精炼油，每轮额外获得 1 份精炼油。",
+      "tier": "planetary",
+      "source_tier": 6,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 15,
+        "energy_matrix": 15
+      },
+      "duration": 90,
+      "prerequisites": [
+        "dsp_xray_cracking",
+        "dsp_basic_chemical_engineering"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "recipe",
+          "id": "dsp_reforming_refine"
+        }
+      ],
+      "unlock_descriptions": [
+        "重整精炼配方",
+        "精炼油循环增产"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_research_speed_1": {
+      "id": "dsp_research_speed_1",
+      "source_id": "research_speed_1",
+      "name": "科研速度 I",
+      "description": "以四色矩阵优化科研站的演算管线，提高持续研究吞吐。",
+      "tier": "interstellar",
+      "source_tier": 12,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 20,
+        "energy_matrix": 20,
+        "structure_matrix": 20,
+        "information_matrix": 20
+      },
+      "duration": 240,
+      "prerequisites": [
+        "dsp_information_matrix"
+      ],
+      "effects": {},
+      "unlocks": [],
+      "unlock_descriptions": [
+        "矩阵研究速度 +25%"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_research_speed_2": {
+      "id": "dsp_research_speed_2",
+      "source_id": "research_speed_2",
+      "name": "科研速度 II",
+      "description": "以五色矩阵继续优化科研站演算管线，使研究吞吐累计提升 50%。",
+      "tier": "interstellar",
+      "source_tier": 15,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 20,
+        "energy_matrix": 20,
+        "structure_matrix": 20,
+        "information_matrix": 20,
+        "gravity_matrix": 20
+      },
+      "duration": 300,
+      "prerequisites": [
+        "dsp_gravity_matrix",
+        "dsp_research_speed_1"
+      ],
+      "effects": {},
+      "unlocks": [],
+      "unlock_descriptions": [
+        "矩阵研究速度累计 +50%"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_research_speed_3": {
+      "id": "dsp_research_speed_3",
+      "source_id": "research_speed_3",
+      "name": "科研速度 III",
+      "description": "以六色矩阵统一科研站演算管线，使研究吞吐累计提升至 75%。",
+      "tier": "dyson",
+      "source_tier": 20,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 30,
+        "energy_matrix": 30,
+        "structure_matrix": 30,
+        "information_matrix": 30,
+        "gravity_matrix": 30,
+        "universe_matrix": 30
+      },
+      "duration": 540,
+      "prerequisites": [
+        "dsp_universe_matrix",
+        "dsp_research_speed_2"
+      ],
+      "effects": {},
+      "unlocks": [],
+      "unlock_descriptions": [
+        "矩阵研究速度累计 +75%"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_solar_energy": {
+      "id": "dsp_solar_energy",
+      "source_id": "solar_energy",
+      "name": "太阳能收集",
+      "description": "将高纯硅光伏阵列接入行星电网，建立无需燃料的日照发电能力。",
+      "tier": "planetary",
+      "source_tier": 2,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 8
+      },
+      "duration": 24,
+      "prerequisites": [
+        "dsp_electromagnetism"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_solar_panel"
+        }
+      ],
+      "unlock_descriptions": [
+        "太阳能板",
+        "行星日照系数"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_solar_sail_life_1": {
+      "id": "dsp_solar_sail_life_1",
+      "source_id": "solar_sail_life_1",
+      "name": "太阳帆轨道寿命 I",
+      "description": "改进太阳帆姿态控制和光压补偿，将单帆在轨寿命从 20 分钟延长到 30 分钟。",
+      "tier": "interstellar",
+      "source_tier": 17,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 50,
+        "energy_matrix": 50,
+        "structure_matrix": 50,
+        "information_matrix": 50,
+        "gravity_matrix": 50
+      },
+      "duration": 750,
+      "prerequisites": [
+        "dsp_dyson_swarm"
+      ],
+      "effects": {},
+      "unlocks": [],
+      "unlock_descriptions": [
+        "太阳帆在轨寿命 30 分钟"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_solar_sail_life_2": {
+      "id": "dsp_solar_sail_life_2",
+      "source_id": "solar_sail_life_2",
+      "name": "太阳帆轨道寿命 II",
+      "description": "以宇宙矩阵预测轨道摄动，将太阳帆在轨寿命累计延长到 40 分钟。",
+      "tier": "dyson",
+      "source_tier": 20,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 70,
+        "energy_matrix": 70,
+        "structure_matrix": 70,
+        "information_matrix": 70,
+        "gravity_matrix": 70,
+        "universe_matrix": 70
+      },
+      "duration": 1260,
+      "prerequisites": [
+        "dsp_universe_matrix",
+        "dsp_solar_sail_life_1"
+      ],
+      "effects": {},
+      "unlocks": [],
+      "unlock_descriptions": [
+        "太阳帆在轨寿命累计 40 分钟"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_space_warp": {
+      "id": "dsp_space_warp",
+      "source_id": "space_warp",
+      "name": "空间翘曲",
+      "description": "以引力透镜折叠航线距离，为跨恒星物流运输船提供曲率航行能力。",
+      "tier": "interstellar",
+      "source_tier": 15,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 30,
+        "energy_matrix": 30,
+        "structure_matrix": 30,
+        "information_matrix": 30,
+        "gravity_matrix": 30
+      },
+      "duration": 450,
+      "prerequisites": [
+        "dsp_gravity_matrix",
+        "dsp_interstellar_logistics"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "recipe",
+          "id": "dsp_space_warper"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_space_warper_from_gravity_matrix"
+        }
+      ],
+      "unlock_descriptions": [
+        "空间翘曲器",
+        "星际站翘曲器仓",
+        "跨恒星航线准备"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_stellar_exploration": {
+      "id": "dsp_stellar_exploration",
+      "source_id": "stellar_exploration",
+      "name": "恒星探索",
+      "description": "校准恒星级导航阵列，消耗勘探补给发现远方恒星系并建立永久航标。",
+      "tier": "interstellar",
+      "source_tier": 16,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 40,
+        "energy_matrix": 40,
+        "structure_matrix": 40,
+        "information_matrix": 40,
+        "gravity_matrix": 40
+      },
+      "duration": 600,
+      "prerequisites": [
+        "dsp_space_warp",
+        "dsp_rare_resource_utilization"
+      ],
+      "effects": {},
+      "unlocks": [],
+      "unlock_descriptions": [
+        "星图",
+        "北冕座勘探",
+        "赫卡忒中子星系勘探"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_structure_matrix": {
+      "id": "dsp_structure_matrix",
+      "source_id": "structure_matrix",
+      "name": "结构矩阵",
+      "description": "以钛晶石和金刚石编码物质结构，建立第三阶段科研矩阵。",
+      "tier": "planetary",
+      "source_tier": 7,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 20,
+        "energy_matrix": 20
+      },
+      "duration": 120,
+      "prerequisites": [
+        "dsp_high_strength_crystal",
+        "dsp_polymer_chemistry"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "recipe",
+          "id": "dsp_structure_matrix"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_titanium_crystal"
+        }
+      ],
+      "unlock_descriptions": [
+        "钛晶石",
+        "结构矩阵生产",
+        "黄色矩阵科研"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_super_magnetic_logistics": {
+      "id": "dsp_super_magnetic_logistics",
+      "source_id": "super_magnetic_logistics",
+      "name": "超级磁场物流",
+      "description": "以超级磁场环稳定高速运输线路，使单线路吞吐提升至基础传送带的五倍。",
+      "tier": "interstellar",
+      "source_tier": 15,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 30,
+        "energy_matrix": 30,
+        "structure_matrix": 30,
+        "information_matrix": 30,
+        "gravity_matrix": 30
+      },
+      "duration": 450,
+      "prerequisites": [
+        "dsp_gravity_matrix",
+        "dsp_high_speed_logistics"
+      ],
+      "effects": {},
+      "unlocks": [],
+      "unlock_descriptions": [
+        "传送带 Mk.III",
+        "单线物流 30/s"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_system_space_station_engineering": {
+      "id": "dsp_system_space_station_engineering",
+      "source_id": "system_space_station_engineering",
+      "name": "恒星系空间站工程",
+      "description": "解锁每个已探索恒星系独立建设一座联合空间站的施工工地。",
+      "tier": "dyson",
+      "source_tier": 24,
+      "deprecated": true,
+      "cost": {
+        "universe_matrix": 1000000
+      },
+      "duration": 3000000,
+      "prerequisites": [
+        "dsp_universe_matrix",
+        "dsp_dyson_sphere_program",
+        "dsp_vertical_launching_silo"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_space_station_construction_launcher"
+        }
+      ],
+      "unlock_descriptions": [
+        "空间站建设工地",
+        "空间站施工发射平台"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_thermal_power": {
+      "id": "dsp_thermal_power",
+      "source_id": "thermal_power",
+      "name": "火力发电",
+      "description": "把煤与化工燃料转换为可调度电力，为高耗能工业提供稳定能源。",
+      "tier": "planetary",
+      "source_tier": 2,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 8
+      },
+      "duration": 24,
+      "prerequisites": [
+        "dsp_electromagnetism"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_thermal_power_plant"
+        }
+      ],
+      "unlock_descriptions": [
+        "火力发电厂",
+        "多燃料发电",
+        "按需燃烧"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_time_warp_engineering": {
+      "id": "dsp_time_warp_engineering",
+      "source_id": "time_warp_engineering",
+      "name": "时间扭曲工程",
+      "description": "以指数级电力维持全局时间加速，同时保持离线收益和活动时钟使用真实时间。",
+      "tier": "dyson",
+      "source_tier": 20,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 1000,
+        "energy_matrix": 1000,
+        "structure_matrix": 1000,
+        "information_matrix": 1000,
+        "gravity_matrix": 1000,
+        "universe_matrix": 1000
+      },
+      "duration": 18000,
+      "prerequisites": [
+        "dsp_universe_matrix",
+        "dsp_artificial_star"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_time_warp_device"
+        }
+      ],
+      "unlock_descriptions": [
+        "时间扭曲装置",
+        "5x 及更高实时模拟倍率"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_titanium_alloy": {
+      "id": "dsp_titanium_alloy",
+      "source_id": "titanium_alloy",
+      "name": "钛合金",
+      "description": "利用硫酸改善钛与钢材的晶格结构，制造可承受星际航行环境的结构材料。",
+      "tier": "planetary",
+      "source_tier": 8,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 20,
+        "energy_matrix": 20,
+        "structure_matrix": 10
+      },
+      "duration": 150,
+      "prerequisites": [
+        "dsp_structure_matrix"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "recipe",
+          "id": "dsp_sulfuric_acid"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_titanium_alloy"
+        }
+      ],
+      "unlock_descriptions": [
+        "硫酸合成",
+        "钛合金配方",
+        "熔岩星硫酸海洋开采"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_unified_system_logistics_protocol": {
+      "id": "dsp_unified_system_logistics_protocol",
+      "source_id": "unified_system_logistics_protocol",
+      "name": "恒星系联合物流协议",
+      "description": "将已建空间站接入共享舰队、共享翘曲仓和银河能源池，开启跨恒星系聚合调度。",
+      "tier": "dyson",
+      "source_tier": 27,
+      "deprecated": true,
+      "cost": {
+        "universe_matrix": 1000000000
+      },
+      "duration": 3000000000,
+      "prerequisites": [
+        "dsp_orbital_energy_recovery",
+        "dsp_autonomous_station_construction"
+      ],
+      "effects": {},
+      "unlocks": [],
+      "unlock_descriptions": [
+        "最多 8 座空间站聚合物流",
+        "共享舰队与翘曲仓",
+        "银河能源池"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_universe_matrix": {
+      "id": "dsp_universe_matrix",
+      "source_id": "universe_matrix",
+      "name": "宇宙矩阵",
+      "description": "把五色矩阵的研究数据与反物质统一编码，形成最终阶段的白色科研矩阵。",
+      "tier": "dyson",
+      "source_tier": 19,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 100,
+        "energy_matrix": 100,
+        "structure_matrix": 100,
+        "information_matrix": 100,
+        "gravity_matrix": 100
+      },
+      "duration": 1500,
+      "prerequisites": [
+        "dsp_antimatter"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_galactic_material_exporter"
+        },
+        {
+          "kind": "building",
+          "id": "dsp_orbital_cargo_terminal"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_universe_matrix"
+        }
+      ],
+      "unlock_descriptions": [
+        "宇宙矩阵生产",
+        "六色矩阵科研"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_vertical_launching_silo": {
+      "id": "dsp_vertical_launching_silo",
+      "source_id": "vertical_launching_silo",
+      "name": "垂直发射井",
+      "description": "制造小型运载火箭并通过高功率垂直发射井建设戴森球结构节点。",
+      "tier": "dyson",
+      "source_tier": 22,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 120,
+        "energy_matrix": 120,
+        "structure_matrix": 120,
+        "information_matrix": 120,
+        "gravity_matrix": 120,
+        "universe_matrix": 120
+      },
+      "duration": 2160,
+      "prerequisites": [
+        "dsp_dyson_sphere_program"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "building",
+          "id": "dsp_vertical_launching_silo"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_carrier_rocket_launch"
+        },
+        {
+          "kind": "recipe",
+          "id": "dsp_small_carrier_rocket"
+        }
+      ],
+      "unlock_descriptions": [
+        "小型运载火箭",
+        "垂直发射井",
+        "永久结构点"
+      ],
+      "source_research_bridge": true
+    },
+    "dsp_xray_cracking": {
+      "id": "dsp_xray_cracking",
+      "source_id": "xray_cracking",
+      "name": "X 射线裂解",
+      "description": "利用高能光子裂解精炼油，重新分配氢与碳材料产出。",
+      "tier": "planetary",
+      "source_tier": 5,
+      "deprecated": false,
+      "cost": {
+        "electromagnetic_matrix": 10,
+        "energy_matrix": 10
+      },
+      "duration": 60,
+      "prerequisites": [
+        "dsp_energy_matrix"
+      ],
+      "effects": {},
+      "unlocks": [
+        {
+          "kind": "recipe",
+          "id": "dsp_xray_cracking"
+        }
+      ],
+      "unlock_descriptions": [
+        "X 射线裂解配方",
+        "氢与石墨替代路线"
+      ],
+      "source_research_bridge": true
     }
   }
 }

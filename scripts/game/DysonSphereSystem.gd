@@ -190,7 +190,7 @@ func _launch(building: Dictionary, delta: float) -> String:
 	building.input_buffer[item] -= 1.0
 	config.progress = 0.0
 	if kind == "orbits":
-		var expires := game_state.dyson_tick + int(rules.sail_lifetime_ticks)
+		var expires := game_state.dyson_tick + int(float(rules.sail_lifetime_ticks) * game_state.get_technology_effect_multiplier("sail_lifetime"))
 		if not target.cohorts.is_empty() and int(target.cohorts.back().expires_tick) == expires:
 			target.cohorts.back().count += 1
 		else:
@@ -213,7 +213,7 @@ func _absorb(system: Dictionary, layer: Dictionary) -> void:
 	if orbit.cohorts.is_empty():
 		return
 	layer.absorption_ticks += 1
-	if int(layer.absorption_ticks) < int(rules.absorption_interval_ticks):
+	if int(layer.absorption_ticks) < maxi(1, int(ceilf(float(rules.absorption_interval_ticks) / game_state.get_technology_effect_multiplier("sail_absorption")))):
 		return
 	layer.absorption_ticks = 0
 	orbit.cohorts[0].count -= 1
@@ -246,7 +246,7 @@ func get_summary(system_id: String) -> Dictionary:
 		for cohort in system.orbits[orbit_id].cohorts:
 			available += int(cohort.count)
 		missing_sails += maxi(0, int(orbit_deficits[orbit_id]) - available)
-	var power := live * float(rules.sail_power_kw) + points * float(rules.structure_power_kw) + absorbed * float(rules.shell_sail_power_kw)
+	var power := (live * float(rules.sail_power_kw) + points * float(rules.structure_power_kw) + absorbed * float(rules.shell_sail_power_kw)) * game_state.get_technology_effect_multiplier("dyson_power")
 	return {"live_sails": live, "absorbed_sails": absorbed, "expired_sails": int(system.sails_expired), "launched_sails": int(system.sails_launched), "structure_points": points, "rockets_launched": int(system.rockets_launched), "missing_rockets": required_points - points, "missing_sails": missing_sails, "power_kw": power, "planned_power_kw": required_points * float(rules.structure_power_kw) + required_sails * float(rules.shell_sail_power_kw)}
 
 func receiver_outputs() -> Dictionary:
@@ -265,7 +265,7 @@ func receiver_outputs() -> Dictionary:
 			grouped[system_id] = []
 		grouped[system_id].append(id)
 	for system_id in grouped:
-		var capacity := float(DataManager.get_building("ray_receiver").get("power_generation", 0))
+		var capacity := float(DataManager.get_building("ray_receiver").get("power_generation", 0)) * game_state.get_technology_effect_multiplier("ray_capacity")
 		var total_capacity := 0.0
 		for id in grouped[system_id]:
 			total_capacity += capacity * clampf(float(game_state.buildings[id].get("generation_factor", 1)), 0, 1)

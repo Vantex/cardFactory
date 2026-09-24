@@ -76,6 +76,8 @@ static func to_persistent_dict(state: GameState) -> Dictionary:
 		"buildings": _encode_entity_collection(state.buildings, BUILDING_RUNTIME_FIELDS, state.active_planet_id),
 		"connections": _encode_connections(state),
 	}
+	if not state.progression_facts.is_empty(): payload["progression_facts"] = state.progression_facts.duplicate(true)
+	if not state.selected_source_objective.is_empty(): payload["selected_source_objective"] = state.selected_source_objective
 	if not state.production_orders.is_empty(): payload["production_orders"] = state.production_orders.duplicate(true)
 	for field in ["blueprint_library", "construction_queue", "canvas_regions", "canvas_bookmarks"]:
 		if not state.get(field).is_empty(): payload[field] = state.get(field).duplicate(true)
@@ -124,6 +126,8 @@ static func from_persistent_dict(payload: Variant) -> GameState:
 	state.research_paused = bool(data["research_paused"])
 	state.research_queue_wait_reason = String(data["research_queue_wait_reason"])
 	state.technology_levels = data["technology_levels"].duplicate(true)
+	state.progression_facts = data.get("progression_facts", {}).duplicate(true)
+	state.selected_source_objective = String(data.get("selected_source_objective", ""))
 	state.completed_objective_ids = data["completed_objective_ids"].duplicate(true)
 	state.claimed_progression_reward_ids = data["claimed_progression_reward_ids"].duplicate(true)
 	state.completed_achievement_ids = data["completed_achievement_ids"].duplicate(true)

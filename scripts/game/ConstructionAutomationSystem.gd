@@ -26,7 +26,7 @@ func queue(target: String, quantity: int, construction: bool = false, planet_id:
 
 func configure_center(id: String, target: String, desired: int) -> Dictionary:
 	var building: Dictionary = state.buildings.get(id, {})
-	if DataManager.get_building(String(building.get("type", ""))).get("source_id") != "construction_center" or not DataManager.construction.has(target) or desired < 0 or desired > 99:
+	if DataManager.get_building(String(building.get("type", ""))).get("source_id") != "construction_center" or not DataManager.construction.has(target) or desired < 0 or desired > stock_limit():
 		return {"ok": false, "message": "无效制造中心或目标数量"}
 	if building.get("interaction_locked", false): return {"ok": false, "message": "制造中心已锁定"}
 	var targets: Dictionary = building.get("construction_targets", {})
@@ -60,7 +60,7 @@ func update(delta: float) -> void:
 			if center.get("automation_paused", false):
 				job.status = "paused"
 				continue
-			factor = float(center.get("power_efficiency", 0)) if float(center.get("power_requested", 0)) > 0 else 0.0
+			factor = (float(center.get("power_efficiency", 0)) if float(center.get("power_requested", 0)) > 0 else 0.0) * (5.0 / cycle_seconds())
 		if factor <= 0:
 			job.status = "no_power"
 			continue
@@ -154,3 +154,9 @@ func cancel(id: String) -> Dictionary:
 		state.production_orders.erase(job)
 		return {"ok": true, "message": "已取消并退回当前在制材料"}
 	return {"ok": false, "message": "制造任务不存在"}
+
+func stock_limit() -> int:
+	return 100000000 if SourceTechnologyEffects.completed(state, "construction_capacity_2") else 500 if SourceTechnologyEffects.completed(state, "construction_capacity_1") else 100
+
+func cycle_seconds() -> float:
+	return 1.0 if SourceTechnologyEffects.completed(state, "construction_capacity_2") else 2.5 if SourceTechnologyEffects.completed(state, "construction_capacity_1") else 5.0

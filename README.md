@@ -40,7 +40,7 @@ Godot 不在默认位置时，通过 `-GodotPath` 覆盖：
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1 -GodotPath 'D:\Tools\Godot\Godot.exe'
 ```
 
-门禁会先自动执行无窗口编辑器导入，生成资产缓存和全局脚本类缓存，再运行十七个真实 Godot 测试场景：`TestBaseline`、`TestFactoryWorkspace`、`TestStatePersistence`、`TestSimulationCore`、`TestInventoryConstruction`、`TestAdvancedCanvas`、`TestBlueprints`、`TestProgression`、`TestStatisticsCodex`、`TestGalaxyLogistics`、`TestDysonEndgame`、`TestOfflineSettlement` 、`TestProductShell` 、`TestPerformanceBudgets` 、`TestDSPOnlineParity` 、`TestSaveRecovery` 与 `TestPowerGrids`。正常通过必须同时满足：Godot 退出码为 0；每个场景的完整成功标记各出现一次；输出不包含 `SCRIPT ERROR`、`Parse Error`、对应失败标记、ObjectDB 泄漏或仍被占用的资源。引擎级 `--quit-after 600` 保证测试进程有界结束。
+门禁会先自动执行无窗口编辑器导入，生成资产缓存和全局脚本类缓存，再运行 `tools/run_tests.ps1` 登记的 21 个真实 Godot 测试场景，包含科技/战役源目录与无限研究回归。正常通过必须同时满足：Godot 退出码为 0；每个场景的完整成功标记各出现一次；输出不包含 `SCRIPT ERROR`、`Parse Error`、对应失败标记、ObjectDB 泄漏或仍被占用的资源。引擎级 `--quit-after 600` 保证测试进程有界结束。
 
 ## 当前可玩工作区（Phase 2）
 
@@ -57,6 +57,8 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\run_tests.ps1 -G
 - `Space`：暂停或继续模拟；`1` / `2` / `3`：切换 1×、2×、3× 模拟速度。
 
 固定 UI 包含顶部状态栏、左侧资源栏、中央画布、右侧检查器、底部建造坞和短时通知。顶部按钮可暂停/继续并切换 1×/2×/3×；资源栏显示持久目标、活动行星托盘、光标载荷、手工队列和生产概况；Inspector 的“任务”入口打开默认收起的战役工作台，可查看目标/成就并定位停工建筑；“科技”入口打开与战役、蓝图和“分析”互斥的正式科技工作台，支持搜索、层级/状态筛选、目录驱动的成本/效果/解锁说明、FIFO 队列、等待原因、暂停/恢复/取消与移出队列。顶栏“星图”入口打开与其他工作区互斥的正式 GalaxyMap：可搜索恒星系、行星和资源，查看距离、资源、殖民成本及工业摘要，并通过领域命令发起勘探、殖民和行星切换；切换会保存来源相机并恢复目标行星相机。顶栏“分析”入口打开同样默认收起的统计、诊断和资料库工作台：统计可按 60/300/600 秒窗口搜索实时生产、消耗、净值与吞吐；诊断显示稳定的停工原因并可定位；资料库查询物品、配方、支持建筑和两层或完整上游链。画布上方的简短教程提示不拦截输入；空闲检查器提供 1～99 的批量手工配方，建筑单选显示设备配置，线路单选显示等级、并联、堆叠、优先级、路线、监控和启停，纯建筑/纯线路多选只显示共同命令；建造坞显示各建筑件的已有/需要数量、旧档兼容额度与缺料原因。失败原因通过不拦截画布的短时通知显示。UI 面板会消费指针输入，中央画布保持可交互。每颗已殖民行星拥有独立库存、建筑、线路、资源储量和相机；固定 tick 会持续模拟非活动行星工厂，活动托盘只是当前行星库存的兼容视图。
+
+科技工作区现列出 69 项有效 DSPONLINE 科技及原有 CardFactory 科技；7 项弃用源定义仅用于兼容。源科技需在矩阵实验室选择「科研模式」并投放对应矩阵，研究投入、队列和暂停可存档。完成宇宙矩阵科技后，在科技工作区展开「无限研究」可选择五种独立研究、开启自动下一层、暂停或取消；每层只在实验室真实消耗宇宙矩阵后推进。战役工作区列出 32 项源任务和 13 项成就，可搜索、筛选、跟踪与导航；手动采矿按钮会真实消耗当前行星矿脉并增加库存。完整交付边界见[任务 25 验收](docs/current/TASK25_ACCEPTANCE.md)。
 
 连接的 `enabled` 字段表示持久运输许可，`active` 只表示当前模拟帧是否真的发生物流传输；新连接默认启用但在首次运输前不会显示为活动。Mk.I/II/III 额定吞吐分别为 10/20/30 items/s，有效吞吐再乘以 1～4 并联和 1/2/4 堆叠；等级、并联和拆除保持线路施工件守恒。
 

@@ -243,6 +243,7 @@ func _deliver_one(recipe: Dictionary, planet_id: String) -> void:
 	var outputs: Dictionary = recipe.get("outputs", {})
 	if recipe.get("output_target", "") == "planet":
 		InventorySystem.new(game_state).try_add_batch(outputs, planet_id)
+		for item in outputs: SourceProgressionFacts.record_produced(game_state, item, float(outputs[item]))
 		return
 	for item_key in outputs:
 		var item_id := String(item_key)

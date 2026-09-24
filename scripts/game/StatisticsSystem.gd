@@ -16,6 +16,7 @@ func _init(state: GameState) -> void:
 	game_state = state
 
 func record_produced(item_id: String, amount: float, building_id: String = "", planet_id: String = "") -> void:
+	SourceProgressionFacts.record_produced(game_state, item_id, amount)
 	_record_amount("produced", item_id, amount, building_id, _resolve_planet_id(building_id, planet_id))
 
 func record_consumed(item_id: String, amount: float, building_id: String = "", planet_id: String = "") -> void:

@@ -86,7 +86,8 @@ func _update_extractor(building: Dictionary, building_definition: Dictionary, de
 	if not site is Dictionary or String(site.get("planet_id", "")) != String(building.get("planet_id", "")) or String(site.get("item_id", "")) != output_item:
 		building["status"] = "invalid_resource_site"
 		return
-	if not bool(site.get("infinite", false)):
+	var consumption := game_state.get_technology_effect_multiplier("vein_consumption") if DataManager.get_item(output_item).get("kind") == "solid" else 1.0
+	if not bool(site.get("infinite", false)) and consumption > 0:
 		var remaining := maxf(float(site.get("remaining", 0.0)), 0.0)
 		if remaining <= PROGRESS_EPSILON:
 			building["status"] = "resource_depleted"
@@ -103,17 +104,19 @@ func _update_extractor(building: Dictionary, building_definition: Dictionary, de
 	if available_space <= PROGRESS_EPSILON:
 		building["status"] = "blocked"
 		return
-	var produced := minf(output_rate * delta * speed * power_efficiency * game_state.get_technology_effect_multiplier("production_speed"), available_space)
-	if not bool(site.get("infinite", false)):
-		produced = minf(produced, float(site.get("remaining", 0.0)))
-		site["remaining"] = maxf(float(site.get("remaining", 0.0)) - produced, 0.0)
+	var extraction_effect := game_state.get_technology_effect_multiplier("mining_speed" if DataManager.get_item(output_item).get("kind") == "solid" else "resource_collection")
+	if not building_definition.has("source_id"): extraction_effect *= game_state.get_technology_effect_multiplier("production_speed")
+	var produced := minf(output_rate * delta * speed * power_efficiency * extraction_effect, available_space)
+	if not bool(site.get("infinite", false)) and consumption > 0:
+		produced = minf(produced, float(site.get("remaining", 0.0)) / consumption)
+		site["remaining"] = maxf(float(site.get("remaining", 0.0)) - produced * consumption, 0.0)
 		game_state.resource_sites[resource_site_id] = site
 	var next_amount := current_amount + produced
 	output_buffer[output_item] = next_amount
 	building["output_buffer"] = output_buffer
 	if statistics_system != null:
 		statistics_system.record_produced(output_item, produced, String(building.get("id", "")), String(building.get("planet_id", game_state.active_planet_id)))
-	building["status"] = "blocked" if current_amount >= capacity else ("resource_depleted" if not resource_site_id.is_empty() and not bool(game_state.resource_sites.get(resource_site_id, {}).get("infinite", false)) and float(game_state.resource_sites.get(resource_site_id, {}).get("remaining", 0.0)) <= PROGRESS_EPSILON else "running")
+	building["status"] = "blocked" if current_amount >= capacity else ("resource_depleted" if consumption > 0 and not resource_site_id.is_empty() and not bool(game_state.resource_sites.get(resource_site_id, {}).get("infinite", false)) and float(game_state.resource_sites.get(resource_site_id, {}).get("remaining", 0.0)) <= PROGRESS_EPSILON else "running")
 
 func _has_required_inputs(building: Dictionary, recipe: Dictionary) -> bool:
 	var input_buffer: Dictionary = building.get("input_buffer", {})

@@ -1,0 +1,197 @@
+{
+  "source_commit": "472bf62c76b695852b5577e563c1d113192ac731",
+  "source_file": "src/game/infiniteResearch.ts",
+  "sha256": "b6650402662557b5cd17e16de89f744269d0af54aa8aa40c16625e7758cc34c3",
+  "cases": [
+    {
+      "id": "matrix_compression",
+      "level": 0,
+      "cost": "250"
+    },
+    {
+      "id": "matrix_compression",
+      "level": 1,
+      "cost": "390"
+    },
+    {
+      "id": "matrix_compression",
+      "level": 9,
+      "cost": "12910"
+    },
+    {
+      "id": "matrix_compression",
+      "level": 10,
+      "cost": "13570"
+    },
+    {
+      "id": "matrix_compression",
+      "level": 11,
+      "cost": "14260"
+    },
+    {
+      "id": "matrix_compression",
+      "level": 22,
+      "cost": "24640"
+    },
+    {
+      "id": "matrix_compression",
+      "level": 262,
+      "cost": "3769672140"
+    },
+    {
+      "id": "matrix_compression",
+      "level": 999,
+      "cost": "31441647386989570364354250"
+    },
+    {
+      "id": "vein_utilization",
+      "level": 0,
+      "cost": "300"
+    },
+    {
+      "id": "vein_utilization",
+      "level": 1,
+      "cost": "470"
+    },
+    {
+      "id": "vein_utilization",
+      "level": 9,
+      "cost": "18410"
+    },
+    {
+      "id": "vein_utilization",
+      "level": 10,
+      "cost": "19290"
+    },
+    {
+      "id": "vein_utilization",
+      "level": 11,
+      "cost": "20220"
+    },
+    {
+      "id": "vein_utilization",
+      "level": 22,
+      "cost": "33880"
+    },
+    {
+      "id": "vein_utilization",
+      "level": 262,
+      "cost": "2609878880"
+    },
+    {
+      "id": "vein_utilization",
+      "level": 999,
+      "cost": "2647802975164680627175490"
+    },
+    {
+      "id": "galactic_logistics",
+      "level": 0,
+      "cost": "350"
+    },
+    {
+      "id": "galactic_logistics",
+      "level": 1,
+      "cost": "560"
+    },
+    {
+      "id": "galactic_logistics",
+      "level": 9,
+      "cost": "24050"
+    },
+    {
+      "id": "galactic_logistics",
+      "level": 10,
+      "cost": "25300"
+    },
+    {
+      "id": "galactic_logistics",
+      "level": 11,
+      "cost": "26620"
+    },
+    {
+      "id": "galactic_logistics",
+      "level": 22,
+      "cost": "46490"
+    },
+    {
+      "id": "galactic_logistics",
+      "level": 262,
+      "cost": "8934471670"
+    },
+    {
+      "id": "galactic_logistics",
+      "level": 999,
+      "cost": "150199719791816213690635070"
+    },
+    {
+      "id": "stellar_harnessing",
+      "level": 0,
+      "cost": "400"
+    },
+    {
+      "id": "stellar_harnessing",
+      "level": 1,
+      "cost": "650"
+    },
+    {
+      "id": "stellar_harnessing",
+      "level": 9,
+      "cost": "30740"
+    },
+    {
+      "id": "stellar_harnessing",
+      "level": 10,
+      "cost": "32280"
+    },
+    {
+      "id": "stellar_harnessing",
+      "level": 11,
+      "cost": "33890"
+    },
+    {
+      "id": "stellar_harnessing",
+      "level": 22,
+      "cost": "57950"
+    },
+    {
+      "id": "stellar_harnessing",
+      "level": 262,
+      "cost": "7053479170"
+    },
+    {
+      "id": "stellar_harnessing",
+      "level": 999,
+      "cost": "29168681802280940068235780"
+    },
+    {
+      "id": "continuum_simulation",
+      "level": 0,
+      "cost": "500"
+    },
+    {
+      "id": "continuum_simulation",
+      "level": 1,
+      "cost": "830"
+    },
+    {
+      "id": "continuum_simulation",
+      "level": 9,
+      "cost": "45320"
+    },
+    {
+      "id": "continuum_simulation",
+      "level": 10,
+      "cost": "47360"
+    },
+    {
+      "id": "continuum_simulation",
+      "level": 11,
+      "cost": "49490"
+    },
+    {
+      "id": "continuum_simulation",
+      "level": 22,
+      "cost": "80330"
+    }
+  ]
+}

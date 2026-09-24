@@ -4,6 +4,7 @@ extends PanelContainer
 var category: OptionButton
 var target: OptionButton
 var quantity: SpinBox
+var center_quantity: SpinBox
 var details: Label
 var queue_status: Label
 var target_ids: Array[String] = []
@@ -45,7 +46,14 @@ func _ready() -> void:
 	_button(content, "重新预览材料", _preview)
 	_button(content, "确认预留并制造", _queue)
 	_button(content, "放置已拥有的施工件", _place)
-	_button(content, "将批次数设为所选制造中心的目标库存", _set_center)
+	center_quantity = SpinBox.new()
+	center_quantity.name = "CenterTarget"
+	center_quantity.min_value = 0
+	center_quantity.max_value = 100000000
+	center_quantity.value = 10
+	center_quantity.prefix = "持续目标库存 "
+	content.add_child(center_quantity)
+	_button(content, "设置所选制造中心的目标库存", _set_center)
 	_button(content, "清除所选制造中心的当前目标", _clear_center_target)
 	_button(content, "暂停 / 恢复所选制造中心", _pause_center)
 	_button(content, "暂停 / 恢复本行星制造任务", _pause_jobs)
@@ -110,7 +118,7 @@ func _set_center() -> void:
 	if ids.size() != 1:
 		EventBus.notice_requested.emit("请先选中一台建筑制造中心", "error")
 		return
-	var result := ConstructionAutomationSystem.new(GameManager.game_state).configure_center(ids[0], target_ids[maxi(target.selected, 0)], int(quantity.value))
+	var result := ConstructionAutomationSystem.new(GameManager.game_state).configure_center(ids[0], target_ids[maxi(target.selected, 0)], int(center_quantity.value))
 	EventBus.notice_requested.emit(result.message, "success" if result.ok else "error")
 
 func _pause_jobs() -> void:
@@ -156,3 +164,18 @@ func _clear_center_target() -> void:
 	if ids.size() != 1: return
 	var result := ConstructionAutomationSystem.new(GameManager.game_state).configure_center(ids[0], target_ids[maxi(target.selected, 0)], 0)
 	EventBus.notice_requested.emit(result.message, "success" if result.ok else "error")
+
+func navigate_to(navigation: Dictionary) -> void:
+	var id := ""
+	if navigation.get("kind") == "recipe":
+		category.select(0)
+		for recipe in DataManager.all_recipes.values():
+			if recipe.has("source_id") and recipe.get("outputs", []).any(func(output): return output.item_id == navigation.itemId):
+				id = recipe.id
+				break
+	else:
+		category.select(1)
+		id = "dsp_" + String(navigation.get("buildingId", navigation.get("constructionId", "")))
+	_populate()
+	if target_ids.has(id): target.select(target_ids.find(id))
+	_preview()

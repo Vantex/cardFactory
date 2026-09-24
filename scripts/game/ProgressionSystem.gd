@@ -28,15 +28,19 @@ func evaluate() -> Dictionary:
 				continue
 			var objective: Dictionary = objective_value
 			var objective_id := String(objective.get("id", ""))
+			if objective.has("source_id") and game_state.completed_objective_ids.has(objective_id):
+				if not _apply_reward_once("objective:" + objective_id, objective.get("reward", {}), true):
+					if not blocked_reward_ids.has("objective:" + objective_id): blocked_reward_ids.append("objective:" + objective_id)
+				continue
 			if objective_id.is_empty() or game_state.completed_objective_ids.has(objective_id) or not _prerequisites_complete(objective):
 				continue
 			if not objective_system.is_complete(game_state, objective):
 				continue
 			var reward_id := "objective:%s" % objective_id
-			if not _apply_reward_once(reward_id, objective.get("reward", {})):
+			if not _apply_reward_once(reward_id, objective.get("reward", {}), objective.has("source_id")):
 				if not blocked_reward_ids.has(reward_id):
 					blocked_reward_ids.append(reward_id)
-				continue
+				if not objective.has("source_id"): continue
 			game_state.completed_objective_ids.append(objective_id)
 			completed_objectives.append(objective_id)
 			changed = true
@@ -65,6 +69,8 @@ func evaluate() -> Dictionary:
 	}
 
 func get_current_objective() -> Dictionary:
+	var selected: Dictionary = _objective_by_id.get(game_state.selected_source_objective, {})
+	if not selected.is_empty() and not game_state.completed_objective_ids.has(game_state.selected_source_objective) and _prerequisites_complete(selected): return selected.duplicate(true)
 	for chapter_value in catalog.get("chapters", []):
 		if not chapter_value is Dictionary:
 			continue
@@ -120,7 +126,7 @@ func _prerequisites_complete(objective: Dictionary) -> bool:
 			return false
 	return true
 
-func _apply_reward_once(reward_id: String, reward_value: Variant) -> bool:
+func _apply_reward_once(reward_id: String, reward_value: Variant, source_reward: bool = false) -> bool:
 	if game_state.claimed_progression_reward_ids.has(reward_id):
 		return true
 	var reward: Dictionary = reward_value if reward_value is Dictionary else {}
@@ -131,7 +137,7 @@ func _apply_reward_once(reward_id: String, reward_value: Variant) -> bool:
 		return false
 	for item_key in construction_items:
 		var amount := float(construction_items[item_key])
-		if amount <= 0.0 or float(game_state.construction_inventory.get(item_key, 0.0)) + amount > 99.0:
+		if amount <= 0.0 or float(game_state.construction_inventory.get(item_key, 0.0)) + amount > (GameState.construction_capacity(String(item_key)) if source_reward else 99.0):
 			return false
 
 	if not planet_items.is_empty():
@@ -156,3 +162,19 @@ func _ensure_state_arrays() -> void:
 		game_state.completed_achievement_ids = []
 	if game_state.unlocked_progression_ids == null:
 		game_state.unlocked_progression_ids = []
+
+func select_objective(id: String) -> bool:
+	var objective: Dictionary = _objective_by_id.get(id, {})
+	if objective.is_empty() or not objective.has("source_id") or game_state.completed_objective_ids.has(id) or not _prerequisites_complete(objective): return false
+	game_state.selected_source_objective = id
+	return true
+
+func get_source_objectives() -> Array:
+	var result := []
+	for objective in catalog.get("objectives", []):
+		if not objective.has("source_id"): continue
+		var row: Dictionary = objective.duplicate(true)
+		row["progress"] = objective_system.get_progress(game_state, objective)
+		row["status"] = "completed" if game_state.completed_objective_ids.has(objective.id) else "available" if _prerequisites_complete(objective) else "locked"
+		result.append(row)
+	return result

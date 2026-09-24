@@ -70,6 +70,8 @@ var research_queue_wait_reason := ""
 var technology_levels: Dictionary = {}
 
 # 本地单人进度；事实本身仍由建筑、库存和科技等权威状态提供。
+var progression_facts: Dictionary = {}
+var selected_source_objective := ""
 var completed_objective_ids: Array = []
 var claimed_progression_reward_ids: Array = []
 var completed_achievement_ids: Array = []
@@ -1062,7 +1064,7 @@ func set_technology_research(tech_id: String) -> bool:
     return TechnologySystem.new(self).start_research(tech_id)
 
 func get_technology_effect_multiplier(effect_key: String) -> float:
-    var multiplier := 1.0
+    var multiplier := SourceTechnologyEffects.multiplier(self, effect_key)
     for technology_id_value in completed_technologies:
         var effects: Dictionary = DataManager.get_technology(String(technology_id_value)).get("effects", {})
         var value: Variant = effects.get(effect_key)
@@ -1153,6 +1155,8 @@ func install_state(source: GameState) -> void:
     research_paused = source.research_paused
     research_queue_wait_reason = source.research_queue_wait_reason
     technology_levels = source.technology_levels.duplicate(true)
+    progression_facts = source.progression_facts.duplicate(true)
+    selected_source_objective = source.selected_source_objective
     completed_objective_ids = source.completed_objective_ids.duplicate(true)
     claimed_progression_reward_ids = source.claimed_progression_reward_ids.duplicate(true)
     completed_achievement_ids = source.completed_achievement_ids.duplicate(true)
@@ -1627,7 +1631,7 @@ func _set_fuel_item_command(entity_id: String, item: String) -> Dictionary:
     return {"ok": true, "message": "燃料已切换"}
 
 static func construction_capacity(item_id: String) -> float:
-    return BELT_MAX_INVENTORY if BELT_RATED_THROUGHPUT.has(item_id) else 99.0
+    return 100000000.0 if item_id.begins_with("dsp_") and DataManager.construction.has(item_id) else BELT_MAX_INVENTORY if BELT_RATED_THROUGHPUT.has(item_id) else 99.0
 
 func try_adjust_belt_lanes(ids: Array, delta: int) -> Dictionary:
     return command_history.execute(self, "调整并联线路", _adjust_belt_lanes_command.bind(ids, delta))

@@ -4546,17 +4546,21 @@
       "category": "technologies",
       "source_id": "antimatter",
       "name": "质能储存",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_antimatter"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:antimatter",
       "manual_acceptance": "manual:technologies:antimatter",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:antimatter"
     },
     {
@@ -4564,17 +4568,21 @@
       "category": "technologies",
       "source_id": "artificial_star",
       "name": "人造恒星",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_artificial_star"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:artificial_star",
       "manual_acceptance": "manual:technologies:artificial_star",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:artificial_star"
     },
     {
@@ -4582,17 +4590,21 @@
       "category": "technologies",
       "source_id": "autonomous_station_construction",
       "name": "自律空间站建造",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_autonomous_station_construction"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:autonomous_station_construction",
       "manual_acceptance": "manual:technologies:autonomous_station_construction",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:autonomous_station_construction"
     },
     {
@@ -4600,17 +4612,21 @@
       "category": "technologies",
       "source_id": "basic_chemical_engineering",
       "name": "基础化工",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_basic_chemical_engineering"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:basic_chemical_engineering",
       "manual_acceptance": "manual:technologies:basic_chemical_engineering",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:basic_chemical_engineering"
     },
     {
@@ -4618,17 +4634,21 @@
       "category": "technologies",
       "source_id": "basic_logistics",
       "name": "基础物流系统",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_basic_logistics"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:basic_logistics",
       "manual_acceptance": "manual:technologies:basic_logistics",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:basic_logistics"
     },
     {
@@ -4636,17 +4656,21 @@
       "category": "technologies",
       "source_id": "construction_automation",
       "name": "巨构建筑制造",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_construction_automation"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:construction_automation",
       "manual_acceptance": "manual:technologies:construction_automation",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:construction_automation"
     },
     {
@@ -4654,17 +4678,21 @@
       "category": "technologies",
       "source_id": "construction_capacity_1",
       "name": "建筑仓储扩容 I",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_construction_capacity_1"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:construction_capacity_1",
       "manual_acceptance": "manual:technologies:construction_capacity_1",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:construction_capacity_1"
     },
     {
@@ -4672,17 +4700,21 @@
       "category": "technologies",
       "source_id": "construction_capacity_2",
       "name": "建筑仓储扩容 II",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_construction_capacity_2"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:construction_capacity_2",
       "manual_acceptance": "manual:technologies:construction_capacity_2",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:construction_capacity_2"
     },
     {
@@ -4690,17 +4722,21 @@
       "category": "technologies",
       "source_id": "dyson_absorption_1",
       "name": "壳面吸附效率",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_dyson_absorption_1"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:dyson_absorption_1",
       "manual_acceptance": "manual:technologies:dyson_absorption_1",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:dyson_absorption_1"
     },
     {
@@ -4708,17 +4744,21 @@
       "category": "technologies",
       "source_id": "dyson_shell",
       "name": "戴森壳面",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_dyson_shell"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:dyson_shell",
       "manual_acceptance": "manual:technologies:dyson_shell",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:dyson_shell"
     },
     {
@@ -4726,17 +4766,21 @@
       "category": "technologies",
       "source_id": "dyson_sphere_program",
       "name": "戴森球计划",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_dyson_sphere_program"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:dyson_sphere_program",
       "manual_acceptance": "manual:technologies:dyson_sphere_program",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:dyson_sphere_program"
     },
     {
@@ -4744,17 +4788,21 @@
       "category": "technologies",
       "source_id": "dyson_swarm",
       "name": "戴森云",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_dyson_swarm"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:dyson_swarm",
       "manual_acceptance": "manual:technologies:dyson_swarm",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:dyson_swarm"
     },
     {
@@ -4762,17 +4810,21 @@
       "category": "technologies",
       "source_id": "electromagnetic_matrix",
       "name": "电磁矩阵",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_electromagnetic_matrix"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:electromagnetic_matrix",
       "manual_acceptance": "manual:technologies:electromagnetic_matrix",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:electromagnetic_matrix"
     },
     {
@@ -4780,17 +4832,21 @@
       "category": "technologies",
       "source_id": "electromagnetism",
       "name": "电磁学",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_electromagnetism"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:electromagnetism",
       "manual_acceptance": "manual:technologies:electromagnetism",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:electromagnetism"
     },
     {
@@ -4798,17 +4854,21 @@
       "category": "technologies",
       "source_id": "energy_matrix",
       "name": "能量矩阵",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_energy_matrix"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:energy_matrix",
       "manual_acceptance": "manual:technologies:energy_matrix",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:energy_matrix"
     },
     {
@@ -4816,17 +4876,21 @@
       "category": "technologies",
       "source_id": "energy_storage",
       "name": "能量储存",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_energy_storage"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:energy_storage",
       "manual_acceptance": "manual:technologies:energy_storage",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:energy_storage"
     },
     {
@@ -4834,17 +4898,21 @@
       "category": "technologies",
       "source_id": "fractionation",
       "name": "流体分馏",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_fractionation"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:fractionation",
       "manual_acceptance": "manual:technologies:fractionation",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:fractionation"
     },
     {
@@ -4852,17 +4920,21 @@
       "category": "technologies",
       "source_id": "fusion_power",
       "name": "可控核聚变",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_fusion_power"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:fusion_power",
       "manual_acceptance": "manual:technologies:fusion_power",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:fusion_power"
     },
     {
@@ -4870,17 +4942,21 @@
       "category": "technologies",
       "source_id": "geothermal_power",
       "name": "地热发电",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_geothermal_power"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:geothermal_power",
       "manual_acceptance": "manual:technologies:geothermal_power",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:geothermal_power"
     },
     {
@@ -4888,17 +4964,21 @@
       "category": "technologies",
       "source_id": "gravity_matrix",
       "name": "引力矩阵",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_gravity_matrix"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:gravity_matrix",
       "manual_acceptance": "manual:technologies:gravity_matrix",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:gravity_matrix"
     },
     {
@@ -4906,17 +4986,21 @@
       "category": "technologies",
       "source_id": "high_efficiency_plasma_control",
       "name": "高效电浆控制",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_high_efficiency_plasma_control"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:high_efficiency_plasma_control",
       "manual_acceptance": "manual:technologies:high_efficiency_plasma_control",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:high_efficiency_plasma_control"
     },
     {
@@ -4924,17 +5008,21 @@
       "category": "technologies",
       "source_id": "high_speed_assembling",
       "name": "高速装配工艺",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_high_speed_assembling"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:high_speed_assembling",
       "manual_acceptance": "manual:technologies:high_speed_assembling",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:high_speed_assembling"
     },
     {
@@ -4942,17 +5030,21 @@
       "category": "technologies",
       "source_id": "high_speed_logistics",
       "name": "高速物流系统",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_high_speed_logistics"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:high_speed_logistics",
       "manual_acceptance": "manual:technologies:high_speed_logistics",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:high_speed_logistics"
     },
     {
@@ -4960,17 +5052,21 @@
       "category": "technologies",
       "source_id": "high_strength_crystal",
       "name": "高强度晶体",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_high_strength_crystal"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:high_strength_crystal",
       "manual_acceptance": "manual:technologies:high_strength_crystal",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:high_strength_crystal"
     },
     {
@@ -4978,17 +5074,21 @@
       "category": "technologies",
       "source_id": "information_matrix",
       "name": "信息矩阵",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_information_matrix"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:information_matrix",
       "manual_acceptance": "manual:technologies:information_matrix",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:information_matrix"
     },
     {
@@ -5000,15 +5100,17 @@
       "target": {
         "category": "technologies",
         "ids": [
-          "interstellar_logistics"
+          "dsp_interstellar_logistics"
         ]
       },
-      "gap": "已有候选；源数值、约束、效果和操作尚未逐项对比验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:interstellar_logistics",
       "manual_acceptance": "manual:technologies:interstellar_logistics",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:interstellar_logistics"
     },
     {
@@ -5016,17 +5118,21 @@
       "category": "technologies",
       "source_id": "logistics_capacity_1",
       "name": "物流载荷扩容 I",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_logistics_capacity_1"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:logistics_capacity_1",
       "manual_acceptance": "manual:technologies:logistics_capacity_1",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:logistics_capacity_1"
     },
     {
@@ -5034,17 +5140,21 @@
       "category": "technologies",
       "source_id": "logistics_capacity_2",
       "name": "物流载荷扩容 II",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_logistics_capacity_2"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:logistics_capacity_2",
       "manual_acceptance": "manual:technologies:logistics_capacity_2",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:logistics_capacity_2"
     },
     {
@@ -5052,17 +5162,21 @@
       "category": "technologies",
       "source_id": "logistics_engine_1",
       "name": "物流运输引擎 I",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_logistics_engine_1"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:logistics_engine_1",
       "manual_acceptance": "manual:technologies:logistics_engine_1",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:logistics_engine_1"
     },
     {
@@ -5070,17 +5184,21 @@
       "category": "technologies",
       "source_id": "logistics_engine_2",
       "name": "物流运输引擎 II",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_logistics_engine_2"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:logistics_engine_2",
       "manual_acceptance": "manual:technologies:logistics_engine_2",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:logistics_engine_2"
     },
     {
@@ -5088,17 +5206,21 @@
       "category": "technologies",
       "source_id": "material_delivery_logistics",
       "name": "物资直送物流",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_material_delivery_logistics"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:material_delivery_logistics",
       "manual_acceptance": "manual:technologies:material_delivery_logistics",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:material_delivery_logistics"
     },
     {
@@ -5106,17 +5228,21 @@
       "category": "technologies",
       "source_id": "micro_black_hole_containment",
       "name": "微型黑洞约束工程",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_micro_black_hole_containment"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:micro_black_hole_containment",
       "manual_acceptance": "manual:technologies:micro_black_hole_containment",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:micro_black_hole_containment"
     },
     {
@@ -5124,17 +5250,21 @@
       "category": "technologies",
       "source_id": "miniature_particle_collider",
       "name": "微型粒子对撞机",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_miniature_particle_collider"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:miniature_particle_collider",
       "manual_acceptance": "manual:technologies:miniature_particle_collider",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:miniature_particle_collider"
     },
     {
@@ -5142,17 +5272,21 @@
       "category": "technologies",
       "source_id": "mining_speed_1",
       "name": "高效采矿 I",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_mining_speed_1"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:mining_speed_1",
       "manual_acceptance": "manual:technologies:mining_speed_1",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:mining_speed_1"
     },
     {
@@ -5160,17 +5294,21 @@
       "category": "technologies",
       "source_id": "mining_speed_2",
       "name": "高效采矿 II",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_mining_speed_2"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:mining_speed_2",
       "manual_acceptance": "manual:technologies:mining_speed_2",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:mining_speed_2"
     },
     {
@@ -5178,17 +5316,21 @@
       "category": "technologies",
       "source_id": "mining_speed_3",
       "name": "高效采矿 III",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_mining_speed_3"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:mining_speed_3",
       "manual_acceptance": "manual:technologies:mining_speed_3",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:mining_speed_3"
     },
     {
@@ -5196,17 +5338,21 @@
       "category": "technologies",
       "source_id": "nanomaterials",
       "name": "纳米材料",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_nanomaterials"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:nanomaterials",
       "manual_acceptance": "manual:technologies:nanomaterials",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:nanomaterials"
     },
     {
@@ -5214,17 +5360,21 @@
       "category": "technologies",
       "source_id": "orbital_collection",
       "name": "气态行星开采",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_orbital_collection"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:orbital_collection",
       "manual_acceptance": "manual:technologies:orbital_collection",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:orbital_collection"
     },
     {
@@ -5232,17 +5382,21 @@
       "category": "technologies",
       "source_id": "orbital_elevator_engineering",
       "name": "轨道升降工程",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_orbital_elevator_engineering"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:orbital_elevator_engineering",
       "manual_acceptance": "manual:technologies:orbital_elevator_engineering",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:orbital_elevator_engineering"
     },
     {
@@ -5250,17 +5404,21 @@
       "category": "technologies",
       "source_id": "orbital_energy_recovery",
       "name": "轨道升降能量回收",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_orbital_energy_recovery"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:orbital_energy_recovery",
       "manual_acceptance": "manual:technologies:orbital_energy_recovery",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:orbital_energy_recovery"
     },
     {
@@ -5268,17 +5426,21 @@
       "category": "technologies",
       "source_id": "orbital_modular_assembly",
       "name": "轨道模块化装配",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_orbital_modular_assembly"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:orbital_modular_assembly",
       "manual_acceptance": "manual:technologies:orbital_modular_assembly",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:orbital_modular_assembly"
     },
     {
@@ -5286,17 +5448,21 @@
       "category": "technologies",
       "source_id": "orbital_multi_cargo_bus",
       "name": "多物质轨道汇流",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_orbital_multi_cargo_bus"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:orbital_multi_cargo_bus",
       "manual_acceptance": "manual:technologies:orbital_multi_cargo_bus",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:orbital_multi_cargo_bus"
     },
     {
@@ -5304,17 +5470,21 @@
       "category": "technologies",
       "source_id": "plane_smelting",
       "name": "位面冶金",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_plane_smelting"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:plane_smelting",
       "manual_acceptance": "manual:technologies:plane_smelting",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:plane_smelting"
     },
     {
@@ -5322,17 +5492,21 @@
       "category": "technologies",
       "source_id": "planetary_logistics",
       "name": "行星物流系统",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_planetary_logistics"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:planetary_logistics",
       "manual_acceptance": "manual:technologies:planetary_logistics",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:planetary_logistics"
     },
     {
@@ -5340,17 +5514,21 @@
       "category": "technologies",
       "source_id": "polymer_chemistry",
       "name": "高分子化工",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_polymer_chemistry"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:polymer_chemistry",
       "manual_acceptance": "manual:technologies:polymer_chemistry",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:polymer_chemistry"
     },
     {
@@ -5358,17 +5536,21 @@
       "category": "technologies",
       "source_id": "processor",
       "name": "处理器",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_processor"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:processor",
       "manual_acceptance": "manual:technologies:processor",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:processor"
     },
     {
@@ -5376,17 +5558,21 @@
       "category": "technologies",
       "source_id": "proliferator_1",
       "name": "增产剂 Mk.I",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_proliferator_1"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:proliferator_1",
       "manual_acceptance": "manual:technologies:proliferator_1",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:proliferator_1"
     },
     {
@@ -5394,17 +5580,21 @@
       "category": "technologies",
       "source_id": "proliferator_2",
       "name": "增产剂 Mk.II",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_proliferator_2"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:proliferator_2",
       "manual_acceptance": "manual:technologies:proliferator_2",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:proliferator_2"
     },
     {
@@ -5412,17 +5602,21 @@
       "category": "technologies",
       "source_id": "proliferator_3",
       "name": "增产剂 Mk.III",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_proliferator_3"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:proliferator_3",
       "manual_acceptance": "manual:technologies:proliferator_3",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:proliferator_3"
     },
     {
@@ -5430,17 +5624,21 @@
       "category": "technologies",
       "source_id": "quantum_chemical_engineering",
       "name": "量子化工",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_quantum_chemical_engineering"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:quantum_chemical_engineering",
       "manual_acceptance": "manual:technologies:quantum_chemical_engineering",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:quantum_chemical_engineering"
     },
     {
@@ -5448,17 +5646,21 @@
       "category": "technologies",
       "source_id": "quantum_chip",
       "name": "量子芯片",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_quantum_chip"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:quantum_chip",
       "manual_acceptance": "manual:technologies:quantum_chip",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:quantum_chip"
     },
     {
@@ -5466,17 +5668,21 @@
       "category": "technologies",
       "source_id": "quantum_logistics_network",
       "name": "量子物流网络",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_quantum_logistics_network"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:quantum_logistics_network",
       "manual_acceptance": "manual:technologies:quantum_logistics_network",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:quantum_logistics_network"
     },
     {
@@ -5484,17 +5690,21 @@
       "category": "technologies",
       "source_id": "quantum_printing",
       "name": "量子打印技术",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_quantum_printing"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:quantum_printing",
       "manual_acceptance": "manual:technologies:quantum_printing",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:quantum_printing"
     },
     {
@@ -5502,17 +5712,21 @@
       "category": "technologies",
       "source_id": "rare_resource_utilization",
       "name": "稀有资源利用",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_rare_resource_utilization"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:rare_resource_utilization",
       "manual_acceptance": "manual:technologies:rare_resource_utilization",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:rare_resource_utilization"
     },
     {
@@ -5520,17 +5734,21 @@
       "category": "technologies",
       "source_id": "ray_receiver",
       "name": "射线接收站",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_ray_receiver"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:ray_receiver",
       "manual_acceptance": "manual:technologies:ray_receiver",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:ray_receiver"
     },
     {
@@ -5538,17 +5756,21 @@
       "category": "technologies",
       "source_id": "ray_transmission_1",
       "name": "射线传输效率 I",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_ray_transmission_1"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:ray_transmission_1",
       "manual_acceptance": "manual:technologies:ray_transmission_1",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:ray_transmission_1"
     },
     {
@@ -5556,17 +5778,21 @@
       "category": "technologies",
       "source_id": "ray_transmission_2",
       "name": "射线传输效率 II",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_ray_transmission_2"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:ray_transmission_2",
       "manual_acceptance": "manual:technologies:ray_transmission_2",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:ray_transmission_2"
     },
     {
@@ -5574,17 +5800,21 @@
       "category": "technologies",
       "source_id": "reforming_refine",
       "name": "重整精炼",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_reforming_refine"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:reforming_refine",
       "manual_acceptance": "manual:technologies:reforming_refine",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:reforming_refine"
     },
     {
@@ -5592,17 +5822,21 @@
       "category": "technologies",
       "source_id": "research_speed_1",
       "name": "科研速度 I",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_research_speed_1"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:research_speed_1",
       "manual_acceptance": "manual:technologies:research_speed_1",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:research_speed_1"
     },
     {
@@ -5610,17 +5844,21 @@
       "category": "technologies",
       "source_id": "research_speed_2",
       "name": "科研速度 II",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_research_speed_2"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:research_speed_2",
       "manual_acceptance": "manual:technologies:research_speed_2",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:research_speed_2"
     },
     {
@@ -5628,17 +5866,21 @@
       "category": "technologies",
       "source_id": "research_speed_3",
       "name": "科研速度 III",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_research_speed_3"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:research_speed_3",
       "manual_acceptance": "manual:technologies:research_speed_3",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:research_speed_3"
     },
     {
@@ -5646,17 +5888,21 @@
       "category": "technologies",
       "source_id": "solar_energy",
       "name": "太阳能收集",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_solar_energy"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:solar_energy",
       "manual_acceptance": "manual:technologies:solar_energy",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:solar_energy"
     },
     {
@@ -5664,17 +5910,21 @@
       "category": "technologies",
       "source_id": "solar_sail_life_1",
       "name": "太阳帆轨道寿命 I",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_solar_sail_life_1"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:solar_sail_life_1",
       "manual_acceptance": "manual:technologies:solar_sail_life_1",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:solar_sail_life_1"
     },
     {
@@ -5682,17 +5932,21 @@
       "category": "technologies",
       "source_id": "solar_sail_life_2",
       "name": "太阳帆轨道寿命 II",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_solar_sail_life_2"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:solar_sail_life_2",
       "manual_acceptance": "manual:technologies:solar_sail_life_2",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:solar_sail_life_2"
     },
     {
@@ -5700,17 +5954,21 @@
       "category": "technologies",
       "source_id": "space_warp",
       "name": "空间翘曲",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_space_warp"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:space_warp",
       "manual_acceptance": "manual:technologies:space_warp",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:space_warp"
     },
     {
@@ -5718,17 +5976,21 @@
       "category": "technologies",
       "source_id": "stellar_exploration",
       "name": "恒星探索",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_stellar_exploration"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:stellar_exploration",
       "manual_acceptance": "manual:technologies:stellar_exploration",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:stellar_exploration"
     },
     {
@@ -5736,17 +5998,21 @@
       "category": "technologies",
       "source_id": "structure_matrix",
       "name": "结构矩阵",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_structure_matrix"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:structure_matrix",
       "manual_acceptance": "manual:technologies:structure_matrix",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:structure_matrix"
     },
     {
@@ -5754,17 +6020,21 @@
       "category": "technologies",
       "source_id": "super_magnetic_logistics",
       "name": "超级磁场物流",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_super_magnetic_logistics"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:super_magnetic_logistics",
       "manual_acceptance": "manual:technologies:super_magnetic_logistics",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:super_magnetic_logistics"
     },
     {
@@ -5772,17 +6042,21 @@
       "category": "technologies",
       "source_id": "system_space_station_engineering",
       "name": "恒星系空间站工程",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_system_space_station_engineering"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:system_space_station_engineering",
       "manual_acceptance": "manual:technologies:system_space_station_engineering",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:system_space_station_engineering"
     },
     {
@@ -5790,17 +6064,21 @@
       "category": "technologies",
       "source_id": "thermal_power",
       "name": "火力发电",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_thermal_power"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:thermal_power",
       "manual_acceptance": "manual:technologies:thermal_power",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:thermal_power"
     },
     {
@@ -5808,17 +6086,21 @@
       "category": "technologies",
       "source_id": "time_warp_engineering",
       "name": "时间扭曲工程",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_time_warp_engineering"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:time_warp_engineering",
       "manual_acceptance": "manual:technologies:time_warp_engineering",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:time_warp_engineering"
     },
     {
@@ -5826,17 +6108,21 @@
       "category": "technologies",
       "source_id": "titanium_alloy",
       "name": "钛合金",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_titanium_alloy"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:titanium_alloy",
       "manual_acceptance": "manual:technologies:titanium_alloy",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:titanium_alloy"
     },
     {
@@ -5844,17 +6130,21 @@
       "category": "technologies",
       "source_id": "unified_system_logistics_protocol",
       "name": "恒星系联合物流协议",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_unified_system_logistics_protocol"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:unified_system_logistics_protocol",
       "manual_acceptance": "manual:technologies:unified_system_logistics_protocol",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:unified_system_logistics_protocol"
     },
     {
@@ -5862,17 +6152,21 @@
       "category": "technologies",
       "source_id": "universe_matrix",
       "name": "宇宙矩阵",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_universe_matrix"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:universe_matrix",
       "manual_acceptance": "manual:technologies:universe_matrix",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:universe_matrix"
     },
     {
@@ -5880,17 +6174,21 @@
       "category": "technologies",
       "source_id": "vertical_launching_silo",
       "name": "垂直发射井",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_vertical_launching_silo"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:vertical_launching_silo",
       "manual_acceptance": "manual:technologies:vertical_launching_silo",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:vertical_launching_silo"
     },
     {
@@ -5898,17 +6196,21 @@
       "category": "technologies",
       "source_id": "xray_cracking",
       "name": "X 射线裂解",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "technologies",
-        "ids": []
+        "ids": [
+          "dsp_xray_cracking"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:technologies:xray_cracking",
       "manual_acceptance": "manual:technologies:xray_cracking",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "technologies:xray_cracking"
     },
     {
@@ -5916,17 +6218,21 @@
       "category": "campaign",
       "source_id": "absorb_shell_sail",
       "name": "形成首片永久壳面",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "campaign",
-        "ids": []
+        "ids": [
+          "dsp_absorb_shell_sail"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:campaign:absorb_shell_sail",
       "manual_acceptance": "manual:campaign:absorb_shell_sail",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "campaign:absorb_shell_sail"
     },
     {
@@ -5934,17 +6240,21 @@
       "category": "campaign",
       "source_id": "build_dyson_structure",
       "name": "完成第一个结构点",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "campaign",
-        "ids": []
+        "ids": [
+          "dsp_build_dyson_structure"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:campaign:build_dyson_structure",
       "manual_acceptance": "manual:campaign:build_dyson_structure",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "campaign:build_dyson_structure"
     },
     {
@@ -5952,17 +6262,21 @@
       "category": "campaign",
       "source_id": "complete_interstellar_trip",
       "name": "完成首次星际运输",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "campaign",
-        "ids": []
+        "ids": [
+          "dsp_complete_interstellar_trip"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:campaign:complete_interstellar_trip",
       "manual_acceptance": "manual:campaign:complete_interstellar_trip",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "campaign:complete_interstellar_trip"
     },
     {
@@ -5970,17 +6284,21 @@
       "category": "campaign",
       "source_id": "complete_planetary_trip",
       "name": "完成首次行星配送",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "campaign",
-        "ids": []
+        "ids": [
+          "dsp_complete_planetary_trip"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:campaign:complete_planetary_trip",
       "manual_acceptance": "manual:campaign:complete_planetary_trip",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "campaign:complete_planetary_trip"
     },
     {
@@ -5988,17 +6306,21 @@
       "category": "campaign",
       "source_id": "deploy_interstellar_station",
       "name": "部署星际物流站",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "campaign",
-        "ids": []
+        "ids": [
+          "dsp_deploy_interstellar_station"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:campaign:deploy_interstellar_station",
       "manual_acceptance": "manual:campaign:deploy_interstellar_station",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "campaign:deploy_interstellar_station"
     },
     {
@@ -6006,17 +6328,21 @@
       "category": "campaign",
       "source_id": "deploy_matrix_lab",
       "name": "部署矩阵研究站",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "campaign",
-        "ids": []
+        "ids": [
+          "dsp_deploy_matrix_lab"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:campaign:deploy_matrix_lab",
       "manual_acceptance": "manual:campaign:deploy_matrix_lab",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "campaign:deploy_matrix_lab"
     },
     {
@@ -6024,17 +6350,21 @@
       "category": "campaign",
       "source_id": "deploy_miner",
       "name": "部署第一台采矿机",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "campaign",
-        "ids": []
+        "ids": [
+          "dsp_deploy_miner"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:campaign:deploy_miner",
       "manual_acceptance": "manual:campaign:deploy_miner",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "campaign:deploy_miner"
     },
     {
@@ -6042,17 +6372,21 @@
       "category": "campaign",
       "source_id": "deploy_planetary_station",
       "name": "部署行星物流站",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "campaign",
-        "ids": []
+        "ids": [
+          "dsp_deploy_planetary_station"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:campaign:deploy_planetary_station",
       "manual_acceptance": "manual:campaign:deploy_planetary_station",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "campaign:deploy_planetary_station"
     },
     {
@@ -6060,17 +6394,21 @@
       "category": "campaign",
       "source_id": "endgame_export",
       "name": "完成银河出口",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "campaign",
-        "ids": []
+        "ids": [
+          "dsp_endgame_export"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:campaign:endgame_export",
       "manual_acceptance": "manual:campaign:endgame_export",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "campaign:endgame_export"
     },
     {
@@ -6078,17 +6416,21 @@
       "category": "campaign",
       "source_id": "endgame_infinite_research",
       "name": "启动无限科研",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "campaign",
-        "ids": []
+        "ids": [
+          "dsp_endgame_infinite_research"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:campaign:endgame_infinite_research",
       "manual_acceptance": "manual:campaign:endgame_infinite_research",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "campaign:endgame_infinite_research"
     },
     {
@@ -6096,17 +6438,21 @@
       "category": "campaign",
       "source_id": "endgame_mastery",
       "name": "完成银河工业协议",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "campaign",
-        "ids": []
+        "ids": [
+          "dsp_endgame_mastery"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:campaign:endgame_mastery",
       "manual_acceptance": "manual:campaign:endgame_mastery",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "campaign:endgame_mastery"
     },
     {
@@ -6114,17 +6460,21 @@
       "category": "campaign",
       "source_id": "endgame_score",
       "name": "达到银河级评分",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "campaign",
-        "ids": []
+        "ids": [
+          "dsp_endgame_score"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:campaign:endgame_score",
       "manual_acceptance": "manual:campaign:endgame_score",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "campaign:endgame_score"
     },
     {
@@ -6132,17 +6482,21 @@
       "category": "campaign",
       "source_id": "launch_carrier_rocket",
       "name": "发射第一枚运载火箭",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "campaign",
-        "ids": []
+        "ids": [
+          "dsp_launch_carrier_rocket"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:campaign:launch_carrier_rocket",
       "manual_acceptance": "manual:campaign:launch_carrier_rocket",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "campaign:launch_carrier_rocket"
     },
     {
@@ -6150,17 +6504,21 @@
       "category": "campaign",
       "source_id": "launch_solar_sail",
       "name": "发射第一片太阳帆",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "campaign",
-        "ids": []
+        "ids": [
+          "dsp_launch_solar_sail"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:campaign:launch_solar_sail",
       "manual_acceptance": "manual:campaign:launch_solar_sail",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "campaign:launch_solar_sail"
     },
     {
@@ -6168,17 +6526,21 @@
       "category": "campaign",
       "source_id": "lay_first_belt",
       "name": "铺设第一条传送带",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "campaign",
-        "ids": []
+        "ids": [
+          "dsp_lay_first_belt"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:campaign:lay_first_belt",
       "manual_acceptance": "manual:campaign:lay_first_belt",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "campaign:lay_first_belt"
     },
     {
@@ -6186,17 +6548,21 @@
       "category": "campaign",
       "source_id": "mine_first_ore",
       "name": "采集第一份矿石",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "campaign",
-        "ids": []
+        "ids": [
+          "dsp_mine_first_ore"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:campaign:mine_first_ore",
       "manual_acceptance": "manual:campaign:mine_first_ore",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "campaign:mine_first_ore"
     },
     {
@@ -6204,17 +6570,21 @@
       "category": "campaign",
       "source_id": "produce_blue_matrix",
       "name": "产出电磁矩阵",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "campaign",
-        "ids": []
+        "ids": [
+          "dsp_produce_blue_matrix"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:campaign:produce_blue_matrix",
       "manual_acceptance": "manual:campaign:produce_blue_matrix",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "campaign:produce_blue_matrix"
     },
     {
@@ -6222,17 +6592,21 @@
       "category": "campaign",
       "source_id": "produce_gravity_matrix",
       "name": "产出引力矩阵",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "campaign",
-        "ids": []
+        "ids": [
+          "dsp_produce_gravity_matrix"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:campaign:produce_gravity_matrix",
       "manual_acceptance": "manual:campaign:produce_gravity_matrix",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "campaign:produce_gravity_matrix"
     },
     {
@@ -6240,17 +6614,21 @@
       "category": "campaign",
       "source_id": "produce_information_matrix",
       "name": "产出信息矩阵",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "campaign",
-        "ids": []
+        "ids": [
+          "dsp_produce_information_matrix"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:campaign:produce_information_matrix",
       "manual_acceptance": "manual:campaign:produce_information_matrix",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "campaign:produce_information_matrix"
     },
     {
@@ -6258,17 +6636,21 @@
       "category": "campaign",
       "source_id": "produce_plastic",
       "name": "合成塑料",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "campaign",
-        "ids": []
+        "ids": [
+          "dsp_produce_plastic"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:campaign:produce_plastic",
       "manual_acceptance": "manual:campaign:produce_plastic",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "campaign:produce_plastic"
     },
     {
@@ -6276,17 +6658,21 @@
       "category": "campaign",
       "source_id": "produce_red_matrix",
       "name": "产出能量矩阵",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "campaign",
-        "ids": []
+        "ids": [
+          "dsp_produce_red_matrix"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:campaign:produce_red_matrix",
       "manual_acceptance": "manual:campaign:produce_red_matrix",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "campaign:produce_red_matrix"
     },
     {
@@ -6294,17 +6680,21 @@
       "category": "campaign",
       "source_id": "produce_structure_matrix",
       "name": "产出结构矩阵",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "campaign",
-        "ids": []
+        "ids": [
+          "dsp_produce_structure_matrix"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:campaign:produce_structure_matrix",
       "manual_acceptance": "manual:campaign:produce_structure_matrix",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "campaign:produce_structure_matrix"
     },
     {
@@ -6312,17 +6702,21 @@
       "category": "campaign",
       "source_id": "produce_universe_matrix",
       "name": "产出宇宙矩阵",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "campaign",
-        "ids": []
+        "ids": [
+          "dsp_produce_universe_matrix"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:campaign:produce_universe_matrix",
       "manual_acceptance": "manual:campaign:produce_universe_matrix",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "campaign:produce_universe_matrix"
     },
     {
@@ -6330,17 +6724,21 @@
       "category": "campaign",
       "source_id": "refine_oil",
       "name": "启动原油精炼",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "campaign",
-        "ids": []
+        "ids": [
+          "dsp_refine_oil"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:campaign:refine_oil",
       "manual_acceptance": "manual:campaign:refine_oil",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "campaign:refine_oil"
     },
     {
@@ -6348,17 +6746,21 @@
       "category": "campaign",
       "source_id": "side_belt_upgrade",
       "name": "升级高速运输线",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "campaign",
-        "ids": []
+        "ids": [
+          "dsp_side_belt_upgrade"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:campaign:side_belt_upgrade",
       "manual_acceptance": "manual:campaign:side_belt_upgrade",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "campaign:side_belt_upgrade"
     },
     {
@@ -6366,17 +6768,21 @@
       "category": "campaign",
       "source_id": "side_blueprint",
       "name": "保存第一张蓝图",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "campaign",
-        "ids": []
+        "ids": [
+          "dsp_side_blueprint"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:campaign:side_blueprint",
       "manual_acceptance": "manual:campaign:side_blueprint",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "campaign:side_blueprint"
     },
     {
@@ -6384,17 +6790,21 @@
       "category": "campaign",
       "source_id": "side_rare_resource",
       "name": "采集稀有资源",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "campaign",
-        "ids": []
+        "ids": [
+          "dsp_side_rare_resource"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:campaign:side_rare_resource",
       "manual_acceptance": "manual:campaign:side_rare_resource",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "campaign:side_rare_resource"
     },
     {
@@ -6402,17 +6812,21 @@
       "category": "campaign",
       "source_id": "side_spray_coater",
       "name": "安装首台喷涂机",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "campaign",
-        "ids": []
+        "ids": [
+          "dsp_side_spray_coater"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:campaign:side_spray_coater",
       "manual_acceptance": "manual:campaign:side_spray_coater",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "campaign:side_spray_coater"
     },
     {
@@ -6420,17 +6834,21 @@
       "category": "campaign",
       "source_id": "side_stable_power",
       "name": "稳定火力电网",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "campaign",
-        "ids": []
+        "ids": [
+          "dsp_side_stable_power"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:campaign:side_stable_power",
       "manual_acceptance": "manual:campaign:side_stable_power",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "campaign:side_stable_power"
     },
     {
@@ -6438,17 +6856,21 @@
       "category": "campaign",
       "source_id": "side_storage",
       "name": "建立物流缓存",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "campaign",
-        "ids": []
+        "ids": [
+          "dsp_side_storage"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:campaign:side_storage",
       "manual_acceptance": "manual:campaign:side_storage",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "campaign:side_storage"
     },
     {
@@ -6456,17 +6878,21 @@
       "category": "campaign",
       "source_id": "smelt_iron",
       "name": "铸造基础铁块",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "campaign",
-        "ids": []
+        "ids": [
+          "dsp_smelt_iron"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:campaign:smelt_iron",
       "manual_acceptance": "manual:campaign:smelt_iron",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "campaign:smelt_iron"
     },
     {
@@ -6474,17 +6900,21 @@
       "category": "campaign",
       "source_id": "unlock_borealis",
       "name": "解锁下一恒星系",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "campaign",
-        "ids": []
+        "ids": [
+          "dsp_unlock_borealis"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:campaign:unlock_borealis",
       "manual_acceptance": "manual:campaign:unlock_borealis",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "campaign:unlock_borealis"
     },
     {
@@ -6492,17 +6922,21 @@
       "category": "achievements",
       "source_id": "automated_mining",
       "name": "自动化开端",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "achievements",
-        "ids": []
+        "ids": [
+          "dsp_automated_mining"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:achievements:automated_mining",
       "manual_acceptance": "manual:achievements:automated_mining",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "achievements:automated_mining"
     },
     {
@@ -6510,17 +6944,21 @@
       "category": "achievements",
       "source_id": "dyson_swarm_online",
       "name": "逐日之帆",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "achievements",
-        "ids": []
+        "ids": [
+          "dsp_dyson_swarm_online"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:achievements:dyson_swarm_online",
       "manual_acceptance": "manual:achievements:dyson_swarm_online",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "achievements:dyson_swarm_online"
     },
     {
@@ -6528,17 +6966,21 @@
       "category": "achievements",
       "source_id": "electromagnetic_matrix_online",
       "name": "蓝色火花",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "achievements",
-        "ids": []
+        "ids": [
+          "dsp_electromagnetic_matrix_online"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:achievements:electromagnetic_matrix_online",
       "manual_acceptance": "manual:achievements:electromagnetic_matrix_online",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "achievements:electromagnetic_matrix_online"
     },
     {
@@ -6546,17 +6988,21 @@
       "category": "achievements",
       "source_id": "energy_matrix_online",
       "name": "红色燃流",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "achievements",
-        "ids": []
+        "ids": [
+          "dsp_energy_matrix_online"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:achievements:energy_matrix_online",
       "manual_acceptance": "manual:achievements:energy_matrix_online",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "achievements:energy_matrix_online"
     },
     {
@@ -6564,17 +7010,21 @@
       "category": "achievements",
       "source_id": "first_logistics_line",
       "name": "物流脉搏",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "achievements",
-        "ids": []
+        "ids": [
+          "dsp_first_logistics_line"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:achievements:first_logistics_line",
       "manual_acceptance": "manual:achievements:first_logistics_line",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "achievements:first_logistics_line"
     },
     {
@@ -6582,17 +7032,21 @@
       "category": "achievements",
       "source_id": "first_manual_mine",
       "name": "第一镐",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "achievements",
-        "ids": []
+        "ids": [
+          "dsp_first_manual_mine"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:achievements:first_manual_mine",
       "manual_acceptance": "manual:achievements:first_manual_mine",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "achievements:first_manual_mine"
     },
     {
@@ -6600,17 +7054,21 @@
       "category": "achievements",
       "source_id": "interstellar_delivery",
       "name": "星际航次",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "achievements",
-        "ids": []
+        "ids": [
+          "dsp_interstellar_delivery"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:achievements:interstellar_delivery",
       "manual_acceptance": "manual:achievements:interstellar_delivery",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "achievements:interstellar_delivery"
     },
     {
@@ -6618,17 +7076,21 @@
       "category": "achievements",
       "source_id": "multi_system_industry",
       "name": "群星工业",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "achievements",
-        "ids": []
+        "ids": [
+          "dsp_multi_system_industry"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:achievements:multi_system_industry",
       "manual_acceptance": "manual:achievements:multi_system_industry",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "achievements:multi_system_industry"
     },
     {
@@ -6636,17 +7098,21 @@
       "category": "achievements",
       "source_id": "permanent_dyson_structure",
       "name": "恒星骨架",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "achievements",
-        "ids": []
+        "ids": [
+          "dsp_permanent_dyson_structure"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:achievements:permanent_dyson_structure",
       "manual_acceptance": "manual:achievements:permanent_dyson_structure",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "achievements:permanent_dyson_structure"
     },
     {
@@ -6654,17 +7120,21 @@
       "category": "achievements",
       "source_id": "planetary_logistics_online",
       "name": "行星配送",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "achievements",
-        "ids": []
+        "ids": [
+          "dsp_planetary_logistics_online"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:achievements:planetary_logistics_online",
       "manual_acceptance": "manual:achievements:planetary_logistics_online",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "achievements:planetary_logistics_online"
     },
     {
@@ -6672,17 +7142,21 @@
       "category": "achievements",
       "source_id": "rare_resource_harvest",
       "name": "奇珍样本",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "achievements",
-        "ids": []
+        "ids": [
+          "dsp_rare_resource_harvest"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:achievements:rare_resource_harvest",
       "manual_acceptance": "manual:achievements:rare_resource_harvest",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "achievements:rare_resource_harvest"
     },
     {
@@ -6690,17 +7164,21 @@
       "category": "achievements",
       "source_id": "six_matrix_mastery",
       "name": "矩阵全谱",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "achievements",
-        "ids": []
+        "ids": [
+          "dsp_six_matrix_mastery"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:achievements:six_matrix_mastery",
       "manual_acceptance": "manual:achievements:six_matrix_mastery",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "achievements:six_matrix_mastery"
     },
     {
@@ -6708,17 +7186,21 @@
       "category": "achievements",
       "source_id": "stable_power_grid",
       "name": "电网并轨",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
         "category": "achievements",
-        "ids": []
+        "ids": [
+          "dsp_stable_power_grid"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:achievements:stable_power_grid",
       "manual_acceptance": "manual:achievements:stable_power_grid",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "achievements:stable_power_grid"
     },
     {
@@ -8033,17 +8515,19 @@
       "name": "CampaignWorkspace",
       "status": "实现中",
       "target": {
-        "category": "file",
+        "category": "symbol",
         "ids": [
-          "scenes/ui/CampaignWorkspace.gd"
+          "scenes/ui/CampaignWorkspace.gd::_ready"
         ]
       },
-      "gap": "已有候选；源数值、约束、效果和操作尚未逐项对比验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:workspaces:CampaignWorkspace",
       "manual_acceptance": "manual:workspaces:CampaignWorkspace",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "workspaces:CampaignWorkspace"
     },
     {
@@ -8249,17 +8733,19 @@
       "name": "TechnologyWorkspace",
       "status": "实现中",
       "target": {
-        "category": "file",
+        "category": "symbol",
         "ids": [
-          "scenes/ui/TechnologyPanel.gd"
+          "scenes/ui/TechnologyPanel.gd::_ready"
         ]
       },
-      "gap": "已有候选；源数值、约束、效果和操作尚未逐项对比验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:workspaces:TechnologyWorkspace",
       "manual_acceptance": "manual:workspaces:TechnologyWorkspace",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "workspaces:TechnologyWorkspace"
     },
     {
@@ -8269,17 +8755,19 @@
       "name": "TutorialWorkspace",
       "status": "实现中",
       "target": {
-        "category": "file",
+        "category": "symbol",
         "ids": [
-          "scenes/ui/TutorialOverlay.gd"
+          "scenes/ui/TutorialOverlay.gd::_ready"
         ]
       },
-      "gap": "已有候选；源数值、约束、效果和操作尚未逐项对比验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:workspaces:TutorialWorkspace",
       "manual_acceptance": "manual:workspaces:TutorialWorkspace",
       "ui_entry": "src/components/TutorialWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "workspaces:TutorialWorkspace"
     },
     {
@@ -9019,17 +9507,21 @@
       "category": "commands",
       "source_id": "CampaignWorkspace.onClose",
       "name": "onClose",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scenes/ui/CampaignWorkspace.gd::_show_workspace"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:commands:CampaignWorkspace.onClose",
       "manual_acceptance": "manual:commands:CampaignWorkspace.onClose",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "commands:CampaignWorkspace.onClose"
     },
     {
@@ -9037,17 +9529,21 @@
       "category": "commands",
       "source_id": "CampaignWorkspace.onNavigate",
       "name": "onNavigate",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scenes/ui/CampaignWorkspace.gd::_navigate_source"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:commands:CampaignWorkspace.onNavigate",
       "manual_acceptance": "manual:commands:CampaignWorkspace.onNavigate",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "commands:CampaignWorkspace.onNavigate"
     },
     {
@@ -9055,17 +9551,21 @@
       "category": "commands",
       "source_id": "CampaignWorkspace.onSelectTask",
       "name": "onSelectTask",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/ProgressionSystem.gd::select_objective"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:commands:CampaignWorkspace.onSelectTask",
       "manual_acceptance": "manual:commands:CampaignWorkspace.onSelectTask",
       "ui_entry": "src/components/CampaignWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "commands:CampaignWorkspace.onSelectTask"
     },
     {
@@ -10643,17 +11143,21 @@
       "category": "commands",
       "source_id": "engine.cancelCurrentResearch",
       "name": "cancelCurrentResearch",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/TechnologySystem.gd::cancel_research"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:commands:engine.cancelCurrentResearch",
       "manual_acceptance": "manual:commands:engine.cancelCurrentResearch",
       "ui_entry": "src/game/engine.ts",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "commands:engine.cancelCurrentResearch"
     },
     {
@@ -10908,17 +11412,21 @@
       "category": "commands",
       "source_id": "engine.canQueueTechnology",
       "name": "canQueueTechnology",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/TechnologySystem.gd::_queue_prerequisites_are_scheduled"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:commands:engine.canQueueTechnology",
       "manual_acceptance": "manual:commands:engine.canQueueTechnology",
       "ui_entry": "src/game/engine.ts",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "commands:engine.canQueueTechnology"
     },
     {
@@ -10926,17 +11434,21 @@
       "category": "commands",
       "source_id": "engine.canSelectTechnology",
       "name": "canSelectTechnology",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/TechnologySystem.gd::can_research_technology"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:commands:engine.canSelectTechnology",
       "manual_acceptance": "manual:commands:engine.canSelectTechnology",
       "ui_entry": "src/game/engine.ts",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "commands:engine.canSelectTechnology"
     },
     {
@@ -12949,17 +13461,21 @@
       "category": "commands",
       "source_id": "engine.hasActiveResearch",
       "name": "hasActiveResearch",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/TechnologySystem.gd::is_researching"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:commands:engine.hasActiveResearch",
       "manual_acceptance": "manual:commands:engine.hasActiveResearch",
       "ui_entry": "src/game/engine.ts",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "commands:engine.hasActiveResearch"
     },
     {
@@ -13163,16 +13679,17 @@
       "target": {
         "category": "symbol",
         "ids": [
-          "scripts/game/GameState.gd::is_technology_completed",
           "scripts/game/TechnologySystem.gd::is_technology_completed"
         ]
       },
-      "gap": "已有候选；源数值、约束、效果和操作尚未逐项对比验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:commands:engine.isTechnologyCompleted",
       "manual_acceptance": "manual:commands:engine.isTechnologyCompleted",
       "ui_entry": "src/game/engine.ts",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "commands:engine.isTechnologyCompleted"
     },
     {
@@ -13364,17 +13881,21 @@
       "category": "commands",
       "source_id": "engine.pauseCurrentResearch",
       "name": "pauseCurrentResearch",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/TechnologySystem.gd::pause_research"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:commands:engine.pauseCurrentResearch",
       "manual_acceptance": "manual:commands:engine.pauseCurrentResearch",
       "ui_entry": "src/game/engine.ts",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "commands:engine.pauseCurrentResearch"
     },
     {
@@ -13857,17 +14378,21 @@
       "category": "commands",
       "source_id": "engine.removeQueuedTechnology",
       "name": "removeQueuedTechnology",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/TechnologySystem.gd::remove_from_queue"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:commands:engine.removeQueuedTechnology",
       "manual_acceptance": "manual:commands:engine.removeQueuedTechnology",
       "ui_entry": "src/game/engine.ts",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "commands:engine.removeQueuedTechnology"
     },
     {
@@ -13970,17 +14495,21 @@
       "category": "commands",
       "source_id": "engine.resumePausedResearch",
       "name": "resumePausedResearch",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/TechnologySystem.gd::resume_research"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:commands:engine.resumePausedResearch",
       "manual_acceptance": "manual:commands:engine.resumePausedResearch",
       "ui_entry": "src/game/engine.ts",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "commands:engine.resumePausedResearch"
     },
     {
@@ -14006,17 +14535,21 @@
       "category": "commands",
       "source_id": "engine.selectInfiniteResearch",
       "name": "selectInfiniteResearch",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/InfiniteResearchSystem.gd::select"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:commands:engine.selectInfiniteResearch",
       "manual_acceptance": "manual:commands:engine.selectInfiniteResearch",
       "ui_entry": "src/game/engine.ts",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "commands:engine.selectInfiniteResearch"
     },
     {
@@ -14024,17 +14557,21 @@
       "category": "commands",
       "source_id": "engine.selectTechnology",
       "name": "selectTechnology",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/TechnologySystem.gd::start_research"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:commands:engine.selectTechnology",
       "manual_acceptance": "manual:commands:engine.selectTechnology",
       "ui_entry": "src/game/engine.ts",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "commands:engine.selectTechnology"
     },
     {
@@ -14804,17 +15341,21 @@
       "category": "commands",
       "source_id": "engine.setInfiniteResearchAutomation",
       "name": "setInfiniteResearchAutomation",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/InfiniteResearchSystem.gd::select"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:commands:engine.setInfiniteResearchAutomation",
       "manual_acceptance": "manual:commands:engine.setInfiniteResearchAutomation",
       "ui_entry": "src/game/engine.ts",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "commands:engine.setInfiniteResearchAutomation"
     },
     {
@@ -16839,17 +17380,21 @@
       "category": "commands",
       "source_id": "GamePanels.onOpenCampaign",
       "name": "onOpenCampaign",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scenes/ui/CampaignWorkspace.gd::_show_workspace"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:commands:GamePanels.onOpenCampaign",
       "manual_acceptance": "manual:commands:GamePanels.onOpenCampaign",
       "ui_entry": "src/components/GamePanels.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "commands:GamePanels.onOpenCampaign"
     },
     {
@@ -17097,17 +17642,21 @@
       "category": "commands",
       "source_id": "GamePanels.onOpenTechnology",
       "name": "onOpenTechnology",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scenes/ui/FactoryWorkspaceUI.gd::_toggle_technology_workspace"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:commands:GamePanels.onOpenTechnology",
       "manual_acceptance": "manual:commands:GamePanels.onOpenTechnology",
       "ui_entry": "src/components/GamePanels.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "commands:GamePanels.onOpenTechnology"
     },
     {
@@ -17115,17 +17664,21 @@
       "category": "commands",
       "source_id": "GamePanels.onOpenTutorial",
       "name": "onOpenTutorial",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scenes/ui/TutorialOverlay.gd::_ready"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:commands:GamePanels.onOpenTutorial",
       "manual_acceptance": "manual:commands:GamePanels.onOpenTutorial",
       "ui_entry": "src/components/GamePanels.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "commands:GamePanels.onOpenTutorial"
     },
     {
@@ -21229,17 +21782,21 @@
       "category": "commands",
       "source_id": "TechnologyWorkspace.onCancelResearch",
       "name": "onCancelResearch",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scenes/ui/TechnologyPanel.gd::_on_technology_intent"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:commands:TechnologyWorkspace.onCancelResearch",
       "manual_acceptance": "manual:commands:TechnologyWorkspace.onCancelResearch",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "commands:TechnologyWorkspace.onCancelResearch"
     },
     {
@@ -21247,17 +21804,21 @@
       "category": "commands",
       "source_id": "TechnologyWorkspace.onClose",
       "name": "onClose",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scenes/ui/FactoryWorkspaceUI.gd::close_active_workspace"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:commands:TechnologyWorkspace.onClose",
       "manual_acceptance": "manual:commands:TechnologyWorkspace.onClose",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "commands:TechnologyWorkspace.onClose"
     },
     {
@@ -21301,17 +21862,21 @@
       "category": "commands",
       "source_id": "TechnologyWorkspace.onPauseResearch",
       "name": "onPauseResearch",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/TechnologySystem.gd::pause_research"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:commands:TechnologyWorkspace.onPauseResearch",
       "manual_acceptance": "manual:commands:TechnologyWorkspace.onPauseResearch",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "commands:TechnologyWorkspace.onPauseResearch"
     },
     {
@@ -21319,17 +21884,21 @@
       "category": "commands",
       "source_id": "TechnologyWorkspace.onRemoveQueued",
       "name": "onRemoveQueued",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scenes/ui/TechnologyPanel.gd::_on_remove_queue_intent"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:commands:TechnologyWorkspace.onRemoveQueued",
       "manual_acceptance": "manual:commands:TechnologyWorkspace.onRemoveQueued",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "commands:TechnologyWorkspace.onRemoveQueued"
     },
     {
@@ -21337,17 +21906,21 @@
       "category": "commands",
       "source_id": "TechnologyWorkspace.onResumeResearch",
       "name": "onResumeResearch",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/TechnologySystem.gd::resume_research"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:commands:TechnologyWorkspace.onResumeResearch",
       "manual_acceptance": "manual:commands:TechnologyWorkspace.onResumeResearch",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "commands:TechnologyWorkspace.onResumeResearch"
     },
     {
@@ -21355,17 +21928,21 @@
       "category": "commands",
       "source_id": "TechnologyWorkspace.onSelect",
       "name": "onSelect",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scenes/ui/TechnologyPanel.gd::_on_technology_intent"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:commands:TechnologyWorkspace.onSelect",
       "manual_acceptance": "manual:commands:TechnologyWorkspace.onSelect",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "commands:TechnologyWorkspace.onSelect"
     },
     {
@@ -21373,17 +21950,21 @@
       "category": "commands",
       "source_id": "TechnologyWorkspace.onSelectInfiniteResearch",
       "name": "onSelectInfiniteResearch",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scripts/game/InfiniteResearchSystem.gd::select"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:commands:TechnologyWorkspace.onSelectInfiniteResearch",
       "manual_acceptance": "manual:commands:TechnologyWorkspace.onSelectInfiniteResearch",
       "ui_entry": "src/components/TechnologyWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "commands:TechnologyWorkspace.onSelectInfiniteResearch"
     },
     {
@@ -21517,17 +22098,21 @@
       "category": "commands",
       "source_id": "TutorialWorkspace.onClose",
       "name": "onClose",
-      "status": "未实现",
+      "status": "实现中",
       "target": {
-        "category": "commands",
-        "ids": []
+        "category": "symbol",
+        "ids": [
+          "scenes/ui/TutorialOverlay.gd::_ready"
+        ]
       },
-      "gap": "无已确认对应项，需实现或明确映射后验证",
+      "gap": "已有可运行候选；源行为数值、完整人工旅程及相关任务 26 特殊系统集成仍待逐项验收",
       "owner_task": 25,
       "rule_test": "rule:commands:TutorialWorkspace.onClose",
       "manual_acceptance": "manual:commands:TutorialWorkspace.onClose",
       "ui_entry": "src/components/TutorialWorkspace.tsx",
-      "supporting_tests": [],
+      "supporting_tests": [
+        "res://scenes/test/TestProgressionParity.tscn"
+      ],
       "source_definition": "commands:TutorialWorkspace.onClose"
     },
     {
