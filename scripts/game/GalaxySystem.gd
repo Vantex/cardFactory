@@ -16,10 +16,19 @@ func get_catalog_errors() -> Array:
 	return _catalog_errors.duplicate(true)
 
 func get_star_system(system_id: String) -> Dictionary:
-	return _systems.get(system_id, {}).duplicate(true)
+	var result: Dictionary = _systems.get(system_id, {}).duplicate(true)
+	var name: String = game_state.source_galaxy.get("systemMetadata", {}).get(system_id, {}).get("customName", "")
+	if not name.is_empty(): result.name = name
+	return result
 
 func get_planet(planet_id: String) -> Dictionary:
-	return _planets.get(planet_id, {}).duplicate(true)
+	var result: Dictionary = _planets.get(planet_id, {}).duplicate(true)
+	var metadata: Dictionary = game_state.source_galaxy.get("planetMetadata", {}).get(planet_id, {})
+	if not String(metadata.get("customName", "")).is_empty(): result.name = metadata.customName
+	if not game_state.source_galaxy.is_empty():
+		result["local_metadata"] = metadata.duplicate(true)
+		result["industry_role"] = game_state.source_galaxy.planetRoles.get(planet_id, "auto")
+	return result
 
 func get_all_system_ids() -> Array:
 	var ids: Array = _systems.keys()
@@ -35,7 +44,7 @@ func get_all_star_systems() -> Dictionary:
 	return _systems.duplicate(true)
 
 func get_system_name(system_id: String) -> String:
-	return String(_systems.get(system_id, {}).get("name", ""))
+	return String(get_star_system(system_id).get("name", ""))
 
 func get_system_code(system_id: String) -> String:
 	return String(_systems.get(system_id, {}).get("code", ""))
@@ -51,6 +60,11 @@ func get_system_distance(from_system_id: String, to_system_id: String) -> float:
 	var to_system: Dictionary = _systems.get(to_system_id, {})
 	if from_system.is_empty() or to_system.is_empty():
 		return 0.0
+	if not game_state.source_galaxy.is_empty():
+		if from_system_id == to_system_id: return 0.0
+		var x := float(from_system.position.x) - float(to_system.position.x)
+		var y := float(from_system.position.y) - float(to_system.position.y)
+		return SourceGalaxySystem.rounded(maxf(0.1, sqrt(x * x + y * y)))
 	return _to_vector2(from_system.get("position", {})).distance_to(_to_vector2(to_system.get("position", {})))
 
 func get_system_description(system_id: String) -> String:
@@ -212,7 +226,7 @@ func build_resource_sites_for_planet(planet_id: String, seed: int) -> Dictionary
 		var infinite := bool(template.get("infinite", false))
 		var capacity := 0
 		if not infinite:
-			capacity = roundi(float(template.get("base_capacity", 0.0)) * _reserve_multiplier(seed, site_id, item_id))
+			capacity = SourceGalaxySystem.new(game_state).reserve(planet_id, item_id, site_id) if not game_state.source_galaxy.is_empty() else roundi(float(template.get("base_capacity", 0.0)) * _reserve_multiplier(seed, site_id, item_id))
 		built[site_id] = {"id": site_id, "planet_id": planet_id, "item_id": item_id, "position": _to_vector2(template.get("position", {})), "capacity": capacity, "remaining": capacity, "infinite": infinite}
 	return built
 
@@ -228,6 +242,7 @@ func _load_catalog(catalog_path: String) -> void:
 		_add_error("invalid_catalog_json", catalog_path)
 		return
 	var catalog: Dictionary = json.data
+	if catalog_path == DEFAULT_CATALOG_PATH and not game_state.source_galaxy.is_empty(): catalog = _source_catalog(catalog)
 	if not catalog.get("systems") is Array or not catalog.get("planets") is Array:
 		_add_error("invalid_catalog_shape", catalog_path)
 		return
@@ -252,6 +267,40 @@ func _load_catalog(catalog_path: String) -> void:
 			continue
 		_planets[planet_id] = planet
 	_validate_catalog()
+
+func _source_catalog(legacy: Dictionary) -> Dictionary:
+	if not game_state._source_catalog_cache.is_empty(): return game_state._source_catalog_cache
+	var source := SourceGalaxySystem.catalog()
+	var service := SourceGalaxySystem.new(game_state)
+	var systems := []
+	var planets := []
+	for id in source.systems:
+		var definition: Dictionary = source.systems[id]
+		var profile: Dictionary = game_state.source_galaxy.systemProfiles[id]
+		var costs := []
+		for cost in definition.explorationCost: costs.append({"item_id": cost.itemId, "amount": cost.amount})
+		var duration := 0.0
+		for planet in definition.planetIds: duration = maxf(duration, float(service.profile(planet).surveyDurationSeconds))
+		systems.append({"id": id, "name": definition.name, "code": definition.code, "star_type": profile.starTypeName, "color": definition.color, "position": {"x": profile.positionX, "y": profile.positionY}, "distance_ly": profile.distanceFromOriginLy, "description": definition.description, "planet_ids": definition.planetIds, "exploration_cost": costs, "required_technology_id": "dsp_" + String(definition.requiredTechId) if definition.has("requiredTechId") else "", "prerequisite_system_id": definition.get("prerequisiteSystemId", ""), "survey_duration_seconds": duration, "luminosity": profile.luminosity})
+	for id in source.planets:
+		var definition: Dictionary = source.planets[id]
+		var profile := service.profile(id)
+		var costs := []
+		for cost in profile.colonyCost: costs.append({"item_id": cost.itemId, "amount": cost.amount})
+		var old_sites := {}
+		for old_planet in legacy.planets:
+			if old_planet.id == id:
+				for site in old_planet.resource_sites: old_sites[site.item_id] = site.position
+		var sites := []
+		for index in range(profile.resourceIds.size()):
+			var item: String = profile.resourceIds[index]
+			var angle := TAU * index / maxf(1.0, profile.resourceIds.size())
+			var position: Dictionary = old_sites.get(item, {"x": roundf(cos(angle) * 520), "y": roundf(sin(angle) * 520)})
+			var infinite: bool = (item == "water" and profile.oceanType == "water") or (item == "sulfuric_acid" and profile.oceanType == "sulfuric-acid")
+			sites.append({"id": "%s_%s_1" % [id, item], "item_id": item, "position": position, "base_capacity": 240000, "infinite": infinite})
+		planets.append({"id": id, "name": definition.name, "code": definition.code, "color": definition.color, "planet_type": profile.climateName, "kind": "gas_giant" if definition.kind == "gas-giant" else "terrestrial", "system_id": definition.systemId, "orbit": definition.orbitIndex, "solar_multiplier": service.solar_multiplier(id), "colonization_cost": costs, "required_technology_id": "", "resource_sites": sites, "industrial_profile": profile, "travel_multiplier": profile.travelTimeMultiplier, "orbital_yields": profile.orbitalYields, "industry_role": game_state.source_galaxy.planetRoles[id]})
+	game_state._source_catalog_cache = {"systems": systems, "planets": planets}
+	return game_state._source_catalog_cache
 
 func _validate_catalog() -> void:
 	var global_site_ids: Dictionary = {}
@@ -366,7 +415,7 @@ func _create_pioneer_landing(system_id: String) -> void:
 		game_state.resource_sites[site_id] = sites[site_id]
 
 func _system_search_text(system_id: String) -> String:
-	var system: Dictionary = _systems.get(system_id, {})
+	var system := get_star_system(system_id)
 	return " ".join([
 		system_id,
 		String(system.get("name", "")),
@@ -376,7 +425,7 @@ func _system_search_text(system_id: String) -> String:
 	]).to_lower()
 
 func _planet_search_text(planet_id: String) -> String:
-	var planet: Dictionary = _planets.get(planet_id, {})
+	var planet := get_planet(planet_id)
 	var terms: Array[String] = [
 		planet_id,
 		String(planet.get("name", "")),
@@ -384,6 +433,8 @@ func _planet_search_text(planet_id: String) -> String:
 		String(planet.get("planet_type", "")),
 		String(planet.get("kind", "")),
 		String(planet.get("system_id", "")),
+		String(planet.get("local_metadata", {}).get("note", "")),
+		str(planet.get("local_metadata", {}).get("tags", [])),
 	]
 	for site_value in planet.get("resource_sites", []):
 		if not site_value is Dictionary:
@@ -429,7 +480,7 @@ func _get_planet_industry_summary(planet_id: String) -> Dictionary:
 				blocked_count += 1
 			generation += maxf(float(building_value.get("power_output", 0.0)), 0.0)
 			var definition := DataManager.get_building(String(building_value.get("type", "")))
-			demand += maxf(float(definition.get("power_demand", 0.0)), 0.0)
+			demand += maxf(float(building_value.get("power_requested", definition.get("power_demand", 0.0))), 0.0)
 	var connection_count := 0
 	for connection_value in game_state.connections.values():
 		if connection_value is Dictionary and String(connection_value.get("planet_id", "")) == planet_id:

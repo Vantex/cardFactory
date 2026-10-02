@@ -68,6 +68,15 @@
     },
     "commands:GalaxyWorkspace.onUpdateProfile": {
       "reason": "账号、云存档或公共银河网络入口，不属于单机范围"
+    },
+    "commands:engine.setGalacticMaterialExporterPaused": {
+      "reason": "冻结 engine.runGalacticMaterialExporters 仅在服务器 constructionActivity 的活动 ID 与时间窗有效时交付；离线范围不创建服务器活动。保留目录定义，排除该活动专用控制回调。"
+    },
+    "commands:GamePanels.onGalacticExporterPausedChange": {
+      "reason": "冻结 engine.runGalacticMaterialExporters 仅在服务器 constructionActivity 的活动 ID 与时间窗有效时交付；离线范围不创建服务器活动。保留目录定义，排除该活动专用控制回调。"
+    },
+    "commands:StatisticsWorkspace.onGalacticExporterPausedChange": {
+      "reason": "冻结 engine.runGalacticMaterialExporters 仅在服务器 constructionActivity 的活动 ID 与时间窗有效时交付；离线范围不创建服务器活动。保留目录定义，排除该活动专用控制回调。"
     }
   },
   "scope": {

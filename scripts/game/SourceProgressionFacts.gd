@@ -55,10 +55,10 @@ static func value(state: GameState, metric: Dictionary) -> float:
 			for system in state.dyson_systems: result += float(DysonSphereSystem.new(state).get_summary(system).get(field, 0))
 		"infinite-research":
 			for progress in state.progression_facts.get("infinite_research", {}).values(): result += float(progress.get("level", 0))
-		"exported": return float(state.endgame.get("total_exported", 0))
-		"galactic-score": return float(state.endgame.get("galactic_score", 0))
+		"exported": return float(state.galactic_exports.get("total_exported", 0))
+		"galactic-score": return float(state.galactic_exports.get("score", 0))
 		"endgame-mastery":
-			var projects: Dictionary = state.endgame.get("export_projects", {})
+			var projects: Dictionary = state.galactic_exports.get("projects", {})
 			if projects.size() < 4: return 0
 			for project in projects.values():
 				if int(project.get("level", 0)) < 1: return 0

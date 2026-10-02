@@ -4,6 +4,7 @@ extends Control
 signal new_game_requested
 signal continue_requested(slot: int)
 signal slots_requested
+signal content_packs_requested
 signal settings_requested
 
 const BACKGROUND := Color("#0b1110")
@@ -117,6 +118,9 @@ func _create_ui() -> void:
 	var slots_button := _button("SlotsButton", "管理存档槽位", false)
 	slots_button.pressed.connect(func() -> void: slots_requested.emit())
 	actions.add_child(slots_button)
+	var pack_button := _button("ContentPacksButton", "本地内容包", false)
+	pack_button.pressed.connect(func(): content_packs_requested.emit())
+	actions.add_child(pack_button)
 	var settings_button := _button("SettingsButton", "本机设置", false)
 	settings_button.pressed.connect(func(): settings_requested.emit())
 	actions.add_child(settings_button)

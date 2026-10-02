@@ -5,8 +5,15 @@ static func validate(data: Dictionary) -> Array:
 	var rules := DysonSphereSystem.get_rules()
 	if not _int(data.get("dyson_tick"), 0, 9000000000000) or not data.get("dyson_systems") is Dictionary or rules.is_empty():
 		return _error("戴森根状态无效")
+	var schedule: Variant = data.get("dyson_engineering", {})
+	if not schedule is Dictionary: return _error("戴森发射计划无效")
+	if not schedule.is_empty() and (data.get("source_galaxy", {}).is_empty() or schedule.get("version") != 1 or not schedule.get("enabled") is bool or schedule.get("launch_mode") not in ["balanced", "swarm", "sphere"] or schedule.get("throttle") not in [0.25, 0.5, 0.75, 1.0]): return _error("戴森发射模式或节流无效")
+	if not schedule.is_empty() and not _number(schedule.get("launch_energy_spent_mj", 0), 0, 1.0e18): return _error("戴森发射累计能耗无效")
 	var systems: Dictionary = data.dyson_systems
-	var galaxy := GalaxySystem.new(GameState.new())
+	var world := GameState.new()
+	world.source_galaxy = data.get("source_galaxy", {}).duplicate(true)
+	world.galaxy_seed = int(data.get("galaxy_seed", 240721))
+	var galaxy := GalaxySystem.new(world)
 	var seen := {}
 	for system_id in systems:
 		if not system_id is String or galaxy.get_star_system(system_id).is_empty() or not data.get("explored_system_ids", []).has(system_id):
@@ -19,6 +26,9 @@ static func validate(data: Dictionary) -> Array:
 		for field in ["sails_launched", "sails_expired", "rockets_launched"]:
 			if not _int(system.get(field), 0, 9000000000000):
 				return _error("戴森累计数量无效")
+		var source_plan: bool = system.has("source_plan")
+		if source_plan and schedule.is_empty(): return _error("源戴森缺少发射计划")
+		var lifetime := (72000 if source_plan else int(rules.sail_lifetime_ticks)) * (1.0 + 0.5 * (int(data.get("completed_technologies", []).has("dsp_solar_sail_life_1")) + int(data.get("completed_technologies", []).has("dsp_solar_sail_life_2"))))
 		var live := 0
 		var absorbed := 0
 		var built := 0
@@ -26,14 +36,23 @@ static func validate(data: Dictionary) -> Array:
 			var orbit: Variant = system.orbits[id]
 			if not orbit is Dictionary or not _id(id, orbit, "orbit", data, seen) or not _geometry(orbit) or not orbit.get("cohorts") is Array:
 				return _error("太阳帆轨道无效")
-			if orbit.cohorts.size() > int(rules.sail_lifetime_ticks):
+			if source_plan:
+				if not _number(orbit.get("decay_progress"), 0, 0.999999) or orbit.cohorts.size() > 1: return _error("源太阳帆衰减进度无效")
+				for cohort in orbit.cohorts:
+					if not cohort is Dictionary or not _int(cohort.get("count"), 1, 9000000000000) or not _int(cohort.get("expires_tick"), 0, 0): return _error("源太阳帆总数无效")
+				continue
+			if orbit.cohorts.size() > int(lifetime):
 				return _error("太阳帆批次数量无界")
 			var previous := int(data.dyson_tick)
 			for cohort in orbit.cohorts:
-				if not cohort is Dictionary or not _int(cohort.get("count"), 1, 1000000) or not _int(cohort.get("expires_tick"), previous + 1, int(data.dyson_tick) + int(rules.sail_lifetime_ticks)):
+				if not cohort is Dictionary or not _int(cohort.get("count"), 1, 1000000) or not _int(cohort.get("expires_tick"), previous + 1, int(data.dyson_tick) + int(lifetime)):
 					return _error("太阳帆批次到期时间或数量无效")
 				previous = int(cohort.expires_tick)
 				live += int(cohort.count)
+		if source_plan:
+			var error := SourceDysonEngineering.validate_system(system, data, seen)
+			if not error.is_empty(): return _error(error)
+			continue
 		for id in system.layers:
 			var layer: Variant = system.layers[id]
 			if not layer is Dictionary or not _id(id, layer, "layer", data, seen) or not _geometry(layer) or not layer.get("nodes") is Dictionary or not layer.get("shell") is Dictionary:
@@ -69,10 +88,11 @@ static func validate(data: Dictionary) -> Array:
 		if building.get("type", "") not in DysonSphereSystem.AMMO or not building.dyson is Dictionary:
 			return _error("非发射设备包含发射配置")
 		var config: Dictionary = building.dyson
-		if not config.get("enabled") is bool or not config.get("target_id") is String or not _number(config.get("progress"), 0, float(rules.launch_seconds[building.type])):
+		var duration_key := "solar_sail_ejector" if building.type in ["solar_sail_ejector", "dsp_em_rail_ejector"] else "dyson_sphere_launcher"
+		if not config.get("enabled") is bool or not config.get("target_id") is String or not _number(config.get("progress"), 0, (12.0 if duration_key == "solar_sail_ejector" else 6.0) if not data.get("source_galaxy", {}).is_empty() else float(rules.launch_seconds[duration_key])):
 			return _error("发射设备配置无效")
 		var system_id := String(galaxy.get_planet(String(building.get("planet_id", ""))).get("system_id", ""))
-		var kind := "orbits" if building.type == "solar_sail_ejector" else "layers"
+		var kind := "orbits" if building.type in ["solar_sail_ejector", "dsp_em_rail_ejector"] else "layers"
 		if config.target_id != "" and not systems.get(system_id, {}).get(kind, {}).has(config.target_id):
 			return _error("设备发射目标跨星系或不存在")
 	return []
@@ -99,6 +119,7 @@ static func _error(message: String) -> Array:
 	return [{"code": "invalid_dyson_state", "entity_type": "dyson", "entity_id": "", "message": message}]
 
 static func normalize_integer_fields(data: Dictionary) -> void:
+	if data.get("dyson_engineering") is Dictionary and _int(data.dyson_engineering.get("version"), 1, 1): data.dyson_engineering.version = 1
 	if _int(data.get("dyson_tick"), 0, 9000000000000):
 		data.dyson_tick = int(data.dyson_tick)
 	_normalize(data.get("dyson_systems", {}))
@@ -106,7 +127,7 @@ static func normalize_integer_fields(data: Dictionary) -> void:
 static func _normalize(value: Variant) -> void:
 	if value is Dictionary:
 		for key in value:
-			if key in ["sails_launched", "sails_expired", "rockets_launched", "expires_tick", "count", "points", "sails", "absorption_ticks"] and _int(value[key], 0, 9000000000000):
+			if key in ["sails_launched", "sails_expired", "rockets_launched", "expires_tick", "count", "points", "sails", "absorption_ticks", "required_points", "capacity", "structure_points", "shell_sails", "structure_floor", "shell_floor"] and _int(value[key], 0, 9000000000000):
 				value[key] = int(value[key])
 			else:
 				_normalize(value[key])

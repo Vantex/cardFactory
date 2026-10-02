@@ -36,6 +36,23 @@ var _explore_button: Button
 var _colonize_button: Button
 var _travel_button: Button
 var _fleet_button: Button
+var _profile_summary: Label
+var _source_controls: VBoxContainer
+var _local_name: LineEdit
+var _local_note: LineEdit
+var _local_tags: LineEdit
+var _system_name: LineEdit
+var _tray_limit: SpinBox
+var _discard_item: OptionButton
+var _discard_amount: SpinBox
+var _discard_dialog: ConfirmationDialog
+var _discard_planet := ""
+var _discard_selected := ""
+var _discard_count := 0.0
+var _role: OptionButton
+var _metadata_notice: Label
+var _editing_planet_id := ""
+var _editing_system_id := ""
 
 func _ready() -> void:
 	_build_ui()
@@ -91,8 +108,13 @@ func _build_ui() -> void:
 	if get_node_or_null("Margin") != null:
 		return
 	mouse_filter = Control.MOUSE_FILTER_STOP
+	var background := StyleBoxFlat.new()
+	background.bg_color = PANEL_DARK
+	add_theme_stylebox_override("panel", background)
 	var margin := MarginContainer.new()
 	margin.name = "Margin"
+	margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	margin.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	for side in ["margin_left", "margin_top", "margin_right", "margin_bottom"]:
 		margin.add_theme_constant_override(side, 12)
@@ -162,6 +184,58 @@ func _build_ui() -> void:
 	details.add_child(_colonization_summary)
 	_industry_summary = _make_wrapped_label("IndustrySummary", ACCENT_GREEN)
 	details.add_child(_industry_summary)
+	_profile_summary = _make_wrapped_label("IndustrialProfile", TEXT_MUTED)
+	details.add_child(_profile_summary)
+	_source_controls = VBoxContainer.new()
+	_source_controls.name = "SourceWorldControls"
+	details.add_child(_source_controls)
+	_local_name = _metadata_input("PlanetLocalName", "行星自定义名称（32 字）")
+	_local_note = _metadata_input("PlanetLocalNote", "本地备注（240 字）")
+	_local_tags = _metadata_input("PlanetLocalTags", "本地标签，用逗号分隔")
+	_role = OptionButton.new()
+	_role.name = "PlanetIndustryRole"
+	var role_names := ["自动识别", "采矿前哨", "冶炼基地", "制造中心", "化工基地", "科研中心", "物流枢纽", "能源基地"]
+	for title in role_names: _role.add_item(title)
+	_source_controls.add_child(_role)
+	_role.item_selected.connect(func(index):
+		var result := SourceGalaxySystem.new(game_state).set_role(_selected_planet_id, SourceGalaxySystem.ROLES[index])
+		_metadata_notice.text = result.message
+		refresh_now())
+	_source_controls.add_child(_make_action_button("SavePlanetMetadata", "保存行星说明", _save_planet_metadata))
+	_system_name = _metadata_input("SystemLocalName", "星系自定义名称（32 字）")
+	_source_controls.add_child(_make_action_button("SaveSystemMetadata", "保存星系名称", _save_system_metadata))
+	_tray_limit = SpinBox.new()
+	_tray_limit.name = "PlanetTrayLimit"
+	_tray_limit.min_value = PlanetTraySystem.MIN_LIMIT
+	_tray_limit.max_value = PlanetTraySystem.MAX_LIMIT
+	_tray_limit.step = 1000
+	_tray_limit.prefix = "单物品容量 "
+	_source_controls.add_child(_tray_limit)
+	_source_controls.add_child(_make_action_button("SavePlanetTrayLimit", "设置托盘容量", func():
+		_metadata_notice.text = PlanetTraySystem.new(game_state).set_limit(_selected_planet_id, _tray_limit.value).message))
+	_discard_item = OptionButton.new()
+	_discard_item.name = "DiscardTrayItem"
+	for item in DataManager.all_items:
+		_discard_item.add_item(DataManager.get_item(item).get("name", item))
+		_discard_item.set_item_metadata(_discard_item.item_count - 1, item)
+	_source_controls.add_child(_discard_item)
+	_discard_amount = SpinBox.new()
+	_discard_amount.min_value = 1
+	_discard_amount.max_value = PlanetTraySystem.MAX_LIMIT
+	_discard_amount.value = 1
+	_source_controls.add_child(_discard_amount)
+	_source_controls.add_child(_make_action_button("DiscardTrayStock", "丢弃托盘物料…", func():
+		_discard_planet = _selected_planet_id
+		_discard_selected = str(_discard_item.get_item_metadata(_discard_item.selected))
+		_discard_count = _discard_amount.value
+		_discard_dialog.dialog_text = "确认丢弃 %s × %d？丢弃后不能恢复。" % [DataManager.get_item(_discard_selected).name, _discard_count]
+		_discard_dialog.popup_centered()))
+	_discard_dialog = ConfirmationDialog.new()
+	_discard_dialog.confirmed.connect(func():
+		_metadata_notice.text = PlanetTraySystem.new(game_state).discard(_discard_planet, _discard_selected, _discard_count, true).get("message", "物料已丢弃"))
+	add_child(_discard_dialog)
+	_metadata_notice = _make_wrapped_label("MetadataNotice", ACCENT_YELLOW)
+	_source_controls.add_child(_metadata_notice)
 	var actions := HBoxContainer.new()
 	actions.name = "Actions"
 	actions.add_theme_constant_override("separation", 6)
@@ -256,7 +330,51 @@ func _refresh_details() -> void:
 	_colonization_summary.text = "殖民\n状态：%s\n成本：%s" % ["活动" if colonization.get("active", false) else ("已殖民" if colonization.get("colonized", false) else "未殖民"), _cost_text(colonization.get("requirements", {}))]
 	var industry: Dictionary = planet.get("industry", {})
 	_industry_summary.text = "工业\n建筑 %d · 运行 %d · 阻塞 %d · 线路 %d · 资源点 %d\n发电 %.1f · 需求 %.1f\n托盘：%s" % [int(industry.get("building_count", 0)), int(industry.get("running_count", 0)), int(industry.get("blocked_count", 0)), int(industry.get("connection_count", 0)), int(industry.get("resource_site_count", 0)), float(industry.get("generation", 0.0)), float(industry.get("demand", 0.0)), _inventory_text(industry.get("inventory", {}))]
+	_source_controls.visible = not game_state.source_galaxy.is_empty()
+	_profile_summary.visible = _source_controls.visible
+	if _source_controls.visible and not planet.is_empty():
+		var profile: Dictionary = planet.get("industrial_profile", {})
+		var orbital := []
+		for item in profile.orbitalYields: orbital.append("%s %.2f / 秒" % [DataManager.get_item(item).get("name", item), profile.orbitalYields[item]])
+		var ocean: String = {"water": "水", "sulfuric-acid": "硫酸", "ice": "冰", "none": "无", "salt-water": "盐水"}.get(profile.oceanType, profile.oceanType)
+		_profile_summary.text = "%s\n风力 %.2f× · 地热 %.2f× · 采矿 %.2f×\n储量 %.2f× · 航行 %.2f× · 轨道采集 %.2f×\n海洋：%s · 恒星光度 %.2f×\n轨道资源：%s" % [profile.specializationName, profile.windMultiplier, profile.geothermalMultiplier, profile.miningMultiplier, profile.reserveScale, profile.travelTimeMultiplier, profile.orbitalYieldMultiplier, ocean, system.get("luminosity", 1.0), "、".join(orbital) if not orbital.is_empty() else "无"]
+		if _editing_planet_id != _selected_planet_id:
+			_editing_planet_id = _selected_planet_id
+			_tray_limit.value = PlanetTraySystem.new(game_state).limit(_selected_planet_id)
+			var metadata: Dictionary = game_state.source_galaxy.planetMetadata.get(_selected_planet_id, {})
+			_local_name.text = metadata.get("customName", "")
+			_local_note.text = metadata.get("note", "")
+			_local_tags.text = ", ".join(metadata.get("tags", []))
+			_role.select(SourceGalaxySystem.ROLES.find(planet.get("industry_role", "auto")))
+		if _editing_system_id != _selected_system_id:
+			_editing_system_id = _selected_system_id
+			_system_name.text = game_state.source_galaxy.systemMetadata.get(_selected_system_id, {}).get("customName", "")
 	_refresh_action_states(system, planet)
+
+func _metadata_input(node_name: String, placeholder: String) -> LineEdit:
+	var control := LineEdit.new()
+	control.name = node_name
+	control.placeholder_text = placeholder
+	_source_controls.add_child(control)
+	return control
+
+func _save_planet_metadata() -> void:
+	var tags := []
+	for part in _local_tags.text.replace("，", ",").split(",", false):
+		var tag: String = part.strip_edges()
+		if not tag.is_empty() and not tags.has(tag): tags.append(tag)
+	var result := SourceGalaxySystem.new(game_state).set_metadata(_selected_planet_id, _local_name.text, _local_note.text, tags)
+	_metadata_notice.text = result.message
+	_system_signature = ""
+	_planet_signature = ""
+	refresh_now()
+
+func _save_system_metadata() -> void:
+	var result := SourceGalaxySystem.new(game_state).set_metadata(_selected_system_id, _system_name.text, "", [], true)
+	_metadata_notice.text = result.message
+	_system_signature = ""
+	_planet_signature = ""
+	refresh_now()
 
 func _refresh_action_states(system: Dictionary, planet: Dictionary) -> void:
 	var requirements: Dictionary = system.get("exploration", {}).get("requirements", {})
@@ -303,6 +421,11 @@ func _travel_availability(planet: Dictionary) -> Dictionary:
 	return {"ok": true, "message": "可以前往"}
 
 func _fleet_availability(planet: Dictionary) -> Dictionary:
+	if not game_state.source_galaxy.is_empty():
+		for item in ["logistics_drone", "logistics_vessel"]:
+			var amount := int(floorf(float(game_state.planet_inventory.get(item, 0))))
+			if amount > 0: return {"ok": true, "message": "转入全局随身编队", "item_id": item, "amount": amount}
+		return {"ok": false, "message": "活动行星托盘中没有可入队的载具"}
 	if planet.is_empty():
 		return {"ok": false, "message": "目标行星不存在"}
 	var requirements: Dictionary = planet.get("colonization", {}).get("requirements", {})

@@ -97,6 +97,14 @@ func _complete_research(tech_id: String) -> void:
 	if not game_state.completed_technologies.has(tech_id):
 		game_state.completed_technologies.append(tech_id)
 		game_state.completed_technologies.sort()
+	if tech_id in ["dsp_interstellar_logistics", "interstellar_logistics"] and not game_state.source_galaxy.is_empty():
+		for planet in ["ashen", "giant"]:
+			if game_state.colonized_planet_ids.has(planet): continue
+			game_state.colonized_planet_ids.append(planet)
+			game_state.planet_inventories[planet] = {}
+			game_state.planet_viewports[planet] = {"position": Vector2.ZERO, "zoom": Vector2.ONE}
+			game_state.planet_metrics[planet] = {}
+		PlanetSystem.new(game_state).initialize_colonized_resource_sites()
 	game_state.research_progress.erase(tech_id)
 	game_state.research_invested_costs.erase(tech_id)
 	if technology.has("repeatable"):
@@ -140,6 +148,7 @@ func _start_research_transaction(tech_id: String, from_queue: bool) -> bool:
 	if from_queue:
 		EventBus.technology_research_queue_changed.emit(game_state.research_queue.duplicate(true))
 	EventBus.technology_research_started.emit(tech_id)
+	if get_technology(tech_id).get("source_content_pack", "") != "" and get_technology_cost(tech_id).is_empty(): _complete_research(tech_id)
 	return true
 
 func _queue_prerequisites_are_scheduled(tech_id: String) -> bool:
@@ -286,7 +295,7 @@ func update_source_labs(delta: float, statistics: StatisticsSystem = null) -> vo
 			if float(lab.get("power_requested", 0)) <= 0 or efficiency <= 0: break
 			var recipe := DataManager.get_recipe("dsp_matrix_research")
 			var effect := ProliferatorSystem.profile(lab, recipe)
-			var rate := maxf(float(lab.get("speed", 1)), 0) * efficiency * float(effect.speed) * game_state.get_technology_effect_multiplier("research_speed")
+			var rate := maxf(float(lab.get("speed", 1)), 0) * efficiency * float(effect.speed) * game_state.get_technology_effect_multiplier("research_speed") * GameModeSystem.new(game_state).multiplier("production") * SourceGalaxySystem.new(game_state).production_multiplier(String(lab.planet_id), String(lab.type))
 			if rate <= 0: break
 			var duration := float(recipe.duration)
 			var progress := minf(float(lab.get("progress", 0)), duration)

@@ -9,6 +9,7 @@ const PHASE_ORDER := ["dyson_decay", "power", "production", "handcraft", "belt",
 var game_state: GameState
 var performance_monitor: PerformanceSystem
 var optimize_queries := true
+var offline_replay := false
 var production_system: ProductionSystem
 var belt_system: BeltSystem
 var power_system: PowerSystem
@@ -19,6 +20,8 @@ var galaxy_system: GalaxySystem
 var logistics_system: LogisticsSystem
 var dyson_system: DysonSphereSystem
 var endgame_system: EndgameSystem
+var galactic_export_system: GalacticExportSystem
+var orbital_cargo_system: OrbitalCargoTerminalSystem
 var progression_system: ProgressionSystem
 
 var _accumulator := 0.0
@@ -37,6 +40,8 @@ func _init(state: GameState) -> void:
 	logistics_system = LogisticsSystem.new(state, statistics_system)
 	dyson_system = DysonSphereSystem.new(state, statistics_system)
 	endgame_system = EndgameSystem.new(state)
+	galactic_export_system = GalacticExportSystem.new(state)
+	orbital_cargo_system = OrbitalCargoTerminalSystem.new(state)
 	progression_system = ProgressionSystem.new(state)
 
 func update(delta: float) -> void:
@@ -47,7 +52,7 @@ func update(delta: float) -> void:
 		game_state.simulation_budget["current_steps"] = 0
 		return
 
-	_accumulator += maxf(delta, 0.0) * game_state.speed
+	_accumulator += maxf(delta, 0.0) * (1.0 if offline_replay else TimeWarpSystem.new(game_state).effective_multiplier())
 	while _accumulator + STEP_EPSILON >= FIXED_DELTA and _last_step_count < MAX_STEPS_PER_FRAME:
 		_run_fixed_tick()
 		_accumulator = maxf(_accumulator - FIXED_DELTA, 0.0)
@@ -69,6 +74,7 @@ func _run_fixed_tick() -> void:
 		performance_monitor.finish("phase_power_ms", phase_started)
 		phase_started = performance_monitor.begin()
 	production_system.update(FIXED_DELTA)
+	OrbitalCollectorSystem.new(game_state).update(FIXED_DELTA, statistics_system)
 	if performance_monitor != null and performance_monitor.enabled:
 		performance_monitor.finish("phase_production_ms", phase_started)
 		phase_started = performance_monitor.begin()
@@ -86,6 +92,8 @@ func _run_fixed_tick() -> void:
 		performance_monitor.finish("phase_belt_ms", phase_started)
 		phase_started = performance_monitor.begin()
 	logistics_system.update(FIXED_DELTA)
+	QuantumLogisticsSystem.new(game_state).update()
+	SystemHubLogisticsSystem.new(game_state).update()
 	if performance_monitor != null and performance_monitor.enabled:
 		performance_monitor.finish("phase_logistics_ms", phase_started)
 		phase_started = performance_monitor.begin()
@@ -102,6 +110,9 @@ func _run_fixed_tick() -> void:
 		performance_monitor.finish("phase_research_ms", phase_started)
 		phase_started = performance_monitor.begin()
 	endgame_system.update_tick()
+	galactic_export_system.update(FIXED_DELTA)
+	orbital_cargo_system.update(FIXED_DELTA)
+	SystemSpaceStationSystem.new(game_state).update()
 	if performance_monitor != null and performance_monitor.enabled:
 		performance_monitor.finish("phase_endgame_ms", phase_started)
 		phase_started = performance_monitor.begin()

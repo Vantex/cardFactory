@@ -1,0 +1,581 @@
+{
+  "source_commit": "472bf62c76b695852b5577e563c1d113192ac731",
+  "source_files": {
+    "src/game/content.ts": "6de101d86d28012c8765815aec35177a95b4d7ac5604736a4b608a100284f7ff",
+    "src/game/galaxyCatalog.ts": "fc503cfdcc7d5f38bfcd8b6c7f262b56126f1e3cc2c749c0463e5779730c2540",
+    "src/game/galaxy.ts": "bf0e4d23f6af26d0180ff4e7303e45a7e06e782ed0289f9a94dda3de88028bfd",
+    "src/game/difficulty.ts": "24613016f2296036c18577ce3338f792119617d07a17f2f9dffbefddf48e423e",
+    "src/game/engine.ts": "a809a4cf72a7c2342d81732b010cf95e35cbca653313a0ebe33d56d49483b50b"
+  },
+  "seed": 240721,
+  "cases": [
+    {
+      "source": {
+        "id": "source",
+        "planetId": "home",
+        "buildingId": "interstellar_logistics_station",
+        "machineCount": 1
+      },
+      "target": {
+        "id": "target",
+        "planetId": "ashen",
+        "buildingId": "interstellar_logistics_station",
+        "machineCount": 1
+      },
+      "hubs": [
+        {
+          "id": "hub_0",
+          "planetId": "frost",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 0
+        },
+        {
+          "id": "hub_1",
+          "planetId": "verdant",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 1
+        },
+        {
+          "id": "hub_2",
+          "planetId": "dune",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 2
+        },
+        {
+          "id": "hub_3",
+          "planetId": "crystal",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 0
+        },
+        {
+          "id": "hub_4",
+          "planetId": "salt",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 1
+        },
+        {
+          "id": "hub_5",
+          "planetId": "magnetar",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 2
+        },
+        {
+          "id": "hub_6",
+          "planetId": "tempest",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 0
+        }
+      ],
+      "level": 0,
+      "difficulty": "standard",
+      "count": 1,
+      "policy": "direct",
+      "budget": 1,
+      "expected": {
+        "distanceLy": 0,
+        "orbitSpan": 1,
+        "requiresWarp": false,
+        "durationSeconds": 29.25,
+        "cargoPerTrip": 100,
+        "throughputPerMinute": 205.13,
+        "warpersPerTrip": 0,
+        "powerKw": 2640,
+        "energyMjPerTrip": 77.22,
+        "routeAvailable": true,
+        "routeKind": "local",
+        "waypointStationIds": [],
+        "hopCount": 0,
+        "maxLegDistanceLy": 0,
+        "warpersPerVessel": 0
+      }
+    },
+    {
+      "source": {
+        "id": "source",
+        "planetId": "home",
+        "buildingId": "interstellar_logistics_station",
+        "machineCount": 1
+      },
+      "target": {
+        "id": "target",
+        "planetId": "giant",
+        "buildingId": "interstellar_logistics_station",
+        "machineCount": 1
+      },
+      "hubs": [
+        {
+          "id": "hub_0",
+          "planetId": "frost",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 0
+        },
+        {
+          "id": "hub_1",
+          "planetId": "verdant",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 1
+        },
+        {
+          "id": "hub_2",
+          "planetId": "dune",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 2
+        },
+        {
+          "id": "hub_3",
+          "planetId": "crystal",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 0
+        },
+        {
+          "id": "hub_4",
+          "planetId": "salt",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 1
+        },
+        {
+          "id": "hub_5",
+          "planetId": "magnetar",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 2
+        },
+        {
+          "id": "hub_6",
+          "planetId": "tempest",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 0
+        }
+      ],
+      "level": 3,
+      "difficulty": "hard",
+      "count": 2,
+      "policy": "direct",
+      "budget": 2,
+      "expected": {
+        "distanceLy": 0,
+        "orbitSpan": 2,
+        "requiresWarp": false,
+        "durationSeconds": 33.96,
+        "cargoPerTrip": 230,
+        "throughputPerMinute": 406.36,
+        "warpersPerTrip": 0,
+        "powerKw": 2880,
+        "energyMjPerTrip": 97.8,
+        "routeAvailable": true,
+        "routeKind": "local",
+        "waypointStationIds": [],
+        "hopCount": 0,
+        "maxLegDistanceLy": 0,
+        "warpersPerVessel": 0
+      }
+    },
+    {
+      "source": {
+        "id": "source",
+        "planetId": "home",
+        "buildingId": "interstellar_logistics_station",
+        "machineCount": 1
+      },
+      "target": {
+        "id": "target",
+        "planetId": "tempest",
+        "buildingId": "interstellar_logistics_station",
+        "machineCount": 1
+      },
+      "hubs": [
+        {
+          "id": "hub_0",
+          "planetId": "frost",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 0
+        },
+        {
+          "id": "hub_1",
+          "planetId": "verdant",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 1
+        },
+        {
+          "id": "hub_2",
+          "planetId": "dune",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 2
+        },
+        {
+          "id": "hub_3",
+          "planetId": "crystal",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 0
+        },
+        {
+          "id": "hub_4",
+          "planetId": "salt",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 1
+        },
+        {
+          "id": "hub_5",
+          "planetId": "magnetar",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 2
+        },
+        {
+          "id": "hub_6",
+          "planetId": "tempest",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 0
+        }
+      ],
+      "level": 0,
+      "difficulty": "standard",
+      "count": 1,
+      "policy": "direct",
+      "budget": 1,
+      "expected": {
+        "distanceLy": 30.44,
+        "orbitSpan": 1,
+        "requiresWarp": true,
+        "durationSeconds": 57.8,
+        "cargoPerTrip": 100,
+        "throughputPerMinute": 103.81,
+        "warpersPerTrip": 1,
+        "powerKw": 3300,
+        "energyMjPerTrip": 190.74,
+        "routeAvailable": true,
+        "routeKind": "direct",
+        "waypointStationIds": [],
+        "hopCount": 1,
+        "maxLegDistanceLy": 30.44,
+        "warpersPerVessel": 1
+      }
+    },
+    {
+      "source": {
+        "id": "source",
+        "planetId": "home",
+        "buildingId": "interstellar_logistics_station",
+        "machineCount": 1
+      },
+      "target": {
+        "id": "target",
+        "planetId": "tempest",
+        "buildingId": "interstellar_logistics_station",
+        "machineCount": 1
+      },
+      "hubs": [
+        {
+          "id": "hub_0",
+          "planetId": "frost",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 0
+        },
+        {
+          "id": "hub_1",
+          "planetId": "verdant",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 1
+        },
+        {
+          "id": "hub_2",
+          "planetId": "dune",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 2
+        },
+        {
+          "id": "hub_3",
+          "planetId": "crystal",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 0
+        },
+        {
+          "id": "hub_4",
+          "planetId": "salt",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 1
+        },
+        {
+          "id": "hub_5",
+          "planetId": "magnetar",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 2
+        },
+        {
+          "id": "hub_6",
+          "planetId": "tempest",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 0
+        }
+      ],
+      "level": 0,
+      "difficulty": "standard",
+      "count": 1,
+      "policy": "relay-required",
+      "budget": 1,
+      "expected": {
+        "distanceLy": 30.44,
+        "orbitSpan": 1,
+        "requiresWarp": true,
+        "durationSeconds": 49.44,
+        "cargoPerTrip": 100,
+        "throughputPerMinute": 121.36,
+        "warpersPerTrip": 1,
+        "powerKw": 3300,
+        "energyMjPerTrip": 163.15,
+        "routeAvailable": false,
+        "routeKind": "direct",
+        "waypointStationIds": [],
+        "hopCount": 1,
+        "maxLegDistanceLy": 30.44,
+        "warpersPerVessel": 1
+      }
+    },
+    {
+      "source": {
+        "id": "source",
+        "planetId": "home",
+        "buildingId": "interstellar_logistics_station",
+        "machineCount": 1
+      },
+      "target": {
+        "id": "target",
+        "planetId": "tempest",
+        "buildingId": "interstellar_logistics_station",
+        "machineCount": 1
+      },
+      "hubs": [
+        {
+          "id": "hub_0",
+          "planetId": "frost",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 0
+        },
+        {
+          "id": "hub_1",
+          "planetId": "verdant",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 1
+        },
+        {
+          "id": "hub_2",
+          "planetId": "dune",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 2
+        },
+        {
+          "id": "hub_3",
+          "planetId": "crystal",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 0
+        },
+        {
+          "id": "hub_4",
+          "planetId": "salt",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 1
+        },
+        {
+          "id": "hub_5",
+          "planetId": "magnetar",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 2
+        },
+        {
+          "id": "hub_6",
+          "planetId": "tempest",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 0
+        }
+      ],
+      "level": 0,
+      "difficulty": "standard",
+      "count": 1,
+      "policy": "relay-required",
+      "budget": 4,
+      "expected": {
+        "distanceLy": 33.24,
+        "orbitSpan": 1,
+        "requiresWarp": true,
+        "durationSeconds": 46.86,
+        "cargoPerTrip": 100,
+        "throughputPerMinute": 128.04,
+        "warpersPerTrip": 2,
+        "powerKw": 5400,
+        "energyMjPerTrip": 253.04,
+        "routeAvailable": true,
+        "routeKind": "relay",
+        "waypointStationIds": [
+          "hub_2"
+        ],
+        "hopCount": 2,
+        "maxLegDistanceLy": 17.18,
+        "warpersPerVessel": 2
+      }
+    },
+    {
+      "source": {
+        "id": "source",
+        "planetId": "home",
+        "buildingId": "interstellar_logistics_station",
+        "machineCount": 1
+      },
+      "target": {
+        "id": "target",
+        "planetId": "tempest",
+        "buildingId": "interstellar_logistics_station",
+        "machineCount": 1
+      },
+      "hubs": [
+        {
+          "id": "hub_0",
+          "planetId": "frost",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 0
+        },
+        {
+          "id": "hub_1",
+          "planetId": "verdant",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 1
+        },
+        {
+          "id": "hub_2",
+          "planetId": "dune",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 2
+        },
+        {
+          "id": "hub_3",
+          "planetId": "crystal",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 0
+        },
+        {
+          "id": "hub_4",
+          "planetId": "salt",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 1
+        },
+        {
+          "id": "hub_5",
+          "planetId": "magnetar",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 2
+        },
+        {
+          "id": "hub_6",
+          "planetId": "tempest",
+          "buildingId": "interstellar_logistics_station",
+          "machineCount": 1,
+          "stationHubEnabled": true,
+          "stationHubPriority": 0
+        }
+      ],
+      "level": 3,
+      "difficulty": "relaxed",
+      "count": 3,
+      "policy": "relay-preferred",
+      "budget": 4,
+      "expected": {
+        "distanceLy": 33.24,
+        "orbitSpan": 1,
+        "requiresWarp": true,
+        "durationSeconds": 37.05,
+        "cargoPerTrip": 345,
+        "throughputPerMinute": 558.7,
+        "warpersPerTrip": 6,
+        "powerKw": 9000,
+        "energyMjPerTrip": 333.45,
+        "routeAvailable": true,
+        "routeKind": "relay",
+        "waypointStationIds": [
+          "hub_2"
+        ],
+        "hopCount": 2,
+        "maxLegDistanceLy": 17.18,
+        "warpersPerVessel": 2
+      }
+    }
+  ]
+}

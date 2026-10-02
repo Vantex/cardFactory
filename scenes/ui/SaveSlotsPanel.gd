@@ -21,6 +21,17 @@ var _slots: GridContainer
 var _error_label: Label
 var _confirmation: ConfirmationDialog
 var _pending_delete_slot := -1
+var _copy_dialog: ConfirmationDialog
+var _copy_target: OptionButton
+var _copy_source := -1
+var _mode_selection: OptionButton
+var _difficulty_selection: OptionButton
+
+func selected_new_game_mode() -> String:
+	return String(_mode_selection.get_item_metadata(_mode_selection.selected))
+
+func selected_new_game_difficulty() -> String:
+	return String(_difficulty_selection.get_item_metadata(_difficulty_selection.selected))
 
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -84,6 +95,24 @@ func _create_ui() -> void:
 	back_button.pressed.connect(func() -> void: back_requested.emit())
 	heading.add_child(back_button)
 
+	var choices := HBoxContainer.new()
+	choices.name = "NewGameChoices"
+	content.add_child(choices)
+	choices.add_child(_label("ModeLabel", "新游戏模式", 14, MUTED))
+	_mode_selection = OptionButton.new()
+	_mode_selection.name = "ModeSelection"
+	for row in [["标准单机", "normal"], ["速通", "speedrun"]]:
+		_mode_selection.add_item(row[0])
+		_mode_selection.set_item_metadata(_mode_selection.item_count - 1, row[1])
+	choices.add_child(_mode_selection)
+	choices.add_child(_label("DifficultyLabel", "难度", 14, MUTED))
+	_difficulty_selection = OptionButton.new()
+	_difficulty_selection.name = "DifficultySelection"
+	for row in [["舒缓", "relaxed"], ["标准", "standard"], ["高压", "hard"]]:
+		_difficulty_selection.add_item(row[0])
+		_difficulty_selection.set_item_metadata(_difficulty_selection.item_count - 1, row[1])
+	_difficulty_selection.select(1)
+	choices.add_child(_difficulty_selection)
 	_slots = GridContainer.new()
 	_slots.name = "Slots"
 	_slots.columns = 2
@@ -104,6 +133,18 @@ func _create_ui() -> void:
 	_confirmation.cancel_button_text = "取消"
 	_confirmation.confirmed.connect(_on_delete_confirmed)
 	add_child(_confirmation)
+	_copy_dialog = ConfirmationDialog.new()
+	_copy_dialog.name = "SpeedrunCopyDialog"
+	_copy_dialog.title = "复制速通存档为普通存档"
+	_copy_dialog.dialog_text = "保留工厂与难度，清除速通计时和目标记录。选择空槽位："
+	_copy_target = OptionButton.new()
+	_copy_dialog.add_child(_copy_target)
+	_copy_dialog.confirmed.connect(func():
+		if _copy_target.selected < 0: return
+		var result := GameManager.get_save_system().copy_speedrun_to_normal(_copy_source, int(_copy_target.get_item_metadata(_copy_target.selected)))
+		show_error("已复制为普通存档" if result.ok else result.error.message)
+		refresh_slots(GameManager.get_save_system().get_all_saves()))
+	add_child(_copy_dialog)
 	refresh_slots([])
 
 func _create_slot(slot: int, info: Dictionary) -> Control:
@@ -137,6 +178,18 @@ func _create_slot(slot: int, info: Dictionary) -> Control:
 		continue_button.disabled = not info.get("valid", true)
 		continue_button.pressed.connect(func() -> void: continue_requested.emit(slot))
 		row.add_child(continue_button)
+		if info.get("save_mode") == "speedrun" and info.get("valid", true):
+			var copy := _small_button("CopySpeedrunButton", "复制为普通", ACCENT)
+			copy.pressed.connect(func():
+				_copy_source = slot
+				_copy_target.clear()
+				for target in range(SaveSystem.MAX_SAVES):
+					if GameManager.get_save_system().get_slot_info(target).is_empty():
+						_copy_target.add_item("空槽位 %02d" % (target + 1))
+						_copy_target.set_item_metadata(_copy_target.item_count - 1, target)
+				_copy_dialog.get_ok_button().disabled = _copy_target.item_count == 0
+				_copy_dialog.popup_centered(Vector2i(580, 200)))
+			row.add_child(copy)
 		var recovery := _small_button("RecoveryButton", "恢复", ACCENT)
 		recovery.pressed.connect(func(): recovery_requested.emit(slot))
 		row.add_child(recovery)

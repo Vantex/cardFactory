@@ -44,6 +44,10 @@ func display(snapshot: Dictionary) -> void:
 	retry_button.visible = phase == "error"
 	close_button.visible = phase == "complete"
 	menu_button.visible = phase != "complete"
+	if snapshot.get("kind") == "pure_idle" and phase != "error":
+		var idle: Dictionary = snapshot.get("report", {})
+		text.text = "纯挂机 · %s\n已结算真实时间 %.1f 秒 · 模拟 %.1f 秒\n宏观推进 %.1f 秒 · 校验 %d 次\n剩余 %.1f 秒保留至下次结算\n%s" % ["已保存" if phase == "complete" else "正在结算", float(idle.get("settled_wall_seconds", 0)), float(idle.get("simulated_seconds", idle.get("settled_simulation_seconds", 0))), float(idle.get("macro_seconds", 0)), int(idle.get("validation_count", 0)), float(idle.get("remaining_seconds", 0)), idle.get("reason", "")]
+		return
 	if phase == "error":
 		text.text = "离线结算未提交\n" + String(snapshot.get("error", {}).get("message", "写入失败，请重试"))
 		return

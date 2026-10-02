@@ -1117,19 +1117,19 @@ git commit -m "feat: match DSPONLINE technology and progression content"
 - 创建：`scripts/test/TestSinglePlayerModes.gd`
 - 创建：`scenes/test/TestSinglePlayerModes.tscn`
 
-- [ ] **步骤 1：写模式隔离和特殊规则失败测试**
+- [x] **步骤 1：写模式隔离和特殊规则失败测试**
 
 覆盖冻结基线中的难度、速通、时间扭曲、纯挂机/宏观推进、本地空间站、银河出口和无限科研目标。模式创建后不可通过加载或 UI 操作绕过规则，模式间存档和成就互不污染。
 
-- [ ] **步骤 2：实现难度、速通和时间扭曲**
+- [x] **步骤 2：实现难度、速通和时间扭曲**
 
 对齐生产、采矿、物流、功耗、计时、暂停和时间扭曲功率限制；时间扭曲只改变规定的模拟领域，不重复累计游玩时间或离线结算。
 
-- [ ] **步骤 3：实现本地空间站和银河项目**
+- [x] **步骤 3：实现本地空间站和银河项目**
 
 每档唯一空间站、建设阶段、材料守恒、本地合同、银河出口和长期目标进入权威状态；公共主页、玩家信号和服务器同步不进入代码路径。
 
-- [ ] **步骤 4：清零冻结 manifest 的特殊规则差距**
+- [x] **步骤 4：清零冻结 manifest 的特殊规则差距**
 
 按以下批次处理冻结清单，每批先核实已有实现，再补差和验证：
 
@@ -1140,12 +1140,14 @@ git commit -m "feat: match DSPONLINE technology and progression content"
 
 每批须有具体领域测试、正式 UI 入口和必要的持久化往返；查询/展示项验证派生值，不强行新增持久状态。不得把普通线路 Mode 或电力 Snapshot 归入特殊玩法。科技效果由任务 25 实现，本任务验证模式和特殊系统中的集成。
 
-- [ ] **步骤 5：提交**
+- [x] **步骤 5：提交**
 
 ```powershell
 git add scripts/game/GameModeSystem.gd scripts/game/LocalSpaceStationSystem.gd scenes/ui/LocalSpaceStationWorkspace.gd scripts/game/EndgameSystem.gd scripts/game/SimulationEngine.gd scenes/ui/StartMenu.gd scripts/test/TestSinglePlayerModes.gd scenes/test/TestSinglePlayerModes.tscn
 git commit -m "feat: match remaining DSPONLINE single player modes"
 ```
+
+**完成记录（2026-10-02）：** 26A～26D 已接入真实命令、正式入口和持久化，23 场景门禁、1080p OpenGL 与冻结源登记通过。新增纯挂机独立恢复事务、本地内容包、恒星系空间站/枢纽与展厅，并修复长周期纯挂机外推和实际无限研究量子吞吐。任务 26 主责 232 项单机候选已登记，未将候选当作逐项源行为验证；完整金标、人工旅程、导出与发布门由任务 27 收口。详见 [任务 26 验收](TASK26_ACCEPTANCE.md)。本地 main 提交，不推送。
 
 ### 任务 27：逐项对齐验收与单机发布门
 

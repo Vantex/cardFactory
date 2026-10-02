@@ -22,6 +22,7 @@ func capture_selection(selected_entity_ids: Array) -> Dictionary:
 			return _failure("inactive_entity", "蓝图只能捕获活动行星实体")
 		if not game_state.buildings.has(entity_id):
 			continue
+		if StationSystem.stack_count(game_state.buildings[entity_id]) > 1: return _failure("unsupported_station_stack", "蓝图 v1 请先将物流站拆回单座，避免漏计施工件")
 		if not building_ids.has(entity_id):
 			building_ids.append(entity_id)
 	if building_ids.is_empty():
@@ -81,7 +82,7 @@ func capture_selection(selected_entity_ids: Array) -> Dictionary:
 			for item in game_state.buildings[id].station.fleet:
 				var count := int(game_state.buildings[id].station.fleet[item])
 				for route in game_state.logistics_routes.values():
-					if route.source_id == id and route.vehicle == item: count += 1
+					if route.get("owner_id", route.source_id) == id and route.vehicle == item: count += 1
 				if count > 0: targets[item] = count
 			if not targets.is_empty(): result.fleet_targets[local_refs[id]] = targets
 	return result
@@ -140,7 +141,7 @@ func deploy(blueprint: Dictionary, offset: Vector2, rotation_quarters: int = 0, 
 		if not local_refs.has(connection.source) or not local_refs.has(connection.target):
 			return _failure("invalid_reference", "蓝图连接引用不存在")
 		var connection_type := String(connection.type)
-		if not CONNECTION_TYPES.has(connection_type):
+		if not DataManager.belt_definitions().has(connection_type):
 			return _failure("invalid_reference", "蓝图引用了未知线路类型")
 		var item_id := String(connection.configuration.get("item_id", ""))
 		if not item_id.is_empty() and DataManager.get_item(item_id).is_empty():
@@ -260,6 +261,8 @@ func _validate_entity_configuration(building_type: String, configuration: Dictio
 	var definition := DataManager.get_building(building_type)
 	var pending := DataManager.building_pending_reason(building_type)
 	if not pending.is_empty(): return _failure("feature_pending", pending)
+	if building_type == OrbitalCollectorSystem.TYPE and SourceGalaxySystem.new(game_state).orbital_yields(game_state.active_planet_id).is_empty():
+		return _failure("invalid_planet", "轨道采集器只能部署在气态巨行星")
 	if definition.get("source_id") == "geothermal_power_station" and PowerSystem.source_environment_multiplier(game_state, building_type, game_state.active_planet_id) <= 0:
 		return _failure("invalid_planet", "该行星不具备地热发电条件")
 	var recipe_id := String(configuration.get("recipe_id", ""))
@@ -312,6 +315,11 @@ func _validate_planned_connection(source_plan: Dictionary, target_plan: Dictiona
 					source_outputs.append(String(output_value))
 	if item_id.is_empty() or not source_outputs.has(item_id):
 		return _failure("incompatible_connection", "蓝图源建筑不提供线路物品")
+	if target_plan.type == SystemSpaceStationSystem.TYPE:
+		var inputs: Dictionary = target_plan.get("platform_input_items", {})
+		inputs[item_id] = true
+		target_plan["platform_input_items"] = inputs
+		return {"ok": true} if inputs.size() <= 4 else _failure("input_ports_full", "施工平台最多接入四种物料")
 	var target_configuration: Dictionary = target_plan.configuration
 	if target_configuration.get("spray_coater_installed", false) and item_id == "proliferator_mk%d" % int(target_configuration.get("proliferator_tier", 1)):
 		return {"ok": true}
@@ -353,6 +361,10 @@ func _is_catalog_entry_unlocked(kind: String, entry_id: String) -> bool:
 	return false
 
 func _validate_space(plans: Array, reused: Dictionary = {}) -> Dictionary:
+	var platforms := int(SystemSpaceStationSystem.new(game_state).has_platform(game_state.active_planet_id))
+	for plan in plans:
+		if plan.type == SystemSpaceStationSystem.TYPE and not reused.has(plan.ref): platforms += 1
+	if platforms > 1: return _failure("unique_building", "每颗行星最多一座施工发射平台")
 	for index in range(plans.size()):
 		var target_rect := FactoryGeometryScript.card_rect(plans[index].position)
 		for existing in game_state.buildings.values():
@@ -403,8 +415,9 @@ func _make_building_data(building_type: String, position: Vector2, configuration
 	if not fuel.is_empty():
 		building["fuel_item"] = String(fuel.get("item_id", ""))
 		building["fuel_remaining"] = 0.0
-	if building_type in StationSystem.TYPES:
-		building["station"] = StationSystem.empty_station()
+	if StationSystem.is_station(building_type):
+		building["station"] = StationSystem.empty_station(building_type)
+		if building_type == OrbitalCollectorSystem.TYPE: OrbitalCollectorSystem.initialize(building)
 	for key in ["spray_coater_installed", "proliferator_tier", "proliferator_mode"]:
 		if configuration.has(key): building[key] = configuration[key]
 	return building

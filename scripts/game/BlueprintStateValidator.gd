@@ -50,9 +50,11 @@ static func _definition(entry: Dictionary) -> bool:
 	var refs := {}
 	for entity in result.blueprint.entities: refs[entity.ref] = entity.type
 	for ref in targets:
-		if not refs.has(ref) or refs[ref] not in StationSystem.TYPES or not targets[ref] is Dictionary: return false
+		if not refs.has(ref) or not StationSystem.is_station(String(refs[ref])) or not targets[ref] is Dictionary: return false
+		if refs[ref] == OrbitalCollectorSystem.TYPE and not targets[ref].is_empty(): return false
 		for item in targets[ref]:
-			if item not in StationSystem.FLEET_ITEMS or (refs[ref] == StationSystem.TYPES[0] and item != "logistics_drone") or not _number(targets[ref][item], 0, 999) or float(targets[ref][item]) != floorf(targets[ref][item]): return false
+			var cap := (10 if item == "logistics_vessel" else 50) if StationSystem.is_source(refs[ref]) else 999
+			if item not in StationSystem.FLEET_ITEMS or (not StationSystem.is_interstellar(refs[ref]) and item != "logistics_drone") or not _number(targets[ref][item], 0, cap) or float(targets[ref][item]) != floorf(targets[ref][item]): return false
 	return true
 
 static func _id(entry: Dictionary, prefix: String, data: Dictionary, ids: Dictionary) -> bool:

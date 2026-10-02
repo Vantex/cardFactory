@@ -56,7 +56,7 @@ var _dock_buttons: Dictionary = {}
 var _toast_label: Label
 var _toast_timer: Timer
 var _recipe_signature := ""
-const WORKSPACES := ["BlueprintWorkspace", "CampaignWorkspace", "TechnologyPanel", "CodexWorkspace", "GalaxyMap", "StationPanel", "DysonPanel", "EndgameWorkspace", "ProductionCatalogWorkspace", "CommandPalette"]
+const WORKSPACES := ["BlueprintWorkspace", "CampaignWorkspace", "TechnologyPanel", "CodexWorkspace", "GalaxyMap", "StationPanel", "DysonPanel", "EndgameWorkspace", "LocalSpaceStationWorkspace", "SystemSpaceStationWorkspace", "GalacticExportWorkspace", "ProductionCatalogWorkspace", "CommandPalette"]
 
 func _ready() -> void:
 	_create_workspace()
@@ -93,6 +93,34 @@ func _ready() -> void:
 	endgame_panel.z_index = 4
 	endgame_panel.hide()
 	add_child(endgame_panel)
+	var orbital_panel := preload("res://scenes/ui/LocalSpaceStationWorkspace.gd").new()
+	orbital_panel.name = "LocalSpaceStationWorkspace"
+	orbital_panel.anchor_right = 1.0
+	orbital_panel.anchor_bottom = 1.0
+	orbital_panel.offset_left = RESOURCE_RAIL_WIDTH + 10.0
+	orbital_panel.offset_top = TOP_BAR_HEIGHT + 8.0
+	orbital_panel.offset_right = -INSPECTOR_WIDTH - 10.0
+	orbital_panel.offset_bottom = -CONSTRUCTION_DOCK_HEIGHT - 8.0
+	orbital_panel.z_index = 4
+	orbital_panel.hide()
+	add_child(orbital_panel)
+	var system_station_panel := preload("res://scenes/ui/SystemSpaceStationWorkspace.gd").new()
+	system_station_panel.name = "SystemSpaceStationWorkspace"
+	system_station_panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	system_station_panel.z_index = 4
+	system_station_panel.hide()
+	add_child(system_station_panel)
+	var export_panel := preload("res://scenes/ui/GalacticExportWorkspace.gd").new()
+	export_panel.name = "GalacticExportWorkspace"
+	export_panel.anchor_right = 1.0
+	export_panel.anchor_bottom = 1.0
+	export_panel.offset_left = RESOURCE_RAIL_WIDTH + 10.0
+	export_panel.offset_top = TOP_BAR_HEIGHT + 8.0
+	export_panel.offset_right = -INSPECTOR_WIDTH - 10.0
+	export_panel.offset_bottom = -CONSTRUCTION_DOCK_HEIGHT - 8.0
+	export_panel.z_index = 4
+	export_panel.hide()
+	add_child(export_panel)
 	var technology_panel := TECHNOLOGY_PANEL_SCRIPT.new()
 	technology_panel.name = "TechnologyPanel"
 	technology_panel.anchor_right = 1.0
@@ -202,7 +230,7 @@ func show_notice(message: String, tone: String = "info") -> void:
 		_toast_timer.start()
 
 func is_pointer_over_ui(viewport_position: Vector2) -> bool:
-	for node_name in ["TopBar", "ResourceRail", "InspectorPanel", "ConstructionDock", "BlueprintWorkspace", "CampaignWorkspace", "MiniMap", "TechnologyPanel", "CodexWorkspace", "GalaxyMap", "StationPanel", "DysonPanel", "EndgameWorkspace", "ProductionCatalogWorkspace", "CommandPalette"]:
+	for node_name in ["TopBar", "ResourceRail", "InspectorPanel", "ConstructionDock", "BlueprintWorkspace", "CampaignWorkspace", "MiniMap", "TechnologyPanel", "CodexWorkspace", "GalaxyMap", "StationPanel", "DysonPanel", "EndgameWorkspace", "LocalSpaceStationWorkspace", "SystemSpaceStationWorkspace", "GalacticExportWorkspace", "ProductionCatalogWorkspace", "CommandPalette"]:
 		var region := get_node_or_null(node_name) as Control
 		if region != null and region.visible and Rect2(Vector2.ZERO, region.size).has_point(region.get_global_transform_with_canvas().affine_inverse() * viewport_position):
 			return true
@@ -442,7 +470,7 @@ func _toggle_galaxy_workspace() -> void:
 			show_exclusive_workspace("GalaxyMap")
 
 func show_exclusive_workspace(workspace_name: String) -> void:
-	for candidate_name in ["TechnologyPanel", "CampaignWorkspace", "BlueprintWorkspace", "CodexWorkspace", "GalaxyMap", "StationPanel", "DysonPanel", "EndgameWorkspace", "ProductionCatalogWorkspace", "CommandPalette"]:
+	for candidate_name in ["TechnologyPanel", "CampaignWorkspace", "BlueprintWorkspace", "CodexWorkspace", "GalaxyMap", "StationPanel", "DysonPanel", "EndgameWorkspace", "LocalSpaceStationWorkspace", "SystemSpaceStationWorkspace", "GalacticExportWorkspace", "ProductionCatalogWorkspace", "CommandPalette"]:
 		var workspace := get_node_or_null(candidate_name) as Control
 		if workspace != null:
 			workspace.visible = candidate_name == workspace_name
@@ -837,6 +865,22 @@ func _refresh_belt_controls(belt_id: String, config: Dictionary) -> void:
 	for child in _recipe_list.get_children():
 		_recipe_list.remove_child(child)
 		child.queue_free()
+	var tiers := OptionButton.new()
+	var tier_ids := DataManager.belt_definitions().keys()
+	tier_ids.sort()
+	for tier_id in tier_ids:
+		tiers.add_item(DataManager.runtime_belts.get(tier_id, {}).get("name", tier_id))
+		tiers.set_item_metadata(tiers.item_count - 1, tier_id)
+		if tier_id == config.tier: tiers.select(tiers.item_count - 1)
+	_recipe_list.add_child(tiers)
+	var apply_tier := Button.new()
+	apply_tier.text = "应用线路等级"
+	apply_tier.pressed.connect(func():
+		var result := _get_game_state().try_configure_belt(belt_id, {"tier": tiers.get_item_metadata(tiers.selected)})
+		show_notice(result.message, "success" if result.ok else "error")
+		_recipe_signature = ""
+		refresh_now())
+	_recipe_list.add_child(apply_tier)
 	var actions := [
 		["upgrade", "等级 +"],
 		["parallel", "并联 +"],
@@ -979,6 +1023,9 @@ func _refresh_recipe_controls(_state: GameState, building: Dictionary) -> void:
 		_refresh_handcraft_controls(_state)
 		return
 	var definition := DataManager.get_building(String(building.get("type", "")))
+	if definition.get("kind") in ["storage", "splitter"]:
+		_refresh_storage_controls(building)
+		return
 	if definition.get("kind", "") == "extractor":
 		_refresh_extraction_controls(building, definition)
 		return
@@ -1015,6 +1062,34 @@ func _refresh_recipe_controls(_state: GameState, building: Dictionary) -> void:
 			output_button.custom_minimum_size = Vector2(120, 34)
 			output_button.pressed.connect(_on_output_item_pressed.bind(item_id))
 			_recipe_list.add_child(output_button)
+
+func _refresh_storage_controls(building: Dictionary) -> void:
+	_recipe_heading.text = "仓储与分流"
+	_handcraft_quantity.hide()
+	var signature := "storage|" + _selected_building_id + str(DataManager.all_items.keys()) + str(building.get("stored_item", ""))
+	if signature == _recipe_signature: return
+	_recipe_signature = signature
+	for child in _recipe_list.get_children():
+		_recipe_list.remove_child(child)
+		child.queue_free()
+	var items := OptionButton.new()
+	items.name = "StorageItem"
+	var ids := DataManager.all_items.keys()
+	ids.sort()
+	for id in ids:
+		items.add_item(DataManager.get_item(id).get("name", id))
+		items.set_item_metadata(items.item_count - 1, id)
+		if id == building.get("stored_item", ""): items.select(items.item_count - 1)
+	_recipe_list.add_child(items)
+	for mode in ["balanced", "priority"]:
+		var apply := Button.new()
+		apply.text = "配置 · 均衡分流" if mode == "balanced" else "配置 · 优先线路"
+		apply.pressed.connect(func():
+			var result := StorageBufferSystem.new(_get_game_state()).configure(_selected_building_id, String(items.get_item_metadata(items.selected)), mode)
+			show_notice(result.message, "success" if result.ok else "error")
+			_recipe_signature = ""
+			refresh_now())
+		_recipe_list.add_child(apply)
 
 func _refresh_extraction_controls(building: Dictionary, definition: Dictionary) -> void:
 	_recipe_heading.text = "采集目标"

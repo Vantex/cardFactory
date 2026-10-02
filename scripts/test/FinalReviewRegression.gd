@@ -132,6 +132,9 @@ func _test_formal_entry_points() -> void:
 	GameManager.configure_save_system(SaveSystem.new("res://.godot/final_review_%d" % Time.get_ticks_usec()))
 	_expect(GameManager.start_new_game(0).get("ok", false), "formal new game saves")
 	var state := GameManager.get_game_state()
+	_expect(state.colonized_planet_ids == ["home"], "formal source new game starts with only its home colony")
+	var copper_site := String(PlanetSystem.new(state).find_nearest_resource_site("home", "copper_ore", Vector2(470, -250)).get("id", ""))
+	var iron_site := String(PlanetSystem.new(state).find_nearest_resource_site("home", "iron_ore", Vector2(-470, -250)).get("id", ""))
 	var before_coal := float(state.planet_inventory.get("coal", 0))
 	var generator := ConstructionSystem.new(state).try_place_building("power_generator", Vector2.ZERO)
 	var placed := ConstructionSystem.new(state).try_place_building("miner", Vector2(-470, -250))
@@ -151,15 +154,12 @@ func _test_formal_entry_points() -> void:
 	state.buildings[miner_id]["position"] = Vector2(470, -250)
 	workspace.call("set_selected_building", miner_id)
 	_press_item(workspace, "copper_ore")
-	_expect(state.buildings[miner_id].get("resource_site_id", "") == "home_copper_1", "real Inspector target button atomically rebinds copper")
+	_expect(not copper_site.is_empty() and state.buildings[miner_id].get("resource_site_id", "") == copper_site, "real Inspector target button atomically rebinds copper")
 	ProductionSystem.new(state).update(1.0)
 	_expect(float(state.buildings[miner_id].output_buffer.get("copper_ore", 0)) > 0 and GameManager.save_current_game().get("ok", false), "Inspector success produces and saves valid binding")
 	var before := GameStateCodec.state_digest_payload(state)
 	_press_item(workspace, "iron_ore")
 	_expect(before == GameStateCodec.state_digest_payload(state), "Inspector unavailable target preserves full digest")
-	# Restore a valid fixture on RED so later independent regressions still execute.
-	state.buildings[miner_id]["output_item"] = "copper_ore"
-	state.buildings[miner_id]["resource_site_id"] = "home_copper_1"
 	var camera: Camera2D = main.get_node("WorldCamera")
 	for reason in ["manual", "autosave", "exit"]:
 		camera.position += Vector2(100, 75)
@@ -171,7 +171,7 @@ func _test_formal_entry_points() -> void:
 		else: result = GameManager.save_current_game()
 		_expect(result.get("ok", false) and GameManager.continue_game(0).get("ok", false) and camera.position == wanted.position and camera.zoom == wanted.zoom, "no-travel %s save restores camera" % reason)
 	state = GameManager.get_game_state()
-	state.completed_technologies.append("interstellar_logistics")
+	TechnologySystem.new(state)._complete_research("interstellar_logistics")
 	var smelter := ConstructionSystem.new(state).try_place_building("smelter", Vector2(900, 200))
 	_expect(smelter.get("ok", false), "formal new game can place its starter smelter")
 	if not smelter.get("ok", false):
@@ -189,7 +189,7 @@ func _test_formal_entry_points() -> void:
 	_expect(_run_recipe_from_inventory(state, production, smelter_id, "copper_ingot_recipe", {"copper_ore": 6.0}, "copper_ingot", 6.0, 6.0), "base smelting produces the missing copper ingots")
 	state.buildings[miner_id]["position"] = Vector2(-470, -250)
 	state.buildings[miner_id]["output_item"] = "iron_ore"
-	_expect(PlanetSystem.new(state).try_bind_extractor(miner_id, "home_iron_1").get("ok", false), "starter miner rebinds to the iron reserve")
+	_expect(PlanetSystem.new(state).try_bind_extractor(miner_id, iron_site).get("ok", false), "starter miner rebinds to the iron reserve")
 	production.update(54.0)
 	_expect(_collect_building_output(state, miner_id, "iron_ore", 9.0), "starter miner yields iron precursor without inventory injection")
 	_expect(_run_recipe_from_inventory(state, production, smelter_id, "iron_ingot_recipe", {"iron_ore": 9.0}, "iron_ingot", 9.0, 9.0), "base smelting produces the missing iron ingots")
@@ -230,9 +230,10 @@ func _test_formal_entry_points() -> void:
 		fleet_button.pressed.emit()
 		_expect(enlisted == GameStateCodec.state_digest_payload(state), "repeated empty enlistment is atomic")
 		var colony_button: Button = map.get("_colonize_button")
-		_expect(not colony_button.disabled, "enlisted fleet enables giant colonization")
+		_expect(colony_button.disabled and state.colonized_planet_ids.has("giant"), "interstellar research grants the source local colony before manual colonization")
+		var initial_colony := GameStateCodec.state_digest_payload(state)
 		colony_button.pressed.emit()
-		_expect(state.colonized_planet_ids.has("giant") and state.portable_fleet.logistics_drone == 0 and not state.planet_inventory.has("titanium_alloy") and state.planet_inventories.giant.is_empty(), "formal giant colonization consumes five vehicles and ten alloy exactly once")
+		_expect(initial_colony == GameStateCodec.state_digest_payload(state) and state.portable_fleet.logistics_drone == 5, "existing source colony rejects duplicate colonization without spending enlisted fleet")
 		var colonized := GameStateCodec.state_digest_payload(state)
 		colony_button.pressed.emit()
 		_expect(colonized == GameStateCodec.state_digest_payload(state), "repeated colony intent never spends twice")

@@ -1,0 +1,2899 @@
+{
+  "source_commit": "472bf62c76b695852b5577e563c1d113192ac731",
+  "source_files": {
+    "src/game/content.ts": "6de101d86d28012c8765815aec35177a95b4d7ac5604736a4b608a100284f7ff",
+    "src/game/galaxyCatalog.ts": "fc503cfdcc7d5f38bfcd8b6c7f262b56126f1e3cc2c749c0463e5779730c2540",
+    "src/game/galaxy.ts": "bf0e4d23f6af26d0180ff4e7303e45a7e06e782ed0289f9a94dda3de88028bfd",
+    "src/game/difficulty.ts": "24613016f2296036c18577ce3338f792119617d07a17f2f9dffbefddf48e423e",
+    "src/game/stationMath.ts": "5a40a7055e1b76910c84d339da2601032a6d754d725f1cd02b4ba0f474d35c0e",
+    "src/game/stationContracts.ts": "4f3f2571be1878a9bc248ec2939ed03812e7b63ebd080ff8c34dfe5fcaf94f88"
+  },
+  "seed": 240721,
+  "cases": [
+    {
+      "day": 0,
+      "enabled": false,
+      "produced": {},
+      "planets": [
+        "home"
+      ],
+      "offers": [
+        {
+          "id": "station-contract-v1-240721-0-0-dyson",
+          "templateId": "dyson",
+          "slot": 0,
+          "title": "戴森工程补给",
+          "summary": "为远端恒星工程提供结构与发射物资。",
+          "taskDay": 0,
+          "expiresAtTaskDay": 3,
+          "special": false,
+          "difficulty": "P2",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "titanium_alloy",
+              "amount": "9600",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 4
+            }
+          ],
+          "rewards": {
+            "baseMarks": "120",
+            "baseReputation": "80",
+            "completionMarks": "65",
+            "completionReputation": "40"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-0-1-origin",
+          "templateId": "origin",
+          "slot": 1,
+          "title": "澄海 I原产订单",
+          "summary": "由澄海 I的轨道货运终端提交，或由玩家确认后从量子库存交付。",
+          "taskDay": 0,
+          "expiresAtTaskDay": 3,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "processor",
+              "amount": "6000",
+              "delivered": "0",
+              "sourcePlanetIds": [
+                "home"
+              ],
+              "channel": "terminal",
+              "weight": 3
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-0-2-origin",
+          "templateId": "origin",
+          "slot": 2,
+          "title": "澄海 I原产订单",
+          "summary": "由澄海 I的轨道货运终端提交，或由玩家确认后从量子库存交付。",
+          "taskDay": 0,
+          "expiresAtTaskDay": 3,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "processor",
+              "amount": "6000",
+              "delivered": "0",
+              "sourcePlanetIds": [
+                "home"
+              ],
+              "channel": "terminal",
+              "weight": 3
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-0-3-advanced",
+          "templateId": "advanced",
+          "slot": 3,
+          "title": "终局部件特别出口",
+          "summary": "面向深空联合体的高价值特别舱单。",
+          "taskDay": 0,
+          "expiresAtTaskDay": 3,
+          "special": true,
+          "difficulty": "P3",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "titanium_alloy",
+              "amount": "24000",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 4
+            },
+            {
+              "itemId": "processor",
+              "amount": "32000",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 3
+            }
+          ],
+          "rewards": {
+            "baseMarks": "600",
+            "baseReputation": "400",
+            "completionMarks": "360",
+            "completionReputation": "240"
+          }
+        }
+      ]
+    },
+    {
+      "day": 1,
+      "enabled": false,
+      "produced": {},
+      "planets": [
+        "home"
+      ],
+      "offers": [
+        {
+          "id": "station-contract-v1-240721-1-0-single",
+          "templateId": "single",
+          "slot": 0,
+          "title": "处理器常规出口",
+          "summary": "向轨道贸易航线提交一批标准工业物资。",
+          "taskDay": 1,
+          "expiresAtTaskDay": 4,
+          "special": false,
+          "difficulty": "P2",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "processor",
+              "amount": "16000",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 3
+            }
+          ],
+          "rewards": {
+            "baseMarks": "120",
+            "baseReputation": "80",
+            "completionMarks": "65",
+            "completionReputation": "40"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-1-1-origin",
+          "templateId": "origin",
+          "slot": 1,
+          "title": "澄海 I原产订单",
+          "summary": "由澄海 I的轨道货运终端提交，或由玩家确认后从量子库存交付。",
+          "taskDay": 1,
+          "expiresAtTaskDay": 4,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "titanium_alloy",
+              "amount": "4500",
+              "delivered": "0",
+              "sourcePlanetIds": [
+                "home"
+              ],
+              "channel": "terminal",
+              "weight": 4
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-1-2-origin",
+          "templateId": "origin",
+          "slot": 2,
+          "title": "澄海 I原产订单",
+          "summary": "由澄海 I的轨道货运终端提交，或由玩家确认后从量子库存交付。",
+          "taskDay": 1,
+          "expiresAtTaskDay": 4,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "titanium_alloy",
+              "amount": "4500",
+              "delivered": "0",
+              "sourcePlanetIds": [
+                "home"
+              ],
+              "channel": "terminal",
+              "weight": 4
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-1-3-advanced",
+          "templateId": "advanced",
+          "slot": 3,
+          "title": "终局部件特别出口",
+          "summary": "面向深空联合体的高价值特别舱单。",
+          "taskDay": 1,
+          "expiresAtTaskDay": 4,
+          "special": true,
+          "difficulty": "P3",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "titanium_alloy",
+              "amount": "24000",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 4
+            },
+            {
+              "itemId": "processor",
+              "amount": "32000",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 3
+            }
+          ],
+          "rewards": {
+            "baseMarks": "600",
+            "baseReputation": "400",
+            "completionMarks": "360",
+            "completionReputation": "240"
+          }
+        }
+      ]
+    },
+    {
+      "day": 20000,
+      "enabled": false,
+      "produced": {},
+      "planets": [
+        "home"
+      ],
+      "offers": [
+        {
+          "id": "station-contract-v1-240721-20000-0-origin",
+          "templateId": "origin",
+          "slot": 0,
+          "title": "澄海 I原产订单",
+          "summary": "由澄海 I的轨道货运终端提交，或由玩家确认后从量子库存交付。",
+          "taskDay": 20000,
+          "expiresAtTaskDay": 20003,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "titanium_alloy",
+              "amount": "4500",
+              "delivered": "0",
+              "sourcePlanetIds": [
+                "home"
+              ],
+              "channel": "terminal",
+              "weight": 4
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-20000-1-combination",
+          "templateId": "combination",
+          "slot": 1,
+          "title": "组合工业舱单",
+          "summary": "按固定舱单组合交付多种工业部件。",
+          "taskDay": 20000,
+          "expiresAtTaskDay": 20003,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "titanium_alloy",
+              "amount": "3100",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 4
+            },
+            {
+              "itemId": "processor",
+              "amount": "4200",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 3
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-20000-2-origin",
+          "templateId": "origin",
+          "slot": 2,
+          "title": "澄海 I原产订单",
+          "summary": "由澄海 I的轨道货运终端提交，或由玩家确认后从量子库存交付。",
+          "taskDay": 20000,
+          "expiresAtTaskDay": 20003,
+          "special": false,
+          "difficulty": "P2",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "processor",
+              "amount": "16000",
+              "delivered": "0",
+              "sourcePlanetIds": [
+                "home"
+              ],
+              "channel": "terminal",
+              "weight": 3
+            }
+          ],
+          "rewards": {
+            "baseMarks": "120",
+            "baseReputation": "80",
+            "completionMarks": "65",
+            "completionReputation": "40"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-20000-3-dyson",
+          "templateId": "dyson",
+          "slot": 3,
+          "title": "戴森工程补给",
+          "summary": "为远端恒星工程提供结构与发射物资。",
+          "taskDay": 20000,
+          "expiresAtTaskDay": 20003,
+          "special": true,
+          "difficulty": "P3",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "titanium_alloy",
+              "amount": "24000",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 4
+            }
+          ],
+          "rewards": {
+            "baseMarks": "600",
+            "baseReputation": "400",
+            "completionMarks": "360",
+            "completionReputation": "240"
+          }
+        }
+      ]
+    },
+    {
+      "day": 20722,
+      "enabled": false,
+      "produced": {},
+      "planets": [
+        "home"
+      ],
+      "offers": [
+        {
+          "id": "station-contract-v1-240721-20722-0-combination",
+          "templateId": "combination",
+          "slot": 0,
+          "title": "组合工业舱单",
+          "summary": "按固定舱单组合交付多种工业部件。",
+          "taskDay": 20722,
+          "expiresAtTaskDay": 20725,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "processor",
+              "amount": "4200",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 3
+            },
+            {
+              "itemId": "titanium_alloy",
+              "amount": "3100",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 4
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-20722-1-single",
+          "templateId": "single",
+          "slot": 1,
+          "title": "处理器常规出口",
+          "summary": "向轨道贸易航线提交一批标准工业物资。",
+          "taskDay": 20722,
+          "expiresAtTaskDay": 20725,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "processor",
+              "amount": "6000",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 3
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-20722-2-combination",
+          "templateId": "combination",
+          "slot": 2,
+          "title": "组合工业舱单",
+          "summary": "按固定舱单组合交付多种工业部件。",
+          "taskDay": 20722,
+          "expiresAtTaskDay": 20725,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "processor",
+              "amount": "4200",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 3
+            },
+            {
+              "itemId": "titanium_alloy",
+              "amount": "3100",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 4
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-20722-3-advanced",
+          "templateId": "advanced",
+          "slot": 3,
+          "title": "终局部件特别出口",
+          "summary": "面向深空联合体的高价值特别舱单。",
+          "taskDay": 20722,
+          "expiresAtTaskDay": 20725,
+          "special": true,
+          "difficulty": "P3",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "titanium_alloy",
+              "amount": "24000",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 4
+            },
+            {
+              "itemId": "processor",
+              "amount": "32000",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 3
+            }
+          ],
+          "rewards": {
+            "baseMarks": "600",
+            "baseReputation": "400",
+            "completionMarks": "360",
+            "completionReputation": "240"
+          }
+        }
+      ]
+    },
+    {
+      "day": 20723,
+      "enabled": false,
+      "produced": {},
+      "planets": [
+        "home"
+      ],
+      "offers": [
+        {
+          "id": "station-contract-v1-240721-20723-0-combination",
+          "templateId": "combination",
+          "slot": 0,
+          "title": "组合工业舱单",
+          "summary": "按固定舱单组合交付多种工业部件。",
+          "taskDay": 20723,
+          "expiresAtTaskDay": 20726,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "titanium_alloy",
+              "amount": "3100",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 4
+            },
+            {
+              "itemId": "processor",
+              "amount": "4200",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 3
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-20723-1-origin",
+          "templateId": "origin",
+          "slot": 1,
+          "title": "澄海 I原产订单",
+          "summary": "由澄海 I的轨道货运终端提交，或由玩家确认后从量子库存交付。",
+          "taskDay": 20723,
+          "expiresAtTaskDay": 20726,
+          "special": false,
+          "difficulty": "P3",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "titanium_alloy",
+              "amount": "30000",
+              "delivered": "0",
+              "sourcePlanetIds": [
+                "home"
+              ],
+              "channel": "terminal",
+              "weight": 4
+            }
+          ],
+          "rewards": {
+            "baseMarks": "300",
+            "baseReputation": "200",
+            "completionMarks": "180",
+            "completionReputation": "120"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-20723-2-single",
+          "templateId": "single",
+          "slot": 2,
+          "title": "处理器常规出口",
+          "summary": "向轨道贸易航线提交一批标准工业物资。",
+          "taskDay": 20723,
+          "expiresAtTaskDay": 20726,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "processor",
+              "amount": "6000",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 3
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-20723-3-dyson",
+          "templateId": "dyson",
+          "slot": 3,
+          "title": "戴森工程补给",
+          "summary": "为远端恒星工程提供结构与发射物资。",
+          "taskDay": 20723,
+          "expiresAtTaskDay": 20726,
+          "special": true,
+          "difficulty": "P3",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "titanium_alloy",
+              "amount": "24000",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 4
+            }
+          ],
+          "rewards": {
+            "baseMarks": "600",
+            "baseReputation": "400",
+            "completionMarks": "360",
+            "completionReputation": "240"
+          }
+        }
+      ]
+    },
+    {
+      "day": 0,
+      "enabled": false,
+      "produced": {
+        "titanium_alloy": 1,
+        "processor": 1,
+        "particle_container": 1,
+        "titanium_glass": 1,
+        "particle_broadband": 1,
+        "plastic": 1,
+        "space_warper": 1,
+        "frame_material": 1,
+        "solar_sail": 1,
+        "small_carrier_rocket": 1,
+        "quantum_chip": 1,
+        "antimatter_fuel_rod": 1,
+        "universe_matrix": 1
+      },
+      "planets": [
+        "home",
+        "ashen",
+        "giant",
+        "frost"
+      ],
+      "offers": [
+        {
+          "id": "station-contract-v1-240721-0-0-dyson",
+          "templateId": "dyson",
+          "slot": 0,
+          "title": "戴森工程补给",
+          "summary": "为远端恒星工程提供结构与发射物资。",
+          "taskDay": 0,
+          "expiresAtTaskDay": 3,
+          "special": false,
+          "difficulty": "P2",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "small_carrier_rocket",
+              "amount": "800",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 45
+            },
+            {
+              "itemId": "frame_material",
+              "amount": "3800",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 10
+            }
+          ],
+          "rewards": {
+            "baseMarks": "120",
+            "baseReputation": "80",
+            "completionMarks": "65",
+            "completionReputation": "40"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-0-1-dyson",
+          "templateId": "dyson",
+          "slot": 1,
+          "title": "戴森工程补给",
+          "summary": "为远端恒星工程提供结构与发射物资。",
+          "taskDay": 0,
+          "expiresAtTaskDay": 3,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "solar_sail",
+              "amount": "2800",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 5
+            },
+            {
+              "itemId": "frame_material",
+              "amount": "1400",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 10
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-0-2-origin",
+          "templateId": "origin",
+          "slot": 2,
+          "title": "霜原 I原产订单",
+          "summary": "由霜原 I的轨道货运终端提交，或由玩家确认后从量子库存交付。",
+          "taskDay": 0,
+          "expiresAtTaskDay": 3,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "quantum_chip",
+              "amount": "1200",
+              "delivered": "0",
+              "sourcePlanetIds": [
+                "frost"
+              ],
+              "channel": "terminal",
+              "weight": 14
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-0-3-advanced",
+          "templateId": "advanced",
+          "slot": 3,
+          "title": "终局部件特别出口",
+          "summary": "面向深空联合体的高价值特别舱单。",
+          "taskDay": 0,
+          "expiresAtTaskDay": 3,
+          "special": true,
+          "difficulty": "P3",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "antimatter_fuel_rod",
+              "amount": "2400",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 40
+            },
+            {
+              "itemId": "space_warper",
+              "amount": "8000",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 12
+            }
+          ],
+          "rewards": {
+            "baseMarks": "600",
+            "baseReputation": "400",
+            "completionMarks": "360",
+            "completionReputation": "240"
+          }
+        }
+      ]
+    },
+    {
+      "day": 1,
+      "enabled": false,
+      "produced": {
+        "titanium_alloy": 1,
+        "processor": 1,
+        "particle_container": 1,
+        "titanium_glass": 1,
+        "particle_broadband": 1,
+        "plastic": 1,
+        "space_warper": 1,
+        "frame_material": 1,
+        "solar_sail": 1,
+        "small_carrier_rocket": 1,
+        "quantum_chip": 1,
+        "antimatter_fuel_rod": 1,
+        "universe_matrix": 1
+      },
+      "planets": [
+        "home",
+        "ashen",
+        "giant",
+        "frost"
+      ],
+      "offers": [
+        {
+          "id": "station-contract-v1-240721-1-0-single",
+          "templateId": "single",
+          "slot": 0,
+          "title": "框架材料常规出口",
+          "summary": "向轨道贸易航线提交一批标准工业物资。",
+          "taskDay": 1,
+          "expiresAtTaskDay": 4,
+          "special": false,
+          "difficulty": "P2",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "frame_material",
+              "amount": "4800",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 10
+            }
+          ],
+          "rewards": {
+            "baseMarks": "120",
+            "baseReputation": "80",
+            "completionMarks": "65",
+            "completionReputation": "40"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-1-1-origin",
+          "templateId": "origin",
+          "slot": 1,
+          "title": "澄海 I原产订单",
+          "summary": "由澄海 I的轨道货运终端提交，或由玩家确认后从量子库存交付。",
+          "taskDay": 1,
+          "expiresAtTaskDay": 4,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "universe_matrix",
+              "amount": "300",
+              "delivered": "0",
+              "sourcePlanetIds": [
+                "home"
+              ],
+              "channel": "terminal",
+              "weight": 60
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-1-2-combination",
+          "templateId": "combination",
+          "slot": 2,
+          "title": "组合工业舱单",
+          "summary": "按固定舱单组合交付多种工业部件。",
+          "taskDay": 1,
+          "expiresAtTaskDay": 4,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "titanium_glass",
+              "amount": "2500",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 5
+            },
+            {
+              "itemId": "particle_container",
+              "amount": "2100",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 6
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-1-3-advanced",
+          "templateId": "advanced",
+          "slot": 3,
+          "title": "终局部件特别出口",
+          "summary": "面向深空联合体的高价值特别舱单。",
+          "taskDay": 1,
+          "expiresAtTaskDay": 4,
+          "special": true,
+          "difficulty": "P3",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "antimatter_fuel_rod",
+              "amount": "2400",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 40
+            },
+            {
+              "itemId": "universe_matrix",
+              "amount": "1600",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 60
+            }
+          ],
+          "rewards": {
+            "baseMarks": "600",
+            "baseReputation": "400",
+            "completionMarks": "360",
+            "completionReputation": "240"
+          }
+        }
+      ]
+    },
+    {
+      "day": 20000,
+      "enabled": false,
+      "produced": {
+        "titanium_alloy": 1,
+        "processor": 1,
+        "particle_container": 1,
+        "titanium_glass": 1,
+        "particle_broadband": 1,
+        "plastic": 1,
+        "space_warper": 1,
+        "frame_material": 1,
+        "solar_sail": 1,
+        "small_carrier_rocket": 1,
+        "quantum_chip": 1,
+        "antimatter_fuel_rod": 1,
+        "universe_matrix": 1
+      },
+      "planets": [
+        "home",
+        "ashen",
+        "giant",
+        "frost"
+      ],
+      "offers": [
+        {
+          "id": "station-contract-v1-240721-20000-0-single",
+          "templateId": "single",
+          "slot": 0,
+          "title": "钛化玻璃常规出口",
+          "summary": "向轨道贸易航线提交一批标准工业物资。",
+          "taskDay": 20000,
+          "expiresAtTaskDay": 20003,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "titanium_glass",
+              "amount": "3600",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 5
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-20000-1-dyson",
+          "templateId": "dyson",
+          "slot": 1,
+          "title": "戴森工程补给",
+          "summary": "为远端恒星工程提供结构与发射物资。",
+          "taskDay": 20000,
+          "expiresAtTaskDay": 20003,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "solar_sail",
+              "amount": "2800",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 5
+            },
+            {
+              "itemId": "frame_material",
+              "amount": "1400",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 10
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-20000-2-combination",
+          "templateId": "combination",
+          "slot": 2,
+          "title": "组合工业舱单",
+          "summary": "按固定舱单组合交付多种工业部件。",
+          "taskDay": 20000,
+          "expiresAtTaskDay": 20003,
+          "special": false,
+          "difficulty": "P2",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "particle_container",
+              "amount": "5600",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 6
+            },
+            {
+              "itemId": "titanium_alloy",
+              "amount": "8400",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 4
+            },
+            {
+              "itemId": "particle_broadband",
+              "amount": "4200",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 8
+            }
+          ],
+          "rewards": {
+            "baseMarks": "120",
+            "baseReputation": "80",
+            "completionMarks": "65",
+            "completionReputation": "40"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-20000-3-dyson",
+          "templateId": "dyson",
+          "slot": 3,
+          "title": "戴森工程补给",
+          "summary": "为远端恒星工程提供结构与发射物资。",
+          "taskDay": 20000,
+          "expiresAtTaskDay": 20003,
+          "special": true,
+          "difficulty": "P3",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "frame_material",
+              "amount": "9600",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 10
+            },
+            {
+              "itemId": "solar_sail",
+              "amount": "19200",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 5
+            }
+          ],
+          "rewards": {
+            "baseMarks": "600",
+            "baseReputation": "400",
+            "completionMarks": "360",
+            "completionReputation": "240"
+          }
+        }
+      ]
+    },
+    {
+      "day": 20722,
+      "enabled": false,
+      "produced": {
+        "titanium_alloy": 1,
+        "processor": 1,
+        "particle_container": 1,
+        "titanium_glass": 1,
+        "particle_broadband": 1,
+        "plastic": 1,
+        "space_warper": 1,
+        "frame_material": 1,
+        "solar_sail": 1,
+        "small_carrier_rocket": 1,
+        "quantum_chip": 1,
+        "antimatter_fuel_rod": 1,
+        "universe_matrix": 1
+      },
+      "planets": [
+        "home",
+        "ashen",
+        "giant",
+        "frost"
+      ],
+      "offers": [
+        {
+          "id": "station-contract-v1-240721-20722-0-dyson",
+          "templateId": "dyson",
+          "slot": 0,
+          "title": "戴森工程补给",
+          "summary": "为远端恒星工程提供结构与发射物资。",
+          "taskDay": 20722,
+          "expiresAtTaskDay": 20725,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "frame_material",
+              "amount": "1400",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 10
+            },
+            {
+              "itemId": "solar_sail",
+              "amount": "2800",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 5
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-20722-1-origin",
+          "templateId": "origin",
+          "slot": 1,
+          "title": "澄海 I原产订单",
+          "summary": "由澄海 I的轨道货运终端提交，或由玩家确认后从量子库存交付。",
+          "taskDay": 20722,
+          "expiresAtTaskDay": 20725,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "particle_broadband",
+              "amount": "2200",
+              "delivered": "0",
+              "sourcePlanetIds": [
+                "home"
+              ],
+              "channel": "terminal",
+              "weight": 8
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-20722-2-dyson",
+          "templateId": "dyson",
+          "slot": 2,
+          "title": "戴森工程补给",
+          "summary": "为远端恒星工程提供结构与发射物资。",
+          "taskDay": 20722,
+          "expiresAtTaskDay": 20725,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "small_carrier_rocket",
+              "amount": "300",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 45
+            },
+            {
+              "itemId": "solar_sail",
+              "amount": "2800",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 5
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-20722-3-advanced",
+          "templateId": "advanced",
+          "slot": 3,
+          "title": "终局部件特别出口",
+          "summary": "面向深空联合体的高价值特别舱单。",
+          "taskDay": 20722,
+          "expiresAtTaskDay": 20725,
+          "special": true,
+          "difficulty": "P3",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "space_warper",
+              "amount": "8000",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 12
+            },
+            {
+              "itemId": "universe_matrix",
+              "amount": "1600",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 60
+            }
+          ],
+          "rewards": {
+            "baseMarks": "600",
+            "baseReputation": "400",
+            "completionMarks": "360",
+            "completionReputation": "240"
+          }
+        }
+      ]
+    },
+    {
+      "day": 20723,
+      "enabled": false,
+      "produced": {
+        "titanium_alloy": 1,
+        "processor": 1,
+        "particle_container": 1,
+        "titanium_glass": 1,
+        "particle_broadband": 1,
+        "plastic": 1,
+        "space_warper": 1,
+        "frame_material": 1,
+        "solar_sail": 1,
+        "small_carrier_rocket": 1,
+        "quantum_chip": 1,
+        "antimatter_fuel_rod": 1,
+        "universe_matrix": 1
+      },
+      "planets": [
+        "home",
+        "ashen",
+        "giant",
+        "frost"
+      ],
+      "offers": [
+        {
+          "id": "station-contract-v1-240721-20723-0-dyson",
+          "templateId": "dyson",
+          "slot": 0,
+          "title": "戴森工程补给",
+          "summary": "为远端恒星工程提供结构与发射物资。",
+          "taskDay": 20723,
+          "expiresAtTaskDay": 20726,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "frame_material",
+              "amount": "1400",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 10
+            },
+            {
+              "itemId": "solar_sail",
+              "amount": "2800",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 5
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-20723-1-origin",
+          "templateId": "origin",
+          "slot": 1,
+          "title": "霜原 I原产订单",
+          "summary": "由霜原 I的轨道货运终端提交，或由玩家确认后从量子库存交付。",
+          "taskDay": 20723,
+          "expiresAtTaskDay": 20726,
+          "special": false,
+          "difficulty": "P3",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "particle_broadband",
+              "amount": "15000",
+              "delivered": "0",
+              "sourcePlanetIds": [
+                "frost"
+              ],
+              "channel": "terminal",
+              "weight": 8
+            }
+          ],
+          "rewards": {
+            "baseMarks": "300",
+            "baseReputation": "200",
+            "completionMarks": "180",
+            "completionReputation": "120"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-20723-2-multi-origin",
+          "templateId": "multi-origin",
+          "slot": 2,
+          "title": "多行星协同出口",
+          "summary": "由两颗指定行星分别完成出口配额，也可由玩家确认后从量子库存交付。",
+          "taskDay": 20723,
+          "expiresAtTaskDay": 20726,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "particle_container",
+              "amount": "1900",
+              "delivered": "0",
+              "sourcePlanetIds": [
+                "frost"
+              ],
+              "channel": "terminal",
+              "weight": 6
+            },
+            {
+              "itemId": "titanium_glass",
+              "amount": "2300",
+              "delivered": "0",
+              "sourcePlanetIds": [
+                "ashen"
+              ],
+              "channel": "terminal",
+              "weight": 5
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-20723-3-dyson",
+          "templateId": "dyson",
+          "slot": 3,
+          "title": "戴森工程补给",
+          "summary": "为远端恒星工程提供结构与发射物资。",
+          "taskDay": 20723,
+          "expiresAtTaskDay": 20726,
+          "special": true,
+          "difficulty": "P3",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "solar_sail",
+              "amount": "19200",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 5
+            },
+            {
+              "itemId": "frame_material",
+              "amount": "9600",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 10
+            }
+          ],
+          "rewards": {
+            "baseMarks": "600",
+            "baseReputation": "400",
+            "completionMarks": "360",
+            "completionReputation": "240"
+          }
+        }
+      ]
+    },
+    {
+      "day": 0,
+      "enabled": true,
+      "produced": {},
+      "planets": [
+        "home"
+      ],
+      "offers": [
+        {
+          "id": "station-contract-v1-240721-0-0-dyson",
+          "templateId": "dyson",
+          "slot": 0,
+          "title": "戴森工程补给",
+          "summary": "为远端恒星工程提供结构与发射物资。",
+          "taskDay": 0,
+          "expiresAtTaskDay": 3,
+          "special": false,
+          "difficulty": "P2",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "titanium_alloy",
+              "amount": "9600",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 4
+            }
+          ],
+          "rewards": {
+            "baseMarks": "120",
+            "baseReputation": "80",
+            "completionMarks": "65",
+            "completionReputation": "40"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-0-1-dyson",
+          "templateId": "dyson",
+          "slot": 1,
+          "title": "戴森工程补给",
+          "summary": "为远端恒星工程提供结构与发射物资。",
+          "taskDay": 0,
+          "expiresAtTaskDay": 3,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "processor",
+              "amount": "4800",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 3
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-0-2-origin",
+          "templateId": "origin",
+          "slot": 2,
+          "title": "澄海 I原产订单",
+          "summary": "由澄海 I的轨道货运终端提交，或由玩家确认后从量子库存交付。",
+          "taskDay": 0,
+          "expiresAtTaskDay": 3,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "processor",
+              "amount": "6000",
+              "delivered": "0",
+              "sourcePlanetIds": [
+                "home"
+              ],
+              "channel": "terminal",
+              "weight": 3
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-0-3-advanced",
+          "templateId": "advanced",
+          "slot": 3,
+          "title": "终局部件特别出口",
+          "summary": "面向深空联合体的高价值特别舱单。",
+          "taskDay": 0,
+          "expiresAtTaskDay": 3,
+          "special": true,
+          "difficulty": "P3",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "titanium_alloy",
+              "amount": "24000",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 4
+            },
+            {
+              "itemId": "processor",
+              "amount": "32000",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 3
+            }
+          ],
+          "rewards": {
+            "baseMarks": "600",
+            "baseReputation": "400",
+            "completionMarks": "360",
+            "completionReputation": "240"
+          }
+        }
+      ]
+    },
+    {
+      "day": 1,
+      "enabled": true,
+      "produced": {},
+      "planets": [
+        "home"
+      ],
+      "offers": [
+        {
+          "id": "station-contract-v1-240721-1-0-single",
+          "templateId": "single",
+          "slot": 0,
+          "title": "处理器常规出口",
+          "summary": "向轨道贸易航线提交一批标准工业物资。",
+          "taskDay": 1,
+          "expiresAtTaskDay": 4,
+          "special": false,
+          "difficulty": "P2",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "processor",
+              "amount": "16000",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 3
+            }
+          ],
+          "rewards": {
+            "baseMarks": "120",
+            "baseReputation": "80",
+            "completionMarks": "65",
+            "completionReputation": "40"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-1-1-origin",
+          "templateId": "origin",
+          "slot": 1,
+          "title": "澄海 I原产订单",
+          "summary": "由澄海 I的轨道货运终端提交，或由玩家确认后从量子库存交付。",
+          "taskDay": 1,
+          "expiresAtTaskDay": 4,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "titanium_alloy",
+              "amount": "4500",
+              "delivered": "0",
+              "sourcePlanetIds": [
+                "home"
+              ],
+              "channel": "terminal",
+              "weight": 4
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-1-2-combination",
+          "templateId": "combination",
+          "slot": 2,
+          "title": "组合工业舱单",
+          "summary": "按固定舱单组合交付多种工业部件。",
+          "taskDay": 1,
+          "expiresAtTaskDay": 4,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "processor",
+              "amount": "4200",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 3
+            },
+            {
+              "itemId": "titanium_alloy",
+              "amount": "3100",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 4
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-1-3-advanced",
+          "templateId": "advanced",
+          "slot": 3,
+          "title": "终局部件特别出口",
+          "summary": "面向深空联合体的高价值特别舱单。",
+          "taskDay": 1,
+          "expiresAtTaskDay": 4,
+          "special": true,
+          "difficulty": "P3",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "titanium_alloy",
+              "amount": "24000",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 4
+            },
+            {
+              "itemId": "processor",
+              "amount": "32000",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 3
+            }
+          ],
+          "rewards": {
+            "baseMarks": "600",
+            "baseReputation": "400",
+            "completionMarks": "360",
+            "completionReputation": "240"
+          }
+        }
+      ]
+    },
+    {
+      "day": 20000,
+      "enabled": true,
+      "produced": {},
+      "planets": [
+        "home"
+      ],
+      "offers": [
+        {
+          "id": "station-contract-v1-240721-20000-0-single",
+          "templateId": "single",
+          "slot": 0,
+          "title": "钛合金常规出口",
+          "summary": "向轨道贸易航线提交一批标准工业物资。",
+          "taskDay": 20000,
+          "expiresAtTaskDay": 20003,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "titanium_alloy",
+              "amount": "4500",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 4
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-20000-1-dyson",
+          "templateId": "dyson",
+          "slot": 1,
+          "title": "戴森工程补给",
+          "summary": "为远端恒星工程提供结构与发射物资。",
+          "taskDay": 20000,
+          "expiresAtTaskDay": 20003,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "processor",
+              "amount": "4800",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 3
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-20000-2-combination",
+          "templateId": "combination",
+          "slot": 2,
+          "title": "组合工业舱单",
+          "summary": "按固定舱单组合交付多种工业部件。",
+          "taskDay": 20000,
+          "expiresAtTaskDay": 20003,
+          "special": false,
+          "difficulty": "P2",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "titanium_alloy",
+              "amount": "8400",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 4
+            },
+            {
+              "itemId": "processor",
+              "amount": "11200",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 3
+            }
+          ],
+          "rewards": {
+            "baseMarks": "120",
+            "baseReputation": "80",
+            "completionMarks": "65",
+            "completionReputation": "40"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-20000-3-quantum",
+          "templateId": "quantum",
+          "slot": 3,
+          "title": "量子库存应急调拨",
+          "summary": "只能从量子共享库存手动确认交付。",
+          "taskDay": 20000,
+          "expiresAtTaskDay": 20003,
+          "special": true,
+          "difficulty": "P3",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "processor",
+              "amount": "28000",
+              "delivered": "0",
+              "channel": "quantum",
+              "weight": 3
+            },
+            {
+              "itemId": "titanium_alloy",
+              "amount": "21000",
+              "delivered": "0",
+              "channel": "quantum",
+              "weight": 4
+            }
+          ],
+          "rewards": {
+            "baseMarks": "600",
+            "baseReputation": "400",
+            "completionMarks": "360",
+            "completionReputation": "240"
+          }
+        }
+      ]
+    },
+    {
+      "day": 20722,
+      "enabled": true,
+      "produced": {},
+      "planets": [
+        "home"
+      ],
+      "offers": [
+        {
+          "id": "station-contract-v1-240721-20722-0-dyson",
+          "templateId": "dyson",
+          "slot": 0,
+          "title": "戴森工程补给",
+          "summary": "为远端恒星工程提供结构与发射物资。",
+          "taskDay": 20722,
+          "expiresAtTaskDay": 20725,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "titanium_alloy",
+              "amount": "3600",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 4
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-20722-1-origin",
+          "templateId": "origin",
+          "slot": 1,
+          "title": "澄海 I原产订单",
+          "summary": "由澄海 I的轨道货运终端提交，或由玩家确认后从量子库存交付。",
+          "taskDay": 20722,
+          "expiresAtTaskDay": 20725,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "titanium_alloy",
+              "amount": "4500",
+              "delivered": "0",
+              "sourcePlanetIds": [
+                "home"
+              ],
+              "channel": "terminal",
+              "weight": 4
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-20722-2-dyson",
+          "templateId": "dyson",
+          "slot": 2,
+          "title": "戴森工程补给",
+          "summary": "为远端恒星工程提供结构与发射物资。",
+          "taskDay": 20722,
+          "expiresAtTaskDay": 20725,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "processor",
+              "amount": "4800",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 3
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-20722-3-advanced",
+          "templateId": "advanced",
+          "slot": 3,
+          "title": "终局部件特别出口",
+          "summary": "面向深空联合体的高价值特别舱单。",
+          "taskDay": 20722,
+          "expiresAtTaskDay": 20725,
+          "special": true,
+          "difficulty": "P3",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "titanium_alloy",
+              "amount": "24000",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 4
+            },
+            {
+              "itemId": "processor",
+              "amount": "32000",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 3
+            }
+          ],
+          "rewards": {
+            "baseMarks": "600",
+            "baseReputation": "400",
+            "completionMarks": "360",
+            "completionReputation": "240"
+          }
+        }
+      ]
+    },
+    {
+      "day": 20723,
+      "enabled": true,
+      "produced": {},
+      "planets": [
+        "home"
+      ],
+      "offers": [
+        {
+          "id": "station-contract-v1-240721-20723-0-dyson",
+          "templateId": "dyson",
+          "slot": 0,
+          "title": "戴森工程补给",
+          "summary": "为远端恒星工程提供结构与发射物资。",
+          "taskDay": 20723,
+          "expiresAtTaskDay": 20726,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "processor",
+              "amount": "4800",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 3
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-20723-1-origin",
+          "templateId": "origin",
+          "slot": 1,
+          "title": "澄海 I原产订单",
+          "summary": "由澄海 I的轨道货运终端提交，或由玩家确认后从量子库存交付。",
+          "taskDay": 20723,
+          "expiresAtTaskDay": 20726,
+          "special": false,
+          "difficulty": "P3",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "titanium_alloy",
+              "amount": "30000",
+              "delivered": "0",
+              "sourcePlanetIds": [
+                "home"
+              ],
+              "channel": "terminal",
+              "weight": 4
+            }
+          ],
+          "rewards": {
+            "baseMarks": "300",
+            "baseReputation": "200",
+            "completionMarks": "180",
+            "completionReputation": "120"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-20723-2-quantum",
+          "templateId": "quantum",
+          "slot": 2,
+          "title": "量子库存应急调拨",
+          "summary": "只能从量子共享库存手动确认交付。",
+          "taskDay": 20723,
+          "expiresAtTaskDay": 20726,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "titanium_alloy",
+              "amount": "3100",
+              "delivered": "0",
+              "channel": "quantum",
+              "weight": 4
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-20723-3-quantum",
+          "templateId": "quantum",
+          "slot": 3,
+          "title": "量子库存应急调拨",
+          "summary": "只能从量子共享库存手动确认交付。",
+          "taskDay": 20723,
+          "expiresAtTaskDay": 20726,
+          "special": true,
+          "difficulty": "P3",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "titanium_alloy",
+              "amount": "21000",
+              "delivered": "0",
+              "channel": "quantum",
+              "weight": 4
+            },
+            {
+              "itemId": "processor",
+              "amount": "28000",
+              "delivered": "0",
+              "channel": "quantum",
+              "weight": 3
+            }
+          ],
+          "rewards": {
+            "baseMarks": "600",
+            "baseReputation": "400",
+            "completionMarks": "360",
+            "completionReputation": "240"
+          }
+        }
+      ]
+    },
+    {
+      "day": 0,
+      "enabled": true,
+      "produced": {
+        "titanium_alloy": 1,
+        "processor": 1,
+        "particle_container": 1,
+        "titanium_glass": 1,
+        "particle_broadband": 1,
+        "plastic": 1,
+        "space_warper": 1,
+        "frame_material": 1,
+        "solar_sail": 1,
+        "small_carrier_rocket": 1,
+        "quantum_chip": 1,
+        "antimatter_fuel_rod": 1,
+        "universe_matrix": 1
+      },
+      "planets": [
+        "home",
+        "ashen",
+        "giant",
+        "frost"
+      ],
+      "offers": [
+        {
+          "id": "station-contract-v1-240721-0-0-single",
+          "templateId": "single",
+          "slot": 0,
+          "title": "小型运载火箭常规出口",
+          "summary": "向轨道贸易航线提交一批标准工业物资。",
+          "taskDay": 0,
+          "expiresAtTaskDay": 3,
+          "special": false,
+          "difficulty": "P2",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "small_carrier_rocket",
+              "amount": "1000",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 45
+            }
+          ],
+          "rewards": {
+            "baseMarks": "120",
+            "baseReputation": "80",
+            "completionMarks": "65",
+            "completionReputation": "40"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-0-1-combination",
+          "templateId": "combination",
+          "slot": 1,
+          "title": "组合工业舱单",
+          "summary": "按固定舱单组合交付多种工业部件。",
+          "taskDay": 0,
+          "expiresAtTaskDay": 3,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "particle_broadband",
+              "amount": "1500",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 8
+            },
+            {
+              "itemId": "processor",
+              "amount": "4200",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 3
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-0-2-combination",
+          "templateId": "combination",
+          "slot": 2,
+          "title": "组合工业舱单",
+          "summary": "按固定舱单组合交付多种工业部件。",
+          "taskDay": 0,
+          "expiresAtTaskDay": 3,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "plastic",
+              "amount": "6300",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 2
+            },
+            {
+              "itemId": "titanium_alloy",
+              "amount": "3100",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 4
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-0-3-advanced",
+          "templateId": "advanced",
+          "slot": 3,
+          "title": "终局部件特别出口",
+          "summary": "面向深空联合体的高价值特别舱单。",
+          "taskDay": 0,
+          "expiresAtTaskDay": 3,
+          "special": true,
+          "difficulty": "P3",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "antimatter_fuel_rod",
+              "amount": "2400",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 40
+            },
+            {
+              "itemId": "space_warper",
+              "amount": "8000",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 12
+            }
+          ],
+          "rewards": {
+            "baseMarks": "600",
+            "baseReputation": "400",
+            "completionMarks": "360",
+            "completionReputation": "240"
+          }
+        }
+      ]
+    },
+    {
+      "day": 1,
+      "enabled": true,
+      "produced": {
+        "titanium_alloy": 1,
+        "processor": 1,
+        "particle_container": 1,
+        "titanium_glass": 1,
+        "particle_broadband": 1,
+        "plastic": 1,
+        "space_warper": 1,
+        "frame_material": 1,
+        "solar_sail": 1,
+        "small_carrier_rocket": 1,
+        "quantum_chip": 1,
+        "antimatter_fuel_rod": 1,
+        "universe_matrix": 1
+      },
+      "planets": [
+        "home",
+        "ashen",
+        "giant",
+        "frost"
+      ],
+      "offers": [
+        {
+          "id": "station-contract-v1-240721-1-0-multi-origin",
+          "templateId": "multi-origin",
+          "slot": 0,
+          "title": "多行星协同出口",
+          "summary": "由两颗指定行星分别完成出口配额，也可由玩家确认后从量子库存交付。",
+          "taskDay": 1,
+          "expiresAtTaskDay": 4,
+          "special": false,
+          "difficulty": "P2",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "space_warper",
+              "amount": "2600",
+              "delivered": "0",
+              "sourcePlanetIds": [
+                "home"
+              ],
+              "channel": "terminal",
+              "weight": 12
+            },
+            {
+              "itemId": "particle_broadband",
+              "amount": "3900",
+              "delivered": "0",
+              "sourcePlanetIds": [
+                "ashen"
+              ],
+              "channel": "terminal",
+              "weight": 8
+            }
+          ],
+          "rewards": {
+            "baseMarks": "120",
+            "baseReputation": "80",
+            "completionMarks": "65",
+            "completionReputation": "40"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-1-1-quantum",
+          "templateId": "quantum",
+          "slot": 1,
+          "title": "量子库存应急调拨",
+          "summary": "只能从量子共享库存手动确认交付。",
+          "taskDay": 1,
+          "expiresAtTaskDay": 4,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "universe_matrix",
+              "amount": "200",
+              "delivered": "0",
+              "channel": "quantum",
+              "weight": 60
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-1-2-origin",
+          "templateId": "origin",
+          "slot": 2,
+          "title": "澄海 I原产订单",
+          "summary": "由澄海 I的轨道货运终端提交，或由玩家确认后从量子库存交付。",
+          "taskDay": 1,
+          "expiresAtTaskDay": 4,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "universe_matrix",
+              "amount": "300",
+              "delivered": "0",
+              "sourcePlanetIds": [
+                "home"
+              ],
+              "channel": "terminal",
+              "weight": 60
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-1-3-advanced",
+          "templateId": "advanced",
+          "slot": 3,
+          "title": "终局部件特别出口",
+          "summary": "面向深空联合体的高价值特别舱单。",
+          "taskDay": 1,
+          "expiresAtTaskDay": 4,
+          "special": true,
+          "difficulty": "P3",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "antimatter_fuel_rod",
+              "amount": "2400",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 40
+            },
+            {
+              "itemId": "universe_matrix",
+              "amount": "1600",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 60
+            }
+          ],
+          "rewards": {
+            "baseMarks": "600",
+            "baseReputation": "400",
+            "completionMarks": "360",
+            "completionReputation": "240"
+          }
+        }
+      ]
+    },
+    {
+      "day": 20000,
+      "enabled": true,
+      "produced": {
+        "titanium_alloy": 1,
+        "processor": 1,
+        "particle_container": 1,
+        "titanium_glass": 1,
+        "particle_broadband": 1,
+        "plastic": 1,
+        "space_warper": 1,
+        "frame_material": 1,
+        "solar_sail": 1,
+        "small_carrier_rocket": 1,
+        "quantum_chip": 1,
+        "antimatter_fuel_rod": 1,
+        "universe_matrix": 1
+      },
+      "planets": [
+        "home",
+        "ashen",
+        "giant",
+        "frost"
+      ],
+      "offers": [
+        {
+          "id": "station-contract-v1-240721-20000-0-origin",
+          "templateId": "origin",
+          "slot": 0,
+          "title": "澄海 I原产订单",
+          "summary": "由澄海 I的轨道货运终端提交，或由玩家确认后从量子库存交付。",
+          "taskDay": 20000,
+          "expiresAtTaskDay": 20003,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "quantum_chip",
+              "amount": "1200",
+              "delivered": "0",
+              "sourcePlanetIds": [
+                "home"
+              ],
+              "channel": "terminal",
+              "weight": 14
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-20000-1-origin",
+          "templateId": "origin",
+          "slot": 1,
+          "title": "霜原 I原产订单",
+          "summary": "由霜原 I的轨道货运终端提交，或由玩家确认后从量子库存交付。",
+          "taskDay": 20000,
+          "expiresAtTaskDay": 20003,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "titanium_glass",
+              "amount": "3600",
+              "delivered": "0",
+              "sourcePlanetIds": [
+                "frost"
+              ],
+              "channel": "terminal",
+              "weight": 5
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-20000-2-combination",
+          "templateId": "combination",
+          "slot": 2,
+          "title": "组合工业舱单",
+          "summary": "按固定舱单组合交付多种工业部件。",
+          "taskDay": 20000,
+          "expiresAtTaskDay": 20003,
+          "special": false,
+          "difficulty": "P2",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "particle_container",
+              "amount": "5600",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 6
+            },
+            {
+              "itemId": "titanium_alloy",
+              "amount": "8400",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 4
+            },
+            {
+              "itemId": "particle_broadband",
+              "amount": "4200",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 8
+            }
+          ],
+          "rewards": {
+            "baseMarks": "120",
+            "baseReputation": "80",
+            "completionMarks": "65",
+            "completionReputation": "40"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-20000-3-quantum",
+          "templateId": "quantum",
+          "slot": 3,
+          "title": "量子库存应急调拨",
+          "summary": "只能从量子共享库存手动确认交付。",
+          "taskDay": 20000,
+          "expiresAtTaskDay": 20003,
+          "special": true,
+          "difficulty": "P3",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "quantum_chip",
+              "amount": "6000",
+              "delivered": "0",
+              "channel": "quantum",
+              "weight": 14
+            },
+            {
+              "itemId": "antimatter_fuel_rod",
+              "amount": "2100",
+              "delivered": "0",
+              "channel": "quantum",
+              "weight": 40
+            }
+          ],
+          "rewards": {
+            "baseMarks": "600",
+            "baseReputation": "400",
+            "completionMarks": "360",
+            "completionReputation": "240"
+          }
+        }
+      ]
+    },
+    {
+      "day": 20722,
+      "enabled": true,
+      "produced": {
+        "titanium_alloy": 1,
+        "processor": 1,
+        "particle_container": 1,
+        "titanium_glass": 1,
+        "particle_broadband": 1,
+        "plastic": 1,
+        "space_warper": 1,
+        "frame_material": 1,
+        "solar_sail": 1,
+        "small_carrier_rocket": 1,
+        "quantum_chip": 1,
+        "antimatter_fuel_rod": 1,
+        "universe_matrix": 1
+      },
+      "planets": [
+        "home",
+        "ashen",
+        "giant",
+        "frost"
+      ],
+      "offers": [
+        {
+          "id": "station-contract-v1-240721-20722-0-quantum",
+          "templateId": "quantum",
+          "slot": 0,
+          "title": "量子库存应急调拨",
+          "summary": "只能从量子共享库存手动确认交付。",
+          "taskDay": 20722,
+          "expiresAtTaskDay": 20725,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "universe_matrix",
+              "amount": "200",
+              "delivered": "0",
+              "channel": "quantum",
+              "weight": 60
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-20722-1-multi-origin",
+          "templateId": "multi-origin",
+          "slot": 1,
+          "title": "多行星协同出口",
+          "summary": "由两颗指定行星分别完成出口配额，也可由玩家确认后从量子库存交付。",
+          "taskDay": 20722,
+          "expiresAtTaskDay": 20725,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "processor",
+              "amount": "3900",
+              "delivered": "0",
+              "sourcePlanetIds": [
+                "frost"
+              ],
+              "channel": "terminal",
+              "weight": 3
+            },
+            {
+              "itemId": "antimatter_fuel_rod",
+              "amount": "200",
+              "delivered": "0",
+              "sourcePlanetIds": [
+                "home"
+              ],
+              "channel": "terminal",
+              "weight": 40
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-20722-2-quantum",
+          "templateId": "quantum",
+          "slot": 2,
+          "title": "量子库存应急调拨",
+          "summary": "只能从量子共享库存手动确认交付。",
+          "taskDay": 20722,
+          "expiresAtTaskDay": 20725,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "space_warper",
+              "amount": "1000",
+              "delivered": "0",
+              "channel": "quantum",
+              "weight": 12
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-20722-3-advanced",
+          "templateId": "advanced",
+          "slot": 3,
+          "title": "终局部件特别出口",
+          "summary": "面向深空联合体的高价值特别舱单。",
+          "taskDay": 20722,
+          "expiresAtTaskDay": 20725,
+          "special": true,
+          "difficulty": "P3",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "space_warper",
+              "amount": "8000",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 12
+            },
+            {
+              "itemId": "universe_matrix",
+              "amount": "1600",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 60
+            }
+          ],
+          "rewards": {
+            "baseMarks": "600",
+            "baseReputation": "400",
+            "completionMarks": "360",
+            "completionReputation": "240"
+          }
+        }
+      ]
+    },
+    {
+      "day": 20723,
+      "enabled": true,
+      "produced": {
+        "titanium_alloy": 1,
+        "processor": 1,
+        "particle_container": 1,
+        "titanium_glass": 1,
+        "particle_broadband": 1,
+        "plastic": 1,
+        "space_warper": 1,
+        "frame_material": 1,
+        "solar_sail": 1,
+        "small_carrier_rocket": 1,
+        "quantum_chip": 1,
+        "antimatter_fuel_rod": 1,
+        "universe_matrix": 1
+      },
+      "planets": [
+        "home",
+        "ashen",
+        "giant",
+        "frost"
+      ],
+      "offers": [
+        {
+          "id": "station-contract-v1-240721-20723-0-quantum",
+          "templateId": "quantum",
+          "slot": 0,
+          "title": "量子库存应急调拨",
+          "summary": "只能从量子共享库存手动确认交付。",
+          "taskDay": 20723,
+          "expiresAtTaskDay": 20726,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "universe_matrix",
+              "amount": "200",
+              "delivered": "0",
+              "channel": "quantum",
+              "weight": 60
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-20723-1-origin",
+          "templateId": "origin",
+          "slot": 1,
+          "title": "霜原 I原产订单",
+          "summary": "由霜原 I的轨道货运终端提交，或由玩家确认后从量子库存交付。",
+          "taskDay": 20723,
+          "expiresAtTaskDay": 20726,
+          "special": false,
+          "difficulty": "P3",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "particle_broadband",
+              "amount": "15000",
+              "delivered": "0",
+              "sourcePlanetIds": [
+                "frost"
+              ],
+              "channel": "terminal",
+              "weight": 8
+            }
+          ],
+          "rewards": {
+            "baseMarks": "300",
+            "baseReputation": "200",
+            "completionMarks": "180",
+            "completionReputation": "120"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-20723-2-single",
+          "templateId": "single",
+          "slot": 2,
+          "title": "反物质燃料棒常规出口",
+          "summary": "向轨道贸易航线提交一批标准工业物资。",
+          "taskDay": 20723,
+          "expiresAtTaskDay": 20726,
+          "special": false,
+          "difficulty": "P1",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "antimatter_fuel_rod",
+              "amount": "400",
+              "delivered": "0",
+              "channel": "any",
+              "weight": 40
+            }
+          ],
+          "rewards": {
+            "baseMarks": "45",
+            "baseReputation": "30",
+            "completionMarks": "20",
+            "completionReputation": "15"
+          }
+        },
+        {
+          "id": "station-contract-v1-240721-20723-3-quantum",
+          "templateId": "quantum",
+          "slot": 3,
+          "title": "量子库存应急调拨",
+          "summary": "只能从量子共享库存手动确认交付。",
+          "taskDay": 20723,
+          "expiresAtTaskDay": 20726,
+          "special": true,
+          "difficulty": "P3",
+          "status": "offered",
+          "requirements": [
+            {
+              "itemId": "space_warper",
+              "amount": "7000",
+              "delivered": "0",
+              "channel": "quantum",
+              "weight": 12
+            },
+            {
+              "itemId": "universe_matrix",
+              "amount": "1400",
+              "delivered": "0",
+              "channel": "quantum",
+              "weight": 60
+            }
+          ],
+          "rewards": {
+            "baseMarks": "600",
+            "baseReputation": "400",
+            "completionMarks": "360",
+            "completionReputation": "240"
+          }
+        }
+      ]
+    }
+  ]
+}

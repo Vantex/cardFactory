@@ -1,0 +1,380 @@
+{
+  "source_commit": "472bf62c76b695852b5577e563c1d113192ac731",
+  "source_files": {
+    "src/game/content.ts": "6de101d86d28012c8765815aec35177a95b4d7ac5604736a4b608a100284f7ff",
+    "src/game/galaxyCatalog.ts": "fc503cfdcc7d5f38bfcd8b6c7f262b56126f1e3cc2c749c0463e5779730c2540",
+    "src/game/galaxy.ts": "bf0e4d23f6af26d0180ff4e7303e45a7e06e782ed0289f9a94dda3de88028bfd",
+    "src/game/difficulty.ts": "24613016f2296036c18577ce3338f792119617d07a17f2f9dffbefddf48e423e",
+    "src/game/stationMath.ts": "5a40a7055e1b76910c84d339da2601032a6d754d725f1cd02b4ba0f474d35c0e",
+    "src/game/stationContracts.ts": "4f3f2571be1878a9bc248ec2939ed03812e7b63ebd080ff8c34dfe5fcaf94f88",
+    "src/game/engine.ts": "a809a4cf72a7c2342d81732b010cf95e35cbca653313a0ebe33d56d49483b50b"
+  },
+  "seed": 240721,
+  "cases": [
+    {
+      "count": 3,
+      "index": 0,
+      "radius": 10000,
+      "inclination": 0,
+      "longitude": 0,
+      "angles": [
+        0,
+        120,
+        240
+      ],
+      "requirements": [
+        3,
+        3,
+        3
+      ],
+      "capacities": [
+        120,
+        120,
+        120
+      ],
+      "totals": {
+        "layerCount": 1,
+        "nodeCount": 3,
+        "frameCount": 3,
+        "shellCount": 3,
+        "plannedStructure": 12,
+        "completedStructure": 0,
+        "sailCapacity": 0,
+        "absorbedSails": 0
+      }
+    },
+    {
+      "count": 8,
+      "index": 0,
+      "radius": 10000,
+      "inclination": 0,
+      "longitude": 0,
+      "angles": [
+        0,
+        45,
+        90,
+        135,
+        180,
+        225,
+        270,
+        315
+      ],
+      "requirements": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "capacities": [
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40
+      ],
+      "totals": {
+        "layerCount": 1,
+        "nodeCount": 8,
+        "frameCount": 8,
+        "shellCount": 8,
+        "plannedStructure": 16,
+        "completedStructure": 0,
+        "sailCapacity": 0,
+        "absorbedSails": 0
+      }
+    },
+    {
+      "count": 16,
+      "index": 0,
+      "radius": 10000,
+      "inclination": 0,
+      "longitude": 0,
+      "angles": [
+        0,
+        22.5,
+        45,
+        67.5,
+        90,
+        112.5,
+        135,
+        157.5,
+        180,
+        202.5,
+        225,
+        247.5,
+        270,
+        292.5,
+        315,
+        337.5
+      ],
+      "requirements": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "capacities": [
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40
+      ],
+      "totals": {
+        "layerCount": 1,
+        "nodeCount": 16,
+        "frameCount": 16,
+        "shellCount": 16,
+        "plannedStructure": 32,
+        "completedStructure": 0,
+        "sailCapacity": 0,
+        "absorbedSails": 0
+      }
+    },
+    {
+      "count": 8,
+      "index": 1,
+      "radius": 14000,
+      "inclination": 18,
+      "longitude": 24,
+      "angles": [
+        0,
+        45,
+        90,
+        135,
+        180,
+        225,
+        270,
+        315
+      ],
+      "requirements": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "capacities": [
+        80,
+        80,
+        80,
+        80,
+        80,
+        80,
+        80,
+        80
+      ],
+      "totals": {
+        "layerCount": 2,
+        "nodeCount": 8,
+        "frameCount": 8,
+        "shellCount": 8,
+        "plannedStructure": 24,
+        "completedStructure": 0,
+        "sailCapacity": 0,
+        "absorbedSails": 0
+      }
+    },
+    {
+      "count": 3,
+      "index": 7,
+      "radius": 38000,
+      "inclination": 18,
+      "longitude": 168,
+      "angles": [
+        0,
+        120,
+        240
+      ],
+      "requirements": [
+        11,
+        11,
+        11
+      ],
+      "capacities": [
+        440,
+        440,
+        440
+      ],
+      "totals": {
+        "layerCount": 8,
+        "nodeCount": 3,
+        "frameCount": 3,
+        "shellCount": 3,
+        "plannedStructure": 36,
+        "completedStructure": 0,
+        "sailCapacity": 0,
+        "absorbedSails": 0
+      }
+    }
+  ],
+  "power": [
+    {
+      "id": "helios",
+      "level": 0,
+      "luminosity": 1.02,
+      "points": 12,
+      "sails": 60,
+      "live": 3,
+      "expected": 17405.28,
+      "receiver": 12000
+    },
+    {
+      "id": "borealis",
+      "level": 1,
+      "luminosity": 0.65,
+      "points": 12,
+      "sails": 60,
+      "live": 3,
+      "expected": 11646.18,
+      "receiver": 12600
+    },
+    {
+      "id": "aurora",
+      "level": 2,
+      "luminosity": 1.5,
+      "points": 12,
+      "sails": 60,
+      "live": 3,
+      "expected": 28155.6,
+      "receiver": 13200.000000000002
+    },
+    {
+      "id": "ember",
+      "level": 3,
+      "luminosity": 0.26,
+      "points": 12,
+      "sails": 60,
+      "live": 3,
+      "expected": 5101.936,
+      "receiver": 13799.999999999998
+    },
+    {
+      "id": "sirius",
+      "level": 0,
+      "luminosity": 3.34,
+      "points": 12,
+      "sails": 60,
+      "live": 3,
+      "expected": 56993.76,
+      "receiver": 12000
+    },
+    {
+      "id": "white_dwarf",
+      "level": 1,
+      "luminosity": 0.7,
+      "points": 12,
+      "sails": 60,
+      "live": 3,
+      "expected": 12542.04,
+      "receiver": 12600
+    },
+    {
+      "id": "neutron",
+      "level": 2,
+      "luminosity": 0.33,
+      "points": 12,
+      "sails": 60,
+      "live": 3,
+      "expected": 6193.832,
+      "receiver": 13200.000000000002
+    },
+    {
+      "id": "blue_giant",
+      "level": 3,
+      "luminosity": 7.59,
+      "points": 12,
+      "sails": 60,
+      "live": 3,
+      "expected": 148942.324,
+      "receiver": 13799.999999999998
+    }
+  ],
+  "decay": [
+    {
+      "live": 1200,
+      "progress": 0,
+      "seconds": 0.016666666666666666,
+      "steps": 120,
+      "life": 0,
+      "expected": {
+        "sailsInOrbit": 1199,
+        "totalExpired": 1,
+        "decayProgress": 0.9992,
+        "generationKw": 105512
+      }
+    },
+    {
+      "live": 1,
+      "progress": 0.99995,
+      "seconds": 0.001,
+      "steps": 1,
+      "life": 0,
+      "expected": {
+        "sailsInOrbit": 0,
+        "totalExpired": 1,
+        "decayProgress": 0,
+        "generationKw": 0
+      }
+    },
+    {
+      "live": 100,
+      "progress": 0.3,
+      "seconds": 12,
+      "steps": 10,
+      "life": 1,
+      "expected": {
+        "sailsInOrbit": 94,
+        "totalExpired": 6,
+        "decayProgress": 0.786667,
+        "generationKw": 8272
+      }
+    },
+    {
+      "live": 2,
+      "progress": 0,
+      "seconds": 1200,
+      "steps": 1,
+      "life": 2,
+      "expected": {
+        "sailsInOrbit": 1,
+        "totalExpired": 1,
+        "decayProgress": 0,
+        "generationKw": 88
+      }
+    }
+  ]
+}

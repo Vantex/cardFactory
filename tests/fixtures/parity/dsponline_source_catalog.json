@@ -70,7 +70,16 @@
       "src/game/engine.ts": "a809a4cf72a7c2342d81732b010cf95e35cbca653313a0ebe33d56d49483b50b",
       "src/game/types.ts": "320b67e96133f37470c86dd0d789ea52e1c3c70e8571a8c3e47bcc86749d391e",
       "src/game/pureIdleMacro.ts": "10655fe30fa8405b0a56e2fb0299e2473ebdf330ee20a0acb4d4dfbf29c30ef6",
-      "package.json": "499e50f71d83d008939d83df53879f93994840c10dde38cf024db06d258c344d"
+      "package.json": "499e50f71d83d008939d83df53879f93994840c10dde38cf024db06d258c344d",
+      "src/game/mods.ts": "4bd9678a679520c39fb869ebe2a4e5282e6edfa6eea6f70d60f5c25437ada2c5",
+      "src/game/contentPacks.ts": "5c804010588977681cbf0c0f5686e313d63afc059eba61600d0dbd0ae318602b",
+      "src/game/galaxyCatalog.ts": "fc503cfdcc7d5f38bfcd8b6c7f262b56126f1e3cc2c749c0463e5779730c2540",
+      "src/game/galaxy.ts": "bf0e4d23f6af26d0180ff4e7303e45a7e06e782ed0289f9a94dda3de88028bfd",
+      "src/game/stationMath.ts": "5a40a7055e1b76910c84d339da2601032a6d754d725f1cd02b4ba0f474d35c0e",
+      "src/game/stationContracts.ts": "4f3f2571be1878a9bc248ec2939ed03812e7b63ebd080ff8c34dfe5fcaf94f88",
+      "src/game/systemHubLogistics.ts": "b654c3bf76dc0ad685550a5b5992358de84c611eedc1dc75fa3e425cef271659",
+      "src/game/systemSpaceStation.ts": "1cd199e3f11036bf8e06af469bbb92fbb8f882c37c3b5d5283c3f1aaf71798ad",
+      "src/game/stationDecorations.ts": "ad76a89735066ba17cb3c3519b1b726b6f33b05ff7d368c0c7cf00326fb58019"
     }
   },
   "counts": {

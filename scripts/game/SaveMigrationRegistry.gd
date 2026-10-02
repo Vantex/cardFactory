@@ -44,7 +44,7 @@ static func migrate_to_current(payload: Variant) -> Dictionary:
 				if migrated.get("buildings") is Dictionary:
 					for building in migrated.buildings.values():
 						if building is Dictionary and building.get("type", "") in StationSystem.TYPES:
-							building["station"] = StationSystem.empty_station()
+							building["station"] = StationSystem.empty_station(building.type)
 							if not building.has("input_buffer"):
 								building["input_buffer"] = {}
 							if not building.has("output_buffer"):

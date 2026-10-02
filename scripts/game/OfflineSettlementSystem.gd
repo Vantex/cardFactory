@@ -66,6 +66,8 @@ func _start_replay() -> void:
 	state.paused = false
 	state.speed = 1.0
 	engine = SimulationEngine.new(state)
+	engine.offline_replay = true
+	engine.power_system.allow_time_warp = false
 	ticks_done = 0
 	phase = "simulating" if int(entry.ticks) > 0 else "ready"
 	if phase == "ready": _build_report(false)

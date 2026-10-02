@@ -76,6 +76,16 @@ func _test_product_ui() -> void:
 	LocalSettings.update_preferences({"theme": "dark", "font_scale": 1.0, "density": "compact"})
 	shell.close_settings()
 	_expect(shell.get_screen_name() == "start", "settings returns to original screen")
+	shell.get_node("StartMenu/Layout/Card/Content/Actions/ContentPacksButton").pressed.emit()
+	var packs: Control = shell.get_node("ContentPackWorkspace")
+	_expect(packs.visible and shell.get_screen_name() == "packs" and not handler.is_processing_input(), "formal content-pack menu blocks canvas input")
+	packs.find_child("ContentPackTemplate", true, false).pressed.emit()
+	packs.find_child("ContentPackValidate", true, false).pressed.emit()
+	_expect(packs.status.text == "内容校验通过", "formal content-pack template validates against source aliases")
+	await _frames()
+	await _capture(viewport, "task26-content-packs-1920x1080")
+	shell.close_content_packs()
+	_expect(shell.get_screen_name() == "start", "content-pack workspace returns to menu")
 	_expect(GameManager.start_new_game(0).ok, "formal session starts")
 	workspace.get_node("TopBar/SaveButton").pressed.emit()
 	_expect(GameManager.get_save_status().phase == "saved", "top bar saves through the coordinator")
@@ -142,6 +152,7 @@ func _test_product_ui() -> void:
 	_expect(not palette.visible, "workspace navigation closes command palette")
 	workspace.get_node("TechnologyPanel").hide()
 	await _test_task25_workspaces(viewport, workspace)
+	await _test_task26_workspaces(viewport, workspace)
 	await _test_blueprint_persistence_ui(viewport, workspace)
 	handler.set_selected_entities([])
 	var station_id := GameManager.get_game_state().add_building({"type": "planetary_logistics_station", "position": Vector2(3000, 3000), "station": StationSystem.empty_station()})
@@ -353,3 +364,168 @@ func _test_task25_workspaces(viewport: SubViewport, workspace: FactoryWorkspaceU
 	await _frames()
 	await _capture(viewport, "task25-campaign-1920x1080")
 	campaign.hide()
+
+func _test_task26_workspaces(viewport: SubViewport, workspace: FactoryWorkspaceUI) -> void:
+	var state := GameManager.get_game_state()
+	workspace.show_exclusive_workspace("GalaxyMap")
+	var galaxy: GalaxyMap = workspace.get_node("GalaxyMap")
+	await _frames()
+	_expect(galaxy.galaxy_system.get_all_system_ids().size() == 8 and galaxy.get_node("Margin/Columns/DetailsPane").visible, "new-game formal galaxy exposes all source systems")
+	_expect(galaxy.get_node("Margin").size.y > galaxy.size.y * 0.8 and galaxy.get_node("Margin/Columns/SystemPane/SystemScroll").size.y > 300 and galaxy.get_node("Margin/Columns/DetailsPane/DetailsScroll").size.y > 300, "formal galaxy uses full workspace height for readable lists and details")
+	var controls: Control = galaxy.find_child("SourceWorldControls", true, false)
+	_expect(controls != null and controls.visible, "formal galaxy exposes local industry and metadata controls")
+	galaxy.find_child("PlanetLocalName", true, false).text = "产品母星"
+	galaxy.find_child("PlanetLocalNote", true, false).text = "源星区工业基地"
+	galaxy.find_child("SavePlanetMetadata", true, false).pressed.emit()
+	_expect(state.source_galaxy.planetMetadata.get(galaxy.get_selected_planet_id(), {}).get("customName") == "产品母星", "formal metadata action commits the selected planet's local name")
+	await _frames()
+	var tray_limit: SpinBox = galaxy.find_child("PlanetTrayLimit", true, false)
+	tray_limit.value = 2000000
+	galaxy.find_child("SavePlanetTrayLimit", true, false).pressed.emit()
+	_expect(PlanetTraySystem.new(state).limit(galaxy.get_selected_planet_id()) == 2000000, "formal star map adjusts saved per-item tray limit")
+	await _capture(viewport, "task26-galaxy-1920x1080")
+	galaxy.hide()
+	state.completed_technologies.append_array(["dsp_interstellar_logistics", "dsp_quantum_logistics_network"])
+	state.construction_inventory.dsp_interstellar_logistics_station = 1.0
+	var placed := ConstructionSystem.new(state).try_place_building("dsp_interstellar_logistics_station", Vector2(8000, 8000))
+	_expect(placed.ok, "product fixture places a real source logistics station")
+	if placed.ok:
+		workspace.show_exclusive_workspace("StationPanel")
+		var panel: Control = workspace.get_node("StationPanel")
+		panel.open_stations([placed.id])
+		_expect(panel.slot_choice.item_count == 5, "formal station panel exposes its fifth source slot")
+		_click_named_action(panel, "升级首站 Mk.II（需量子科技，无材料成本）")
+		_click_named_action(panel, "挂接首站量子网络")
+		_expect(state.buildings[placed.id].station.quantum_mode == "transitioning", "formal station controls upgrade and queue authoritative quantum attachment")
+		await _frames()
+		await _capture(viewport, "task26-station-1920x1080")
+		panel.hide()
+	state.progression_facts["produced"] = {"universe_matrix": 1.0}
+	workspace.show_exclusive_workspace("LocalSpaceStationWorkspace")
+	var orbital: Control = workspace.get_node("LocalSpaceStationWorkspace")
+	await _frames()
+	_click_named_action(orbital, "开始建设空间站核心")
+	_expect(not state.orbital_station.is_empty(), "formal orbital station control starts the single save-owned station")
+	var required: String = DataManager.get_building(OrbitalCargoTerminalSystem.TYPE).required_source_technology
+	if not state.completed_technologies.has("dsp_" + required): state.completed_technologies.append("dsp_" + required)
+	state.construction_inventory[OrbitalCargoTerminalSystem.TYPE] = 1.0
+	var terminal := ConstructionSystem.new(state).try_place_building(OrbitalCargoTerminalSystem.TYPE, Vector2(8800, 8000))
+	_expect(terminal.ok, "product fixture constructs an orbital cargo terminal")
+	orbital.refresh()
+	_click_named_action(orbital, "货运终端 → 当前建设阶段")
+	if terminal.ok: _expect(state.buildings[terminal.id].orbital_cargo_binding.get("kind") == "construction", "formal terminal binding targets authoritative station construction")
+	await _capture(viewport, "task26-orbital-1920x1080")
+	var orbital_scroll: ScrollContainer = orbital.get_child(0)
+	orbital_scroll.scroll_vertical = 100000
+	await _frames()
+	await _capture(viewport, "task26-cargo-1920x1080")
+	for stage in LocalSpaceStationSystem.STAGES:
+		for item in LocalSpaceStationSystem.COSTS[stage]: LocalSpaceStationSystem.new(state).deliver_from_buffer(item, int(LocalSpaceStationSystem.COSTS[stage][item]))
+	var contract_service := StationContractSystem.new(state)
+	var history_offer: Dictionary = contract_service.snapshot().board.offers[0]
+	_expect(contract_service.accept(history_offer.id).ok, "product fixture accepts actual generated contract")
+	var history_contract: Dictionary = state.station_contracts.accepted[0]
+	for entry in history_contract.requirements: entry.delivered = entry.amount
+	history_contract.status = "claimable"
+	orbital.refresh()
+	for index in range(orbital._contract_choice.item_count):
+		if orbital._contract_choice.get_item_metadata(index) == history_offer.id: orbital._contract_choice.select(index)
+	_click_named_action(orbital, "领取已完成合同奖励")
+	_click_named_action(orbital, "展示选中已完成合同")
+	_expect(state.station_contracts.get("featured_id") == history_offer.id, "formal history selection features a completed contract")
+	_click_named_action(orbital, "取消精选合同展示")
+	_expect(state.station_contracts.featured_id == "", "formal featured contract can be cleared")
+	state.station_contracts.marks = "10000"
+	state.station_contracts.reputation = "5000"
+	var presentation: Control = orbital.find_child("StationPresentation", true, false)
+	for index in range(presentation.decorations.item_count):
+		if presentation.decorations.get_item_metadata(index) == "cargo_crate": presentation.decorations.select(index)
+	presentation.x.value = -750
+	presentation.y.value = 400
+	_click_named_action(presentation, "购买所选装饰永久授权")
+	_click_named_action(presentation, "摆放所选装饰")
+	_expect(state.orbital_station.presentation.placements.size() == 1 and state.station_contracts.marks == "9970", "formal exhibit license and layout use actual marks and saved state")
+	presentation.title_field.text = "产品轨道展厅"
+	_click_named_action(presentation, "保存空间站名片")
+	_expect(state.orbital_station.presentation.profile.title == "产品轨道展厅", "formal station profile saved")
+	await _frames()
+	orbital_scroll.scroll_vertical = maxi(0, int(presentation.position.y) - 12)
+	await _frames()
+	await _capture(viewport, "task26-station-exhibit-1920x1080")
+	orbital_scroll.scroll_vertical = 0
+	orbital.hide()
+	state.completed_technologies.append("dsp_system_space_station_engineering")
+	state.construction_inventory[SystemSpaceStationSystem.TYPE] = 1.0
+	var platform := ConstructionSystem.new(state).try_place_building(SystemSpaceStationSystem.TYPE, Vector2(9500, 8000))
+	_expect(platform.ok, "formal fixture constructs system station platform")
+	workspace.show_exclusive_workspace("SystemSpaceStationWorkspace")
+	var system_station: Control = workspace.get_node("SystemSpaceStationWorkspace")
+	await _frames()
+	_click_named_action(system_station, "开始建设并锁定研究折扣")
+	_expect(state.system_space_stations.get("helios", {}).get("status") == "building", "formal system station button starts saved construction")
+	await _capture(viewport, "task26-system-station-1920x1080")
+	var hub: Dictionary = state.system_space_stations.helios
+	for requirement in SystemSpaceStationSystem.requirements(int(hub.cost_multiplier_basis_points)):
+		if DecimalCount.compare(requirement.required, hub.construction_buffer.get(requirement.item_id, "0")) > 0: hub.construction_buffer[requirement.item_id] = requirement.required
+	SystemSpaceStationSystem.apply_buffer(hub)
+	state.completed_technologies.append_array(["dsp_quantum_logistics_network", "dsp_orbital_multi_cargo_bus"])
+	var elevator_id := state.add_building({"type": SystemHubLogisticsSystem.STATION_TYPE, "position": Vector2(10500, 8000), "station": StationSystem.empty_station(SystemHubLogisticsSystem.STATION_TYPE), "input_buffer": {}, "output_buffer": {}})
+	system_station.refresh_systems()
+	for index in range(system_station.elevator_station.item_count):
+		if system_station.elevator_station.get_item_metadata(index) == elevator_id: system_station.elevator_station.select(index)
+	_click_named_action(system_station, "升级所选站为 Mk.II")
+	_click_named_action(system_station, "切换为太空电梯")
+	SystemHubLogisticsSystem.new(state).update()
+	_expect(SystemHubLogisticsSystem.is_elevator(state.buildings[elevator_id]), "formal elevator upgrade and switch commands")
+	for index in range(system_station.output_item.item_count):
+		if system_station.output_item.get_item_metadata(index) == "iron_ingot": system_station.output_item.select(index)
+	system_station.policy_reserve.text = "100"
+	system_station.policy_target.text = "200"
+	system_station.policy_enabled.button_pressed = true
+	_click_named_action(system_station, "保存跨系供需策略")
+	_expect(hub.item_policies.get("iron_ingot", {}).get("target") == "200", "formal policy controls update authoritative hub")
+	state.planet_inventory.space_warper = 3.0
+	system_station.amount.value = 3
+	_click_named_action(system_station, "按交付数量装入全局翘曲器")
+	_expect(state.galactic_hub_network.warpers == "3" and state.planet_inventory.get("space_warper", 0) == 0, "formal global warper loading pays inventory")
+	var hub_scroll: ScrollContainer = system_station.get_child(0)
+	hub_scroll.scroll_vertical = 100000
+	await _frames()
+	await _capture(viewport, "task26-hub-policy-1920x1080")
+	hub_scroll.scroll_vertical = 0
+	system_station.hide()
+	workspace.show_exclusive_workspace("GalacticExportWorkspace")
+	await _frames()
+	await _capture(viewport, "task26-exports-1920x1080")
+	workspace.get_node("GalacticExportWorkspace").hide()
+	state.completed_technologies.append_array(["dsp_dyson_swarm", "dsp_dyson_sphere_program", "dsp_dyson_shell"])
+	workspace.show_exclusive_workspace("DysonPanel")
+	var dyson: Control = workspace.get_node("DysonPanel")
+	await _frames()
+	_click_named_action(dyson, "创建太阳帆轨道")
+	_click_named_action(dyson, "创建标准壳层")
+	_expect(DysonSphereSystem.new(state).get_summary("helios").get("frames") == 8, "formal Dyson standard-layer action creates eight real frames")
+	_click_named_action(dyson, "暂停全局发射计划")
+	_expect(not state.dyson_engineering.get("enabled", true), "formal global launch pause changes the saved schedule")
+	await _capture(viewport, "task26-dyson-1920x1080")
+	dyson.hide()
+	var completed := {}
+	for tech in state.completed_technologies: completed[tech] = true
+	state.completed_technologies = completed.keys()
+	state.completed_technologies.append("dsp_time_warp_engineering")
+	var warp_id := state.add_building({"type": "dsp_time_warp_device", "position": Vector2(11000, 8000), "input_buffer": {}, "output_buffer": {}})
+	TimeWarpSystem.new(state).select_controller(warp_id)
+	TimeWarpSystem.new(state).set_enabled(true)
+	state.paused = false
+	workspace.show_exclusive_workspace("EndgameWorkspace")
+	var endgame: Control = workspace.get_node("EndgameWorkspace")
+	endgame.find_child("PureIdleToggle", true, false).pressed.emit()
+	_expect(state.pure_idle.get("enabled", false), "formal pure-idle toggle enters durable normal-mode settlement: " + endgame.status.text)
+	workspace.show_exclusive_workspace("EndgameWorkspace")
+	await _frames()
+	endgame.get_child(0).ensure_control_visible(endgame.find_child("PureIdleToggle", true, false))
+	await _frames()
+	await _capture(viewport, "task26-pure-idle-1920x1080")
+	endgame.find_child("PureIdleToggle", true, false).pressed.emit()
+	_expect(not state.pure_idle.get("enabled", true), "formal pure-idle toggle stops and preserves unsettled time: " + endgame.status.text)
+	endgame.hide()

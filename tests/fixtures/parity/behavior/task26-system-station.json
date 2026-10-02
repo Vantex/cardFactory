@@ -1,0 +1,653 @@
+{
+  "source_commit": "472bf62c76b695852b5577e563c1d113192ac731",
+  "source_files": {
+    "src/game/content.ts": "6de101d86d28012c8765815aec35177a95b4d7ac5604736a4b608a100284f7ff",
+    "src/game/galaxyCatalog.ts": "fc503cfdcc7d5f38bfcd8b6c7f262b56126f1e3cc2c749c0463e5779730c2540",
+    "src/game/galaxy.ts": "bf0e4d23f6af26d0180ff4e7303e45a7e06e782ed0289f9a94dda3de88028bfd",
+    "src/game/difficulty.ts": "24613016f2296036c18577ce3338f792119617d07a17f2f9dffbefddf48e423e",
+    "src/game/stationMath.ts": "5a40a7055e1b76910c84d339da2601032a6d754d725f1cd02b4ba0f474d35c0e",
+    "src/game/stationContracts.ts": "4f3f2571be1878a9bc248ec2939ed03812e7b63ebd080ff8c34dfe5fcaf94f88",
+    "src/game/systemHubLogistics.ts": "b654c3bf76dc0ad685550a5b5992358de84c611eedc1dc75fa3e425cef271659",
+    "src/game/systemSpaceStation.ts": "1cd199e3f11036bf8e06af469bbb92fbb8f882c37c3b5d5283c3f1aaf71798ad"
+  },
+  "cases": [
+    {
+      "technologies": [],
+      "initial": {
+        "systemId": "helios",
+        "status": "building",
+        "costRevision": 1,
+        "costMultiplierBasisPoints": 10000,
+        "phaseIndex": 0,
+        "delivered": {},
+        "constructionBuffer": {},
+        "inventory": {},
+        "itemPolicies": {},
+        "modules": {
+          "backbone": 0,
+          "energy": 0,
+          "interstellar": 0
+        },
+        "routingCursors": {},
+        "viewport": {
+          "x": 0,
+          "y": 0,
+          "zoom": 0.85
+        },
+        "decorations": []
+      },
+      "requirements": [
+        {
+          "name": "轨道基座",
+          "itemId": "titanium_alloy",
+          "amount": 1000000,
+          "phaseIndex": 0,
+          "baseAmount": 1000000,
+          "requiredAmount": "1000000"
+        },
+        {
+          "name": "轨道基座",
+          "itemId": "frame_material",
+          "amount": 500000,
+          "phaseIndex": 1,
+          "baseAmount": 500000,
+          "requiredAmount": "500000"
+        },
+        {
+          "name": "轨道基座",
+          "itemId": "small_carrier_rocket",
+          "amount": 100000,
+          "phaseIndex": 2,
+          "baseAmount": 100000,
+          "requiredAmount": "100000"
+        },
+        {
+          "name": "轨道基座",
+          "itemId": "universe_matrix",
+          "amount": 100000,
+          "phaseIndex": 3,
+          "baseAmount": 100000,
+          "requiredAmount": "100000"
+        },
+        {
+          "name": "主体框架",
+          "itemId": "frame_material",
+          "amount": 2000000,
+          "phaseIndex": 4,
+          "baseAmount": 2000000,
+          "requiredAmount": "2000000"
+        },
+        {
+          "name": "主体框架",
+          "itemId": "dyson_sphere_component",
+          "amount": 1000000,
+          "phaseIndex": 5,
+          "baseAmount": 1000000,
+          "requiredAmount": "1000000"
+        },
+        {
+          "name": "主体框架",
+          "itemId": "titanium_glass",
+          "amount": 1000000,
+          "phaseIndex": 6,
+          "baseAmount": 1000000,
+          "requiredAmount": "1000000"
+        },
+        {
+          "name": "主体框架",
+          "itemId": "quantum_chip",
+          "amount": 500000,
+          "phaseIndex": 7,
+          "baseAmount": 500000,
+          "requiredAmount": "500000"
+        },
+        {
+          "name": "能源核心",
+          "itemId": "antimatter_fuel_rod",
+          "amount": 250000,
+          "phaseIndex": 8,
+          "baseAmount": 250000,
+          "requiredAmount": "250000"
+        },
+        {
+          "name": "能源核心",
+          "itemId": "annihilation_constraint_sphere",
+          "amount": 500000,
+          "phaseIndex": 9,
+          "baseAmount": 500000,
+          "requiredAmount": "500000"
+        },
+        {
+          "name": "能源核心",
+          "itemId": "strange_matter",
+          "amount": 1000000,
+          "phaseIndex": 10,
+          "baseAmount": 1000000,
+          "requiredAmount": "1000000"
+        },
+        {
+          "name": "能源核心",
+          "itemId": "plane_filter",
+          "amount": 1000000,
+          "phaseIndex": 11,
+          "baseAmount": 1000000,
+          "requiredAmount": "1000000"
+        },
+        {
+          "name": "调度核心",
+          "itemId": "processor",
+          "amount": 5000000,
+          "phaseIndex": 12,
+          "baseAmount": 5000000,
+          "requiredAmount": "5000000"
+        },
+        {
+          "name": "调度核心",
+          "itemId": "particle_broadband",
+          "amount": 2000000,
+          "phaseIndex": 13,
+          "baseAmount": 2000000,
+          "requiredAmount": "2000000"
+        },
+        {
+          "name": "调度核心",
+          "itemId": "quantum_chip",
+          "amount": 2000000,
+          "phaseIndex": 14,
+          "baseAmount": 2000000,
+          "requiredAmount": "2000000"
+        },
+        {
+          "name": "调度核心",
+          "itemId": "universe_matrix",
+          "amount": 1000000,
+          "phaseIndex": 15,
+          "baseAmount": 1000000,
+          "requiredAmount": "1000000"
+        }
+      ],
+      "report": {
+        "launchers": 1,
+        "accepted": 3000,
+        "completedSystems": 0
+      },
+      "station": {
+        "systemId": "helios",
+        "status": "building",
+        "costRevision": 1,
+        "costMultiplierBasisPoints": 10000,
+        "phaseIndex": 0,
+        "delivered": {
+          "titanium_alloy": "2000",
+          "frame_material": "1000"
+        },
+        "constructionBuffer": {
+          "titanium_alloy": "0",
+          "frame_material": "0"
+        },
+        "inventory": {},
+        "itemPolicies": {},
+        "modules": {
+          "backbone": 0,
+          "energy": 0,
+          "interstellar": 0
+        },
+        "routingCursors": {},
+        "viewport": {
+          "x": 0,
+          "y": 0,
+          "zoom": 0.85
+        },
+        "decorations": []
+      },
+      "inputs": {
+        "titanium_alloy": 2000,
+        "frame_material": 1000
+      }
+    },
+    {
+      "technologies": [
+        "orbital_modular_assembly"
+      ],
+      "initial": {
+        "systemId": "helios",
+        "status": "building",
+        "costRevision": 1,
+        "costMultiplierBasisPoints": 9000,
+        "phaseIndex": 0,
+        "delivered": {},
+        "constructionBuffer": {},
+        "inventory": {},
+        "itemPolicies": {},
+        "modules": {
+          "backbone": 0,
+          "energy": 0,
+          "interstellar": 0
+        },
+        "routingCursors": {},
+        "viewport": {
+          "x": 0,
+          "y": 0,
+          "zoom": 0.85
+        },
+        "decorations": []
+      },
+      "requirements": [
+        {
+          "name": "轨道基座",
+          "itemId": "titanium_alloy",
+          "amount": 1000000,
+          "phaseIndex": 0,
+          "baseAmount": 1000000,
+          "requiredAmount": "900000"
+        },
+        {
+          "name": "轨道基座",
+          "itemId": "frame_material",
+          "amount": 500000,
+          "phaseIndex": 1,
+          "baseAmount": 500000,
+          "requiredAmount": "450000"
+        },
+        {
+          "name": "轨道基座",
+          "itemId": "small_carrier_rocket",
+          "amount": 100000,
+          "phaseIndex": 2,
+          "baseAmount": 100000,
+          "requiredAmount": "90000"
+        },
+        {
+          "name": "轨道基座",
+          "itemId": "universe_matrix",
+          "amount": 100000,
+          "phaseIndex": 3,
+          "baseAmount": 100000,
+          "requiredAmount": "90000"
+        },
+        {
+          "name": "主体框架",
+          "itemId": "frame_material",
+          "amount": 2000000,
+          "phaseIndex": 4,
+          "baseAmount": 2000000,
+          "requiredAmount": "1800000"
+        },
+        {
+          "name": "主体框架",
+          "itemId": "dyson_sphere_component",
+          "amount": 1000000,
+          "phaseIndex": 5,
+          "baseAmount": 1000000,
+          "requiredAmount": "900000"
+        },
+        {
+          "name": "主体框架",
+          "itemId": "titanium_glass",
+          "amount": 1000000,
+          "phaseIndex": 6,
+          "baseAmount": 1000000,
+          "requiredAmount": "900000"
+        },
+        {
+          "name": "主体框架",
+          "itemId": "quantum_chip",
+          "amount": 500000,
+          "phaseIndex": 7,
+          "baseAmount": 500000,
+          "requiredAmount": "450000"
+        },
+        {
+          "name": "能源核心",
+          "itemId": "antimatter_fuel_rod",
+          "amount": 250000,
+          "phaseIndex": 8,
+          "baseAmount": 250000,
+          "requiredAmount": "225000"
+        },
+        {
+          "name": "能源核心",
+          "itemId": "annihilation_constraint_sphere",
+          "amount": 500000,
+          "phaseIndex": 9,
+          "baseAmount": 500000,
+          "requiredAmount": "450000"
+        },
+        {
+          "name": "能源核心",
+          "itemId": "strange_matter",
+          "amount": 1000000,
+          "phaseIndex": 10,
+          "baseAmount": 1000000,
+          "requiredAmount": "900000"
+        },
+        {
+          "name": "能源核心",
+          "itemId": "plane_filter",
+          "amount": 1000000,
+          "phaseIndex": 11,
+          "baseAmount": 1000000,
+          "requiredAmount": "900000"
+        },
+        {
+          "name": "调度核心",
+          "itemId": "processor",
+          "amount": 5000000,
+          "phaseIndex": 12,
+          "baseAmount": 5000000,
+          "requiredAmount": "4500000"
+        },
+        {
+          "name": "调度核心",
+          "itemId": "particle_broadband",
+          "amount": 2000000,
+          "phaseIndex": 13,
+          "baseAmount": 2000000,
+          "requiredAmount": "1800000"
+        },
+        {
+          "name": "调度核心",
+          "itemId": "quantum_chip",
+          "amount": 2000000,
+          "phaseIndex": 14,
+          "baseAmount": 2000000,
+          "requiredAmount": "1800000"
+        },
+        {
+          "name": "调度核心",
+          "itemId": "universe_matrix",
+          "amount": 1000000,
+          "phaseIndex": 15,
+          "baseAmount": 1000000,
+          "requiredAmount": "900000"
+        }
+      ],
+      "report": {
+        "launchers": 1,
+        "accepted": 3000,
+        "completedSystems": 0
+      },
+      "station": {
+        "systemId": "helios",
+        "status": "building",
+        "costRevision": 1,
+        "costMultiplierBasisPoints": 9000,
+        "phaseIndex": 0,
+        "delivered": {
+          "titanium_alloy": "2000",
+          "frame_material": "1000"
+        },
+        "constructionBuffer": {
+          "titanium_alloy": "0",
+          "frame_material": "0"
+        },
+        "inventory": {},
+        "itemPolicies": {},
+        "modules": {
+          "backbone": 0,
+          "energy": 0,
+          "interstellar": 0
+        },
+        "routingCursors": {},
+        "viewport": {
+          "x": 0,
+          "y": 0,
+          "zoom": 0.85
+        },
+        "decorations": []
+      },
+      "inputs": {
+        "titanium_alloy": 2000,
+        "frame_material": 1000
+      }
+    },
+    {
+      "technologies": [
+        "autonomous_station_construction"
+      ],
+      "initial": {
+        "systemId": "helios",
+        "status": "building",
+        "costRevision": 1,
+        "costMultiplierBasisPoints": 8000,
+        "phaseIndex": 0,
+        "delivered": {},
+        "constructionBuffer": {},
+        "inventory": {},
+        "itemPolicies": {},
+        "modules": {
+          "backbone": 0,
+          "energy": 0,
+          "interstellar": 0
+        },
+        "routingCursors": {},
+        "viewport": {
+          "x": 0,
+          "y": 0,
+          "zoom": 0.85
+        },
+        "decorations": []
+      },
+      "requirements": [
+        {
+          "name": "轨道基座",
+          "itemId": "titanium_alloy",
+          "amount": 1000000,
+          "phaseIndex": 0,
+          "baseAmount": 1000000,
+          "requiredAmount": "800000"
+        },
+        {
+          "name": "轨道基座",
+          "itemId": "frame_material",
+          "amount": 500000,
+          "phaseIndex": 1,
+          "baseAmount": 500000,
+          "requiredAmount": "400000"
+        },
+        {
+          "name": "轨道基座",
+          "itemId": "small_carrier_rocket",
+          "amount": 100000,
+          "phaseIndex": 2,
+          "baseAmount": 100000,
+          "requiredAmount": "80000"
+        },
+        {
+          "name": "轨道基座",
+          "itemId": "universe_matrix",
+          "amount": 100000,
+          "phaseIndex": 3,
+          "baseAmount": 100000,
+          "requiredAmount": "80000"
+        },
+        {
+          "name": "主体框架",
+          "itemId": "frame_material",
+          "amount": 2000000,
+          "phaseIndex": 4,
+          "baseAmount": 2000000,
+          "requiredAmount": "1600000"
+        },
+        {
+          "name": "主体框架",
+          "itemId": "dyson_sphere_component",
+          "amount": 1000000,
+          "phaseIndex": 5,
+          "baseAmount": 1000000,
+          "requiredAmount": "800000"
+        },
+        {
+          "name": "主体框架",
+          "itemId": "titanium_glass",
+          "amount": 1000000,
+          "phaseIndex": 6,
+          "baseAmount": 1000000,
+          "requiredAmount": "800000"
+        },
+        {
+          "name": "主体框架",
+          "itemId": "quantum_chip",
+          "amount": 500000,
+          "phaseIndex": 7,
+          "baseAmount": 500000,
+          "requiredAmount": "400000"
+        },
+        {
+          "name": "能源核心",
+          "itemId": "antimatter_fuel_rod",
+          "amount": 250000,
+          "phaseIndex": 8,
+          "baseAmount": 250000,
+          "requiredAmount": "200000"
+        },
+        {
+          "name": "能源核心",
+          "itemId": "annihilation_constraint_sphere",
+          "amount": 500000,
+          "phaseIndex": 9,
+          "baseAmount": 500000,
+          "requiredAmount": "400000"
+        },
+        {
+          "name": "能源核心",
+          "itemId": "strange_matter",
+          "amount": 1000000,
+          "phaseIndex": 10,
+          "baseAmount": 1000000,
+          "requiredAmount": "800000"
+        },
+        {
+          "name": "能源核心",
+          "itemId": "plane_filter",
+          "amount": 1000000,
+          "phaseIndex": 11,
+          "baseAmount": 1000000,
+          "requiredAmount": "800000"
+        },
+        {
+          "name": "调度核心",
+          "itemId": "processor",
+          "amount": 5000000,
+          "phaseIndex": 12,
+          "baseAmount": 5000000,
+          "requiredAmount": "4000000"
+        },
+        {
+          "name": "调度核心",
+          "itemId": "particle_broadband",
+          "amount": 2000000,
+          "phaseIndex": 13,
+          "baseAmount": 2000000,
+          "requiredAmount": "1600000"
+        },
+        {
+          "name": "调度核心",
+          "itemId": "quantum_chip",
+          "amount": 2000000,
+          "phaseIndex": 14,
+          "baseAmount": 2000000,
+          "requiredAmount": "1600000"
+        },
+        {
+          "name": "调度核心",
+          "itemId": "universe_matrix",
+          "amount": 1000000,
+          "phaseIndex": 15,
+          "baseAmount": 1000000,
+          "requiredAmount": "800000"
+        }
+      ],
+      "report": {
+        "launchers": 1,
+        "accepted": 3000,
+        "completedSystems": 0
+      },
+      "station": {
+        "systemId": "helios",
+        "status": "building",
+        "costRevision": 1,
+        "costMultiplierBasisPoints": 8000,
+        "phaseIndex": 0,
+        "delivered": {
+          "titanium_alloy": "2000",
+          "frame_material": "1000"
+        },
+        "constructionBuffer": {
+          "titanium_alloy": "0",
+          "frame_material": "0"
+        },
+        "inventory": {},
+        "itemPolicies": {},
+        "modules": {
+          "backbone": 0,
+          "energy": 0,
+          "interstellar": 0
+        },
+        "routingCursors": {},
+        "viewport": {
+          "x": 0,
+          "y": 0,
+          "zoom": 0.85
+        },
+        "decorations": []
+      },
+      "inputs": {
+        "titanium_alloy": 2000,
+        "frame_material": 1000
+      }
+    }
+  ],
+  "modules": [
+    {
+      "existing": 0,
+      "amount": 1,
+      "cost": {
+        "frame_material": "100000",
+        "quantum_chip": "50000",
+        "processor": "100000",
+        "universe_matrix": "10000"
+      }
+    },
+    {
+      "existing": 9,
+      "amount": 3,
+      "cost": {
+        "frame_material": "500000",
+        "quantum_chip": "250000",
+        "processor": "500000",
+        "universe_matrix": "50000"
+      }
+    },
+    {
+      "existing": 20,
+      "amount": 12,
+      "cost": {
+        "frame_material": "5600000",
+        "quantum_chip": "2800000",
+        "processor": "5600000",
+        "universe_matrix": "560000"
+      }
+    },
+    {
+      "existing": 9000,
+      "amount": 1,
+      "cost": {
+        "frame_material": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+        "quantum_chip": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+        "processor": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+        "universe_matrix": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999"
+      }
+    },
+    {
+      "existing": 0,
+      "amount": 1000000,
+      "cost": {
+        "frame_material": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+        "quantum_chip": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+        "processor": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+        "universe_matrix": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999"
+      }
+    }
+  ]
+}

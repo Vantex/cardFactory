@@ -7,6 +7,9 @@ var _workspace_ui: CanvasLayer
 var _input_handler: Node
 var _screen_name := "start"
 var _offline_report: Control
+var _content_packs: Control
+var _packs_return := "start"
+var _packs_was_paused := false
 var _settings: Control
 var _settings_return := "start"
 var _recovery: RecoveryWorkspace
@@ -29,6 +32,11 @@ func _ready() -> void:
 	_start_menu.continue_requested.connect(_continue_game)
 	_start_menu.slots_requested.connect(_show_slots)
 	_start_menu.settings_requested.connect(open_settings)
+	_start_menu.content_packs_requested.connect(open_content_packs)
+	_content_packs = preload("res://scenes/ui/ContentPackWorkspace.gd").new()
+	_content_packs.name = "ContentPackWorkspace"
+	add_child(_content_packs)
+	_content_packs.dismissed.connect(close_content_packs)
 	_settings = preload("res://scenes/ui/SettingsWorkspace.gd").new()
 	_settings.name = "SettingsWorkspace"
 	add_child(_settings)
@@ -123,6 +131,7 @@ func _show_start() -> void:
 	if _pause_menu != null: _pause_menu.hide()
 	if _settings != null: _settings.hide()
 	if _offline_report != null: _offline_report.hide()
+	if _content_packs != null: _content_packs.hide()
 	_screen_name = "start"
 	_set_gameplay_visible(false)
 	_slots_panel.hide()
@@ -143,7 +152,7 @@ func _show_slots() -> void:
 	_focus_first.call_deferred(_slots_panel)
 
 func _start_new_game(slot: int) -> void:
-	var result := GameManager.start_new_game(slot)
+	var result := GameManager.start_new_game(slot, _slots_panel.selected_new_game_mode(), _slots_panel.selected_new_game_difficulty())
 	if not result.get("ok", false):
 		_slots_panel.show_error(_error_message(result))
 
@@ -211,6 +220,25 @@ func _on_offline_updated(snapshot: Dictionary) -> void:
 	_offline_report.display(snapshot)
 	if snapshot.get("phase") in ["complete", "error"]: _focus_first.call_deferred(_offline_report)
 
+func open_content_packs() -> void:
+	if _screen_name in ["offline", "offline_report", "packs"]: return
+	_packs_return = _screen_name
+	_packs_was_paused = GameManager.get_game_state().paused
+	GameManager.get_game_state().paused = true
+	_screen_name = "packs"
+	_start_menu.hide()
+	_slots_panel.hide()
+	_pause_menu.hide()
+	_set_gameplay_visible(false)
+	_content_packs.open()
+
+func close_content_packs() -> void:
+	_content_packs.hide()
+	GameManager.get_game_state().paused = _packs_was_paused
+	if GameManager.is_session_active(): _on_session_started(GameManager.get_current_slot(), false)
+	elif _packs_return == "slots": _show_slots()
+	else: _show_start()
+
 func open_settings() -> void:
 	if _screen_name in ["offline", "offline_report", "settings"]: return
 	_settings_return = _screen_name
@@ -265,7 +293,7 @@ func _create_pause_menu() -> void:
 	content.add_child(_pause_message)
 	for action in [["ResumeButton", "继续游戏", close_pause_menu], ["SaveButton", "立即保存 · Ctrl+S", func(): GameManager.save_current_game()], ["SnapshotButton", "创建恢复快照", func():
 		var result := GameManager.create_recovery_snapshot()
-		_pause_message.text = "恢复快照已创建" if result.ok else _error_message(result)], ["RecoveryButton", "管理恢复快照", func(): open_recovery(GameManager.get_current_slot())], ["ReturnButton", "保存并返回主菜单", return_to_menu]]:
+		_pause_message.text = "恢复快照已创建" if result.ok else _error_message(result)], ["ContentPacksButton", "本地内容包", open_content_packs], ["RecoveryButton", "管理恢复快照", func(): open_recovery(GameManager.get_current_slot())], ["ReturnButton", "保存并返回主菜单", return_to_menu]]:
 		var button := Button.new()
 		button.name = action[0]
 		button.text = action[1]

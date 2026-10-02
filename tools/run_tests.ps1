@@ -7,6 +7,20 @@ $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $testCases = @(
     @{
+        Name = "Local content packs"
+        ScenePath = Join-Path $repoRoot "scenes\test\TestLocalContentPacks.tscn"
+        ResourcePath = "res://scenes/test/TestLocalContentPacks.tscn"
+        SuccessMarker = "LOCAL CONTENT PACK TESTS PASSED"
+        FailureMarker = "LOCAL CONTENT PACK TESTS FAILED"
+    },
+    @{
+        Name = "Single player modes"
+        ScenePath = Join-Path $repoRoot "scenes\test\TestSinglePlayerModes.tscn"
+        ResourcePath = "res://scenes/test/TestSinglePlayerModes.tscn"
+        SuccessMarker = "SINGLE PLAYER MODES TESTS PASSED"
+        FailureMarker = "SINGLE PLAYER MODES TESTS FAILED"
+    },
+    @{
         Name = "Progression parity"
         ScenePath = Join-Path $repoRoot "scenes\test\TestProgressionParity.tscn"
         ResourcePath = "res://scenes/test/TestProgressionParity.tscn"
@@ -211,7 +225,9 @@ if ($importExitCode -ne 0 -or $importOutputText -match "SCRIPT ERROR|Parse Error
 foreach ($testCase in $testCases) {
     $startInfo = New-Object System.Diagnostics.ProcessStartInfo
     $startInfo.FileName = $GodotPath
-    $startInfo.Arguments = '--headless --path "{0}" --quit-after 600 "{1}" -- --device-settings=res://.godot/gate-device-settings-{2}.cfg' -f $repoRoot, $testCase.ResourcePath, ([guid]::NewGuid().ToString("N"))
+    # Product UI visits every workspace at six resolutions and three font scales.
+    $frameLimit = if ($testCase.Name -eq "Product shell") { 1200 } else { 600 }
+    $startInfo.Arguments = '--headless --path "{0}" --quit-after {3} "{1}" -- --device-settings=res://.godot/gate-device-settings-{2}.cfg' -f $repoRoot, $testCase.ResourcePath, ([guid]::NewGuid().ToString("N")), $frameLimit
     $startInfo.WorkingDirectory = $repoRoot
     $startInfo.UseShellExecute = $false
     $startInfo.RedirectStandardOutput = $true

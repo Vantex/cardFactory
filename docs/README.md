@@ -18,6 +18,8 @@
 
 任务 22 的实现、验证和后续接续边界见 [任务 22 验收](current/TASK22_ACCEPTANCE.md)。
 
+任务 26：[实施计划](current/TASK26_PLAN.md) · [单机模式与特殊规则验收](current/TASK26_ACCEPTANCE.md)。
+
 ## 历史文档
 
 任务 25：[实施计划](current/TASK25_PLAN.md) · [科技、战役与成就验收](current/TASK25_ACCEPTANCE.md)。任务 24：[实施计划](current/TASK24_PLAN.md) · [蓝图库、施工与导航验收](current/TASK24_ACCEPTANCE.md)。

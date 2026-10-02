@@ -261,5 +261,5 @@ func _test_source_runtime_boundaries() -> void:
 	before = GameStateCodec.to_persistent_dict(state)
 	check(ConstructionSystem.new(state).try_place_building("dsp_geothermal_power_station", Vector2(2000, 0)).reason == "invalid_planet" and GameStateCodec.to_persistent_dict(state) == before, "invalid geothermal planet rejects placement before spending the kit")
 	check(PowerSystem.source_environment_multiplier(state, "dsp_geothermal_power_station", "ashen") == 1 and PowerSystem.source_environment_multiplier(state, "dsp_geothermal_power_station", "home") == 0, "geothermal generation follows the current planets' frozen profiles")
-	check(not DataManager.building_pending_reason("dsp_time_warp_device").is_empty() and not DataManager.building_pending_reason("dsp_planetary_logistics_station").is_empty(), "future advanced devices provide an explicit availability reason")
+	check(DataManager.building_pending_reason("dsp_time_warp_device").is_empty() and DataManager.building_pending_reason("dsp_planetary_logistics_station").is_empty(), "implemented time warp and source stations are available through their formal systems")
 	check(DataManager.get_building("dsp_solar_panel").input_buffer_capacity == 0, "zero source buffers remain zero at runtime")

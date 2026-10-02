@@ -32,7 +32,7 @@ func try_place_building(building_type: String, position: Vector2) -> Dictionary:
 		return _failure("unconfigured_construction_item", "未配置施工件")
 	if building_type == "interstellar_logistics_station" and not game_state.completed_technologies.has("interstellar_logistics"):
 		return _failure("technology_locked", "需要星际物流科技")
-	if building_type in DysonSphereSystem.BUILDINGS and not game_state.completed_technologies.has("dyson_engineering"):
+	if building_type in ["solar_sail_ejector", "dyson_sphere_launcher", "ray_receiver"] and not game_state.completed_technologies.has("dyson_engineering"):
 		return _failure("technology_locked", "需要戴森工程科技")
 	if not DataManager.source_technology_unlocked(game_state, String(building_definition.get("required_source_technology", ""))):
 		return _failure("technology_locked", "建筑科技尚未解锁")
@@ -40,6 +40,8 @@ func try_place_building(building_type: String, position: Vector2) -> Dictionary:
 	if not pending.is_empty(): return _failure("feature_pending", pending)
 	if building_definition.get("source_id") == "geothermal_power_station" and PowerSystem.source_environment_multiplier(game_state, building_type, game_state.active_planet_id) <= 0:
 		return _failure("invalid_planet", "该行星不具备地热发电条件")
+	if building_type == OrbitalCollectorSystem.TYPE and SourceGalaxySystem.new(game_state).orbital_yields(game_state.active_planet_id).is_empty(): return _failure("invalid_planet", "轨道采集器只能部署在气态巨星")
+	if building_type == SystemSpaceStationSystem.TYPE and SystemSpaceStationSystem.new(game_state).has_platform(game_state.active_planet_id): return _failure("unique_building", "每颗行星最多一座施工发射平台")
 	var placement_rect := FactoryGeometry.card_rect(position)
 	for existing_building in game_state.buildings.values():
 		if String(existing_building.get("planet_id", game_state.active_planet_id)) != game_state.active_planet_id:
@@ -82,8 +84,13 @@ func try_place_building(building_type: String, position: Vector2) -> Dictionary:
 			InventorySystem.new(game_state).try_remove(fuel_item, startup_fuel)
 		building_data["fuel_item"] = fuel_item
 		building_data["fuel_remaining"] = startup_fuel * burn_duration
-	if building_type in StationSystem.TYPES:
-		building_data["station"] = StationSystem.empty_station()
+	if StationSystem.is_station(building_type):
+		building_data["station"] = StationSystem.empty_station(building_type)
+		if building_type == OrbitalCollectorSystem.TYPE: OrbitalCollectorSystem.initialize(building_data)
+	if building_type == BlackHoleSystem.TYPE:
+		building_data["black_hole_paused"] = true
+		building_data["black_hole_activation_confirmed"] = false
+		building_data["black_hole_ports"] = BlackHoleSystem.empty_ports()
 	var building_id := game_state.add_building(building_data)
 	return {"ok": true, "reason": "", "message": "建筑已放置", "details": {"id": building_id}, "id": building_id}
 

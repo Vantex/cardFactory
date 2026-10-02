@@ -6,12 +6,14 @@ const DEFAULT_BUFFER_CAPACITY := 60.0
 
 var game_state: GameState
 var statistics_system: StatisticsSystem
+var _dyson_receipts: Dictionary = {}
 
 func _init(state: GameState, statistics: StatisticsSystem = null) -> void:
 	game_state = state
 	statistics_system = statistics
 
 func update(delta: float) -> void:
+	_dyson_receipts = DysonSphereSystem.new(game_state).receiver_allocations()
 	var building_ids: Array = game_state.buildings.keys()
 	building_ids.sort()
 	for building_id in building_ids:
@@ -20,6 +22,22 @@ func update(delta: float) -> void:
 func _update_building(building: Dictionary, delta: float) -> void:
 	var building_type := String(building.get("type", ""))
 	var building_definition := DataManager.get_building(building_type)
+	if building_definition.get("kind") in ["storage", "splitter"]:
+		var item := String(building.get("stored_item", ""))
+		var inputs: Dictionary = building.get("input_buffer", {})
+		var outputs: Dictionary = building.get("output_buffer", {})
+		var capacity := _get_buffer_capacity(building, building_definition, "output")
+		var moved := minf(floorf(float(inputs.get(item, 0)) + PROGRESS_EPSILON), maxf(0, capacity - float(outputs.get(item, 0))))
+		if item != "" and moved > 0:
+			inputs[item] = float(inputs.get(item, 0)) - moved
+			outputs[item] = float(outputs.get(item, 0)) + moved
+			building.input_buffer = inputs
+			building.output_buffer = outputs
+		building.status = "running" if moved > 0 else "idle"
+		return
+	if building_type == "dsp_ray_receiver" and building.get("recipe_id", "") == "dsp_critical_photon":
+		_update_photon_receiver(building, delta)
+		return
 	if building_definition.get("kind", "") == "generator":
 		if float(building.get("power_input", 0.0)) > 0.0:
 			building["status"] = "charging"
@@ -58,7 +76,7 @@ func _update_building(building: Dictionary, delta: float) -> void:
 		return
 
 	var progress := float(building.get("progress", 0.0))
-	progress += delta * maxf(float(building.get("speed", 1.0)), 0.0) * power_efficiency * game_state.get_technology_effect_multiplier("production_speed")
+	progress += delta * maxf(float(building.get("speed", 1.0)), 0.0) * power_efficiency * game_state.get_technology_effect_multiplier("production_speed") * GameModeSystem.new(game_state).multiplier("production")
 	var duration := maxf(float(recipe.get("duration", 0.0)), PROGRESS_EPSILON)
 	building["status"] = "running"
 	while progress + PROGRESS_EPSILON >= duration:
@@ -105,8 +123,9 @@ func _update_extractor(building: Dictionary, building_definition: Dictionary, de
 		building["status"] = "blocked"
 		return
 	var extraction_effect := game_state.get_technology_effect_multiplier("mining_speed" if DataManager.get_item(output_item).get("kind") == "solid" else "resource_collection")
+	if building_definition.has("source_id"): extraction_effect *= float(SourceGalaxySystem.new(game_state).profile(String(building.planet_id)).get("miningMultiplier", 1.0))
 	if not building_definition.has("source_id"): extraction_effect *= game_state.get_technology_effect_multiplier("production_speed")
-	var produced := minf(output_rate * delta * speed * power_efficiency * extraction_effect, available_space)
+	var produced := minf(output_rate * delta * speed * power_efficiency * extraction_effect * GameModeSystem.new(game_state).multiplier("mining"), available_space)
 	if not bool(site.get("infinite", false)) and consumption > 0:
 		produced = minf(produced, float(site.get("remaining", 0.0)) / consumption)
 		site["remaining"] = maxf(float(site.get("remaining", 0.0)) - produced * consumption, 0.0)
@@ -185,7 +204,7 @@ func _update_sprayed(building: Dictionary, recipe: Dictionary, delta: float) -> 
 			if float(building.get("output_buffer", {}).get(item, 0)) + outputs[item] > capacity:
 				building.status = "blocked"
 				return
-		var rate := float(building.get("speed", 1)) * efficiency * float(effect.speed) * game_state.get_technology_effect_multiplier("production_speed")
+		var rate := float(building.get("speed", 1)) * efficiency * float(effect.speed) * game_state.get_technology_effect_multiplier("production_speed") * GameModeSystem.new(game_state).multiplier("production") * SourceGalaxySystem.new(game_state).production_multiplier(String(building.planet_id), String(building.type))
 		if rate <= 0: return
 		var progress := float(building.get("progress", 0))
 		var seconds := maxf(float(recipe.duration) - progress, 0) / rate
@@ -201,3 +220,21 @@ func _update_sprayed(building: Dictionary, recipe: Dictionary, delta: float) -> 
 			if statistics_system != null: statistics_system.record_produced(item, outputs[item], building.id, building.planet_id)
 		building.progress = 0.0
 		_emit_production_completed(building, recipe)
+
+func _update_photon_receiver(building: Dictionary, delta: float) -> void:
+	var received := float(_dyson_receipts.get(building.id, 0.0))
+	var capacity := DysonSphereSystem.new(game_state).receiver_capacity("dsp_ray_receiver")
+	if received <= 0 or capacity <= 0:
+		building.status = "no_power"
+		return
+	var recipe := DataManager.get_recipe("dsp_critical_photon")
+	if not _has_output_space(building, recipe):
+		building.status = "blocked"
+		return
+	var rate := received / capacity * maxf(float(building.get("speed", 1.0)), 0.0) * SourceTechnologyEffects.multiplier(game_state, "production_speed") * GameModeSystem.new(game_state).multiplier("production") * SourceGalaxySystem.new(game_state).production_multiplier(String(building.planet_id), String(building.type))
+	building.progress = float(building.get("progress", 0.0)) + delta * rate
+	while float(building.progress) + PROGRESS_EPSILON >= float(recipe.duration) and _has_output_space(building, recipe):
+		_produce_outputs(building, recipe)
+		building.progress = maxf(0.0, float(building.progress) - float(recipe.duration))
+		_emit_production_completed(building, recipe)
+	building.status = "running" if _has_output_space(building, recipe) else "blocked"

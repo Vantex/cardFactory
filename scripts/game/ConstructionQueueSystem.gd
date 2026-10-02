@@ -46,7 +46,7 @@ func _preview(order: Dictionary) -> Dictionary:
 	for entity in decoded.blueprint.entities:
 		probe.construction_inventory[entity.type] = 1000000.0
 	probe.construction_inventory.dsp_spray_coater = 1000000.0
-	for item in GameState.BELT_RATED_THROUGHPUT: probe.construction_inventory[item] = 10000000.0
+	for item in DataManager.belt_definitions(): probe.construction_inventory[item] = 10000000.0
 	return BlueprintSystem.new(probe).deploy(decoded.blueprint, Vector2(order.position[0], order.position[1]), order.rotation, order.mirrored, Callable(), order.allow_overlap)
 
 func fund(id: String, scope: String = "all") -> Dictionary:
@@ -153,7 +153,7 @@ func _owned_fleet(probe: GameState, id: String, item: String) -> int:
 	var building: Dictionary = probe.buildings.get(id, {})
 	var count := int(building.get("station", {}).get("fleet", {}).get(item, 0))
 	for route in probe.logistics_routes.values():
-		if route.source_id == id and route.vehicle == item: count += 1
+		if route.get("owner_id", route.source_id) == id and route.vehicle == item: count += 1
 	return count
 
 func _index(id: String) -> int:

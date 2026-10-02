@@ -1,6 +1,8 @@
 # autoload/DataManager.gd
 extends Node
 
+var content_pack_system: ContentPackSystem
+var runtime_belts: Dictionary = {}
 var construction: Dictionary = {}
 var proliferators: Dictionary = {}
 var all_items: Dictionary = {}
@@ -20,6 +22,9 @@ const TECHNOLOGY_EFFECT_KEYS := ["production_speed"]
 
 func _ready():
     _load_all_data()
+    content_pack_system = ContentPackSystem.new()
+    var packs_loaded := content_pack_system.load_registry()
+    if not packs_loaded.ok: content_pack_system.last_error = packs_loaded.message
     print("DataManager loaded: ", all_items.size(), " items, ", all_buildings.size(), " buildings, ", all_recipes.size(), " recipes")
 
 func _load_all_data():
@@ -215,7 +220,7 @@ func validate_catalog(catalog: Dictionary) -> Array:
             errors.append(_make_error("invalid_repeatable_rule", source, technology_id, "Technology repeatable must declare a fixed cost rule"))
         _validate_positive_number(errors, technology.get("duration", 0.0), "invalid_duration", source, technology_id, "Technology duration must be positive")
         var cost_value: Variant = technology.get("cost")
-        if not cost_value is Dictionary or cost_value.is_empty():
+        if not cost_value is Dictionary or (cost_value.is_empty() and not technology.has("source_content_pack")):
             errors.append(_make_error("invalid_technology_cost", source, technology_id, "Technology cost must be a non-empty Dictionary"))
         else:
             var cost: Dictionary = cost_value
@@ -406,12 +411,17 @@ func source_technology_unlocked(state: GameState, source_id: String) -> bool:
 
 func building_pending_reason(building_id: String) -> String:
     var definition := get_building(building_id)
+    if definition.get("source_kind") == "miner": return "采矿设备需使用资源点专用放置规则"
+    if definition.has("source_content_pack"): return ""
     if not definition.has("source_id"): return ""
     var source_id := String(definition.source_id)
     if source_id == "spray_coater": return "喷涂机作为模块安装：选中生产设备，在喷涂配置中安装"
-    if source_id in ["em_rail_ejector", "vertical_launching_silo", "ray_receiver", "space_station_construction_launcher", "orbital_cargo_terminal", "stellar_mining_station", "micro_black_hole_connector", "time_warp_device"]:
+    if StationSystem.is_station(building_id): return ""
+    if source_id in ["orbital_cargo_terminal", "space_station_construction_launcher"]: return ""
+    if source_id in ["space_station_construction_launcher", "stellar_mining_station"]:
         return "当前版本暂不支持该设备运行，施工件可保留；暂不能放置"
-    if definition.get("kind") in ["station", "storage", "splitter"]:
+    if definition.get("kind") in ["storage", "splitter"]: return ""
+    if definition.get("kind") in ["station"]:
         return "当前版本暂不支持该设备的运输功能，施工件可保留；暂不能放置"
     return ""
 
@@ -419,3 +429,8 @@ func is_source_research_item(item_id: String) -> bool:
     for technology in all_technologies.values():
         if technology.get("source_research_bridge", false) and technology.get("cost", {}).has(item_id): return true
     return false
+
+func belt_definitions() -> Dictionary:
+    var definitions := GameState.BELT_RATED_THROUGHPUT.duplicate()
+    for id in runtime_belts: definitions[id] = runtime_belts[id].speed
+    return definitions

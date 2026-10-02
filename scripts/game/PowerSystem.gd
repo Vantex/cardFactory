@@ -11,6 +11,7 @@ var power_ratio := 1.0
 var _power_by_planet: Dictionary = {}
 var _dyson_receiver_outputs: Dictionary = {}
 var _grids: Dictionary = {}
+var allow_time_warp := true
 
 func _init(state: GameState, statistics: StatisticsSystem = null) -> void:
 	game_state = state
@@ -22,6 +23,7 @@ func update(delta: float) -> void:
 
 func _calculate_power(delta: float) -> void:
 	_dyson_receiver_outputs = DysonSphereSystem.new(game_state).receiver_outputs()
+	TimeWarpSystem.new(game_state).reset_allocation()
 	_grids.clear()
 	_power_by_planet.clear()
 	total_generation = 0
@@ -65,11 +67,14 @@ func _dispatch_grid(buildings: Array, delta: float) -> Dictionary:
 		building["power_output"] = 0.0
 		building["power_input"] = 0.0
 		building["power_efficiency"] = 1.0
-		var rated := float(definition.get("power_generation", 0))
+		var rated := maxf(float(definition.get("power_generation", 0)), float(_dyson_receiver_outputs.get(building.get("id", ""), 0)))
 		if definition.get("kind") == "generator" or rated > 0: covered = true
 		var needed := maxf(float(definition.get("power_demand", 0)), 0)
 		if definition.get("source_id") == "construction_center":
 			needed = float(definition.get("power_demand", 0)) if not building.get("automation_paused", false) and game_state.production_orders.any(func(job): return job.center_id == building.id and not job.paused) else 0.0
+		elif definition.get("source_id") in ["em_rail_ejector", "vertical_launching_silo"]:
+			var ammo := String(DysonSphereSystem.AMMO.get(building.get("type", ""), ""))
+			needed = needed if building.get("dyson", {}).get("enabled", false) and float(building.get("input_buffer", {}).get(ammo, 0)) >= 1 and (game_state.source_galaxy.is_empty() or SourceDysonEngineering.new(game_state).launch_factor(ammo == "solar_sail") > 0) else 0.0
 		elif definition.has("source_id") and definition.get("kind") == "processor":
 			var recipe := DataManager.get_recipe(String(building.get("recipe_id", "")))
 			if recipe.get("source_id") == "matrix_research":
@@ -81,6 +86,8 @@ func _dispatch_grid(buildings: Array, delta: float) -> Dictionary:
 			for item in outputs:
 				if float(building.get("output_buffer", {}).get(item, 0)) + outputs[item] > float(definition.get("output_buffer_capacity", 60)): needed = 0
 		if building.get("spray_coater_installed", false): needed *= float(ProliferatorSystem.profile(building, DataManager.get_recipe(String(building.get("recipe_id", "")))).power)
+		needed *= StationSystem.stack_count(building)
+		needed *= GameModeSystem.new(game_state).multiplier("power_demand")
 		building["power_requested"] = needed
 		if needed > 0:
 			consumers.append({"building": building, "capacity": needed})
@@ -96,11 +103,27 @@ func _dispatch_grid(buildings: Array, delta: float) -> Dictionary:
 			base += generated
 	var capacity := base
 	for candidate in dispatch: capacity += candidate.capacity
+	var warp_building: Dictionary = {}
+	var warp_stable := 0
+	var warp_required := 0.0
+	if allow_time_warp and game_state.time_warp.get("enabled", false):
+		for building in buildings:
+			if building.get("id") == game_state.time_warp.get("controller_id") and building.get("type") == "dsp_time_warp_device":
+				warp_building = building
+				break
+		if not warp_building.is_empty():
+			warp_stable = TimeWarpSystem.maximum_stable(maxf(capacity - demand, 0), int(game_state.time_warp.get("requested", 5)))
+			warp_required = TimeWarpSystem.required_power_kw(warp_stable) if warp_stable >= 4 else TimeWarpSystem.BASE_POWER_KW
+			warp_building.power_requested = warp_required
+			demand += warp_required
 	var supplied := minf(demand, capacity) if covered else 0.0
 	var remaining := supplied
 	for priority in [3, 2, 1]:
 		var group: Array = consumers.filter(func(candidate): return int(candidate.building.get("power_priority", 2)) == priority)
 		remaining -= _allocate(group, remaining, "power_input")
+	if not warp_building.is_empty():
+		warp_building.power_input = minf(maxf(remaining, 0), warp_required)
+		TimeWarpSystem.new(game_state).set_allocation(warp_stable, warp_required, float(warp_building.power_input))
 	for building in buildings:
 		building["power_covered"] = covered
 		var needed: float = building.power_requested
@@ -168,7 +191,7 @@ func get_grid_info(planet_id: String, grid_id: String) -> Dictionary:
 	return _grids.get(planet_id + "|" + grid_id, _empty_power_info()).duplicate(true)
 
 func _building_generation(building: Dictionary, building_definition: Dictionary, base_generation: float, _delta: float) -> float:
-	if String(building.get("type", "")) == "ray_receiver":
+	if String(building.get("type", "")) in ["ray_receiver", "dsp_ray_receiver"]:
 		return float(_dyson_receiver_outputs.get(building.get("id", ""), 0))
 	var generation_factor := clampf(float(building.get("generation_factor", 1.0)), 0.0, 1.0)
 	var environment_multiplier := 1.0
@@ -198,6 +221,11 @@ static func fuel_rule(building: Dictionary, definition: Dictionary) -> Dictionar
 
 static func source_environment_multiplier(state: GameState, building_type: String, planet_id: String) -> float:
 	var role := String(DataManager.get_building(building_type).get("source_id", ""))
+	if not state.source_galaxy.is_empty():
+		var service := SourceGalaxySystem.new(state)
+		if role == "solar_panel": return service.solar_multiplier(planet_id)
+		if role == "geothermal_power_station": return float(service.profile(planet_id).get("geothermalMultiplier", 0))
+		if role == "wind_turbine": return float(service.profile(planet_id).get("windMultiplier", 0))
 	if role == "solar_panel": return float(GalaxySystem.new(state).get_planet(planet_id).get("solar_multiplier", 0))
 	if role == "geothermal_power_station": return float({"ashen": 1.0, "frost": 0.08, "magnetar": 0.18}.get(planet_id, 0))
 	if role == "wind_turbine": return float({"home": 1.0, "ashen": 1.0, "frost": 1.32, "magnetar": 0.28}.get(planet_id, 0))

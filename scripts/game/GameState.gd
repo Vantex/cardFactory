@@ -16,6 +16,22 @@ const NEW_GAME_HOME_INVENTORY := {
 var paused: bool = false
 var speed: float = 1.0
 var elapsed_time: float = 0.0
+var save_mode := "normal"
+var difficulty := "standard"
+var speedrun_state: Dictionary = {}
+var planet_tray_limits: Dictionary = {}
+var content_packs: Array = []
+var pure_idle: Dictionary = {}
+var time_warp: Dictionary = {}
+var orbital_station: Dictionary = {}
+var galactic_exports: Dictionary = {}
+var station_contracts: Dictionary = {}
+var quantum_network: Dictionary = {}
+var source_galaxy: Dictionary = {}
+var dyson_engineering: Dictionary = {}
+var system_space_stations: Dictionary = {}
+var galactic_hub_network: Dictionary = {}
+var _source_catalog_cache: Dictionary = {}
 # Runtime compatibility view for the currently active planet. It is never persisted directly.
 var planet_inventory: Dictionary = {}
 var active_planet_id := HOME_PLANET_ID
@@ -174,6 +190,7 @@ func add_building(building_data: Dictionary) -> String:
     var id = generate_id("building")
     building_data["id"] = id
     building_data["planet_id"] = String(building_data.get("planet_id", active_planet_id))
+    if building_data.get("type") == OrbitalCargoTerminalSystem.TYPE: OrbitalCargoTerminalSystem.initialize(building_data)
     if PowerGridSystem.kind_id(building_data) == "energy_exchanger":
         if not building_data.has("energy_mode"):
             building_data["energy_mode"] = "discharge" if building_data.get("recipe_id") in ["discharge_accumulator", "dsp_accumulator_discharge"] else "charge"
@@ -238,10 +255,32 @@ func _try_add_connection_command(source_id: String, target_id: String, requested
         return {"ok": false, "message": "源建筑不提供所选输出物品"}
 
     var target_building: Dictionary = buildings[target_id]
+    var black_hole_port := -1
     var existing_recipe_id: String = target_building.get("recipe_id", "")
     if target_building.get("type", "") in DysonSphereSystem.AMMO:
         if output_item != DysonSphereSystem.AMMO[target_building.type]:
             return {"ok": false, "message": "发射设备只接收对应耗材"}
+    elif target_building.get("type") == BlackHoleSystem.TYPE:
+        var used_ports := {}
+        for existing in connections.values():
+            if existing.get("target_id") == target_id: used_ports[int(existing.get("target_port_index", -1))] = true
+        for candidate in range(BlackHoleSystem.PORT_COUNT):
+            if not used_ports.has(candidate):
+                black_hole_port = candidate
+                break
+        if black_hole_port < 0:
+            return {"ok": false, "message": "微型黑洞三个端口均已占用"}
+    elif target_building.get("type") == OrbitalCargoTerminalSystem.TYPE:
+        black_hole_port = OrbitalCargoTerminalSystem.new(self).resolve_port(target_id, output_item)
+        if black_hole_port < 0: return {"ok": false, "message": "货运目标不需要该物品、来源不匹配或四端口已满"}
+    elif target_building.get("type") == SystemSpaceStationSystem.TYPE:
+        if not SystemSpaceStationSystem.new(self).accepts_input(target_id, output_item): return {"ok": false, "message": "施工平台四种输入物料已满"}
+    elif DataManager.get_building(String(target_building.type)).get("kind") in ["storage", "splitter"]:
+        var stored_item := String(target_building.get("stored_item", ""))
+        var accepts := String(DataManager.get_building(String(target_building.type)).get("accepts", "any"))
+        if stored_item != output_item or (accepts != "any" and DataManager.get_item(output_item).get("kind", "solid") != accepts): return {"ok": false, "message": "请先配置仓储或分流器的物品"}
+    elif SystemHubLogisticsSystem.is_elevator(target_building):
+        pass
     elif target_building.has("station"):
         var accepts := false
         for slot in target_building.station.slots:
@@ -279,14 +318,18 @@ func _try_add_connection_command(source_id: String, target_id: String, requested
         return {"ok": false, "message": "缺少 Mk.I 线路施工件"}
     _consume_belt_pieces("conveyor_belt_mk1", 1)
 
-    var connection_id := add_connection({
+    var connection_data := {
         "source_id": source_id,
         "target_id": target_id,
 		"planet_id": String(buildings[source_id].get("planet_id", active_planet_id)),
         "type": "conveyor_belt_mk1",
         "item_id": output_item,
         "construction_accounted": true,
-    })
+    }
+    if SystemHubLogisticsSystem.is_elevator(buildings[source_id]): connection_data["elevator_output_index"] = buildings[source_id].station.elevator_output_items.find(output_item)
+    if black_hole_port >= 0: connection_data["target_port_index"] = black_hole_port
+    if target_building.get("type") == OrbitalCargoTerminalSystem.TYPE: target_building.orbital_cargo_ports[black_hole_port] = output_item
+    var connection_id := add_connection(connection_data)
     return {"ok": true, "message": "连接已创建", "id": connection_id}
 
 func get_compatible_recipes(building_type: String, input_item_id: String = "") -> Array:
@@ -331,6 +374,8 @@ func get_building_output_items(building_id: String) -> Array:
     var building := get_building(building_id)
     if building.is_empty():
         return []
+    if SystemHubLogisticsSystem.is_elevator(building): return building.station.get("elevator_output_items", []).filter(func(item): return item != "")
+    if building.get("type") == OrbitalCollectorSystem.TYPE: return [building.get("collector_item", "hydrogen")]
     if building.has("station"):
         var items: Array = []
         for slot in building.station.slots:
@@ -338,6 +383,8 @@ func get_building_output_items(building_id: String) -> Array:
                 items.append(slot.item_id)
         return items
     var definition := DataManager.get_building(String(building.get("type", "")))
+    if definition.get("kind") in ["storage", "splitter"]:
+        return [] if building.get("stored_item", "") == "" else [building.stored_item]
     var extraction: Dictionary = definition.get("extraction", {})
     if definition.get("kind", "") == "extractor":
         var selected_item := String(building.get("output_item", extraction.get("item_id", "")))
@@ -372,7 +419,7 @@ func _try_remove_connection_command(connection_id: String) -> Dictionary:
     if not tier.is_empty():
         construction_inventory[tier] = _construction_inventory_count(construction_inventory, tier) + float(installed)
     connections.erase(connection_id)
-    EventBus.connection_removed.emit(connection_id)
+    if emit_canvas_events: EventBus.connection_removed.emit(connection_id)
     return {"ok": true, "message": "线路已拆除", "reason": ""}
 
 func remove_connection(connection_id: String) -> bool:
@@ -446,6 +493,7 @@ func _try_remove_entities_command(entity_ids: Array) -> Dictionary:
     var seen: Dictionary = {}
     var construction_refund: Dictionary = {}
     var material_refund: Dictionary = {}
+    var fleet_refund: Dictionary = {}
     var connection_ids: Dictionary = {}
     for id_value in entity_ids:
         var entity_id := String(id_value)
@@ -467,10 +515,13 @@ func _try_remove_entities_command(entity_ids: Array) -> Dictionary:
                     material_refund[slot.item_id] = float(material_refund.get(slot.item_id, 0)) + float(slot.amount)
             for item in building.station.fleet:
                 if int(building.station.fleet[item]) > 0:
-                    material_refund[item] = float(material_refund.get(item, 0)) + float(building.station.fleet[item])
+                    if StationSystem.is_source(building_type) and item in ["logistics_drone", "logistics_vessel"]:
+                        fleet_refund[item] = int(fleet_refund.get(item, 0)) + int(building.station.fleet[item])
+                    else:
+                        material_refund[item] = float(material_refund.get(item, 0)) + float(building.station.fleet[item])
         if not ConstructionSystem.LEGACY_COSTS.has(building_type) and not DataManager.construction.has(building_type):
             return _batch_failure("建筑没有可返还的施工件", "invalid_construction_item")
-        construction_refund[building_type] = float(construction_refund.get(building_type, 0.0)) + 1.0
+        construction_refund[building_type] = float(construction_refund.get(building_type, 0.0)) + float(StationSystem.stack_count(building))
         _collect_building_material_refund(building, material_refund)
         if building.get("spray_coater_installed", false):
             construction_refund["dsp_spray_coater"] = float(construction_refund.get("dsp_spray_coater", 0)) + 1.0
@@ -500,12 +551,18 @@ func _try_remove_entities_command(entity_ids: Array) -> Dictionary:
             return _batch_failure(String(inventory_result.get("message", "返还缓存失败")), "commit_failed")
     for item_id in construction_refund:
         construction_inventory[item_id] = _construction_inventory_count(construction_inventory, String(item_id)) + float(construction_refund[item_id])
+    for item_id in fleet_refund:
+        portable_fleet[item_id] = int(portable_fleet.get(item_id, 0)) + int(fleet_refund[item_id])
     var removed_connection_ids: Array = connection_ids.keys()
     removed_connection_ids.sort()
     for connection_id in removed_connection_ids:
         connections.erase(connection_id)
     for entity_id in normalized:
         buildings.erase(entity_id)
+        if time_warp.get("controller_id", "") == entity_id:
+            TimeWarpSystem.new(self).reset_allocation()
+            time_warp.erase("controller_id")
+            time_warp["enabled"] = false
     for connection_id in removed_connection_ids:
         EventBus.connection_removed.emit(String(connection_id))
     for entity_id in normalized:
@@ -776,7 +833,7 @@ func get_belt_configuration(belt_id: String) -> Dictionary:
     var tier := _belt_tier(connection)
     var parallel_count := _belt_parallel_count(connection)
     var stack_size := _belt_stack_size(connection)
-    var rated_throughput := float(BELT_RATED_THROUGHPUT.get(tier, 10.0))
+    var rated_throughput := float(DataManager.belt_definitions().get(tier, 10.0))
     return {
         "tier": tier,
         "rated_throughput": rated_throughput,
@@ -801,7 +858,7 @@ func _try_configure_belt_command(belt_id: String, requested: Dictionary, emit_ch
     for key in ["tier", "parallel_count", "stack_size", "priority", "route_mode", "route_offset_y", "monitor_enabled", "enabled"]:
         if requested.has(key):
             target[key] = requested[key]
-    if not target.tier is String or not BELT_RATED_THROUGHPUT.has(String(target.tier)):
+    if not target.tier is String or not DataManager.belt_definitions().has(String(target.tier)):
         return {"ok": false, "message": "线路等级无效", "reason": "invalid_tier"}
     if not _is_integral_value(target.parallel_count) or int(target.parallel_count) < 1 or int(target.parallel_count) > BELT_MAX_PARALLEL:
         return {"ok": false, "message": "并联数必须为 1..4096", "reason": "invalid_parallel_count"}
@@ -929,7 +986,7 @@ func _network_failure(template_belt_id: String, reason: String) -> Dictionary:
 
 func _is_belt_connection(connection: Dictionary) -> bool:
     var connection_type := String(connection.get("type", "conveyor_belt_mk1"))
-    return connection_type == "belt" or connection_type.begins_with("conveyor_belt")
+    return connection_type == "belt" or DataManager.belt_definitions().has(connection_type)
 
 func _normalize_belt_connection(connection: Dictionary) -> void:
     if not _is_belt_connection(connection):
@@ -946,7 +1003,7 @@ func _normalize_belt_connection(connection: Dictionary) -> void:
 
 func _belt_tier(connection: Dictionary) -> String:
     var tier := String(connection.get("type", "conveyor_belt_mk1"))
-    return tier if BELT_RATED_THROUGHPUT.has(tier) else "conveyor_belt_mk1"
+    return tier if DataManager.belt_definitions().has(tier) else "conveyor_belt_mk1"
 
 func _belt_parallel_count(connection: Dictionary) -> int:
     var value: Variant = connection.get("parallel_count", connection.get("lanes", 1))
@@ -1125,10 +1182,26 @@ func install_state(source: GameState) -> void:
     endgame = source.endgame.duplicate(true)
     interplanetary_delivered = source.interplanetary_delivered
     elapsed_time = source.elapsed_time
+    save_mode = source.save_mode
+    difficulty = source.difficulty
+    speedrun_state = source.speedrun_state.duplicate(true)
+    planet_tray_limits = source.planet_tray_limits.duplicate(true)
+    content_packs = source.content_packs.duplicate(true)
+    pure_idle = source.pure_idle.duplicate(true)
+    time_warp = source.time_warp.duplicate(true)
+    orbital_station = source.orbital_station.duplicate(true)
+    galactic_exports = source.galactic_exports.duplicate(true)
+    station_contracts = source.station_contracts.duplicate(true)
+    quantum_network = source.quantum_network.duplicate(true)
+    _source_catalog_cache = {}
     paused = source.paused
     speed = source.speed
     active_planet_id = source.active_planet_id
     galaxy_seed = source.galaxy_seed
+    source_galaxy = source.source_galaxy.duplicate(true)
+    dyson_engineering = source.dyson_engineering.duplicate(true)
+    system_space_stations = source.system_space_stations.duplicate(true)
+    galactic_hub_network = source.galactic_hub_network.duplicate(true)
     explored_system_ids = source.explored_system_ids.duplicate(true)
     colonized_planet_ids = source.colonized_planet_ids.duplicate(true)
     exploration_missions = source.exploration_missions.duplicate(true)
@@ -1631,7 +1704,7 @@ func _set_fuel_item_command(entity_id: String, item: String) -> Dictionary:
     return {"ok": true, "message": "燃料已切换"}
 
 static func construction_capacity(item_id: String) -> float:
-    return 100000000.0 if item_id.begins_with("dsp_") and DataManager.construction.has(item_id) else BELT_MAX_INVENTORY if BELT_RATED_THROUGHPUT.has(item_id) else 99.0
+    return 100000000.0 if item_id.begins_with("dsp_") and DataManager.construction.has(item_id) else BELT_MAX_INVENTORY if DataManager.belt_definitions().has(item_id) else 99.0
 
 func try_adjust_belt_lanes(ids: Array, delta: int) -> Dictionary:
     return command_history.execute(self, "调整并联线路", _adjust_belt_lanes_command.bind(ids, delta))

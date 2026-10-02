@@ -72,7 +72,7 @@ func can_add_batch(items: Dictionary, planet_id: String = "") -> bool:
 		var amount := float(items[item_key])
 		if not _validate_item_amount(item_id, amount).is_empty():
 			return false
-		if float(inventory.get(item_id, 0.0)) + amount > MAX_PLANET_STACK + AMOUNT_EPSILON:
+		if float(inventory.get(item_id, 0.0)) + amount > PlanetTraySystem.new(game_state).limit(planet_id) + AMOUNT_EPSILON:
 			return false
 	return true
 

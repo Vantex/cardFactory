@@ -8,6 +8,43 @@ static func validate_persistent_dict(payload: Variant) -> Array:
 		return errors
 
 	var data: Dictionary = payload
+	if data.has("content_packs"):
+		var pack_error := DataManager.content_pack_system.requirements_error(data.content_packs) if DataManager.content_pack_system != null else "内容包目录尚未加载"
+		if pack_error != "":
+			_add_error(errors, "missing_content_pack", "state", "", pack_error)
+			return errors
+	var source_errors := SourceGalaxySystem.validate(data)
+	for message in source_errors:
+		_add_error(errors, "invalid_source_galaxy", "state", "", message)
+	if not source_errors.is_empty(): return errors
+	for message in PlanetTraySystem.validate(data):
+		_add_error(errors, "invalid_planet_tray_limits", "state", "", message)
+	for message in GameModeSystem.validate(data):
+		_add_error(errors, "invalid_game_mode", "state", "", message)
+	for message in PureIdleState.validate(data):
+		_add_error(errors, "invalid_pure_idle", "state", "", message)
+	for message in TimeWarpSystem.validate(data):
+		_add_error(errors, "invalid_time_warp", "state", "", message)
+	for message in LocalSpaceStationSystem.validate(data):
+		_add_error(errors, "invalid_orbital_station", "state", "", message)
+	for message in StationPresentationSystem.validate(data):
+		_add_error(errors, "invalid_station_presentation", "state", "", message)
+	for message in SystemHubLogisticsSystem.validate(data):
+		_add_error(errors, "invalid_system_hub", "state", "", message)
+	for message in SystemSpaceStationSystem.validate(data):
+		_add_error(errors, "invalid_system_space_station", "state", "", message)
+	for message in GalacticExportSystem.validate(data):
+		_add_error(errors, "invalid_galactic_exports", "state", "", message)
+	for message in StationContractSystem.validate(data):
+		_add_error(errors, "invalid_station_contracts", "state", "", message)
+	for message in BlackHoleSystem.validate(data):
+		_add_error(errors, "invalid_black_hole", "state", "", message)
+	for message in OrbitalCargoTerminalSystem.validate(data):
+		_add_error(errors, "invalid_orbital_cargo", "state", "", message)
+	for message in QuantumLogisticsSystem.validate(data):
+		_add_error(errors, "invalid_quantum_network", "state", "", message)
+	for message in OrbitalCollectorSystem.validate(data):
+		_add_error(errors, "invalid_orbital_collector", "state", "", message)
 	if not _is_integral_number(data.get("schema_version")) or int(data.get("schema_version")) != GameState.SCHEMA_VERSION:
 		_add_error(errors, "invalid_schema_version", "state", "", "存档版本无效")
 
@@ -25,7 +62,10 @@ static func validate_persistent_dict(payload: Variant) -> Array:
 		_add_error(errors, "invalid_progression_facts", "state", "", message)
 	for progression_field in ["completed_objective_ids", "claimed_progression_reward_ids", "completed_achievement_ids", "unlocked_progression_ids"]:
 		_validate_stable_id_array(errors, progression_field, data.get(progression_field))
-	var galaxy := GalaxySystem.new(GameState.new())
+	var galaxy_rules := GameState.new()
+	if source_errors.is_empty(): galaxy_rules.source_galaxy = data.get("source_galaxy", {}).duplicate(true)
+	galaxy_rules.galaxy_seed = int(data.get("galaxy_seed", 240721)) if _is_integral_number(data.get("galaxy_seed")) else 240721
+	var galaxy := GalaxySystem.new(galaxy_rules)
 	_validate_galaxy_state(errors, data, galaxy)
 	_validate_root_inventory(errors, "construction_inventory", data.get("construction_inventory"), 99.0, true)
 	_validate_cursor_payload(errors, data.get("cursor_payload"))
@@ -159,7 +199,7 @@ static func _validate_galaxy_state(errors: Array, data: Dictionary, galaxy: Gala
 			if not inventories_value.has(planet_id):
 				_add_error(errors, "missing_planet_inventory", "state", planet_id, "已殖民行星缺少材料托盘")
 			else:
-				_validate_root_inventory(errors, "planet_inventory", inventories_value[planet_id], InventorySystem.MAX_PLANET_STACK)
+				_validate_root_inventory(errors, "planet_inventory", inventories_value[planet_id], PlanetTraySystem.MAX_LIMIT if not data.get("source_galaxy", {}).is_empty() else InventorySystem.MAX_PLANET_STACK)
 	_validate_viewports(errors, data.get("planet_viewports"), colonized)
 	if not _is_integral_number(data.get("galaxy_seed")):
 		_add_error(errors, "invalid_galaxy_seed", "state", "", "星区种子必须是整数")
@@ -444,6 +484,9 @@ static func _validate_catalog_configuration(errors: Array, building_id: String, 
 	var building_type := String(building.get("type", ""))
 	var definition := DataManager.get_building(building_type)
 	var recipe_id := String(building.get("recipe_id", ""))
+	if definition.get("kind") in ["storage", "splitter"]:
+		var stored: Variant = building.get("stored_item", "")
+		if not stored is String or (stored != "" and DataManager.get_item(stored).is_empty()) or building.get("distribution_mode", "balanced") not in ["balanced", "priority"]: _add_error(errors, "invalid_storage_configuration", "building", building_id, "仓储或分流器配置无效")
 	if not recipe_id.is_empty():
 		var recipe := DataManager.get_recipe(recipe_id)
 		if recipe.is_empty():

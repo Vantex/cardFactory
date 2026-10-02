@@ -167,7 +167,7 @@ func delete_slot(slot: int) -> Dictionary:
 	for source in snapshots:
 		if _remove_snapshot(slot, source) != OK: return _failure("delete_failed", "无法删除恢复快照")
 	var found := not snapshots.is_empty()
-	for suffix in ["", ".bak", ".tmp", ".emergency", ".emergency.tmp", ".offline", ".offline.bak", ".offline.tmp"]:
+	for suffix in ["", ".bak", ".tmp", ".emergency", ".emergency.tmp", ".offline", ".offline.bak", ".offline.tmp", ".offline.pure", ".offline.pure.bak", ".offline.pure.tmp"]:
 		var path := _get_slot_path(slot, suffix)
 		if not FileAccess.file_exists(path):
 			continue
@@ -200,9 +200,22 @@ func get_slot_info(slot: int) -> Dictionary:
 	metadata["valid"] = true
 	metadata["recovery_only"] = load_result.get("source", "primary") not in ["primary", "backup"]
 	metadata["building_count"] = state.buildings.size()
+	metadata["save_mode"] = state.save_mode
 	metadata["connection_count"] = state.connections.size()
 	metadata["recovered_from_backup"] = load_result.get("recovered_from_backup", false)
 	return metadata
+
+func copy_speedrun_to_normal(source_slot: int, target_slot: int) -> Dictionary:
+	var error := _validate_slot(target_slot)
+	if not error.is_empty(): return error
+	if not get_slot_info(target_slot).is_empty(): return _failure("target_occupied", "只能复制到空槽位")
+	var loaded := load_slot(source_slot)
+	if not loaded.ok: return loaded
+	if loaded.state.save_mode != "speedrun": return _failure("invalid_mode", "仅支持将速通存档复制为普通存档")
+	var candidate: GameState = loaded.state.copy_state()
+	candidate.save_mode = "normal"
+	candidate.speedrun_state = {}
+	return save_slot(target_slot, candidate)
 
 func get_all_saves() -> Array:
 	var saves: Array = []
@@ -417,21 +430,30 @@ func _digest_payload(payload: Dictionary) -> String:
 func _normalize_stored_digest_types(payload: Dictionary) -> Dictionary:
 	var normalized := payload.duplicate(true)
 	if normalized.has("production_orders"): normalized.production_orders = _json_numeric_tree(normalized.production_orders)
+	if normalized.has("progression_facts"): normalized.progression_facts = _json_numeric_tree(normalized.progression_facts)
+	for field in ["planet_tray_limits", "pure_idle", "content_packs", "speedrun_state", "time_warp", "orbital_station", "galactic_exports", "station_contracts", "quantum_network", "source_galaxy", "dyson_engineering", "system_space_stations", "galactic_hub_network"]:
+		if normalized.has(field): normalized[field] = _json_numeric_tree(normalized[field])
 	# JSON numbers decode as floats. Use that representation for belt integers;
 	# existing successfully saved float-valued records retain their digest.
 	var buildings: Variant = normalized.get("buildings")
 	if buildings is Dictionary:
 		for building in buildings.values():
 			if building is Dictionary:
+				if _is_integral_number(building.get("orbital_cargo_cursor")): building.orbital_cargo_cursor = float(building.orbital_cargo_cursor)
+				var station: Variant = building.get("station")
+				if station is Dictionary and _is_number(station.get("warper_target")): station.warper_target = float(station.warper_target)
+				if station is Dictionary and station.has("tier"): station.tier = float(station.tier)
+				if station is Dictionary and station.has("quantum_transition"): station.quantum_transition = _json_numeric_tree(station.quantum_transition)
+				if building.has("black_hole_ports"): building.black_hole_ports = _json_numeric_tree(building.black_hole_ports)
 				for field in ["proliferator_bonus", "construction_targets"]:
 					if building.has(field): building[field] = _json_numeric_tree(building[field])
-				for field in ["power_priority", "generation_priority", "stored_energy_mj", "proliferator_tier", "proliferator_points"]:
+				for field in ["station_stack_count", "power_priority", "generation_priority", "stored_energy_mj", "proliferator_tier", "proliferator_points"]:
 					if _is_number(building.get(field)): building[field] = float(building[field])
 	var connections: Variant = normalized.get("connections")
 	if connections is Dictionary:
 		for connection in connections.values():
 			if connection is Dictionary:
-				for field in ["priority", "parallel_count", "stack_size"]:
+				for field in ["priority", "parallel_count", "stack_size", "target_port_index"]:
 					if _is_integral_number(connection.get(field)):
 						connection[field] = float(connection[field])
 	LogisticsStateValidator.normalize_integer_fields(normalized)

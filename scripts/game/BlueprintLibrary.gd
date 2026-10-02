@@ -51,7 +51,7 @@ static func resolve(entry: Dictionary) -> Dictionary:
 		if not recipe_id.is_empty() and not DataManager.is_recipe_supported_by_building(DataManager.get_recipe(recipe_id), entity.type): return fail("配方不适用于蓝图建筑")
 		refs[entity.ref] = entity
 	for connection in blueprint.connections:
-		if not GameState.BELT_RATED_THROUGHPUT.has(connection.type): return fail("蓝图线路引用无效")
+		if not DataManager.belt_definitions().has(connection.type): return fail("蓝图线路引用无效")
 		var item: String = connection.configuration.get("item_id", "")
 		if DataManager.get_item(item).is_empty(): return fail("蓝图线路物品无效")
 		var source: Dictionary = refs[connection.source]

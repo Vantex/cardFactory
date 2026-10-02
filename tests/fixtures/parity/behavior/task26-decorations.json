@@ -1,0 +1,4104 @@
+{
+  "source_commit": "472bf62c76b695852b5577e563c1d113192ac731",
+  "source_files": {
+    "src/game/stationMath.ts": "5a40a7055e1b76910c84d339da2601032a6d754d725f1cd02b4ba0f474d35c0e",
+    "src/game/stationDecorations.ts": "ad76a89735066ba17cb3c3519b1b726b6f33b05ff7d368c0c7cf00326fb58019"
+  },
+  "checks": [
+    {
+      "reputation": "0",
+      "decoration": "deck_grid",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 0,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "0",
+      "decoration": "deck_grid",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 0,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "position"
+      }
+    },
+    {
+      "reputation": "0",
+      "decoration": "deck_grid",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 0,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "0",
+      "decoration": "bulkhead_arc",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "0",
+      "decoration": "bulkhead_arc",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "position"
+      }
+    },
+    {
+      "reputation": "0",
+      "decoration": "bulkhead_arc",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "0",
+      "decoration": "guide_light",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "0",
+      "decoration": "guide_light",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "position"
+      }
+    },
+    {
+      "reputation": "0",
+      "decoration": "guide_light",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "0",
+      "decoration": "cargo_crate",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "0",
+      "decoration": "cargo_crate",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "position"
+      }
+    },
+    {
+      "reputation": "0",
+      "decoration": "cargo_crate",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "0",
+      "decoration": "service_robot",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "0",
+      "decoration": "service_robot",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "0",
+      "decoration": "service_robot",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "0",
+      "decoration": "hydroponic_planter",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "0",
+      "decoration": "hydroponic_planter",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "0",
+      "decoration": "hydroponic_planter",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "0",
+      "decoration": "observation_window",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "0",
+      "decoration": "observation_window",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "0",
+      "decoration": "observation_window",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "0",
+      "decoration": "factory_flag",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "0",
+      "decoration": "factory_flag",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "0",
+      "decoration": "factory_flag",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "0",
+      "decoration": "route_hologram",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "0",
+      "decoration": "route_hologram",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "0",
+      "decoration": "route_hologram",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "0",
+      "decoration": "quantum_sculpture",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "0",
+      "decoration": "quantum_sculpture",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "0",
+      "decoration": "quantum_sculpture",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "0",
+      "decoration": "contract_trophy",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "0",
+      "decoration": "contract_trophy",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "0",
+      "decoration": "contract_trophy",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "0",
+      "decoration": "dyson_monument",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "0",
+      "decoration": "dyson_monument",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "0",
+      "decoration": "dyson_monument",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "0",
+      "decoration": "galactic_beacon",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "0",
+      "decoration": "galactic_beacon",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "0",
+      "decoration": "galactic_beacon",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "99",
+      "decoration": "deck_grid",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 0,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "99",
+      "decoration": "deck_grid",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 0,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "position"
+      }
+    },
+    {
+      "reputation": "99",
+      "decoration": "deck_grid",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 0,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "99",
+      "decoration": "bulkhead_arc",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "99",
+      "decoration": "bulkhead_arc",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "position"
+      }
+    },
+    {
+      "reputation": "99",
+      "decoration": "bulkhead_arc",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "99",
+      "decoration": "guide_light",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "99",
+      "decoration": "guide_light",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "position"
+      }
+    },
+    {
+      "reputation": "99",
+      "decoration": "guide_light",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "99",
+      "decoration": "cargo_crate",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "99",
+      "decoration": "cargo_crate",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "position"
+      }
+    },
+    {
+      "reputation": "99",
+      "decoration": "cargo_crate",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "99",
+      "decoration": "service_robot",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "99",
+      "decoration": "service_robot",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "99",
+      "decoration": "service_robot",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "99",
+      "decoration": "hydroponic_planter",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "99",
+      "decoration": "hydroponic_planter",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "99",
+      "decoration": "hydroponic_planter",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "99",
+      "decoration": "observation_window",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "99",
+      "decoration": "observation_window",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "99",
+      "decoration": "observation_window",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "99",
+      "decoration": "factory_flag",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "99",
+      "decoration": "factory_flag",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "99",
+      "decoration": "factory_flag",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "99",
+      "decoration": "route_hologram",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "99",
+      "decoration": "route_hologram",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "99",
+      "decoration": "route_hologram",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "99",
+      "decoration": "quantum_sculpture",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "99",
+      "decoration": "quantum_sculpture",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "99",
+      "decoration": "quantum_sculpture",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "99",
+      "decoration": "contract_trophy",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "99",
+      "decoration": "contract_trophy",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "99",
+      "decoration": "contract_trophy",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "99",
+      "decoration": "dyson_monument",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "99",
+      "decoration": "dyson_monument",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "99",
+      "decoration": "dyson_monument",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "99",
+      "decoration": "galactic_beacon",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "99",
+      "decoration": "galactic_beacon",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "99",
+      "decoration": "galactic_beacon",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "100",
+      "decoration": "deck_grid",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 0,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "100",
+      "decoration": "deck_grid",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 0,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "position"
+      }
+    },
+    {
+      "reputation": "100",
+      "decoration": "deck_grid",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 0,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "100",
+      "decoration": "bulkhead_arc",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "100",
+      "decoration": "bulkhead_arc",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "position"
+      }
+    },
+    {
+      "reputation": "100",
+      "decoration": "bulkhead_arc",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "100",
+      "decoration": "guide_light",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "100",
+      "decoration": "guide_light",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "position"
+      }
+    },
+    {
+      "reputation": "100",
+      "decoration": "guide_light",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "100",
+      "decoration": "cargo_crate",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "100",
+      "decoration": "cargo_crate",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "position"
+      }
+    },
+    {
+      "reputation": "100",
+      "decoration": "cargo_crate",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "100",
+      "decoration": "service_robot",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "100",
+      "decoration": "service_robot",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "position"
+      }
+    },
+    {
+      "reputation": "100",
+      "decoration": "service_robot",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "100",
+      "decoration": "hydroponic_planter",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "100",
+      "decoration": "hydroponic_planter",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "position"
+      }
+    },
+    {
+      "reputation": "100",
+      "decoration": "hydroponic_planter",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "100",
+      "decoration": "observation_window",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "100",
+      "decoration": "observation_window",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "rotation"
+      }
+    },
+    {
+      "reputation": "100",
+      "decoration": "observation_window",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "100",
+      "decoration": "factory_flag",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "100",
+      "decoration": "factory_flag",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "rotation"
+      }
+    },
+    {
+      "reputation": "100",
+      "decoration": "factory_flag",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "100",
+      "decoration": "route_hologram",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "100",
+      "decoration": "route_hologram",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "100",
+      "decoration": "route_hologram",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "100",
+      "decoration": "quantum_sculpture",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "100",
+      "decoration": "quantum_sculpture",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "100",
+      "decoration": "quantum_sculpture",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "100",
+      "decoration": "contract_trophy",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "100",
+      "decoration": "contract_trophy",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "100",
+      "decoration": "contract_trophy",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "100",
+      "decoration": "dyson_monument",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "100",
+      "decoration": "dyson_monument",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "100",
+      "decoration": "dyson_monument",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "100",
+      "decoration": "galactic_beacon",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "100",
+      "decoration": "galactic_beacon",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "100",
+      "decoration": "galactic_beacon",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "799",
+      "decoration": "deck_grid",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 0,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "799",
+      "decoration": "deck_grid",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 0,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "position"
+      }
+    },
+    {
+      "reputation": "799",
+      "decoration": "deck_grid",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 0,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "799",
+      "decoration": "bulkhead_arc",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "799",
+      "decoration": "bulkhead_arc",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "position"
+      }
+    },
+    {
+      "reputation": "799",
+      "decoration": "bulkhead_arc",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "799",
+      "decoration": "guide_light",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "799",
+      "decoration": "guide_light",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "position"
+      }
+    },
+    {
+      "reputation": "799",
+      "decoration": "guide_light",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "799",
+      "decoration": "cargo_crate",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "799",
+      "decoration": "cargo_crate",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "position"
+      }
+    },
+    {
+      "reputation": "799",
+      "decoration": "cargo_crate",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "799",
+      "decoration": "service_robot",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "799",
+      "decoration": "service_robot",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "position"
+      }
+    },
+    {
+      "reputation": "799",
+      "decoration": "service_robot",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "799",
+      "decoration": "hydroponic_planter",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "799",
+      "decoration": "hydroponic_planter",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "position"
+      }
+    },
+    {
+      "reputation": "799",
+      "decoration": "hydroponic_planter",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "799",
+      "decoration": "observation_window",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "799",
+      "decoration": "observation_window",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "rotation"
+      }
+    },
+    {
+      "reputation": "799",
+      "decoration": "observation_window",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "799",
+      "decoration": "factory_flag",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "799",
+      "decoration": "factory_flag",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "rotation"
+      }
+    },
+    {
+      "reputation": "799",
+      "decoration": "factory_flag",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "799",
+      "decoration": "route_hologram",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "799",
+      "decoration": "route_hologram",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "position"
+      }
+    },
+    {
+      "reputation": "799",
+      "decoration": "route_hologram",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "799",
+      "decoration": "quantum_sculpture",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "799",
+      "decoration": "quantum_sculpture",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "position"
+      }
+    },
+    {
+      "reputation": "799",
+      "decoration": "quantum_sculpture",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "799",
+      "decoration": "contract_trophy",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "799",
+      "decoration": "contract_trophy",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "799",
+      "decoration": "contract_trophy",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "799",
+      "decoration": "dyson_monument",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "799",
+      "decoration": "dyson_monument",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "799",
+      "decoration": "dyson_monument",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "799",
+      "decoration": "galactic_beacon",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "799",
+      "decoration": "galactic_beacon",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "799",
+      "decoration": "galactic_beacon",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "800",
+      "decoration": "deck_grid",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 0,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "800",
+      "decoration": "deck_grid",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 0,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "800",
+      "decoration": "deck_grid",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 0,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "800",
+      "decoration": "bulkhead_arc",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "800",
+      "decoration": "bulkhead_arc",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "800",
+      "decoration": "bulkhead_arc",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "800",
+      "decoration": "guide_light",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "800",
+      "decoration": "guide_light",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "800",
+      "decoration": "guide_light",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "800",
+      "decoration": "cargo_crate",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "800",
+      "decoration": "cargo_crate",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "800",
+      "decoration": "cargo_crate",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "800",
+      "decoration": "service_robot",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "800",
+      "decoration": "service_robot",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "800",
+      "decoration": "service_robot",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "800",
+      "decoration": "hydroponic_planter",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "800",
+      "decoration": "hydroponic_planter",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "800",
+      "decoration": "hydroponic_planter",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "800",
+      "decoration": "observation_window",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "800",
+      "decoration": "observation_window",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "rotation"
+      }
+    },
+    {
+      "reputation": "800",
+      "decoration": "observation_window",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "800",
+      "decoration": "factory_flag",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "800",
+      "decoration": "factory_flag",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "rotation"
+      }
+    },
+    {
+      "reputation": "800",
+      "decoration": "factory_flag",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "800",
+      "decoration": "route_hologram",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "800",
+      "decoration": "route_hologram",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "800",
+      "decoration": "route_hologram",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "800",
+      "decoration": "quantum_sculpture",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "800",
+      "decoration": "quantum_sculpture",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "800",
+      "decoration": "quantum_sculpture",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "800",
+      "decoration": "contract_trophy",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "800",
+      "decoration": "contract_trophy",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "800",
+      "decoration": "contract_trophy",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "800",
+      "decoration": "dyson_monument",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "800",
+      "decoration": "dyson_monument",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "800",
+      "decoration": "dyson_monument",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "800",
+      "decoration": "galactic_beacon",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "800",
+      "decoration": "galactic_beacon",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "800",
+      "decoration": "galactic_beacon",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "level"
+      }
+    },
+    {
+      "reputation": "5000",
+      "decoration": "deck_grid",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 0,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "5000",
+      "decoration": "deck_grid",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 0,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "5000",
+      "decoration": "deck_grid",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 0,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "5000",
+      "decoration": "bulkhead_arc",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "5000",
+      "decoration": "bulkhead_arc",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "5000",
+      "decoration": "bulkhead_arc",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "5000",
+      "decoration": "guide_light",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "5000",
+      "decoration": "guide_light",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "5000",
+      "decoration": "guide_light",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "5000",
+      "decoration": "cargo_crate",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "5000",
+      "decoration": "cargo_crate",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "5000",
+      "decoration": "cargo_crate",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "5000",
+      "decoration": "service_robot",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "5000",
+      "decoration": "service_robot",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "5000",
+      "decoration": "service_robot",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "5000",
+      "decoration": "hydroponic_planter",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "5000",
+      "decoration": "hydroponic_planter",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "5000",
+      "decoration": "hydroponic_planter",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "5000",
+      "decoration": "observation_window",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "5000",
+      "decoration": "observation_window",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "rotation"
+      }
+    },
+    {
+      "reputation": "5000",
+      "decoration": "observation_window",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "5000",
+      "decoration": "factory_flag",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "5000",
+      "decoration": "factory_flag",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "rotation"
+      }
+    },
+    {
+      "reputation": "5000",
+      "decoration": "factory_flag",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "5000",
+      "decoration": "route_hologram",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "5000",
+      "decoration": "route_hologram",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "5000",
+      "decoration": "route_hologram",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "5000",
+      "decoration": "quantum_sculpture",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "5000",
+      "decoration": "quantum_sculpture",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "5000",
+      "decoration": "quantum_sculpture",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "5000",
+      "decoration": "contract_trophy",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "5000",
+      "decoration": "contract_trophy",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "5000",
+      "decoration": "contract_trophy",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "5000",
+      "decoration": "dyson_monument",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "5000",
+      "decoration": "dyson_monument",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "5000",
+      "decoration": "dyson_monument",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "5000",
+      "decoration": "galactic_beacon",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "5000",
+      "decoration": "galactic_beacon",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "5000",
+      "decoration": "galactic_beacon",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "decoration": "deck_grid",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 0,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "decoration": "deck_grid",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 0,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "decoration": "deck_grid",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 0,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "decoration": "bulkhead_arc",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "decoration": "bulkhead_arc",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "decoration": "bulkhead_arc",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "decoration": "guide_light",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "decoration": "guide_light",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "decoration": "guide_light",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "decoration": "cargo_crate",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "decoration": "cargo_crate",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "decoration": "cargo_crate",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "decoration": "service_robot",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "decoration": "service_robot",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "decoration": "service_robot",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "decoration": "hydroponic_planter",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "decoration": "hydroponic_planter",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "decoration": "hydroponic_planter",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "decoration": "observation_window",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "decoration": "observation_window",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "rotation"
+      }
+    },
+    {
+      "reputation": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "decoration": "observation_window",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "decoration": "factory_flag",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "decoration": "factory_flag",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "rotation"
+      }
+    },
+    {
+      "reputation": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "decoration": "factory_flag",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "decoration": "route_hologram",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "decoration": "route_hologram",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "decoration": "route_hologram",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 2,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "decoration": "quantum_sculpture",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "decoration": "quantum_sculpture",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "decoration": "quantum_sculpture",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "decoration": "contract_trophy",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "decoration": "contract_trophy",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "decoration": "contract_trophy",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "decoration": "dyson_monument",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "decoration": "dyson_monument",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "decoration": "dyson_monument",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    },
+    {
+      "reputation": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "decoration": "galactic_beacon",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "decoration": "galactic_beacon",
+      "position": {
+        "x": -750,
+        "y": 400,
+        "rotation": 90,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": true,
+        "code": "ready"
+      }
+    },
+    {
+      "reputation": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "decoration": "galactic_beacon",
+      "position": {
+        "x": -270,
+        "y": -80,
+        "rotation": 0,
+        "layer": 1,
+        "variant": 0
+      },
+      "expected": {
+        "ok": false,
+        "code": "anchor"
+      }
+    }
+  ]
+}

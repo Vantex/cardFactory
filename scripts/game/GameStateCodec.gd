@@ -77,6 +77,21 @@ static func to_persistent_dict(state: GameState) -> Dictionary:
 		"connections": _encode_connections(state),
 	}
 	if not state.progression_facts.is_empty(): payload["progression_facts"] = state.progression_facts.duplicate(true)
+	if state.save_mode != "normal": payload["save_mode"] = state.save_mode
+	if state.difficulty != "standard": payload["difficulty"] = state.difficulty
+	if not state.speedrun_state.is_empty(): payload["speedrun_state"] = state.speedrun_state.duplicate(true)
+	if not state.planet_tray_limits.is_empty(): payload["planet_tray_limits"] = state.planet_tray_limits.duplicate(true)
+	if not state.content_packs.is_empty(): payload["content_packs"] = state.content_packs.duplicate(true)
+	if not state.pure_idle.is_empty(): payload["pure_idle"] = state.pure_idle.duplicate(true)
+	if not state.time_warp.is_empty(): payload["time_warp"] = {"controller_id": state.time_warp.get("controller_id", ""), "enabled": state.time_warp.get("enabled", false), "requested": state.time_warp.get("requested", 5)}
+	if not state.orbital_station.is_empty(): payload["orbital_station"] = state.orbital_station.duplicate(true)
+	if not state.galactic_exports.is_empty(): payload["galactic_exports"] = state.galactic_exports.duplicate(true)
+	if not state.station_contracts.is_empty(): payload["station_contracts"] = state.station_contracts.duplicate(true)
+	if not state.quantum_network.is_empty(): payload["quantum_network"] = state.quantum_network.duplicate(true)
+	if not state.source_galaxy.is_empty(): payload["source_galaxy"] = state.source_galaxy.duplicate(true)
+	if not state.galactic_hub_network.is_empty(): payload["galactic_hub_network"] = state.galactic_hub_network.duplicate(true)
+	if not state.system_space_stations.is_empty(): payload["system_space_stations"] = state.system_space_stations.duplicate(true)
+	if not state.dyson_engineering.is_empty(): payload["dyson_engineering"] = state.dyson_engineering.duplicate(true)
 	if not state.selected_source_objective.is_empty(): payload["selected_source_objective"] = state.selected_source_objective
 	if not state.production_orders.is_empty(): payload["production_orders"] = state.production_orders.duplicate(true)
 	for field in ["blueprint_library", "construction_queue", "canvas_regions", "canvas_bookmarks"]:
@@ -91,6 +106,21 @@ static func from_persistent_dict(payload: Variant) -> GameState:
 	var data: Dictionary = migration_result["data"]
 	var state := GameState.new()
 	state.elapsed_time = float(data["elapsed_time"])
+	state.save_mode = String(data.get("save_mode", "normal"))
+	state.difficulty = String(data.get("difficulty", "standard"))
+	state.speedrun_state = data.get("speedrun_state", {}).duplicate(true)
+	state.planet_tray_limits = data.get("planet_tray_limits", {}).duplicate(true)
+	state.content_packs = data.get("content_packs", []).duplicate(true)
+	state.pure_idle = data.get("pure_idle", {}).duplicate(true)
+	state.time_warp = data.get("time_warp", {}).duplicate(true)
+	state.orbital_station = data.get("orbital_station", {}).duplicate(true)
+	state.galactic_exports = data.get("galactic_exports", {}).duplicate(true)
+	state.station_contracts = data.get("station_contracts", {}).duplicate(true)
+	state.quantum_network = data.get("quantum_network", {}).duplicate(true)
+	state.source_galaxy = data.get("source_galaxy", {}).duplicate(true)
+	state.dyson_engineering = data.get("dyson_engineering", {}).duplicate(true)
+	state.system_space_stations = data.get("system_space_stations", {}).duplicate(true)
+	state.galactic_hub_network = data.get("galactic_hub_network", {}).duplicate(true)
 	state.active_planet_id = String(data["active_planet_id"])
 	state.galaxy_seed = int(data["galaxy_seed"])
 	state.explored_system_ids = data["explored_system_ids"].duplicate(true)
@@ -207,6 +237,9 @@ static func _decode_buildings(encoded_buildings: Dictionary) -> Dictionary:
 		building["position"] = Vector2(float(position.get("x", 0.0)), float(position.get("y", 0.0)))
 		building["status"] = "idle"
 		if building.has("station"):
+			if building.station.has("warper_target"): building.station.warper_target = int(building.station.warper_target)
+			if building.station.has("tier"): building.station.tier = int(building.station.tier)
+			if building.station.has("quantum_transition"): building.station.quantum_transition.boundary_second = int(building.station.quantum_transition.boundary_second)
 			for item in building.station.fleet:
 				building.station.fleet[item] = int(building.station.fleet[item])
 			for slot in building.station.slots:
@@ -222,7 +255,7 @@ static func _decode_connections(encoded_connections: Dictionary) -> Dictionary:
 		connection["active"] = false
 		connection["current_flow"] = 0.0
 		var connection_type := String(connection.get("type", "conveyor_belt_mk1"))
-		if connection_type == "belt" or connection_type.begins_with("conveyor_belt"):
+		if connection_type == "belt" or DataManager.belt_definitions().has(connection_type):
 			connection["construction_accounted"] = true
 		connections[String(connection_id)] = connection
 	return connections

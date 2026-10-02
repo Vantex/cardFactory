@@ -1,0 +1,439 @@
+{
+  "source_commit": "472bf62c76b695852b5577e563c1d113192ac731",
+  "source_files": {
+    "src/game/stationMath.ts": "5a40a7055e1b76910c84d339da2601032a6d754d725f1cd02b4ba0f474d35c0e",
+    "src/game/stationDecorations.ts": "ad76a89735066ba17cb3c3519b1b726b6f33b05ff7d368c0c7cf00326fb58019"
+  },
+  "levels": [
+    {
+      "level": 1,
+      "reputation": "0",
+      "title": "轨道新港",
+      "placementLimit": 16,
+      "halfWidth": 520,
+      "halfHeight": 320
+    },
+    {
+      "level": 2,
+      "reputation": "100",
+      "title": "星际中继站",
+      "placementLimit": 32,
+      "halfWidth": 650,
+      "halfHeight": 380
+    },
+    {
+      "level": 3,
+      "reputation": "300",
+      "title": "深空贸易港",
+      "placementLimit": 64,
+      "halfWidth": 760,
+      "halfHeight": 440
+    },
+    {
+      "level": 4,
+      "reputation": "800",
+      "title": "银河展示枢纽",
+      "placementLimit": 112,
+      "halfWidth": 860,
+      "halfHeight": 500
+    },
+    {
+      "level": 5,
+      "reputation": "2000",
+      "title": "文明纪念站",
+      "placementLimit": 176,
+      "halfWidth": 960,
+      "halfHeight": 560
+    },
+    {
+      "level": 6,
+      "reputation": "5000",
+      "title": "群星会客厅",
+      "placementLimit": 256,
+      "halfWidth": 1080,
+      "halfHeight": 620
+    }
+  ],
+  "decorations": [
+    {
+      "id": "deck_grid",
+      "name": "核心甲板网格",
+      "englishName": "Core Deck Grid",
+      "category": "structure",
+      "description": "空间站标准化的发光甲板分区。",
+      "markCost": "0",
+      "minimumLevel": 1,
+      "repeatable": true,
+      "width": 160,
+      "height": 100,
+      "layers": [
+        0
+      ],
+      "rotations": [
+        0,
+        90,
+        180,
+        270
+      ],
+      "variantCount": 3,
+      "animated": false,
+      "publicSafe": true,
+      "glyph": "▦",
+      "color": "#4fb8ac"
+    },
+    {
+      "id": "bulkhead_arc",
+      "name": "弧形舱壁",
+      "englishName": "Arc Bulkhead",
+      "category": "structure",
+      "description": "用于勾勒展示舱轮廓的模块化舱壁。",
+      "markCost": "35",
+      "minimumLevel": 1,
+      "repeatable": true,
+      "width": 120,
+      "height": 34,
+      "layers": [
+        1,
+        2
+      ],
+      "rotations": [
+        0,
+        90,
+        180,
+        270
+      ],
+      "variantCount": 2,
+      "animated": false,
+      "publicSafe": true,
+      "glyph": "⌒",
+      "color": "#90a9a4"
+    },
+    {
+      "id": "guide_light",
+      "name": "货运引导灯",
+      "englishName": "Cargo Guide Light",
+      "category": "light",
+      "description": "沿甲板连续布置的低亮度引导灯。",
+      "markCost": "25",
+      "minimumLevel": 1,
+      "repeatable": true,
+      "width": 52,
+      "height": 26,
+      "layers": [
+        2,
+        3
+      ],
+      "rotations": [
+        0,
+        90,
+        180,
+        270
+      ],
+      "variantCount": 4,
+      "animated": true,
+      "publicSafe": true,
+      "glyph": "✦",
+      "color": "#75e4d2"
+    },
+    {
+      "id": "cargo_crate",
+      "name": "标准货柜组",
+      "englishName": "Standard Cargo Crates",
+      "category": "cargo",
+      "description": "带轨道出口识别码的密封货柜。",
+      "markCost": "30",
+      "minimumLevel": 1,
+      "repeatable": true,
+      "width": 72,
+      "height": 58,
+      "layers": [
+        1,
+        2
+      ],
+      "rotations": [
+        0,
+        90,
+        180,
+        270
+      ],
+      "variantCount": 4,
+      "animated": false,
+      "publicSafe": true,
+      "glyph": "▣",
+      "color": "#d39a4c"
+    },
+    {
+      "id": "service_robot",
+      "name": "甲板维护机器人",
+      "englishName": "Deck Service Robot",
+      "category": "robot",
+      "description": "按固定巡检动作工作的轻型维护机。",
+      "markCost": "80",
+      "minimumLevel": 2,
+      "repeatable": true,
+      "width": 54,
+      "height": 54,
+      "layers": [
+        1,
+        2
+      ],
+      "rotations": [
+        0,
+        90,
+        180,
+        270
+      ],
+      "variantCount": 3,
+      "animated": true,
+      "publicSafe": true,
+      "glyph": "◉",
+      "color": "#8bc7ff"
+    },
+    {
+      "id": "hydroponic_planter",
+      "name": "水培绿植舱",
+      "englishName": "Hydroponic Planter",
+      "category": "nature",
+      "description": "封闭循环的观赏植物模块。",
+      "markCost": "65",
+      "minimumLevel": 2,
+      "repeatable": true,
+      "width": 76,
+      "height": 54,
+      "layers": [
+        1,
+        2
+      ],
+      "rotations": [
+        0,
+        90,
+        180,
+        270
+      ],
+      "variantCount": 3,
+      "animated": false,
+      "publicSafe": true,
+      "glyph": "♧",
+      "color": "#77c77d"
+    },
+    {
+      "id": "observation_window",
+      "name": "深空观景窗",
+      "englishName": "Deep-space Window",
+      "category": "window",
+      "description": "显示当前空间站主题星景的安全舷窗。",
+      "markCost": "110",
+      "minimumLevel": 2,
+      "repeatable": true,
+      "width": 150,
+      "height": 72,
+      "layers": [
+        1,
+        2
+      ],
+      "rotations": [
+        0,
+        180
+      ],
+      "variantCount": 3,
+      "animated": true,
+      "publicSafe": true,
+      "glyph": "◫",
+      "color": "#5f8edb"
+    },
+    {
+      "id": "factory_flag",
+      "name": "工厂旗帜",
+      "englishName": "Factory Banner",
+      "category": "flag",
+      "description": "带有限预设纹样的空间站旗帜。",
+      "markCost": "90",
+      "minimumLevel": 2,
+      "repeatable": true,
+      "width": 58,
+      "height": 92,
+      "layers": [
+        2,
+        3
+      ],
+      "rotations": [
+        0,
+        180
+      ],
+      "variantCount": 6,
+      "animated": true,
+      "publicSafe": true,
+      "glyph": "⚑",
+      "color": "#ee846f"
+    },
+    {
+      "id": "route_hologram",
+      "name": "航线全息图",
+      "englishName": "Route Hologram",
+      "category": "hologram",
+      "description": "以匿名化轨迹展示银河货运网络。",
+      "markCost": "150",
+      "minimumLevel": 3,
+      "repeatable": true,
+      "width": 118,
+      "height": 92,
+      "layers": [
+        2,
+        3
+      ],
+      "rotations": [
+        0,
+        90,
+        180,
+        270
+      ],
+      "variantCount": 4,
+      "animated": true,
+      "publicSafe": true,
+      "glyph": "◎",
+      "color": "#69d9ff"
+    },
+    {
+      "id": "quantum_sculpture",
+      "name": "量子波雕塑",
+      "englishName": "Quantum Wave Sculpture",
+      "category": "monument",
+      "description": "将量子物流相位波转化为纯视觉装置。",
+      "markCost": "240",
+      "minimumLevel": 3,
+      "repeatable": true,
+      "width": 92,
+      "height": 116,
+      "layers": [
+        1,
+        2
+      ],
+      "rotations": [
+        0,
+        90,
+        180,
+        270
+      ],
+      "variantCount": 2,
+      "animated": true,
+      "publicSafe": true,
+      "glyph": "≋",
+      "color": "#b792ff"
+    },
+    {
+      "id": "contract_trophy",
+      "name": "百单纪念奖杯",
+      "englishName": "Contract Centurion Trophy",
+      "category": "trophy",
+      "description": "纪念持续完成轨道出口合同的唯一展品。",
+      "markCost": "400",
+      "minimumLevel": 4,
+      "repeatable": false,
+      "width": 86,
+      "height": 108,
+      "layers": [
+        1,
+        2
+      ],
+      "rotations": [
+        0,
+        90,
+        180,
+        270
+      ],
+      "variantCount": 1,
+      "animated": false,
+      "publicSafe": true,
+      "glyph": "♜",
+      "color": "#f2c35f"
+    },
+    {
+      "id": "dyson_monument",
+      "name": "戴森工程纪念碑",
+      "englishName": "Dyson Project Monument",
+      "category": "monument",
+      "description": "以缩尺结构记录恒星工程里程碑。",
+      "markCost": "650",
+      "minimumLevel": 5,
+      "repeatable": false,
+      "width": 150,
+      "height": 150,
+      "layers": [
+        1,
+        2
+      ],
+      "rotations": [
+        0,
+        90,
+        180,
+        270
+      ],
+      "variantCount": 1,
+      "animated": true,
+      "publicSafe": true,
+      "glyph": "◌",
+      "color": "#ffb86c"
+    },
+    {
+      "id": "galactic_beacon",
+      "name": "群星通讯信标",
+      "englishName": "Galactic Signal Beacon",
+      "category": "monument",
+      "description": "面向公共空间站主页的纯展示通讯信标。",
+      "markCost": "900",
+      "minimumLevel": 6,
+      "repeatable": false,
+      "width": 118,
+      "height": 170,
+      "layers": [
+        1,
+        2
+      ],
+      "rotations": [
+        0,
+        90,
+        180,
+        270
+      ],
+      "variantCount": 1,
+      "animated": true,
+      "publicSafe": true,
+      "glyph": "⌁",
+      "color": "#7ef0df"
+    }
+  ],
+  "themes": [
+    {
+      "id": "orbital_teal",
+      "name": "轨道青",
+      "minimumLevel": 1,
+      "markCost": "0",
+      "background": "#071310",
+      "accent": "#65d4c3"
+    },
+    {
+      "id": "solar_gold",
+      "name": "恒星金",
+      "minimumLevel": 2,
+      "markCost": "180",
+      "background": "#171108",
+      "accent": "#e7b85f"
+    },
+    {
+      "id": "nebula_violet",
+      "name": "星云紫",
+      "minimumLevel": 3,
+      "markCost": "260",
+      "background": "#100b19",
+      "accent": "#b692ef"
+    },
+    {
+      "id": "deep_blue",
+      "name": "深空蓝",
+      "minimumLevel": 4,
+      "markCost": "380",
+      "background": "#07101c",
+      "accent": "#72b7ed"
+    }
+  ]
+}

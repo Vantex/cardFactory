@@ -14,6 +14,12 @@ var status: Label
 var summary: Label
 var preview: Control
 var refresh_time := 0.0
+var node_source: OptionButton
+var node_target: OptionButton
+var launch_mode: OptionButton
+var launch_throttle: OptionButton
+var standard_count: SpinBox
+var layer_clipboard: Dictionary = {}
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
@@ -48,15 +54,45 @@ func _ready() -> void:
 	_button("规划壳面（至少三个节点）", func(): _result(_model().plan_shell(_selected(system_choice), _selected(layer_choice))))
 	_button("删除空轨道", func(): _result(_model().remove_plan(_selected(system_choice), _selected(orbit_choice), "orbits")))
 	_button("删除空层", func(): _result(_model().remove_plan(_selected(system_choice), _selected(layer_choice), "layers")))
+	_label("源戴森工程 · 框架与壳面")
+	standard_count = _number("标准壳层节点数", 3, 16, 8)
+	_button("创建标准壳层", func(): _result(_source().standard_layer(_selected(system_choice), _selected(orbit_choice), int(standard_count.value))))
+	node_source = _choice("起点节点")
+	node_target = _choice("终点 / 删除节点")
+	layer_choice.item_selected.connect(func(_i: int): _refresh_nodes())
+	_button("连接所选节点", func(): _result(_source().connect_nodes(_selected(system_choice), _selected(layer_choice), _selected(node_source), _selected(node_target))))
+	_button("自动连接相邻节点", func(): _result(_source().auto_connect(_selected(system_choice), _selected(layer_choice))))
+	_button("删除所选节点及相连框架", func(): _result(_source().remove_node(_selected(system_choice), _selected(layer_choice), _selected(node_target))))
+	_button("清空壳面规划", func(): _result(_source().clear_shells(_selected(system_choice), _selected(layer_choice))))
+	_button("应用几何到所选层", func(): _result(_source().set_geometry(_selected(system_choice), _selected(layer_choice), "layers", radius.value, inclination.value, longitude.value)))
+	_button("应用几何到所选轨道", func(): _result(_source().set_geometry(_selected(system_choice), _selected(orbit_choice), "orbits", radius.value, inclination.value, longitude.value)))
+	_button("复制所选壳层模板", func():
+		layer_clipboard = _source().copy_template(_selected(system_choice), _selected(layer_choice))
+		status.text = "壳层模板已复制" if not layer_clipboard.is_empty() else "请选择源戴森层")
+	_button("粘贴壳层模板", func(): _result(_source().paste_template(_selected(system_choice), _selected(orbit_choice), layer_clipboard)))
+	launch_mode = _choice("全局发射模式")
+	for mode in [["balanced", "均衡"], ["swarm", "太阳帆"], ["sphere", "结构火箭"]]:
+		launch_mode.add_item(mode[1])
+		launch_mode.set_item_metadata(launch_mode.item_count - 1, mode[0])
+	launch_throttle = _choice("全局发射节流")
+	for throttle in [0.25, 0.5, 0.75, 1.0]:
+		launch_throttle.add_item("%.0f%%" % (throttle * 100))
+		launch_throttle.set_item_metadata(launch_throttle.item_count - 1, throttle)
+	launch_throttle.select(3)
+	_button("应用并启用全局发射计划", func(): _result(_source().configure_schedule(_selected(launch_mode), float(launch_throttle.get_item_metadata(launch_throttle.selected)), true)))
+	_button("暂停全局发射计划", func(): _result(_source().configure_schedule(_selected(launch_mode), float(launch_throttle.get_item_metadata(launch_throttle.selected)), false)))
 	launcher_choice = _choice("当前行星发射设备")
 	_button("绑定所选轨道 / 层并启动", _configure.bind(true, false))
 	_button("停止发射", _configure.bind(false, false))
 	_button("解除目标", _configure.bind(false, true))
-	quantity = _number("装载耗材数量（容量 60）", 1, 60, 1)
+	quantity = _number("装载耗材数量", 1, 60, 1)
 	_button("从当前行星托盘装载", func(): _result(_model().load_ammo(_selected(launcher_choice), int(quantity.value))))
 	visibility_changed.connect(func():
 		if visible: refresh())
 	refresh()
+
+func _source() -> SourceDysonEngineering:
+	return SourceDysonEngineering.new(GameManager.get_game_state())
 
 func _model() -> DysonSphereSystem:
 	return DysonSphereSystem.new(GameManager.get_game_state())
@@ -126,13 +162,25 @@ func _refresh_plans() -> void:
 		var layer: Dictionary = system.layers[id]
 		entries[id] = "%s · %d 节点 · 壳面 %d 帆" % [id, layer.nodes.size(), layer.shell.get("sails", 0)]
 	_fill(layer_choice, entries)
+	_refresh_nodes()
 	_update_summary()
+
+func _refresh_nodes() -> void:
+	if node_source == null: return
+	var layer := _source().layer_for(_selected(system_choice), _selected(layer_choice))
+	var entries := {}
+	for node in layer.get("nodes", {}).values(): entries[node.id] = "%s · %.1f° · %d/%d" % [node.id, node.angle, node.points, node.get("required_points", 2)]
+	_fill(node_source, entries)
+	_fill(node_target, entries)
 
 func _update_summary() -> void:
 	preview.queue_redraw()
 	var data := _model().get_summary(_selected(system_choice))
 	summary.text = "在轨 %d / 已吸附 %d / 已到期 %d\n结构点 %d · 尚缺火箭 %d / 太阳帆 %d\n当前 %.0f kW · 规划结构完成后 %.0f kW\n太阳帆寿命 600 秒；接收器共享本恒星系可用功率。" % [data.live_sails, data.absorbed_sails, data.expired_sails, data.structure_points, data.missing_rockets, data.missing_sails, data.power_kw, data.planned_power_kw]
 
+	if not GameManager.get_game_state().source_galaxy.is_empty():
+		summary.text = "在轨 %d / 已吸附 %d / 已到期 %d\n结构点 %d · 尚缺火箭 %d / 太阳帆 %d\n框架 %d · 壳面 %d · 激活容量 %d / 规划容量 %d\n当前 %.0f kW · 规划完成 %.0f kW\n太阳帆基础寿命 1200 秒；发电乘以恒星光度和研究系数。" % [data.live_sails, data.absorbed_sails, data.expired_sails, data.structure_points, data.missing_rockets, data.missing_sails, data.get("frames", 0), data.get("shells", 0), data.get("active_capacity", 0), data.get("planned_capacity", 0), data.power_kw, data.planned_power_kw]
+	quantity.max_value = _model().ammo_capacity(_selected(launcher_choice))
 	var building: Dictionary = GameManager.get_game_state().buildings.get(_selected(launcher_choice), {})
 	if not building.is_empty():
 		var config: Dictionary = building.get("dyson", {})
@@ -141,7 +189,7 @@ func _update_summary() -> void:
 func _configure(enabled: bool, unbind: bool) -> void:
 	var id := _selected(launcher_choice)
 	var building: Dictionary = GameManager.get_game_state().buildings.get(id, {})
-	var target := _selected(orbit_choice) if building.get("type") == "solar_sail_ejector" else _selected(layer_choice)
+	var target := _selected(orbit_choice) if building.get("type") in ["solar_sail_ejector", "dsp_em_rail_ejector"] else _selected(layer_choice)
 	if not enabled: target = String(building.get("dyson", {}).get("target_id", ""))
 	_result(_model().configure_launcher(id, "" if unbind else target, enabled))
 
@@ -171,7 +219,11 @@ func _draw_plan() -> void:
 		for node in nodes:
 			var point := center + Vector2.from_angle(deg_to_rad(float(node.angle))) * r
 			points.append(point)
-			preview.draw_circle(point, 4, Color("#70bb85") if int(node.points) == 2 else Color("#e1b452"))
+			preview.draw_circle(point, 4, Color("#70bb85") if int(node.points) == int(node.get("required_points", 2)) else Color("#e1b452"))
+		for frame in layer.get("frames", {}).values():
+			var a := center + Vector2.from_angle(deg_to_rad(float(layer.nodes[frame.source_id].angle))) * r
+			var b := center + Vector2.from_angle(deg_to_rad(float(layer.nodes[frame.target_id].angle))) * r
+			preview.draw_line(a, b, Color("#70bb85") if int(frame.points) == int(frame.required_points) else Color("#e1b452"), 1.0, true)
 		if not layer.shell.is_empty() and points.size() >= 3:
 			points.append(points[0])
 			preview.draw_polyline(points, Color("#70bb85"), 1.0, true)

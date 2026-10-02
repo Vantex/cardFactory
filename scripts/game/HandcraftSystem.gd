@@ -212,7 +212,7 @@ func _can_reserve_output(recipe: Dictionary, quantity: int, planet_id: String = 
 		var resolved_planet_id := game_state.active_planet_id if planet_id.is_empty() else planet_id
 		var current := float(game_state.construction_inventory.get(item_id, 0.0)) if target == "construction" else float(game_state.get_planet_inventory(resolved_planet_id).get(item_id, 0.0))
 		var reserved := _reserved_output(target, item_id, resolved_planet_id)
-		var limit := GameState.construction_capacity(item_id) if target == "construction" else InventorySystem.MAX_PLANET_STACK
+		var limit := GameState.construction_capacity(item_id) if target == "construction" else PlanetTraySystem.new(game_state).limit(planet_id)
 		if current + reserved + float(outputs[item_key]) * quantity > limit + AMOUNT_EPSILON:
 			return false
 	return true

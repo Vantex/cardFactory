@@ -1,0 +1,162 @@
+{
+  "source_commit": "472bf62c76b695852b5577e563c1d113192ac731",
+  "source_files": {
+    "src/game/content.ts": "6de101d86d28012c8765815aec35177a95b4d7ac5604736a4b608a100284f7ff",
+    "src/game/galaxyCatalog.ts": "fc503cfdcc7d5f38bfcd8b6c7f262b56126f1e3cc2c749c0463e5779730c2540",
+    "src/game/galaxy.ts": "bf0e4d23f6af26d0180ff4e7303e45a7e06e782ed0289f9a94dda3de88028bfd",
+    "src/game/difficulty.ts": "24613016f2296036c18577ce3338f792119617d07a17f2f9dffbefddf48e423e",
+    "src/game/stationMath.ts": "5a40a7055e1b76910c84d339da2601032a6d754d725f1cd02b4ba0f474d35c0e",
+    "src/game/stationContracts.ts": "4f3f2571be1878a9bc248ec2939ed03812e7b63ebd080ff8c34dfe5fcaf94f88",
+    "src/game/systemHubLogistics.ts": "b654c3bf76dc0ad685550a5b5992358de84c611eedc1dc75fa3e425cef271659",
+    "src/game/systemSpaceStation.ts": "1cd199e3f11036bf8e06af469bbb92fbb8f882c37c3b5d5283c3f1aaf71798ad"
+  },
+  "cases": [
+    {
+      "power": 1,
+      "targetAmount": "200",
+      "report": {
+        "simulationSecond": 5,
+        "systemsSettled": 2,
+        "localUploads": 0,
+        "localDownloads": 0,
+        "crossSystemMoved": "200",
+        "vesselsDispatched": 2,
+        "vesselsReleased": 0,
+        "activeItems": 0,
+        "skippedBecauseNoFleet": false
+      },
+      "inventories": [
+        {
+          "iron_ingot": "800"
+        },
+        {
+          "iron_ingot": "200"
+        }
+      ],
+      "network": {
+        "fleetInstalled": 2,
+        "fleetBusy": 2,
+        "fleetReturns": [
+          {
+            "routeKey": "helios->borealis:iron_ingot",
+            "returnAtSecond": 35,
+            "vesselCount": 2
+          }
+        ],
+        "warpers": "0",
+        "warperTarget": "0",
+        "routingCursors": {}
+      }
+    },
+    {
+      "power": 0.5,
+      "targetAmount": "1000",
+      "report": {
+        "simulationSecond": 5,
+        "systemsSettled": 2,
+        "localUploads": 0,
+        "localDownloads": 0,
+        "crossSystemMoved": "100",
+        "vesselsDispatched": 1,
+        "vesselsReleased": 0,
+        "activeItems": 0,
+        "skippedBecauseNoFleet": false
+      },
+      "inventories": [
+        {
+          "iron_ingot": "900"
+        },
+        {
+          "iron_ingot": "100"
+        }
+      ],
+      "network": {
+        "fleetInstalled": 2,
+        "fleetBusy": 1,
+        "fleetReturns": [
+          {
+            "routeKey": "helios->borealis:iron_ingot",
+            "returnAtSecond": 35,
+            "vesselCount": 1
+          }
+        ],
+        "warpers": "2",
+        "warperTarget": "0",
+        "routingCursors": {}
+      }
+    },
+    {
+      "power": 0,
+      "targetAmount": "200",
+      "report": {
+        "simulationSecond": 5,
+        "systemsSettled": 2,
+        "localUploads": 0,
+        "localDownloads": 0,
+        "crossSystemMoved": "0",
+        "vesselsDispatched": 0,
+        "vesselsReleased": 0,
+        "activeItems": 0,
+        "skippedBecauseNoFleet": true
+      },
+      "inventories": [
+        {
+          "iron_ingot": "1000"
+        },
+        {}
+      ],
+      "network": {
+        "fleetInstalled": 2,
+        "fleetBusy": 0,
+        "fleetReturns": [],
+        "warpers": "4",
+        "warperTarget": "0",
+        "routingCursors": {}
+      }
+    }
+  ],
+  "allocations": [
+    {
+      "budget": "101",
+      "requests": [
+        {
+          "key": "a",
+          "amount": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999"
+        },
+        {
+          "key": "b",
+          "amount": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999"
+        }
+      ],
+      "expected": {
+        "allocations": {
+          "a": "51",
+          "b": "50"
+        },
+        "nextCursor": 1,
+        "totalAllocated": "101"
+      }
+    },
+    {
+      "budget": "9999999999999",
+      "requests": [
+        {
+          "key": "a",
+          "amount": "9007199254740993"
+        },
+        {
+          "key": "b",
+          "amount": "123456789012345678901234567890"
+        }
+      ],
+      "expected": {
+        "allocations": {
+          "a": "1",
+          "b": "9999999999998"
+        },
+        "nextCursor": 1,
+        "totalAllocated": "9999999999999"
+      }
+    }
+  ]
+}

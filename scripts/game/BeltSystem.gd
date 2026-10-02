@@ -28,11 +28,45 @@ func update(delta: float):
 			_tick_priorities[id] = int(game_state.get_belt_configuration(String(id)).get("priority", 0))
 	connection_ids.sort_custom(_connection_precedes)
 	_tick_priorities.clear()
+	var balanced := _balanced_allocations(connection_ids, delta)
 	for conn_id in connection_ids:
 		var connection = game_state.connections[conn_id]
 		if not _is_connection_planet_local(connection):
 			continue
-		_update_connection(connection, delta)
+		_update_connection(connection, delta, float(balanced.get(conn_id, INF)))
+
+func _balanced_allocations(ids: Array, delta: float) -> Dictionary:
+	var groups := {}
+	for id in ids:
+		var connection: Dictionary = game_state.connections[id]
+		var source := game_state.get_building(connection.source_id)
+		var target := game_state.get_building(connection.target_id)
+		if source.is_empty() or target.is_empty() or not connection.get("enabled", true) or not _is_connection_planet_local(connection): continue
+		if DataManager.get_building(source.type).get("kind") != "splitter" or source.get("distribution_mode", "balanced") == "priority": continue
+		if target.get("type") == BlackHoleSystem.TYPE or target.get("station", {}).get("quantum_mode") == "quantum": continue
+		var key := str([connection.source_id, connection.item_id])
+		if not groups.has(key): groups[key] = {"available": maxf(0, float(source.get("output_buffer", {}).get(connection.item_id, 0))), "candidates": []}
+		var definition := DataManager.get_building(target.type)
+		var free := maxf(0, float(target.get("input_buffer_capacity", definition.get("input_buffer_capacity", DEFAULT_BUFFER_CAPACITY))) - float(target.get("input_buffer", {}).get(connection.item_id, 0)))
+		var power := minf(clampf(float(source.get("power_efficiency", 1)), 0, 1), clampf(float(target.get("power_efficiency", 1)), 0, 1))
+		groups[key].candidates.append({"id": id, "capacity": minf(free, _effective_throughput(connection) * delta * power)})
+	var result := {}
+	for group in groups.values():
+		var candidates: Array = group.candidates
+		var remaining: float = group.available
+		while not candidates.is_empty():
+			var share := remaining / candidates.size()
+			var constrained := false
+			for candidate in candidates.duplicate():
+				if candidate.capacity <= share:
+					result[candidate.id] = candidate.capacity
+					remaining -= candidate.capacity
+					candidates.erase(candidate)
+					constrained = true
+			if not constrained:
+				for candidate in candidates: result[candidate.id] = share
+				break
+	return result
 
 func _connection_precedes(left_id: Variant, right_id: Variant) -> bool:
 	var left_key := String(left_id)
@@ -49,7 +83,7 @@ func _connection_precedes(left_id: Variant, right_id: Variant) -> bool:
 		return left_priority > right_priority
 	return left_key < right_key
 
-func _update_connection(connection: Dictionary, delta: float):
+func _update_connection(connection: Dictionary, delta: float, allocation: float = INF):
 	if not connection.get("enabled", true) or delta <= 0.0:
 		return
 
@@ -63,6 +97,14 @@ func _update_connection(connection: Dictionary, delta: float):
 
 	if source.is_empty() or target.is_empty():
 		return
+	if target.get("station", {}).get("quantum_mode", "legacy") == "quantum":
+		for slot in target.station.slots:
+			if slot.item_id == item_id and StationSystem.mode_for(target, slot, true) == "supply":
+				_update_quantum_connection(connection, source, item_id, flow_rate, delta)
+				return
+	if target.get("type") == BlackHoleSystem.TYPE:
+		_update_black_hole_connection(connection, source, target, item_id, flow_rate, delta)
+		return
 	var source_power := clampf(float(source.get("power_efficiency", 1.0)), 0.0, 1.0)
 	var target_power := clampf(float(target.get("power_efficiency", 1.0)), 0.0, 1.0)
 	var power_efficiency := minf(source_power, target_power)
@@ -74,8 +116,12 @@ func _update_connection(connection: Dictionary, delta: float):
 	var target_definition := DataManager.get_building(String(target.get("type", "")))
 	var target_capacity := maxf(float(target.get("input_buffer_capacity", target_definition.get("input_buffer_capacity", DEFAULT_BUFFER_CAPACITY))), 0.0)
 	var max_transfer = min(available, target_capacity - target_buffer)
-	var transfer_amount = min(max_transfer, flow_rate * delta * power_efficiency)
+	var transfer_amount = minf(allocation, min(max_transfer, flow_rate * delta * power_efficiency))
 
+	if target.get("type") == SystemSpaceStationSystem.TYPE:
+		var credit := minf(1.0, float(connection.get("construction_credit", 0))) + flow_rate * delta * power_efficiency
+		transfer_amount = minf(floorf(max_transfer), floorf(credit))
+		connection.construction_credit = clampf(credit - transfer_amount, 0, 1)
 	if transfer_amount > 0:
 		if not source.has("output_buffer"):
 			source.output_buffer = {}
@@ -90,6 +136,33 @@ func _update_connection(connection: Dictionary, delta: float):
 			connection["total_transferred"] = float(connection.get("total_transferred", 0.0)) + transfer_amount
 		if statistics_system != null:
 			statistics_system.record_transferred(String(item_id), transfer_amount, String(connection.get("id", "")), String(connection.get("planet_id", game_state.active_planet_id)))
+
+func _update_black_hole_connection(connection: Dictionary, source: Dictionary, target: Dictionary, item_id: String, flow_rate: float, delta: float) -> void:
+	if target.get("black_hole_paused", true) or not target.get("black_hole_activation_confirmed", false): return
+	var available := maxi(0, int(floorf(float(source.get("output_buffer", {}).get(item_id, 0)))))
+	if available < 1: return
+	var credit := maxf(float(connection.get("black_hole_credit", 0)), 0) + flow_rate * delta * clampf(float(source.get("power_efficiency", 1)), 0, 1)
+	var amount := mini(available, int(floorf(credit)))
+	connection.black_hole_credit = minf(credit - amount, 1.0)
+	if amount <= 0 or not BlackHoleSystem.record_transfer(target, int(connection.get("target_port_index", -1)), item_id, amount): return
+	source.output_buffer[item_id] = float(source.output_buffer[item_id]) - float(amount)
+	connection.current_flow = float(amount) / delta
+	connection.active = true
+	if connection.get("monitor_enabled", false): connection.total_transferred = float(connection.get("total_transferred", 0)) + amount
+	if statistics_system != null: statistics_system.record_consumed(item_id, amount, target.id, target.planet_id)
+
+func _update_quantum_connection(connection: Dictionary, source: Dictionary, item_id: String, flow_rate: float, delta: float) -> void:
+	var available := maxi(0, int(floorf(float(source.get("output_buffer", {}).get(item_id, 0)))))
+	if available < 1: return
+	var credit := maxf(float(connection.get("quantum_credit", 0)), 0) + flow_rate * delta * clampf(float(source.get("power_efficiency", 1)), 0, 1)
+	var accepted := QuantumLogisticsSystem.new(game_state).deposit(item_id, mini(available, int(floorf(credit))))
+	connection.quantum_credit = minf(credit - accepted, 1.0)
+	if accepted < 1: return
+	source.output_buffer[item_id] = float(source.output_buffer[item_id]) - accepted
+	connection.current_flow = float(accepted) / delta
+	connection.active = true
+	if connection.get("monitor_enabled", false): connection.total_transferred = float(connection.get("total_transferred", 0)) + accepted
+	if statistics_system != null: statistics_system.record_transferred(item_id, accepted, connection.id, connection.planet_id)
 
 func _effective_throughput(connection: Dictionary) -> float:
 	var connection_type := String(connection.get("type", "belt"))
