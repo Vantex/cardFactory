@@ -11,6 +11,20 @@ const NEW_GAME_HOME_INVENTORY := {
     "iron_ingot": 12.0,
     "stone": 4.0,
 }
+const SOURCE_NEW_GAME_HOME_INVENTORY := {"iron_ore": 100.0, "copper_ore": 100.0, "stone": 100.0}
+const SOURCE_NEW_GAME_CONSTRUCTION := {
+    "dsp_wind_turbine": 3.0,
+    "dsp_mining_machine": 2.0,
+    "dsp_arc_smelter": 3.0,
+    "dsp_assembling_machine_mk1": 3.0,
+    "dsp_matrix_lab": 2.0,
+    "conveyor_belt_mk1": 10.0,
+}
+const SOURCE_DOCK_BUILDINGS := {
+    "miner": "dsp_mining_machine", "smelter": "dsp_arc_smelter",
+    "assembling_machine_mk1": "dsp_assembling_machine_mk1", "power_generator": "dsp_wind_turbine",
+    "matrix_lab": "dsp_matrix_lab", "accumulator": "dsp_accumulator", "energy_exchanger": "dsp_energy_exchanger",
+}
 
 # 游戏状态
 var paused: bool = false
@@ -18,8 +32,10 @@ var speed: float = 1.0
 var elapsed_time: float = 0.0
 var save_mode := "normal"
 var difficulty := "standard"
+var resource_mode := "finite"
 var speedrun_state: Dictionary = {}
 var planet_tray_limits: Dictionary = {}
+var source_buffer_limits: Dictionary = {}
 var content_packs: Array = []
 var pure_idle: Dictionary = {}
 var time_warp: Dictionary = {}
@@ -62,6 +78,7 @@ var construction_inventory: Dictionary = {
 var cursor_payload: Dictionary = {"item_id": "", "amount": 0.0}
 var handcraft_queue: Array = []
 var production_orders: Array = []
+var production_plans: Array = []
 
 # 所有建筑（卡牌）
 var buildings: Dictionary = {}
@@ -82,6 +99,7 @@ var research_queue: Array = []
 var research_progress: Dictionary = {}
 var research_invested_costs: Dictionary = {}
 var research_paused := false
+var research_paused_id := ""
 var research_queue_wait_reason := ""
 var technology_levels: Dictionary = {}
 
@@ -128,8 +146,8 @@ var belt_speed_config: Dictionary = {
 }
 
 const BELT_RATED_THROUGHPUT := {
-    "conveyor_belt_mk1": 10.0,
-    "conveyor_belt_mk2": 20.0,
+    "conveyor_belt_mk1": 6.0,
+    "conveyor_belt_mk2": 12.0,
     "conveyor_belt_mk3": 30.0,
 }
 const BELT_STACK_SIZES := [1, 2, 4]
@@ -176,10 +194,20 @@ func sync_active_planet_inventory() -> void:
     planet_inventories[active_planet_id] = planet_inventory.duplicate(true)
     planet_inventory = planet_inventories[active_planet_id]
 
-func initialize_new_game_home_inventory() -> void:
-    planet_inventories[HOME_PLANET_ID] = NEW_GAME_HOME_INVENTORY.duplicate(true)
+func initialize_new_game_home_inventory(use_source_economy: bool = false) -> void:
+    planet_inventories[HOME_PLANET_ID] = (SOURCE_NEW_GAME_HOME_INVENTORY if use_source_economy else NEW_GAME_HOME_INVENTORY).duplicate(true)
+    if use_source_economy:
+        construction_inventory = SOURCE_NEW_GAME_CONSTRUCTION.duplicate(true)
+        progression_facts["source_campaign_enabled"] = true
+        selected_source_objective = "dsp_mine_first_ore"
+        progression_facts["infinite_auto"] = true
     if active_planet_id == HOME_PLANET_ID:
         planet_inventory = planet_inventories[HOME_PLANET_ID]
+
+func get_dock_building_type(building_type: String) -> String:
+    if source_galaxy.is_empty() or float(construction_inventory.get(building_type, 0)) >= 1 or float(construction_inventory.get("legacy_credit", 0)) > 0:
+        return building_type
+    return String(SOURCE_DOCK_BUILDINGS.get(building_type, building_type))
 
 func generate_id(prefix: String) -> String:
     var id = prefix + "_" + str(_next_id)
@@ -312,7 +340,8 @@ func _try_add_connection_command(source_id: String, target_id: String, requested
         var selected_recipe: Dictionary = compatible_recipes[0]
         if not _has_belt_pieces("conveyor_belt_mk1", 1):
             return {"ok": false, "message": "缺少 Mk.I 线路施工件"}
-        set_entity_recipe(target_id, selected_recipe.get("id", ""))
+        if not set_entity_recipe(target_id, selected_recipe.get("id", "")):
+            return {"ok": false, "message": "目标配方不可修改；请检查配置锁定和退款容量"}
 
     if not _has_belt_pieces("conveyor_belt_mk1", 1):
         return {"ok": false, "message": "缺少 Mk.I 线路施工件"}
@@ -582,7 +611,10 @@ func _set_entity_recipe_command(entity_id: String, recipe_id: String) -> bool:
         print("ERROR: Entity not found: ", entity_id)
         return false
 
-    if PowerGridSystem.kind_id(buildings[entity_id]) == "energy_exchanger":
+    if is_entity_interaction_locked(entity_id):
+        return false
+
+    if PowerGridSystem.kind_id(buildings[entity_id]) == "energy_exchanger" and not DataManager.get_building(String(buildings[entity_id].type)).has("source_id"):
         return set_energy_mode(entity_id, "charge" if recipe_id in ["charge_accumulator", "dsp_accumulator_charge"] else "discharge" if recipe_id in ["discharge_accumulator", "dsp_accumulator_discharge"] else "invalid")
     var recipe = DataManager.get_recipe(recipe_id)
     if not DataManager.source_technology_unlocked(self, String(recipe.get("required_source_technology", ""))):
@@ -594,12 +626,53 @@ func _set_entity_recipe_command(entity_id: String, recipe_id: String) -> bool:
         print("ERROR: Recipe does not belong to entity: ", recipe_id)
         return false
 
+    var definition := DataManager.get_building(String(buildings[entity_id].get("type", "")))
+    if definition.has("source_id") or definition.has("source_content_pack"):
+        if buildings[entity_id].get("recipe_id", "") == recipe_id:
+            return true
+        if not _reset_source_recipe_buffers([entity_id]): return false
+        buildings[entity_id].proliferator_bonus = {}
+
     buildings[entity_id]["recipe_id"] = recipe_id
     buildings[entity_id]["progress"] = 0.0
     var selected_output := String(buildings[entity_id].get("output_item", ""))
     if not selected_output.is_empty() and not get_building_output_items(entity_id).has(selected_output):
         buildings[entity_id].erase("output_item")
+    if definition.get("source_id") == "ray_receiver": DysonSphereSystem.new(self).refresh_source_receiver_presentation()
     print("Set recipe ", recipe_id, " for entity ", entity_id)
+    return true
+
+func _reset_source_recipe_buffers(entity_ids: Array) -> bool:
+    var refunds := {}
+    var removed := []
+    var returned_kits := {}
+    for entity_id in entity_ids:
+        var building: Dictionary = buildings[entity_id]
+        var planet := String(building.planet_id)
+        if not refunds.has(planet): refunds[planet] = {}
+        for buffer_name in ["input_buffer", "output_buffer"]:
+            for item in building.get(buffer_name, {}):
+                var amount := float(building[buffer_name][item])
+                if amount > 0: refunds[planet][item] = float(refunds[planet].get(item, 0)) + amount
+    var inventory := InventorySystem.new(self)
+    # Batch refunds share capacity and each connecting belt is returned only once.
+    for planet in refunds:
+        if not inventory.can_add_batch(refunds[planet], planet): return false
+    for connection_id in connections:
+        var connection: Dictionary = connections[connection_id]
+        if not _is_belt_connection(connection) or not (entity_ids.has(connection.get("source_id")) or entity_ids.has(connection.get("target_id"))): continue
+        removed.append(connection_id)
+        if _connection_construction_is_accounted(connection):
+            var tier := _belt_tier(connection)
+            returned_kits[tier] = float(returned_kits.get(tier, 0)) + _belt_parallel_count(connection)
+    for tier in returned_kits:
+        if _construction_inventory_count(construction_inventory, tier) + returned_kits[tier] > construction_capacity(String(tier)): return false
+    for planet in refunds: inventory.try_add_batch(refunds[planet], planet)
+    for connection_id in removed: _try_remove_connection_command(connection_id)
+    for entity_id in entity_ids:
+        buildings[entity_id].input_buffer = {}
+        buildings[entity_id].output_buffer = {}
+        buildings[entity_id].progress = 0.0
     return true
 
 func set_entity_extraction_item(entity_id: String, item_id: String) -> bool:
@@ -1167,6 +1240,15 @@ func copy_state() -> GameState:
     new_state.install_state(self)
     return new_state
 
+func get_resource_reserve_snapshot(site: Variant) -> Variant:
+    return preload("res://scripts/game/SourceResourceReserveSystem.gd").snapshot(self, site)
+
+func set_resource_mode(mode: Variant) -> bool:
+    if not mode is String or mode not in ["finite", "infinite"]:
+        return false
+    resource_mode = mode
+    return true
+
 func copy_from(source: GameState) -> void:
     install_state(source)
 
@@ -1184,8 +1266,10 @@ func install_state(source: GameState) -> void:
     elapsed_time = source.elapsed_time
     save_mode = source.save_mode
     difficulty = source.difficulty
+    resource_mode = source.resource_mode
     speedrun_state = source.speedrun_state.duplicate(true)
     planet_tray_limits = source.planet_tray_limits.duplicate(true)
+    source_buffer_limits = source.source_buffer_limits.duplicate(true)
     content_packs = source.content_packs.duplicate(true)
     pure_idle = source.pure_idle.duplicate(true)
     time_warp = source.time_warp.duplicate(true)
@@ -1216,6 +1300,7 @@ func install_state(source: GameState) -> void:
     cursor_payload = source.cursor_payload.duplicate(true)
     handcraft_queue = source.handcraft_queue.duplicate(true)
     production_orders = source.production_orders.duplicate(true)
+    production_plans = source.production_plans.duplicate(true)
     blueprint_library = source.blueprint_library.duplicate(true)
     construction_queue = source.construction_queue.duplicate(true)
     canvas_regions = source.canvas_regions.duplicate(true)
@@ -1226,6 +1311,7 @@ func install_state(source: GameState) -> void:
     research_progress = source.research_progress.duplicate(true)
     research_invested_costs = source.research_invested_costs.duplicate(true)
     research_paused = source.research_paused
+    research_paused_id = source.research_paused_id
     research_queue_wait_reason = source.research_queue_wait_reason
     technology_levels = source.technology_levels.duplicate(true)
     progression_facts = source.progression_facts.duplicate(true)
@@ -1278,9 +1364,13 @@ func get_building_stack_check(current_count: int, requested: int, building_name:
 func get_entity_buffer_limit(entity_id: String) -> int:
     var entity = get_building(entity_id)
     if entity.is_empty():
+        if not source_galaxy.is_empty() and resource_sites.has(entity_id):
+            return preload("res://scripts/game/SourceEntityCapacitySystem.gd").buffer_limit(self, resource_sites[entity_id])
         return 0
     var building_type = entity.get("type", "")
     var building_def = DataManager.get_building(building_type)
+    if building_def.has("source_id"):
+        return preload("res://scripts/game/SourceEntityCapacitySystem.gd").buffer_limit(self, entity)
     return building_def.get("buffer_limit", 60)
 
 # 3. 获取输入容量
@@ -1290,15 +1380,29 @@ func get_entity_input_capacity(entity_id: String) -> int:
         return 0
     var building_type = entity.get("type", "")
     var building_def = DataManager.get_building(building_type)
+    if building_def.has("source_id"):
+        return preload("res://scripts/game/SourceEntityCapacitySystem.gd").input_capacity(self, entity)
     return building_def.get("input_slots", 1) * 60
 
 # 4. 获取输出容量
+func get_entity_item_input_capacity(entity_id: String, item: String) -> float:
+    var entity := get_building(entity_id)
+    if entity.is_empty() or String(entity.get("type", "")).is_empty(): return 0.0
+    var definition := DataManager.get_building(String(entity.get("type", "")))
+    if definition.has("source_id"):
+        return preload("res://scripts/game/SourceEntityCapacitySystem.gd").item_input_capacity(self, entity, item)
+    return maxf(float(entity.get("input_buffer_capacity", definition.get("input_buffer_capacity", 60.0))), 0.0)
+
 func get_entity_output_capacity(entity_id: String) -> int:
     var entity = get_building(entity_id)
     if entity.is_empty():
+        if not source_galaxy.is_empty() and resource_sites.has(entity_id):
+            return preload("res://scripts/game/SourceEntityCapacitySystem.gd").site_output_capacity(self, entity_id)
         return 0
     var building_type = entity.get("type", "")
     var building_def = DataManager.get_building(building_type)
+    if building_def.has("source_id"):
+        return preload("res://scripts/game/SourceEntityCapacitySystem.gd").output_capacity(self, entity)
     return building_def.get("output_slots", 1) * 60
 
 # 5. 获取建筑信息
@@ -1688,6 +1792,8 @@ func _try_configure_power_entities_command(ids: Array, changes: Dictionary) -> D
     return PowerGridSystem.new(self).configure(ids, changes)
 
 func set_energy_mode(entity_id: String, mode: String) -> bool:
+    var building: Dictionary = buildings.get(entity_id, {})
+    if DataManager.get_building(String(building.get("type", ""))).get("source_id", "") == "energy_exchanger" and building.get("energy_mode", "charge") == mode: return false
     return try_configure_power_entities([entity_id], {"energy_mode": mode}).get("ok", false)
 
 func set_fuel_item(entity_id: String, item: String) -> Dictionary:

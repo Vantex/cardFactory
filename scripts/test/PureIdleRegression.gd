@@ -5,6 +5,13 @@ class ClockSave extends SaveSystem:
 	var now := 1000.0
 	func wall_time() -> float: return now
 
+class PeriodicValidationJob extends PureIdleSimulationJob:
+	func begin(source: GameState, wall_seconds: float, selected_mode: String = "stable") -> Dictionary:
+		var begun := super.begin(source, wall_seconds, selected_mode)
+		# Periodic arithmetic is independent of host speed; the real deadline is tested separately.
+		if begun.ok: deadline_at = 9223372036854775807
+		return begun
+
 var failures := 0
 func check(value: bool, message: String) -> void:
 	if not value:
@@ -53,6 +60,7 @@ func run() -> int:
 	check(not PureIdleState.configure(state, true, "stable").ok, "speedrun cannot enable macro settlement")
 	PureIdleJournal.new(storage, 0).clear()
 	_test_periodic_validation()
+	_test_deadline_budget()
 	_test_configuration_budget(storage)
 	return failures
 
@@ -62,13 +70,33 @@ func _test_periodic_validation() -> void:
 	TimeWarpSystem.new(state).select_controller(id)
 	TimeWarpSystem.new(state).set_enabled(true)
 	for mode in ["stable", "extreme"]:
-		var job := PureIdleSimulationJob.new()
+		var job := PeriodicValidationJob.new()
 		check(job.begin(state, 650, mode).ok, "long funded " + mode + " interval begins")
 		for step in range(500):
-			job.advance(100000, 600)
+			job.advance(1000000, 600)
 			if job.phase == "ready": break
 		check(job.phase == "ready" and not job.partial and absf(job.settled_wall - 650) < 0.02, mode + " preserves real wall budget across macro buckets")
 		check(job.validation_count == (2 if mode == "stable" else 1), mode + " observes the source ten-minute validation boundary")
+
+func _test_deadline_budget() -> void:
+	var state := SourceDysonRegression.new().fresh()
+	var id := state.add_building({"type": "dsp_time_warp_device", "position": Vector2.ZERO, "input_buffer": {}, "output_buffer": {}})
+	TimeWarpSystem.new(state).select_controller(id)
+	TimeWarpSystem.new(state).set_enabled(true)
+	var source := GameStateCodec.to_persistent_dict(state)
+	for mode in ["stable", "extreme"]:
+		var job := PureIdleSimulationJob.new()
+		check(job.begin(state, 650, mode).ok, mode + " deadline job begins")
+		var remaining := job.deadline_at - Time.get_ticks_usec()
+		check(PureIdleSimulationJob.DEADLINE_USEC == 30000000 and remaining > 0 and remaining <= PureIdleSimulationJob.DEADLINE_USEC, mode + " retains the production thirty-second calculation ceiling")
+		job.advance(1000000, 1)
+		var candidate := GameStateCodec.to_persistent_dict(job.candidate)
+		var settled := job.settled_wall
+		check(job.exact_ticks == 1 and settled > 0 and settled < 650, mode + " deadline fixture has a real paid exact tick")
+		job.deadline_at = Time.get_ticks_usec()
+		job.advance(1000000, 600)
+		check(job.phase == "ready" and job.partial and job.exact_ticks == 1 and job.settled_wall == settled and "30 秒" in job.reason, mode + " exhausted calculation budget preserves partial funded progress")
+		check(GameStateCodec.to_persistent_dict(job.candidate) == candidate and GameStateCodec.to_persistent_dict(state) == source, mode + " budget stop neither replays a tick nor mutates the live origin")
 
 func _test_configuration_budget(storage: SaveSystem) -> void:
 	var previous_storage := GameManager.get_save_system()

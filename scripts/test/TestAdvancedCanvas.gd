@@ -236,7 +236,7 @@ func _test_belt_configuration_and_throughput() -> void:
 	var inventory_before_total := float(state.construction_inventory.conveyor_belt_mk1) + float(state.construction_inventory.conveyor_belt_mk2) + 1.0
 	var configured: Dictionary = state.call("try_configure_belt", belt_id, {"tier": "conveyor_belt_mk2", "parallel_count": 2, "stack_size": 4, "priority": 2, "route_mode": "upper", "monitor_enabled": true, "enabled": true})
 	var config: Dictionary = state.call("get_belt_configuration", belt_id)
-	_expect(configured.get("ok", false) and config.get("rated_throughput") == 20.0 and config.get("effective_throughput") == 160.0, "Mk.II throughput is 20 items/s times two parallels times stack four")
+	_expect(configured.get("ok", false) and config.get("rated_throughput") == 12.0 and config.get("effective_throughput") == 96.0, "frozen Mk.II throughput is 12 items/s times two parallels times stack four")
 	_expect(state.construction_inventory.get("conveyor_belt_mk1") == 3.0 and state.construction_inventory.get("conveyor_belt_mk2") == 2.0, "tier and parallel adjustment refunds old pieces and consumes installed pieces")
 	_expect(inventory_before_total == float(state.construction_inventory.conveyor_belt_mk1) + float(state.construction_inventory.conveyor_belt_mk2) + 2.0, "construction inventory plus installed belt pieces remains conserved")
 	_expect(state.connections[belt_id].get("active") == true and state.connections[belt_id].get("current_flow") == 7.0 and state.connections[belt_id].get("total_transferred") == 33.0, "belt configuration leaves runtime flow and cumulative statistics untouched")
@@ -245,7 +245,7 @@ func _test_belt_configuration_and_throughput() -> void:
 	_expect(state.construction_inventory == inventory_before_pure, "pure belt configuration does not alter construction inventory")
 	state.call("try_configure_belt", belt_id, {"enabled": true, "stack_size": 4})
 	BeltSystem.new(state).update(0.5)
-	_expect(is_equal_approx(state.buildings[source_id].output_buffer.iron_ore, 120.0) and is_equal_approx(state.buildings[target_id].input_buffer.iron_ore, 80.0), "BeltSystem transports cargo at the configured effective throughput")
+	_expect(is_equal_approx(state.buildings[source_id].output_buffer.iron_ore, 152.0) and is_equal_approx(state.buildings[target_id].input_buffer.iron_ore, 48.0), "BeltSystem transports cargo at the frozen configured effective throughput")
 
 func _test_belt_priority_controls_contention() -> void:
 	var state := GameState.new()
@@ -416,7 +416,7 @@ func _test_advanced_inspector_and_renderer_contract() -> void:
 	workspace.refresh_now()
 	var title := workspace.get_node_or_null("InspectorPanel/Title") as Label
 	var details := workspace.get_node_or_null("InspectorPanel/Details") as Label
-	_expect(title != null and details != null and "线路" in title.text and "Mk.I" in details.text and "10" in details.text and "并联 2" in details.text and "堆叠 4" in details.text and "偏移 42" in details.text and "禁用" in details.text, "manual single-line inspector displays its complete effective configuration including route offset")
+	_expect(title != null and details != null and "线路" in title.text and "Mk.I" in details.text and "额定 6/s" in details.text and "并联 2" in details.text and "堆叠 4" in details.text and "偏移 42" in details.text and "禁用" in details.text, "manual single-line inspector displays its complete frozen configuration including route offset")
 	var belt_controls := workspace.get_node_or_null("InspectorPanel/RecipeScroll/RecipeList") as GridContainer
 	var enabled_button: Button
 	if belt_controls != null:

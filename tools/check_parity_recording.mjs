@@ -1,0 +1,26 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import assert from 'node:assert/strict';
+import {implementationFiles,validateImplementationFingerprints,validateBehaviorHarness} from './parity_implementation_files.mjs';
+
+const root = path.resolve(import.meta.dirname, '..');
+const fingerprints = Object.fromEntries(implementationFiles(root).map(file => [file,crypto.createHash('sha256').update(fs.readFileSync(path.join(root,file))).digest('hex')]));
+validateImplementationFingerprints(root,fingerprints);
+const reduced = {...fingerprints};
+delete reduced['scripts/game/ProductionPlanningSystem.gd'];
+assert.throws(() => validateImplementationFingerprints(root,reduced), /fingerprint set/);
+const missingData = {...fingerprints};
+delete missingData['data/galaxy/source_catalog.json'];
+assert.throws(() => validateImplementationFingerprints(root,missingData), /fingerprint set/);
+assert.throws(() => validateImplementationFingerprints(root,{...fingerprints,'../DSPONLINE/src/game/engine.ts':'fake'}), /fingerprint set/);
+assert.throws(() => validateImplementationFingerprints(root,{...fingerprints,'scripts/game/ProductionPlanningSystem.gd':'fake'}), /Stale implementation/);
+const harness = {passed:true,failures:0,rejections_checked:true,manifest:'res://tests/fixtures/parity/dsponline_single_player_manifest.json',manifest_sha256:'current'};
+validateBehaviorHarness({harness}, 'current');
+assert.throws(() => validateBehaviorHarness({}, 'current'), /did not pass/);
+assert.throws(() => validateBehaviorHarness({harness:{...harness,passed:false}}, 'current'), /did not pass/);
+assert.throws(() => validateBehaviorHarness({harness:{...harness,failures:1}}, 'current'), /failed checks/);
+assert.throws(() => validateBehaviorHarness({harness:{...harness,rejections_checked:false}}, 'current'), /skipped/);
+assert.throws(() => validateBehaviorHarness({harness:{...harness,manifest:'other'}}, 'current'), /another manifest/);
+assert.throws(() => validateBehaviorHarness({harness}, 'changed'), /manifest changed/);
+console.log(`PARITY RECORDING INTEGRITY PASSED: ${Object.keys(fingerprints).length} required dependencies; missing code/data, extra paths, stale content and failed/skipped harness rejected`);

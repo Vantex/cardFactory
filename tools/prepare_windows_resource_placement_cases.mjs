@@ -1,0 +1,41 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+const root=path.resolve(import.meta.dirname,'..'),destination=path.resolve(process.argv[2]??''),checks=path.resolve(process.argv[3]??path.join(root,'.godot/windows-package-check'));
+assert.equal(path.dirname(destination),checks,'Resource external instrumentation stays in isolated package directory');
+const read=file=>fs.readFileSync(path.join(root,file),'utf8'),put=(name,text)=>fs.writeFileSync(path.join(destination,name),text);
+const fixture=JSON.parse(read('tests/fixtures/parity/behavior/task27-resource-placement.json')),catalog=JSON.parse(read('tests/fixtures/parity/dsponline_source_catalog.json'));
+assert.equal(fixture.source_commit,catalog.source.commit);assert.equal(fixture.cases.length,16);assert.equal(new Set(fixture.cases.map(row=>row.id)).size,16);assert.equal(Object.keys(fixture.source_files).length,24);
+for(const [file,digest] of Object.entries(fixture.source_files))assert.equal(catalog.source.files[file],digest);
+put('resource-placement-cases.json',JSON.stringify(fixture));put('dsponline_source_catalog.json',JSON.stringify(catalog));
+const replace=(text,from,to)=>{assert.equal(text.split(from).length,2,from);return text.replace(from,to);};
+const functionText=(source,name)=>{const start=source.indexOf('static func '+name+'(');assert.ok(start>=0);const next=source.indexOf('\nstatic func ',start+1);const regular=source.indexOf('\nfunc ',start+1);const stop=Math.min(...[next,regular,source.length].filter(index=>index>=0));return source.slice(start,stop).trim()+'\n';};
+const exactSource=read('scripts/test/CapacityQueryBehaviorRunner.gd'),ownerSource=read('scripts/test/EffectQueryBehaviorRunner.gd'),controls=read('scripts/test/WorldControlBehaviorRunner.gd'),parity=read('scripts/test/DSPOnlineParity.gd');
+const moduleLine=exactSource.split('\n').find(line=>line.startsWith('const SOURCE_MODULES :='));
+let exact=functionText(exactSource,'_exact').replace('var effects := preload("res://scripts/test/EffectQueryBehaviorRunner.gd")','var effects := preload("res://resource_adapter.gd")');
+put('resource_adapter.gd','extends RefCounted\n\n'+moduleLine+'\n\n'+functionText(ownerSource,'_number')+'\n'+exact+'\n'+functionText(controls,'_same_ids')+'\nstatic func _ownership(state: RefCounted) -> Dictionary:\n\treturn (Engine.get_main_loop() as SceneTree).root.get_node("PackageProbe")._route_ownership(state)\n');
+put('resource_parity_adapter.gd','extends RefCounted\n\nconst ROOT := "res://"\n\n'+functionText(parity,'read_json'));
+const productify=text=>{
+ text=text.replaceAll('DSPOnlineParity.','PARITY.').replace('extends RefCounted\n','extends RefCounted\n\nconst PARITY := preload("res://resource_parity_adapter.gd")\n');
+ for(const name of ['CapacityQueryBehaviorRunner','EffectQueryBehaviorRunner','WorldControlBehaviorRunner'])text=text.replaceAll('res://scripts/test/'+name+'.gd','res://resource_adapter.gd');
+ for(const name of ['GameState','SourceGalaxySystem','PlanetSystem','GameStateCodec']){
+  text=text.replaceAll(name+'.new()', 'load("res://scripts/game/'+name+'.gd").new()');
+  text=text.replaceAll(name+'.new(state)', 'load("res://scripts/game/'+name+'.gd").new(state)');
+  text=text.replaceAll(name+'.catalog()', 'load("res://scripts/game/'+name+'.gd").catalog()');
+  text=text.replaceAll(name+'.to_persistent_dict(', 'load("res://scripts/game/'+name+'.gd").to_persistent_dict(');
+ }
+ text=text.replaceAll(': GameState',': RefCounted').replaceAll(': FactoryWorkspaceUI',': Node');
+ text=text.replaceAll('var state := load(', 'var state: RefCounted = load(').replaceAll('var planets := load(', 'var planets: RefCounted = load(');
+ text=text.replaceAll('var placed := ', 'var placed: Dictionary = ').replaceAll('var canonical := ', 'var canonical: Dictionary = ');
+ return text;
+};
+let paid=productify(read('scripts/test/ResourcePlacementRegression.gd'));
+paid=replace(paid,'res://tests/fixtures/parity/behavior/task27-resource-placement.json','res://resource-placement-cases.json');
+paid=paid.replaceAll('res://.godot/task27-resource-placement-%d/','user://resource-paid-%d/');
+put('resource_paid.gd',paid);
+put('resource_boundaries.gd',productify(read('scripts/test/ResourcePlacementBoundaryRegression.gd')));
+let ui=productify(read('scripts/test/ResourceSelectionUIRegression.gd')).replaceAll('res://scripts/test/ResourcePlacementRegression.gd','res://resource_paid.gd').replaceAll('res://.godot/task27-resource-selection-ui-%d/','user://resource-selection-ui-%d/');
+ui=replace(ui,'\tvar viewport := SubViewport.new()\n\tviewport.size = Vector2i(1920, 1080)\n\ttree.root.add_child(viewport)\n\tvar main: Node = load("res://scenes/main/Main.tscn").instantiate()\n\tviewport.add_child(main)\n\tawait tree.process_frame\n\tmain.set_process(false)','\tvar main: Node = tree.current_scene\n\tvar main_process := main.is_processing()\n\tmain.set_process(false)');
+ui=replace(ui,'\tmain.queue_free()\n\tviewport.queue_free()\n\tawait tree.process_frame','\tmain.set_process(main_process)');
+put('resource_ui.gd',ui);
+console.log('WINDOWS RESOURCE INSTRUMENTATION PREPARED:16actual source cases/32funded primary saves/formal exported Main targets;all regression code outside PCK');

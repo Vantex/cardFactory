@@ -1,0 +1,90 @@
+{
+	"format": "card_factory_save",
+	"metadata": {
+		"active_planet": "home",
+		"digest": "b5517191e26e3a395fdd94cffe089cdadad70f2ff581c45e6a0eb326801abd99",
+		"elapsed_time": 0.0,
+		"saved_at": 1791103660.256,
+		"schema_version": 9
+	},
+	"state": {
+		"active_planet_id": "home",
+		"buildings": {},
+		"claimed_progression_reward_ids": [],
+		"colonized_planet_ids": [
+			"home"
+		],
+		"completed_achievement_ids": [],
+		"completed_objective_ids": [],
+		"completed_technologies": [],
+		"connections": {},
+		"construction_inventory": {
+			"assembling_machine_mk1": 1.0,
+			"conveyor_belt_mk1": 8.0,
+			"conveyor_belt_mk2": 4.0,
+			"conveyor_belt_mk3": 2.0,
+			"matrix_lab": 1.0,
+			"miner": 1.0,
+			"power_generator": 1.0,
+			"smelter": 1.0
+		},
+		"cursor_payload": {
+			"amount": 0.0,
+			"item_id": ""
+		},
+		"dyson_systems": {},
+		"dyson_tick": 0,
+		"elapsed_time": 0.0,
+		"endgame": {
+			"invested": {},
+			"phase": "preparing",
+			"planet_id": "",
+			"progress_ticks": 0,
+			"reward_claimed": false
+		},
+		"exploration_missions": [],
+		"explored_system_ids": [
+			"helios"
+		],
+		"galaxy_seed": 240721,
+		"handcraft_queue": [],
+		"interplanetary_delivered": 0.0,
+		"logistics_routes": {},
+		"next_id": 1,
+		"planet_inventories": {
+			"home": {}
+		},
+		"planet_metrics": {
+			"home": {}
+		},
+		"planet_viewports": {
+			"home": {
+				"position": {
+					"x": 0.0,
+					"y": 0.0
+				},
+				"zoom": {
+					"x": 1.0,
+					"y": 1.0
+				}
+			}
+		},
+		"portable_fleet": {
+			"logistics_drone": 0,
+			"logistics_vessel": 0
+		},
+		"research_current_id": "",
+		"research_invested_costs": {},
+		"research_paused": false,
+		"research_progress": {},
+		"research_queue": [],
+		"research_queue_wait_reason": "",
+		"resource_sites": {},
+		"schema_version": 9,
+		"survey_progress_by_system": {
+			"helios": 0.999999
+		},
+		"technology_levels": {},
+		"unlocked_progression_ids": []
+	}
+}

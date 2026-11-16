@@ -12,6 +12,7 @@ const STATUS_OPTIONS := [
 	["全部状态", "all"],
 	["可研究", "available"],
 	["研究中", "researching"],
+	["已暂停", "paused"],
 	["队列中", "queued"],
 	["已完成", "completed"],
 	["前置锁定", "locked"],
@@ -39,6 +40,8 @@ var _scroll: ScrollContainer
 var _pause_button: Button
 var _resume_button: Button
 var _infinite_labels: Dictionary = {}
+var _infinite_buttons: Dictionary = {}
+var _infinite_automatic: CheckBox
 var _infinite_elapsed := 0.0
 var _cancel_button: Button
 
@@ -181,12 +184,19 @@ func _refresh(_arg_1 = null, _arg_2 = null, _arg_3 = null) -> void:
 func _refresh_current() -> void:
 	var current_id := game_state.research_current_id
 	var current_technology := DataManager.get_technology(current_id)
+	var infinite := InfiniteResearchSystem.new(game_state)
 	_current.text = "当前：无" if current_id.is_empty() else "当前：%s%s" % [String(current_technology.get("name", current_id)), "（已暂停）" if game_state.research_paused else ""]
+	if current_id.is_empty() and not infinite.active().is_empty(): _current.text = "当前：" + String(InfiniteResearchSystem.definitions()[infinite.active()].name)
+	var research := TechnologySystem.new(game_state)
+	if not game_state.research_paused_id.is_empty() and game_state.research_paused_id != current_id and not game_state.completed_technologies.has(game_state.research_paused_id): _current.text += "\n暂停：" + research.get_technology_name(game_state.research_paused_id)
 	_progress.max_value = maxf(float(current_technology.get("duration", 0.0)), 1.0)
 	_progress.value = game_state.get_technology_progress(current_id)
-	_pause_button.disabled = current_id.is_empty() or game_state.research_paused
-	_resume_button.disabled = current_id.is_empty() or not game_state.research_paused
-	_cancel_button.disabled = current_id.is_empty()
+	if current_id.is_empty() and not infinite.active().is_empty():
+		_progress.max_value = 1.0
+		_progress.value = minf(1.0, float(infinite.invested(infinite.active())) / float(infinite.cost(infinite.active())))
+	_pause_button.disabled = (current_id.is_empty() and infinite.active().is_empty()) or game_state.research_paused
+	_resume_button.disabled = not research.can_resume_research() or not infinite.active().is_empty()
+	_cancel_button.disabled = current_id.is_empty() and infinite.active().is_empty()
 
 func _refresh_queue() -> void:
 	var queue_names: Array[String] = []
@@ -230,10 +240,11 @@ func _create_technology_row(tech_id: String, technology: Dictionary, status: Str
 		if not paid.is_empty(): detail.text += "\n已投入：" + _format_cost(paid)
 	row.add_child(detail)
 	var action := Button.new()
-	action.text = "排队" if not game_state.research_current_id.is_empty() or not game_state.research_queue.is_empty() else "研究"
+	action.text = "排队" if _will_queue_technology(tech_id) else "恢复" if status == "paused" else "研究"
 	if game_state.completed_technologies.has(tech_id) and technology.has("repeatable"):
 		action.text = "研究下一层" if game_state.research_current_id.is_empty() and game_state.research_queue.is_empty() else "下一层排队"
-	action.disabled = status == "researching" or status == "queued" or (status == "completed" and not technology.has("repeatable"))
+	action.disabled = game_state.research_current_id == tech_id or game_state.research_queue.has(tech_id) or (status == "completed" and not technology.has("repeatable"))
+	if status == "paused" and technology.get("source_research_bridge", false) and (not game_state.research_current_id.is_empty() or not InfiniteResearchSystem.new(game_state).active().is_empty()): action.disabled = true
 	action.pressed.connect(_on_technology_intent.bind(tech_id))
 	row.add_child(action)
 	if not technology.get("prerequisites", []).is_empty():
@@ -253,7 +264,8 @@ func _matches_filters(tech_id: String, technology: Dictionary, status: String) -
 
 func _technology_status(tech_id: String, technology: Dictionary) -> String:
 	if game_state.research_current_id == tech_id:
-		return "researching"
+		return "paused" if game_state.research_paused else "researching"
+	if TechnologySystem.new(game_state).get_paused_research() == tech_id: return "paused"
 	if game_state.research_queue.has(tech_id):
 		return "queued"
 	if game_state.completed_technologies.has(tech_id):
@@ -264,7 +276,7 @@ func _technology_status(tech_id: String, technology: Dictionary) -> String:
 	return "available"
 
 func _status_name(status: String) -> String:
-	return {"available": "可研究", "researching": "研究中", "queued": "队列中", "completed": "已完成", "locked": "前置锁定"}.get(status, status)
+	return {"available": "可研究", "researching": "研究中", "paused": "已暂停", "queued": "队列中", "completed": "已完成", "locked": "前置锁定"}.get(status, status)
 
 func _format_prerequisites(prerequisites_value: Variant) -> String:
 	if not prerequisites_value is Array or prerequisites_value.is_empty():
@@ -321,10 +333,13 @@ func _format_amount(value: float) -> String:
 	return "%d" % int(value) if is_equal_approx(value, floor(value)) else "%.2f" % value
 
 func _on_technology_intent(tech_id: String) -> void:
-	if not game_state.research_current_id.is_empty() or not game_state.research_queue.is_empty():
+	if _will_queue_technology(tech_id):
 		EventBus.technology_queue_requested.emit(tech_id)
 	else:
 		EventBus.technology_start_requested.emit(tech_id)
+
+func _will_queue_technology(tech_id: String) -> bool:
+	return not game_state.research_current_id.is_empty() or (not DataManager.get_technology(tech_id).get("source_research_bridge", false) and not game_state.research_queue.is_empty())
 
 func _on_remove_queue_intent(tech_id: String) -> void:
 	EventBus.technology_remove_queue_requested.emit(tech_id)
@@ -362,6 +377,10 @@ func _build_infinite_controls(layout: VBoxContainer) -> void:
 	automatic.name = "Automatic"
 	automatic.text = "完成后自动研究下一层"
 	content.add_child(automatic)
+	_infinite_automatic = automatic
+	automatic.toggled.connect(func(enabled: bool):
+		InfiniteResearchSystem.new(game_state).set_automation(enabled)
+		_refresh_infinite())
 	for id in InfiniteResearchSystem.definitions():
 		var row := HBoxContainer.new()
 		content.add_child(row)
@@ -373,29 +392,33 @@ func _build_infinite_controls(layout: VBoxContainer) -> void:
 		var button := Button.new()
 		button.name = "Research_" + id
 		button.text = "研究"
+		_infinite_buttons[id] = button
 		button.pressed.connect(func():
-			if not InfiniteResearchSystem.new(game_state).select(id, automatic.button_pressed): EventBus.notice_requested.emit("需要宇宙矩阵科技、空闲研究队列，且研究尚未满级", "warning")
-			_refresh_infinite())
+			if not InfiniteResearchSystem.new(game_state).select(id): EventBus.notice_requested.emit("需要完成宇宙矩阵科技，且研究尚未满级", "warning")
+			_refresh())
 		row.add_child(button)
 	var actions := HBoxContainer.new()
 	content.add_child(actions)
-	for action in ["暂停 / 恢复无限研究", "取消并保留投入"]:
+	for action in ["暂停当前研究", "取消并保留投入"]:
 		var button := Button.new()
 		button.text = action
 		button.pressed.connect(func():
-			var service := InfiniteResearchSystem.new(game_state)
-			if action.begins_with("暂停"): service.pause(not game_state.progression_facts.get("infinite_paused", false))
-			else: service.cancel()
-			_refresh_infinite())
+			if action.begins_with("暂停"): EventBus.technology_pause_requested.emit()
+			else: EventBus.technology_cancel_requested.emit()
+			_refresh())
 		actions.add_child(button)
 
 func _refresh_infinite() -> void:
 	if game_state == null: return
 	var infinite := InfiniteResearchSystem.new(game_state)
+	_infinite_automatic.set_pressed_no_signal(game_state.progression_facts.get("infinite_auto", false))
+	_infinite_automatic.disabled = not game_state.completed_technologies.has("dsp_universe_matrix")
 	for id in _infinite_labels:
 		var definition: Dictionary = InfiniteResearchSystem.definitions()[id]
 		var status := "（已暂停）" if game_state.progression_facts.get("infinite_paused", false) else "（研究中）"
 		_infinite_labels[id].text = "%s · Lv.%d / %d %s\n宇宙矩阵：%s / %s" % [definition.name, infinite.level(id), int(definition.maximum), status if infinite.active() == id else "", infinite.invested(id), infinite.cost(id)]
+		_infinite_buttons[id].disabled = not game_state.completed_technologies.has("dsp_universe_matrix") or infinite.level(id) >= int(definition.maximum) or infinite.active() == id
+	_refresh_current()
 
 func _process(delta: float) -> void:
 	if not is_visible_in_tree(): return

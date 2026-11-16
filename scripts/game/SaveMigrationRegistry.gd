@@ -89,6 +89,20 @@ static func migrate_to_current(payload: Variant) -> Dictionary:
 				portable_fleet_value[fleet_item_id] = int(fleet_amount)
 
 	var current_tech: Variant = migrated.get("research_current_id", "")
+	var galactic_exports: Variant = migrated.get("galactic_exports")
+	if galactic_exports is Dictionary and galactic_exports.get("projects") is Dictionary:
+		for project in galactic_exports.projects.values():
+			if project is Dictionary and _is_integral_number(project.get("priority")): project.priority = int(project.priority)
+	# Older local source saves used the teaching research pause flag.
+	if not migrated.has("research_paused_id") and current_tech is String and migrated.get("research_paused") == true and DataManager.get_technology(current_tech).get("source_research_bridge", false):
+		migrated["research_paused_id"] = current_tech
+		migrated["research_current_id"] = ""
+		migrated["research_paused"] = false
+		current_tech = ""
+	var paused_tech: Variant = migrated.get("research_paused_id", "")
+	var completed_techs: Variant = migrated.get("completed_technologies", [])
+	if paused_tech is String and not paused_tech.is_empty() and DataManager.get_technology(paused_tech).get("source_research_bridge", false) and ((completed_techs is Array and completed_techs.has(paused_tech)) or paused_tech == current_tech or DataManager.get_technology(paused_tech).get("deprecated", false)):
+		migrated.erase("research_paused_id")
 	if current_tech is String and DataManager.get_technology(current_tech).get("deprecated", false):
 		migrated["research_current_id"] = ""
 		migrated["research_paused"] = false

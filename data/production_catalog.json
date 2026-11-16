@@ -485,6 +485,7 @@
     "dsp_construction_center": {
       "id": "dsp_construction_center",
       "source_id": "construction_center",
+      "source_megastructure": true,
       "name": "建筑制造中心",
       "description": "巨构级建筑补给设施，从所在行星物资托盘取料并按目标库存持续补足施工设备。",
       "symbol": "制造中心",
@@ -567,6 +568,7 @@
     "dsp_galactic_material_exporter": {
       "id": "dsp_galactic_material_exporter",
       "source_id": "galactic_material_exporter",
+      "source_megastructure": true,
       "name": "超大型物资出口",
       "description": "银河终局工程的实体交付设施，通过四个专用输入端口接收宇宙矩阵、太阳帆、小型运载火箭和反物质燃料棒。",
       "symbol": "银河出口",
@@ -667,6 +669,7 @@
     "dsp_micro_black_hole_connector": {
       "id": "dsp_micro_black_hole_connector",
       "source_id": "micro_black_hole_connector",
+      "source_megastructure": true,
       "name": "微型黑洞连接装置",
       "description": "通过三个独立通用输入口永久销毁传送带送达的物资，并以十进制精确记录累计销毁量。",
       "symbol": "黑洞连接器",
@@ -758,7 +761,14 @@
           "coal",
           "stone",
           "silicon_ore",
-          "titanium_ore"
+          "titanium_ore",
+          "fire_ice",
+          "fractal_silicon",
+          "kimberlite_ore",
+          "optical_grating_crystal",
+          "organic_crystal",
+          "spiniform_stalagmite_crystal",
+          "unipolar_magnet"
         ]
       },
       "required_source_technology": ""
@@ -813,6 +823,7 @@
     "dsp_orbital_cargo_terminal": {
       "id": "dsp_orbital_cargo_terminal",
       "source_id": "orbital_cargo_terminal",
+      "source_megastructure": true,
       "name": "轨道货运终端",
       "description": "全星系空间站的行星物资入口。四个稳定输入口共享每分钟 20,000 件上传能力，每颗已殖民行星最多一座。",
       "symbol": "轨道终端",
@@ -953,6 +964,7 @@
     "dsp_space_station_construction_launcher": {
       "id": "dsp_space_station_construction_launcher",
       "source_id": "space_station_construction_launcher",
+      "source_megastructure": true,
       "name": "空间站施工发射平台",
       "description": "将所在行星的终局材料真实送入本恒星系空间站工地。每颗行星最多建设一座。",
       "symbol": "空间站平台",
@@ -1088,6 +1100,7 @@
     "dsp_time_warp_device": {
       "id": "dsp_time_warp_device",
       "source_id": "time_warp_device",
+      "source_megastructure": true,
       "name": "时间扭曲装置",
       "description": "消耗所在电网的剩余功率加速全存档实时模拟；离线收益和活动墙钟不受影响。",
       "symbol": "时间扭曲",
@@ -1147,7 +1160,8 @@
         "item_id": "water",
         "rate_per_minute": 60,
         "items": [
-          "water"
+          "water",
+          "sulfuric_acid"
         ]
       },
       "required_source_technology": "basic_chemical_engineering"

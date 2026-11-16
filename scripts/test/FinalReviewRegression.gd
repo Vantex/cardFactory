@@ -133,6 +133,16 @@ func _test_formal_entry_points() -> void:
 	_expect(GameManager.start_new_game(0).get("ok", false), "formal new game saves")
 	var state := GameManager.get_game_state()
 	_expect(state.colonized_planet_ids == ["home"], "formal source new game starts with only its home colony")
+	_expect(state.planet_inventory == GameState.SOURCE_NEW_GAME_HOME_INVENTORY, "formal source new game uses frozen raw starter materials")
+	GameManager.end_session()
+	# Characterize the task 26 v9 economy through real save/load, without
+	# treating its legacy precursor recipes as a fresh DSPONLINE journey.
+	var legacy := GameState.new()
+	SourceGalaxySystem.new(legacy).initialize(240721, false)
+	legacy.initialize_new_game_home_inventory()
+	PlanetSystem.new(legacy).initialize_colonized_resource_sites()
+	_expect(GameManager.get_save_system().save_slot(0, legacy).ok and GameManager.continue_game(0).ok, "previous v9 starter economy loads through formal continue")
+	state = GameManager.get_game_state()
 	var copper_site := String(PlanetSystem.new(state).find_nearest_resource_site("home", "copper_ore", Vector2(470, -250)).get("id", ""))
 	var iron_site := String(PlanetSystem.new(state).find_nearest_resource_site("home", "iron_ore", Vector2(-470, -250)).get("id", ""))
 	var before_coal := float(state.planet_inventory.get("coal", 0))
@@ -140,8 +150,8 @@ func _test_formal_entry_points() -> void:
 	var placed := ConstructionSystem.new(state).try_place_building("miner", Vector2(-470, -250))
 	var engine := GameManager.get_simulation_engine()
 	for tick in range(60): engine.update(1.0 / 60.0)
-	_expect(before_coal == 10.0 and float(state.planet_inventory.get("coal", 0)) == 0.0 and generator.get("ok", false) and placed.get("ok", false) and is_equal_approx(state.buildings[generator.id].power_output, DataManager.get_building("miner").power_demand) and float(state.buildings[placed.id].output_buffer.get("iron_ore", 0)) > 0, "new home bootstrap powers legal mining without injected inventory")
-	_expect(state.planet_inventory == state.planet_inventories.home and state.planet_inventory.get("iron_ingot", 0) == 12.0, "starter tray binds home compatibility projection")
+	_expect(before_coal == 10.0 and float(state.planet_inventory.get("coal", 0)) == 0.0 and generator.get("ok", false) and placed.get("ok", false) and is_equal_approx(state.buildings[generator.id].power_output, DataManager.get_building("miner").power_demand) and float(state.buildings[placed.id].output_buffer.get("iron_ore", 0)) > 0, "previous v9 bootstrap still powers legal native mining")
+	_expect(state.planet_inventory == state.planet_inventories.home and state.planet_inventory.get("iron_ingot", 0) == 12.0, "previous starter tray retains its home projection")
 	var viewport := SubViewport.new()
 	viewport.size = Vector2i(1152, 648)
 	add_child(viewport)
@@ -173,7 +183,7 @@ func _test_formal_entry_points() -> void:
 	state = GameManager.get_game_state()
 	TechnologySystem.new(state)._complete_research("interstellar_logistics")
 	var smelter := ConstructionSystem.new(state).try_place_building("smelter", Vector2(900, 200))
-	_expect(smelter.get("ok", false), "formal new game can place its starter smelter")
+	_expect(smelter.get("ok", false), "previous v9 game can place its retained starter smelter")
 	if not smelter.get("ok", false):
 		viewport.queue_free()
 		await get_tree().process_frame

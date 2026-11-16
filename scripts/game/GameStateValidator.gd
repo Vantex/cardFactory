@@ -8,6 +8,8 @@ static func validate_persistent_dict(payload: Variant) -> Array:
 		return errors
 
 	var data: Dictionary = payload
+	if data.has("resource_mode") and (not data.resource_mode is String or data.resource_mode not in ["finite", "infinite"]):
+		_add_error(errors, "invalid_resource_mode", "state", "", "资源模式必须为finite或infinite")
 	if data.has("content_packs"):
 		var pack_error := DataManager.content_pack_system.requirements_error(data.content_packs) if DataManager.content_pack_system != null else "内容包目录尚未加载"
 		if pack_error != "":
@@ -19,6 +21,8 @@ static func validate_persistent_dict(payload: Variant) -> Array:
 	if not source_errors.is_empty(): return errors
 	for message in PlanetTraySystem.validate(data):
 		_add_error(errors, "invalid_planet_tray_limits", "state", "", message)
+	for message in preload("res://scripts/game/SourceEntityCapacitySystem.gd").validate(data):
+		_add_error(errors, "invalid_source_buffer_limits", "state", "", message)
 	for message in GameModeSystem.validate(data):
 		_add_error(errors, "invalid_game_mode", "state", "", message)
 	for message in PureIdleState.validate(data):
@@ -71,6 +75,8 @@ static func validate_persistent_dict(payload: Variant) -> Array:
 	_validate_cursor_payload(errors, data.get("cursor_payload"))
 	for message in ConstructionAutomationSystem.validate(data.get("production_orders", []), data.get("planet_inventories", {}), data.get("buildings", {})):
 		_add_error(errors, "invalid_production_order", "state", "", message)
+	for message in ProductionPlanningSystem.validate(data.get("production_plans", [])):
+		_add_error(errors, "invalid_production_plan", "state", "", message)
 	var handcraft_queue_value: Variant = data.get("handcraft_queue")
 	if not handcraft_queue_value is Array:
 		_add_error(errors, "invalid_handcraft_queue", "state", "", "手工制造队列必须是数组")
@@ -207,6 +213,20 @@ static func _validate_galaxy_state(errors: Array, data: Dictionary, galaxy: Gala
 	_validate_exploration_state(errors, data, galaxy)
 	if not data.get("planet_metrics") is Dictionary:
 		_add_error(errors, "invalid_planet_metadata", "state", "", "行星元数据无效")
+	else:
+		for planet in data.planet_metrics:
+			var metrics: Variant = data.planet_metrics[planet]
+			if not metrics is Dictionary:
+				_add_error(errors, "invalid_planet_metadata", "planet", String(planet), "行星元数据必须是字典")
+				continue
+			if not metrics.has("power"): continue
+			var power: Variant = metrics.power
+			if not power is Dictionary:
+				_add_error(errors, "invalid_planet_metadata", "planet", String(planet), "行星电力记录无效")
+				continue
+			for field in ["consumption", "generation", "efficiency"]:
+				if not _is_finite_number(power.get(field)) or float(power.get(field, -1)) < 0 or (field == "efficiency" and float(power.get(field, 2)) > 1):
+					_add_error(errors, "invalid_planet_metadata", "planet", String(planet), "行星电力记录数值无效")
 	_validate_portable_fleet(errors, data.get("portable_fleet"))
 
 static func _validate_portable_fleet(errors: Array, value: Variant) -> void:
@@ -271,15 +291,31 @@ static func _validate_resource_sites(errors: Array, value: Variant, galaxy: Gala
 		if not expected is Dictionary or String(site.get("item_id", "")) != String(expected.get("item_id", "")) or bool(site.get("infinite", false)) != bool(expected.get("infinite", false)) or not _matches_resource_position(site.get("position"), expected.get("position", Vector2.ZERO)):
 			_add_error(errors, "invalid_resource_site", "resource_site", site_id, "资源点必须匹配确定性星区目录")
 			continue
+		if site.has("depletion_remainder"):
+			var remainder: Variant = site.depletion_remainder
+			if not _is_integral_number(remainder) or float(remainder) < 0 or float(remainder) > 9:
+				_add_error(errors, "invalid_resource_depletion_remainder", "resource_site", site_id, "资源消耗余数必须是0到9的整数")
+		if site.has("output_buffer"):
+			var buffer: Variant = site.output_buffer
+			if galaxy.game_state.source_galaxy.is_empty() or not buffer is Dictionary:
+				_add_error(errors, "invalid_resource_output", "resource_site", site_id, "矿脉输出缓存必须属于源星区且是字典")
+			else:
+				for item in buffer:
+					if not item is String or item != site.item_id or not _is_finite_number(buffer[item]) or float(buffer[item]) < 0 or float(buffer[item]) > preload("res://scripts/game/SourceEntityCapacitySystem.gd").MAXIMUM:
+						_add_error(errors, "invalid_resource_output", "resource_site", site_id, "矿脉缓存物品或数量无效")
 		var capacity: Variant = site.get("capacity")
 		var remaining: Variant = site.get("remaining")
-		if not _is_finite_number(capacity) or not _is_finite_number(remaining) or float(capacity) != float(expected.get("capacity", -1.0)) or float(remaining) < 0.0 or (bool(expected.get("infinite", false)) and (float(capacity) != 0.0 or float(remaining) != 0.0)) or (not bool(expected.get("infinite", false)) and (float(capacity) <= 0.0 or float(remaining) > float(capacity))):
+		var legacy_capacity: float = float(expected.get("capacity", -1.0))
+		if not galaxy.game_state.source_galaxy.is_empty() and not bool(expected.get("infinite", false)):
+			legacy_capacity = SourceGalaxySystem.new(galaxy.game_state).reserve(planet_id, String(site.item_id), site_id)
+		if not _is_finite_number(capacity) or not _is_finite_number(remaining) or (float(capacity) != float(expected.get("capacity", -1.0)) and float(capacity) != legacy_capacity) or float(remaining) < 0.0 or (bool(expected.get("infinite", false)) and (float(capacity) != 0.0 or float(remaining) != 0.0)) or (not bool(expected.get("infinite", false)) and (float(capacity) <= 0.0 or float(remaining) > float(capacity))):
 			_add_error(errors, "invalid_resource_reserve", "resource_site", site_id, "资源储量必须有限且合法")
 
 static func _matches_resource_position(value: Variant, expected: Vector2) -> bool:
 	return value is Dictionary and _is_finite_number(value.get("x")) and _is_finite_number(value.get("y")) and is_equal_approx(float(value.get("x")), expected.x) and is_equal_approx(float(value.get("y")), expected.y)
 
 static func _validate_exploration_state(errors: Array, data: Dictionary, galaxy: GalaxySystem) -> void:
+	var source: bool = not data.get("source_galaxy", {}).is_empty()
 	var explored: Array = data.get("explored_system_ids", []) if data.get("explored_system_ids") is Array else []
 	var completed: Array = data.get("completed_technologies", []) if data.get("completed_technologies") is Array else []
 	var missions_value: Variant = data.get("exploration_missions")
@@ -299,7 +335,7 @@ static func _validate_exploration_state(errors: Array, data: Dictionary, galaxy:
 			var system := galaxy.get_star_system(system_id)
 			var required_technology_id := String(system.get("required_technology_id", ""))
 			var prerequisite_id := String(system.get("prerequisite_system_id", ""))
-			if system_id.is_empty() or seen_systems.has(system_id) or system.is_empty() or explored.has(system_id) or not _is_finite_number(duration) or float(duration) <= 0.0 or not is_equal_approx(float(duration), galaxy.get_exploration_duration(system_id)) or not _is_finite_number(progress) or float(progress) < 0.0 or (_is_finite_number(duration) and float(progress) >= float(duration)) or (not required_technology_id.is_empty() and not completed.has(required_technology_id)) or (not prerequisite_id.is_empty() and not explored.has(prerequisite_id)):
+			if system_id.is_empty() or seen_systems.has(system_id) or system.is_empty() or (not source and explored.has(system_id)) or not _is_finite_number(duration) or float(duration) <= 0.0 or not is_equal_approx(float(duration), galaxy.get_exploration_duration(system_id)) or not _is_finite_number(progress) or float(progress) < 0.0 or (_is_finite_number(duration) and float(progress) >= float(duration)) or (not required_technology_id.is_empty() and not completed.has(required_technology_id)) or (not prerequisite_id.is_empty() and not explored.has(prerequisite_id)):
 				_add_error(errors, "invalid_exploration_mission", "exploration", system_id, "勘探任务状态无效")
 			seen_systems[system_id] = true
 			mission_by_system[system_id] = mission
@@ -313,15 +349,15 @@ static func _validate_exploration_state(errors: Array, data: Dictionary, galaxy:
 		if galaxy.get_star_system(system_id).is_empty() or not _is_finite_number(progress) or float(progress) < 0.0 or float(progress) > 1.0:
 			_add_error(errors, "invalid_survey_progress", "exploration", system_id, "勘探进度必须属于已知星系且在零到一之间")
 			continue
-		if explored.has(system_id):
-			if not is_equal_approx(float(progress), 1.0):
-				_add_error(errors, "invalid_survey_progress", "exploration", system_id, "已探索星系进度必须完成")
-			continue
 		if mission_by_system.has(system_id):
 			var mission: Dictionary = mission_by_system[system_id]
 			var expected_progress := float(mission.get("progress", 0.0)) / maxf(float(mission.get("duration_seconds", 0.0)), 0.0000001)
-			if not is_equal_approx(float(progress), expected_progress):
+			var source_progress := GalaxySystem.round_source_survey_ratio(expected_progress)
+			if not is_equal_approx(float(progress), expected_progress) and (not source or not is_equal_approx(float(progress), source_progress)):
 				_add_error(errors, "invalid_survey_progress", "exploration", system_id, "勘探进度必须与进行中的任务一致")
+		elif explored.has(system_id):
+			if (float(progress) < 0.9999 if source else not is_equal_approx(float(progress), 1.0)):
+				_add_error(errors, "invalid_survey_progress", "exploration", system_id, "已完成勘探星系进度必须达到完成边界")
 		elif not is_zero_approx(float(progress)):
 			_add_error(errors, "invalid_survey_progress", "exploration", system_id, "未运行勘探任务的星系进度必须为零")
 	for system_id in mission_by_system:
@@ -330,7 +366,8 @@ static func _validate_exploration_state(errors: Array, data: Dictionary, galaxy:
 	for system_id_value in explored:
 		var system_id := String(system_id_value)
 		var progress: Variant = survey_value.get(system_id)
-		if not survey_value.has(system_id) or not _is_finite_number(progress) or not is_equal_approx(float(progress), 1.0):
+		if source and mission_by_system.has(system_id): continue
+		if not survey_value.has(system_id) or not _is_finite_number(progress) or (float(progress) < 0.9999 if source else not is_equal_approx(float(progress), 1.0)):
 			_add_error(errors, "invalid_survey_progress", "exploration", system_id, "已探索星系必须保留完成的勘探进度")
 
 static func _is_vector2_dict(value: Variant) -> bool:
@@ -369,6 +406,18 @@ static func _validate_research_state(errors: Array, data: Dictionary) -> void:
 			var prerequisite_id := String(prerequisite_value)
 			if not completed.has(prerequisite_id):
 				_add_error(errors, "invalid_research_current_prerequisite", "technology", current, "当前研究缺少已完成前置科技 '%s'" % prerequisite_id)
+	var paused_id: Variant = data.get("research_paused_id", "")
+	var paused := ""
+	if not paused_id is String:
+		_add_error(errors, "invalid_research_paused_id", "state", "", "暂停研究引用必须是字符串")
+	else:
+		paused = paused_id
+		if not paused.is_empty():
+			var paused_technology := DataManager.get_technology(paused)
+			if not paused_technology.get("source_research_bridge", false) or paused_technology.get("deprecated", false) or completed.has(paused) or paused == current:
+				_add_error(errors, "ineligible_research_paused", "technology", paused, "独立暂停研究必须引用未完成的源科技")
+			for prerequisite in paused_technology.get("prerequisites", []):
+				if not completed.has(prerequisite): _add_error(errors, "invalid_research_paused_prerequisite", "technology", paused, "暂停研究缺少已完成前置科技")
 
 	_validate_stable_id_array(errors, "research_queue", data.get("research_queue"))
 	var queue_value: Variant = data.get("research_queue")
@@ -420,12 +469,15 @@ static func _validate_research_state(errors: Array, data: Dictionary) -> void:
 			_validate_exact_research_cost(errors, tech_id, technology.get("cost", {}), invested_by_id[tech_id_value])
 	if not current.is_empty() and not invested_by_id.has(current):
 		_add_error(errors, "research_cost_not_paid", "technology", current, "当前研究必须已经支付完整目录成本")
+	if not paused.is_empty() and not invested_by_id.has(paused):
+		_add_error(errors, "research_cost_not_paid", "technology", paused, "暂停研究必须保留矩阵投入账本")
 
 	var scheduled: Dictionary = {}
 	for completed_id_value in completed:
 		scheduled[String(completed_id_value)] = true
 	if not current.is_empty():
 		scheduled[current] = true
+	if not paused.is_empty(): scheduled[paused] = true
 	for queued_id_value in queue:
 		var queued_id := String(queued_id_value)
 		var technology := DataManager.get_technology(queued_id)

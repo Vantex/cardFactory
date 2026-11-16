@@ -1,0 +1,309 @@
+{
+  "source_commit": "472bf62c76b695852b5577e563c1d113192ac731",
+  "source_files": {
+    "src/game/engine.ts": "a809a4cf72a7c2342d81732b010cf95e35cbca653313a0ebe33d56d49483b50b",
+    "src/game/content.ts": "6de101d86d28012c8765815aec35177a95b4d7ac5604736a4b608a100284f7ff",
+    "src/game/galaxy.ts": "bf0e4d23f6af26d0180ff4e7303e45a7e06e782ed0289f9a94dda3de88028bfd",
+    "src/game/galaxyCatalog.ts": "fc503cfdcc7d5f38bfcd8b6c7f262b56126f1e3cc2c749c0463e5779730c2540",
+    "src/game/systemSpaceStation.ts": "1cd199e3f11036bf8e06af469bbb92fbb8f882c37c3b5d5283c3f1aaf71798ad",
+    "src/game/systemHubLogistics.ts": "b654c3bf76dc0ad685550a5b5992358de84c611eedc1dc75fa3e425cef271659",
+    "src/game/productionStatistics.ts": "b9b6680164bef7fe0f48cce4ffdff2eaf643e7c07c789903a49fe403b6cc7f73",
+    "src/game/quantityFormat.ts": "01008471e4bc2f8e49d97b859667fb41ca83ee77d8c5034361ef5ce003d92178",
+    "src/game/campaign.ts": "c9c363d746b4f51a29fa01f08462c89816686af851daec2b450e6365e683a15c",
+    "src/game/difficulty.ts": "24613016f2296036c18577ce3338f792119617d07a17f2f9dffbefddf48e423e",
+    "src/game/endgame.ts": "65af1b6317e8d4c1dccdd73672750efbec3cd00d3b751333f438a99ac8967c8a",
+    "src/game/infiniteResearch.ts": "b6650402662557b5cd17e16de89f744269d0af54aa8aa40c16625e7758cc34c3",
+    "src/game/activity.ts": "b8711f1e5711bb0ec9826a098beeec246f859eb2581e0ce489ec6bc75f260c6a",
+    "src/game/units.ts": "bf050c2a09270f762ae76bb7ac8373571af3c094a215bd17c69fc9207d138bc5",
+    "src/game/quantumLogisticsNetwork.ts": "b34f1b836401edb757eac76ad6f924f1e8f6540f221134c55b555ebcca92b4c3",
+    "src/game/recursiveCrafting.ts": "1b131b06c7ee5f8164a377cf5a26d6fee4dd873b62f95b8552bd9423ad929e2b",
+    "src/game/speedrun.ts": "6144a52c5c0320080a4b3ec2202bd76e13811dedb587bc45f871ebded1ff2b59",
+    "src/game/idleSettlement.ts": "a90fd7d585074583ba462e4c19f6c44ba751e23128acb5daa7e652b7e4c25e8a",
+    "src/game/orbitalStation.ts": "8398e7ab6c5160a62d78fbd84e54679490336141c6f0224f0eb19524f448a56b",
+    "src/game/progression.ts": "be1ea07ebf711ba6e5d5429037dac1635499ffd33df8d9cb31a56c7099d2b773",
+    "src/game/stationContracts.ts": "4f3f2571be1878a9bc248ec2939ed03812e7b63ebd080ff8c34dfe5fcaf94f88",
+    "src/game/stationMath.ts": "5a40a7055e1b76910c84d339da2601032a6d754d725f1cd02b4ba0f474d35c0e",
+    "src/game/stationDecorations.ts": "ad76a89735066ba17cb3c3519b1b726b6f33b05ff7d368c0c7cf00326fb58019",
+    "src/game/stationCargoTerminal.ts": "d920817d0655f7774540e5b325549085e363d08bbb92834c5b2cced72d607f10"
+  },
+  "source_environment": {
+    "DEV": false,
+    "PROD": true,
+    "MODE": "production"
+  },
+  "scope": "Actual frozen installMiner16 real initial-state resource veins; controlled one funded extractor kit per case consumed by real public command; source input immutability verified. Does not prove earned construction, mining throughput or native card placement geometry.",
+  "cases": [
+    {
+      "id": "actual-funded-install-coal",
+      "input": {
+        "item": "coal",
+        "planet": "home",
+        "entity": "vein_coal",
+        "extractor": "mining_machine",
+        "funded_kits": 1,
+        "count": 1
+      },
+      "expected": {
+        "resource": "coal",
+        "miner_count": 1,
+        "extractor": "mining_machine",
+        "remaining_kits": 0
+      }
+    },
+    {
+      "id": "actual-funded-install-copper_ore",
+      "input": {
+        "item": "copper_ore",
+        "planet": "home",
+        "entity": "vein_copper",
+        "extractor": "mining_machine",
+        "funded_kits": 1,
+        "count": 1
+      },
+      "expected": {
+        "resource": "copper_ore",
+        "miner_count": 1,
+        "extractor": "mining_machine",
+        "remaining_kits": 0
+      }
+    },
+    {
+      "id": "actual-funded-install-crude_oil",
+      "input": {
+        "item": "crude_oil",
+        "planet": "home",
+        "entity": "vein_oil",
+        "extractor": "oil_extractor",
+        "funded_kits": 1,
+        "count": 1
+      },
+      "expected": {
+        "resource": "crude_oil",
+        "miner_count": 1,
+        "extractor": "oil_extractor",
+        "remaining_kits": 0
+      }
+    },
+    {
+      "id": "actual-funded-install-fire_ice",
+      "input": {
+        "item": "fire_ice",
+        "planet": "frost",
+        "entity": "frost_fire_ice",
+        "extractor": "mining_machine",
+        "funded_kits": 1,
+        "count": 1
+      },
+      "expected": {
+        "resource": "fire_ice",
+        "miner_count": 1,
+        "extractor": "mining_machine",
+        "remaining_kits": 0
+      }
+    },
+    {
+      "id": "actual-funded-install-fractal_silicon",
+      "input": {
+        "item": "fractal_silicon",
+        "planet": "ashen",
+        "entity": "ashen_fractal_silicon",
+        "extractor": "mining_machine",
+        "funded_kits": 1,
+        "count": 1
+      },
+      "expected": {
+        "resource": "fractal_silicon",
+        "miner_count": 1,
+        "extractor": "mining_machine",
+        "remaining_kits": 0
+      }
+    },
+    {
+      "id": "actual-funded-install-iron_ore",
+      "input": {
+        "item": "iron_ore",
+        "planet": "home",
+        "entity": "vein_iron",
+        "extractor": "mining_machine",
+        "funded_kits": 1,
+        "count": 1
+      },
+      "expected": {
+        "resource": "iron_ore",
+        "miner_count": 1,
+        "extractor": "mining_machine",
+        "remaining_kits": 0
+      }
+    },
+    {
+      "id": "actual-funded-install-kimberlite_ore",
+      "input": {
+        "item": "kimberlite_ore",
+        "planet": "ashen",
+        "entity": "ashen_kimberlite",
+        "extractor": "mining_machine",
+        "funded_kits": 1,
+        "count": 1
+      },
+      "expected": {
+        "resource": "kimberlite_ore",
+        "miner_count": 1,
+        "extractor": "mining_machine",
+        "remaining_kits": 0
+      }
+    },
+    {
+      "id": "actual-funded-install-optical_grating_crystal",
+      "input": {
+        "item": "optical_grating_crystal",
+        "planet": "frost",
+        "entity": "vein_optical_grating",
+        "extractor": "mining_machine",
+        "funded_kits": 1,
+        "count": 1
+      },
+      "expected": {
+        "resource": "optical_grating_crystal",
+        "miner_count": 1,
+        "extractor": "mining_machine",
+        "remaining_kits": 0
+      }
+    },
+    {
+      "id": "actual-funded-install-organic_crystal",
+      "input": {
+        "item": "organic_crystal",
+        "planet": "ashen",
+        "entity": "ashen_organic_crystal",
+        "extractor": "mining_machine",
+        "funded_kits": 1,
+        "count": 1
+      },
+      "expected": {
+        "resource": "organic_crystal",
+        "miner_count": 1,
+        "extractor": "mining_machine",
+        "remaining_kits": 0
+      }
+    },
+    {
+      "id": "actual-funded-install-silicon_ore",
+      "input": {
+        "item": "silicon_ore",
+        "planet": "ashen",
+        "entity": "vein_silicon",
+        "extractor": "mining_machine",
+        "funded_kits": 1,
+        "count": 1
+      },
+      "expected": {
+        "resource": "silicon_ore",
+        "miner_count": 1,
+        "extractor": "mining_machine",
+        "remaining_kits": 0
+      }
+    },
+    {
+      "id": "actual-funded-install-spiniform_stalagmite_crystal",
+      "input": {
+        "item": "spiniform_stalagmite_crystal",
+        "planet": "frost",
+        "entity": "ashen_spiniform",
+        "extractor": "mining_machine",
+        "funded_kits": 1,
+        "count": 1
+      },
+      "expected": {
+        "resource": "spiniform_stalagmite_crystal",
+        "miner_count": 1,
+        "extractor": "mining_machine",
+        "remaining_kits": 0
+      }
+    },
+    {
+      "id": "actual-funded-install-stone",
+      "input": {
+        "item": "stone",
+        "planet": "home",
+        "entity": "vein_stone",
+        "extractor": "mining_machine",
+        "funded_kits": 1,
+        "count": 1
+      },
+      "expected": {
+        "resource": "stone",
+        "miner_count": 1,
+        "extractor": "mining_machine",
+        "remaining_kits": 0
+      }
+    },
+    {
+      "id": "actual-funded-install-sulfuric_acid",
+      "input": {
+        "item": "sulfuric_acid",
+        "planet": "ashen",
+        "entity": "ashen_sulfuric",
+        "extractor": "water_pump",
+        "funded_kits": 1,
+        "count": 1
+      },
+      "expected": {
+        "resource": "sulfuric_acid",
+        "miner_count": 1,
+        "extractor": "water_pump",
+        "remaining_kits": 0
+      }
+    },
+    {
+      "id": "actual-funded-install-titanium_ore",
+      "input": {
+        "item": "titanium_ore",
+        "planet": "ashen",
+        "entity": "vein_titanium",
+        "extractor": "mining_machine",
+        "funded_kits": 1,
+        "count": 1
+      },
+      "expected": {
+        "resource": "titanium_ore",
+        "miner_count": 1,
+        "extractor": "mining_machine",
+        "remaining_kits": 0
+      }
+    },
+    {
+      "id": "actual-funded-install-unipolar_magnet",
+      "input": {
+        "item": "unipolar_magnet",
+        "planet": "magnetar",
+        "entity": "ashen_unipolar",
+        "extractor": "mining_machine",
+        "funded_kits": 1,
+        "count": 1
+      },
+      "expected": {
+        "resource": "unipolar_magnet",
+        "miner_count": 1,
+        "extractor": "mining_machine",
+        "remaining_kits": 0
+      }
+    },
+    {
+      "id": "actual-funded-install-water",
+      "input": {
+        "item": "water",
+        "planet": "home",
+        "entity": "vein_water",
+        "extractor": "water_pump",
+        "funded_kits": 1,
+        "count": 1
+      },
+      "expected": {
+        "resource": "water",
+        "miner_count": 1,
+        "extractor": "water_pump",
+        "remaining_kits": 0
+      }
+    }
+  ]
+}

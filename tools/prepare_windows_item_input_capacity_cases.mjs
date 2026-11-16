@@ -1,0 +1,31 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+const root=path.resolve(import.meta.dirname,'..');
+const destination=path.resolve(process.argv[2]??'');
+const checks=path.resolve(process.argv[3]??path.join(root,'.godot/windows-package-check'));
+assert.equal(path.dirname(destination),checks,'Item input capacity fixture remains in isolated package directory');
+const fixture=JSON.parse(fs.readFileSync(path.join(root,'tests/fixtures/parity/behavior/task27-item-input-capacity.json'),'utf8'));
+const catalog=JSON.parse(fs.readFileSync(path.join(root,'tests/fixtures/parity/dsponline_source_catalog.json'),'utf8'));
+assert.equal(fixture.source_commit,catalog.source.commit);
+const sail=JSON.parse(fs.readFileSync(path.join(root,'tests/fixtures/parity/behavior/task27-sail-lifetime.json'),'utf8'));
+assert.deepEqual(fixture.source_files,sail.source_files,'Exact actual24 source modules');
+for(const [file,digest] of Object.entries(fixture.source_files))assert.equal(digest,catalog.source.files[file],file);
+assert.deepEqual(fixture.functions,['getEntityItemInputCapacity']);
+assert.equal(fixture.cases.length,45696);assert.equal(new Set(fixture.cases.map(row=>row.id)).size,45696);
+fs.writeFileSync(path.join(destination,'item-input-capacity-cases.json'),JSON.stringify(fixture));
+console.log('WINDOWS ITEM INPUT CAPACITY FIXTURE PREPARED:45696 controlled source queries; real paid boundaries are separate tests');
+
+const pack=JSON.parse(fs.readFileSync(path.join(root,'tests/fixtures/parity/behavior/task27-content-pack-capacity.json'),'utf8'));
+assert.equal(pack.source_commit,catalog.source.commit);
+assert.equal(Object.keys(pack.source_files).length,26);
+for(const [file,digest] of Object.entries(pack.source_files))assert.equal(digest,catalog.source.files[file],file);
+assert.equal(pack.cases.length,36);assert.equal(new Set(pack.cases.map(row=>row.id)).size,36);
+fs.writeFileSync(path.join(destination,'content-pack-capacity-cases.json'),JSON.stringify(pack));
+console.log('WINDOWS CONTENT PACK CAPACITY FIXTURE PREPARED:36controlledregisteredpackstates/108providercomparisons');
+
+const high=JSON.parse(fs.readFileSync(path.join(root,'tests/fixtures/parity/behavior/task27-content-pack-high-capacity.json'),'utf8'));
+assert.equal(high.source_commit,catalog.source.commit);assert.deepEqual(high.source_files,pack.source_files);
+assert.equal(high.cases.length,36);assert.equal(new Set(high.cases.map(row=>row.id)).size,36);
+fs.writeFileSync(path.join(destination,'high-pack-capacity-cases.json'),JSON.stringify(high));
+console.log('WINDOWS HIGH PACK CAPACITY FIXTURE PREPARED:36actualregisteredhighpackstates/144providercomparisons');

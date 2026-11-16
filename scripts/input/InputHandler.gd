@@ -167,6 +167,7 @@ func _sync_primary_building_selection() -> void:
 	_syncing_selection = false
 
 func start_placing_card(building_type: String) -> void:
+	if GameManager.get_game_state() != null: building_type = GameManager.get_game_state().get_dock_building_type(building_type)
 	placing_building_type = building_type
 	connecting_source_id = ""
 	set_selected_entities([])

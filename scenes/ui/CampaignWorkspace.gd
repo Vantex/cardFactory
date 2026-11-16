@@ -11,6 +11,7 @@ var _source_detail: Label
 var _source_ids: Array[String] = []
 var _source_rows: Array = []
 var _source_achievements: Label
+var _source_track_button: Button
 var _objective_label: Label
 var _progress_label: Label
 var _chapter_label: Label
@@ -86,7 +87,7 @@ func _build_controls() -> void:
 	close.text = "收起"
 	close.position = Vector2(168, 238)
 	close.size = Vector2(136, 42)
-	close.pressed.connect(hide)
+	close.pressed.connect(_close_workspace)
 	panel.add_child(close)
 	_build_source_controls(panel)
 
@@ -109,12 +110,16 @@ func _install_toggle() -> void:
 	inspector.add_child(_toggle_button)
 
 func _show_workspace() -> void:
+	_clear_canvas_context()
 	refresh_now()
 	var workspace_shell := get_parent()
 	if workspace_shell != null and workspace_shell.has_method("show_exclusive_workspace"):
 		workspace_shell.call("show_exclusive_workspace", name)
 	else:
 		show()
+
+func _close_workspace() -> void:
+	hide()
 
 func _on_progression_updated(result: Dictionary) -> void:
 	_blocked_reward_ids = result.get("blocked_reward_ids", []).duplicate()
@@ -164,6 +169,9 @@ func _build_source_controls(panel: Control) -> void:
 	for label in ["跟踪所选任务", "前往目标", "手动采集一份铁矿", "重试待领任务奖励"]:
 		var button := Button.new()
 		button.text = label
+		if label == "跟踪所选任务":
+			button.name = "SourceTrack"
+			_source_track_button = button
 		button.pressed.connect(_source_action.bind(label))
 		panel.add_child(button)
 	_source_achievements = Label.new()
@@ -202,22 +210,14 @@ func _selected_source_row() -> Dictionary:
 
 func _refresh_source_detail() -> void:
 	var row := _selected_source_row()
+	if _source_track_button != null: _source_track_button.disabled = row.is_empty() or row.get("status") in ["locked", "completed"]
 	if row.is_empty():
 		_source_detail.text = "没有匹配任务"
 		return
 	var state := GameManager.get_game_state()
 	var details: Array[String] = [String(row.description), "进度 %.0f / %.0f" % [row.progress.current, row.progress.required]]
 	if row.status == "locked": details.append("前置任务尚未完成")
-	var requirements: Array = row.get("requirements", []).duplicate(true)
-	var navigation: Dictionary = row.get("navigation", {})
-	if requirements.is_empty() and navigation.get("kind") == "technology":
-		for item in DataManager.get_technology("dsp_" + String(navigation.techId)).get("cost", {}): requirements.append({"itemId": item, "amount": DataManager.get_technology("dsp_" + String(navigation.techId)).cost[item]})
-	if requirements.is_empty() and navigation.get("kind") == "recipe":
-		for recipe in DataManager.all_recipes.values():
-			if not recipe.has("source_id"): continue
-			if recipe.get("outputs", []).any(func(output): return output.item_id == navigation.itemId):
-				for item in recipe.inputs: requirements.append({"itemId": item.item_id, "amount": item.amount})
-				break
+	var requirements: Array = row.get("requirements", [])
 	for requirement in requirements:
 		var item := String(requirement.itemId)
 		var stock := SourceProgressionFacts.network_stock(state, item)
@@ -232,7 +232,7 @@ func _source_action(action: String) -> void:
 	var state := GameManager.get_game_state()
 	var row := _selected_source_row()
 	if action == "跟踪所选任务":
-		if row.is_empty() or not ProgressionSystem.new(state).select_objective(row.id): EventBus.notice_requested.emit("只能跟踪前置已完成的未完成任务", "warning")
+		if row.is_empty() or row.get("status") in ["locked", "completed"] or not ProgressionSystem.new(state).select_objective(row.id): EventBus.notice_requested.emit("只能跟踪前置已完成的未完成任务", "warning")
 	elif action == "前往目标":
 		if not row.is_empty(): _navigate_source(row.get("navigation", {}))
 	elif action == "手动采集一份铁矿":
@@ -244,21 +244,54 @@ func _source_action(action: String) -> void:
 				found = true
 				break
 		if not found: EventBus.notice_requested.emit("当前行星没有可采集的铁矿脉", "warning")
-	_blocked_reward_ids = ProgressionSystem.new(state).evaluate().blocked_reward_ids
+	if action in ["手动采集一份铁矿", "重试待领任务奖励"]: _blocked_reward_ids = ProgressionSystem.new(state).evaluate().blocked_reward_ids
 	refresh_now()
 
-func _navigate_source(navigation: Dictionary) -> void:
+func _clear_canvas_context() -> void:
 	var shell := get_parent()
+	var main := shell.get_parent()
+	var handler := main.get_node_or_null("InputHandler")
+	if handler != null:
+		handler.cancel_operation()
+		handler.set_selected_entities([])
+	if shell.has_method("set_selected_entities"): shell.set_selected_entities([])
+	if shell.has_method("set_placement_mode"): shell.set_placement_mode("")
+
+func _navigate_source(navigation: Dictionary) -> void:
+	if navigation.is_empty(): return
+	var shell := get_parent()
+	var main := shell.get_parent()
+	var state := GameManager.get_game_state()
+	_clear_canvas_context()
+	if shell.has_method("show_exclusive_workspace"): shell.show_exclusive_workspace("")
 	var target := "ProductionCatalogWorkspace"
 	match String(navigation.get("kind", "")):
 		"technology":
 			target = "TechnologyPanel"
 			var panel := shell.get_node(target)
 			panel.navigate_to("dsp_" + String(navigation.techId))
-		"planet", "system": target = "GalaxyMap"
+		"planet":
+			var planet_id := String(navigation.planetId)
+			var planet := GalaxySystem.new(state).get_planet(planet_id)
+			if state.explored_system_ids.has(String(planet.get("system_id", ""))):
+				var result: Dictionary = main.try_travel_to_planet(planet_id)
+				if not result.get("ok", false): EventBus.notice_requested.emit(String(result.get("message", "无法前往目标行星")), "warning")
+				return
+			target = "GalaxyMap"
+		"system": target = "GalaxyMap"
 		"dyson": target = "DysonPanel"
-		"galactic": target = "EndgameWorkspace"
-		"recipe", "building", "construction":
+		"galactic": target = "GalacticExportWorkspace"
+		"building":
+			var type := "dsp_" + String(navigation.buildingId)
+			for id in state.buildings:
+				var building: Dictionary = state.buildings[id]
+				if building.type == type:
+					main._on_locate_requested(id, building.position)
+					return
+			main.get_node("InputHandler").start_placing_card(type)
+			shell.set_placement_mode(type)
+			return
+		"recipe", "construction":
 			var catalog := shell.get_node(target)
 			catalog.navigate_to(navigation)
 		_: return

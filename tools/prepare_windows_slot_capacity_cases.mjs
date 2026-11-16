@@ -1,0 +1,17 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+const root=path.resolve(import.meta.dirname,'..');
+const destination=path.resolve(process.argv[2]??'');
+const checks=path.resolve(process.argv[3]??path.join(root,'.godot/windows-package-check'));
+assert.equal(path.dirname(destination),checks,'Slot capacity fixture remains in isolated package directory');
+const fixture=JSON.parse(fs.readFileSync(path.join(root,'tests/fixtures/parity/behavior/task27-slot-capacity.json'),'utf8'));
+const catalog=JSON.parse(fs.readFileSync(path.join(root,'tests/fixtures/parity/dsponline_source_catalog.json'),'utf8'));
+assert.equal(fixture.source_commit,catalog.source.commit);
+const sail=JSON.parse(fs.readFileSync(path.join(root,'tests/fixtures/parity/behavior/task27-sail-lifetime.json'),'utf8'));
+assert.deepEqual(fixture.source_files,sail.source_files,'Exact actual24 source modules');
+for(const [file,digest] of Object.entries(fixture.source_files))assert.equal(digest,catalog.source.files[file],file);
+assert.deepEqual(fixture.functions,['getStationSlotCapacity']);
+assert.equal(fixture.cases.length,2824);assert.equal(new Set(fixture.cases.map(row=>row.id)).size,2824);
+fs.writeFileSync(path.join(destination,'slot-capacity-cases.json'),JSON.stringify(fixture));
+console.log('WINDOWS SLOT CAPACITY FIXTURE PREPARED:2824 controlled source queries; real paid boundaries are separate tests');

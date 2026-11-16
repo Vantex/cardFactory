@@ -367,8 +367,11 @@ static func ordered_keys(order: Variant, values: Dictionary) -> bool:
 		if not key is String or not values.has(key) or seen.has(key): return false
 		seen[key] = true
 	return true
+func sail_lifetime_seconds() -> float:
+	return 1200.0 * SourceTechnologyEffects.multiplier(state, "sail_lifetime")
+
 func decay(system: Dictionary, delta: float) -> void:
-	var lifetime := 1200.0 * SourceTechnologyEffects.multiplier(state, "sail_lifetime")
+	var lifetime := sail_lifetime_seconds()
 	for orbit in system.orbits.values():
 		if orbit.cohorts.is_empty(): continue
 		var count := int(orbit.cohorts[0].count)

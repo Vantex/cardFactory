@@ -10,6 +10,7 @@ const ACCENT_YELLOW := Color("#e1b452")
 var _statistics_panel: Control
 var _diagnostics_panel: Control
 var _codex_panel: Control
+var _planning_panel: Control
 var _diagnostics_results: VBoxContainer
 var _codex_results: VBoxContainer
 var _diagnostics_scroll: ScrollContainer
@@ -33,6 +34,8 @@ func _ready() -> void:
 func _build_ui() -> void:
 	var layout := VBoxContainer.new()
 	layout.name = "Layout"
+	layout.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	layout.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	layout.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	layout.add_theme_constant_override("separation", 8)
 	add_child(layout)
@@ -51,6 +54,7 @@ func _build_ui() -> void:
 	_add_tab(tabs, "Statistics", "统计", _show_view.bind("StatisticsPanel"))
 	_add_tab(tabs, "Diagnostics", "诊断", _show_view.bind("DiagnosticsPanel"))
 	_add_tab(tabs, "Codex", "资料库", _show_view.bind("CodexPanel"))
+	_add_tab(tabs, "Planning", "计划", _show_view.bind("PlanningPanel"))
 
 	var content := Control.new()
 	content.name = "Content"
@@ -67,6 +71,10 @@ func _build_ui() -> void:
 	content.add_child(_diagnostics_panel)
 	_codex_panel = _build_codex_panel()
 	content.add_child(_codex_panel)
+	_planning_panel = ProductionPlanningPanel.new()
+	_planning_panel.name = "PlanningPanel"
+	_fill_parent(_planning_panel)
+	content.add_child(_planning_panel)
 	_show_view("StatisticsPanel")
 
 func _build_diagnostics_panel() -> Control:
@@ -137,7 +145,7 @@ func _build_codex_panel() -> Control:
 	return panel
 
 func _show_view(view_name: String) -> void:
-	for panel in [_statistics_panel, _diagnostics_panel, _codex_panel]:
+	for panel in [_statistics_panel, _diagnostics_panel, _codex_panel, _planning_panel]:
 		if panel != null:
 			panel.visible = panel.name == view_name
 	if is_visible_in_tree():
@@ -234,6 +242,8 @@ func _refresh_active_view() -> void:
 		_statistics_panel.refresh_now()
 	elif _diagnostics_panel.visible:
 		_refresh_diagnostics()
+	elif _planning_panel.visible:
+		_planning_panel.refresh_now()
 	else:
 		_refresh_codex()
 

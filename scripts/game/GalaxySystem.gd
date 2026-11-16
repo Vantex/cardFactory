@@ -23,6 +23,7 @@ func get_star_system(system_id: String) -> Dictionary:
 
 func get_planet(planet_id: String) -> Dictionary:
 	var result: Dictionary = _planets.get(planet_id, {}).duplicate(true)
+	if result.is_empty(): return {}
 	var metadata: Dictionary = game_state.source_galaxy.get("planetMetadata", {}).get(planet_id, {})
 	if not String(metadata.get("customName", "")).is_empty(): result.name = metadata.customName
 	if not game_state.source_galaxy.is_empty():
@@ -82,6 +83,20 @@ func get_prerequisite_system(system_id: String) -> String:
 func system_exists(system_id: String) -> bool:
 	return _systems.has(system_id)
 
+func is_source_system_unlocked(system_id: String) -> bool:
+	return game_state.explored_system_ids.has(system_id)
+
+func can_explore_source_system(system_id: String) -> bool:
+	var system := get_star_system(system_id)
+	if system.is_empty() or is_source_system_unlocked(system_id) or not _get_exploration_mission(system_id).is_empty(): return false
+	var technology := String(system.get("required_technology_id", ""))
+	if not technology.is_empty() and not game_state.completed_technologies.has(technology): return false
+	var prerequisite := String(system.get("prerequisite_system_id", ""))
+	if not prerequisite.is_empty() and not is_source_system_unlocked(prerequisite): return false
+	for cost in system.get("exploration_cost", []):
+		if float(game_state.planet_inventory.get(cost.item_id, 0)) + 0.0001 < float(cost.amount): return false
+	return true
+
 func get_system_count() -> int:
 	return _systems.size()
 
@@ -109,6 +124,7 @@ func get_exploration_requirements(system_id: String) -> Dictionary:
 	}.duplicate(true)
 
 func try_explore_system(system_id: String) -> Dictionary:
+	if not game_state.source_galaxy.is_empty(): return _try_explore_source_system(system_id)
 	var requirements := get_exploration_requirements(system_id)
 	if requirements.is_empty():
 		return _failure("unknown_system", "目标星系不存在")
@@ -130,6 +146,25 @@ func try_explore_system(system_id: String) -> Dictionary:
 	game_state.survey_progress_by_system[system_id] = 0.0
 	return _success("勘探任务已启动", {"system_id": system_id, "duration_seconds": duration})
 
+func _try_explore_source_system(system_id: String) -> Dictionary:
+	var requirements := get_exploration_requirements(system_id)
+	if requirements.is_empty(): return _failure("unknown_system", "目标星系不存在")
+	if not can_explore_source_system(system_id): return _exploration_availability(system_id, requirements.materials)
+	var next_inventory := game_state.planet_inventory.duplicate(true)
+	for item_id in requirements.materials:
+		next_inventory[item_id] = floorf(float(next_inventory.get(item_id, 0)) - float(requirements.materials[item_id]))
+	game_state.planet_inventories[game_state.active_planet_id] = next_inventory
+	game_state.planet_inventory = next_inventory
+	var duration := float(requirements.duration_seconds)
+	game_state.explored_system_ids.append(system_id)
+	if duration <= 0.0001:
+		game_state.survey_progress_by_system[system_id] = 1.0
+	else:
+		game_state.exploration_missions.append({"system_id": system_id, "progress": 0.0, "duration_seconds": duration})
+		game_state.survey_progress_by_system[system_id] = 0.0
+	_create_pioneer_landing(system_id)
+	return _success("导航信标已解锁，勘探任务已启动", {"system_id": system_id, "duration_seconds": duration})
+
 func update_exploration(delta: float) -> void:
 	var step := maxf(delta, 0.0)
 	var remaining_missions: Array = []
@@ -139,19 +174,28 @@ func update_exploration(delta: float) -> void:
 		var mission: Dictionary = mission_value
 		var system_id := String(mission.get("system_id", ""))
 		var duration := maxf(float(mission.get("duration_seconds", 0.0)), 0.0)
-		if system_id.is_empty() or duration <= 0.0 or not _systems.has(system_id) or game_state.explored_system_ids.has(system_id):
+		var source := not game_state.source_galaxy.is_empty()
+		if system_id.is_empty() or duration <= 0.0 or not _systems.has(system_id) or (not source and game_state.explored_system_ids.has(system_id)):
 			continue
 		var progress := minf(maxf(float(mission.get("progress", 0.0)), 0.0) + step, duration)
 		mission["progress"] = progress
-		game_state.survey_progress_by_system[system_id] = progress / duration
-		if progress + 0.0000001 >= duration:
-			game_state.explored_system_ids.append(system_id)
-			game_state.explored_system_ids.sort()
-			game_state.survey_progress_by_system[system_id] = 1.0
+		var ratio := progress / duration
+		game_state.survey_progress_by_system[system_id] = round_source_survey_ratio(ratio) if source else ratio
+		if (ratio + 0.0001 >= 1.0 if source else progress + 0.0000001 >= duration):
+			if not game_state.explored_system_ids.has(system_id): game_state.explored_system_ids.append(system_id)
+			if not source:
+				game_state.explored_system_ids.sort()
+				game_state.survey_progress_by_system[system_id] = 1.0
 			_create_pioneer_landing(system_id)
 		else:
 			remaining_missions.append(mission)
 	game_state.exploration_missions = remaining_missions
+
+static func round_source_survey_ratio(ratio: float) -> float:
+	var scaled := ratio * 10000.0
+	var whole := floorf(scaled)
+	# Adding 0.5 first can round a value just below the half boundary upward.
+	return (whole + (1.0 if scaled - whole >= 0.5 else 0.0)) / 10000.0
 
 func search(query: String) -> Dictionary:
 	var needle := query.strip_edges().to_lower()
@@ -172,6 +216,7 @@ func get_system_summary(system_id: String) -> Dictionary:
 	var requirements := get_exploration_requirements(system_id)
 	var mission := _get_exploration_mission(system_id)
 	var status := "explored" if game_state.explored_system_ids.has(system_id) else ("surveying" if not mission.is_empty() else "locked")
+	if not game_state.source_galaxy.is_empty() and not mission.is_empty(): status = "surveying"
 	system["distance"] = float(system.get("distance_ly", 0.0))
 	system["exploration"] = {
 		"status": status,
@@ -209,6 +254,10 @@ func get_planet_summary(planet_id: String) -> Dictionary:
 		"active": game_state.active_planet_id == planet_id,
 		"requirements": _get_colonization_requirements(planet),
 	}
+	if not game_state.source_galaxy.is_empty():
+		var source := PlanetSystem.new(game_state, self)
+		planet.colonization.colonized = source.is_source_planet_colonized(planet_id)
+		planet.colonization["source_requirements"] = source.get_source_colonization_requirements(planet_id)
 	planet["industry"] = _get_planet_industry_summary(planet_id)
 	return planet.duplicate(true)
 
@@ -226,7 +275,7 @@ func build_resource_sites_for_planet(planet_id: String, seed: int) -> Dictionary
 		var infinite := bool(template.get("infinite", false))
 		var capacity := 0
 		if not infinite:
-			capacity = SourceGalaxySystem.new(game_state).reserve(planet_id, item_id, site_id) if not game_state.source_galaxy.is_empty() else roundi(float(template.get("base_capacity", 0.0)) * _reserve_multiplier(seed, site_id, item_id))
+			capacity = SourceGalaxySystem.new(game_state).reserve(planet_id, item_id, _source_resource_id(planet_id, item_id)) if not game_state.source_galaxy.is_empty() else roundi(float(template.get("base_capacity", 0.0)) * _reserve_multiplier(seed, site_id, item_id))
 		built[site_id] = {"id": site_id, "planet_id": planet_id, "item_id": item_id, "position": _to_vector2(template.get("position", {})), "capacity": capacity, "remaining": capacity, "infinite": infinite}
 	return built
 
@@ -368,6 +417,7 @@ func _reserve_multiplier(seed: int, site_id: String, item_id: String) -> float:
 	return 0.85 + float(stable_hash % 3001) / 10000.0
 
 func _exploration_availability(system_id: String, materials: Dictionary) -> Dictionary:
+	if not game_state.source_galaxy.is_empty() and can_explore_source_system(system_id): return _success("可以启动勘探")
 	if not _systems.has(system_id):
 		return _failure("unknown_system", "目标星系不存在")
 	if game_state.explored_system_ids.has(system_id):
@@ -403,6 +453,9 @@ func _create_pioneer_landing(system_id: String) -> void:
 	if planet_ids.is_empty():
 		return
 	var planet_id := String(planet_ids[0])
+	if not game_state.source_galaxy.is_empty():
+		PlanetSystem.new(game_state, self).ensure_colonized_planet_records(planet_id)
+		return
 	if planet_id.is_empty() or game_state.colonized_planet_ids.has(planet_id):
 		return
 	game_state.colonized_planet_ids.append(planet_id)
@@ -519,3 +572,38 @@ func _success(message: String, details: Dictionary = {}) -> Dictionary:
 
 func _failure(reason: String, message: String, details: Dictionary = {}) -> Dictionary:
 	return {"ok": false, "reason": reason, "message": message, "details": details}
+
+# Reserve jitter must use frozen source entity IDs; native save and binding IDs stay stable.
+const SOURCE_LEGACY_RESOURCE_IDS := {
+  "home:iron_ore": "vein_iron",
+  "home:copper_ore": "vein_copper",
+  "home:stone": "vein_stone",
+  "home:water": "vein_water",
+  "home:crude_oil": "vein_oil",
+  "home:coal": "vein_coal",
+  "ashen:iron_ore": "ashen_iron",
+  "ashen:copper_ore": "ashen_copper",
+  "ashen:stone": "ashen_stone",
+  "ashen:silicon_ore": "vein_silicon",
+  "ashen:titanium_ore": "vein_titanium",
+  "ashen:coal": "ashen_coal",
+  "ashen:sulfuric_acid": "ashen_sulfuric",
+  "ashen:kimberlite_ore": "ashen_kimberlite",
+  "ashen:fractal_silicon": "ashen_fractal_silicon",
+  "ashen:organic_crystal": "ashen_organic_crystal",
+  "frost:iron_ore": "frost_iron",
+  "frost:copper_ore": "frost_copper",
+  "frost:titanium_ore": "frost_titanium",
+  "frost:silicon_ore": "frost_silicon",
+  "frost:fire_ice": "frost_fire_ice",
+  "frost:optical_grating_crystal": "vein_optical_grating",
+  "frost:spiniform_stalagmite_crystal": "ashen_spiniform",
+  "magnetar:iron_ore": "magnetar_iron",
+  "magnetar:copper_ore": "magnetar_copper",
+  "magnetar:titanium_ore": "magnetar_titanium",
+  "magnetar:silicon_ore": "magnetar_silicon",
+  "magnetar:unipolar_magnet": "ashen_unipolar"
+}
+
+static func _source_resource_id(planet: String, item: String) -> String:
+	return SOURCE_LEGACY_RESOURCE_IDS.get(planet + ":" + item, "vein_%s_%s" % [planet, item])

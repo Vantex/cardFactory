@@ -1,0 +1,21 @@
+{
+  "format_version": 1,
+  "source_commit": "472bf62c76b695852b5577e563c1d113192ac731",
+  "reviews": {
+    "workspaces:StatisticsWorkspace": {
+      "classification": "部分能力存在，完整契约待补",
+      "candidates": ["scenes/ui/CodexWorkspace.gd", "scenes/ui/StatisticsPanel.gd", "scenes/ui/ProductionPlanningPanel.gd"],
+      "finding": "源工作区含 management/production/efficiency/networks/planning/power/issues/galaxy 八页；当前分析入口含统计、诊断、资料库和计划。计划已有 8 计算/8 命令、4 个具体回调与内容包受控金标，全部网络管理、其他页面和跨工作区回调尚未核实。保留整体未实现状态。"
+    },
+    "modes:normal": {
+      "classification": "开局经济已修复并通过专项，完整模式仍待验证",
+      "candidates": ["autoload/GameManager.gd", "scripts/game/GameState.gd"],
+      "finding": "新游戏现采用源原矿各 100 和源施工件，普通/速通 × 三档难度的库存及磁盘保存专项通过；原矿到三枚蓝矩阵和首项研究的自动旅程通过。完整模式、全成长链及人工旅程仍未验收，保留候选状态。"
+    },
+    "technologies:basic_logistics": {
+      "classification": "施工件奖励已修复并通过边界专项，完整科技仍待验证",
+      "candidates": ["scripts/game/TechnologySystem.gd"],
+      "finding": "现按源首次完成奖励各 2 件并防止重复发放，排除巨构件；全部 76 个定义的奖励/解锁行星边界和保存专项通过。这些检查直接调用完成边界，不能证明全部科技的前置条件、研究投入和正式入口已通过，保留候选状态。"
+    }
+  }
+}

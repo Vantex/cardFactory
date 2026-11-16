@@ -87,6 +87,8 @@ func _test_product_ui() -> void:
 	shell.close_content_packs()
 	_expect(shell.get_screen_name() == "start", "content-pack workspace returns to menu")
 	_expect(GameManager.start_new_game(0).ok, "formal session starts")
+	await _frames()
+	_expect(workspace._construction_stock.text == "施工件 13" and workspace._resource_summary.text.contains("KITS  13"), "formal desktop shows all 13 source building kits")
 	workspace.get_node("TopBar/SaveButton").pressed.emit()
 	_expect(GameManager.get_save_status().phase == "saved", "top bar saves through the coordinator")
 	shell.open_pause_menu()
@@ -152,6 +154,7 @@ func _test_product_ui() -> void:
 	_expect(not palette.visible, "workspace navigation closes command palette")
 	workspace.get_node("TechnologyPanel").hide()
 	await _test_task25_workspaces(viewport, workspace)
+	await _test_task27_planning(viewport, workspace)
 	await _test_task26_workspaces(viewport, workspace)
 	await _test_blueprint_persistence_ui(viewport, workspace)
 	handler.set_selected_entities([])
@@ -327,6 +330,34 @@ func _capture(viewport: SubViewport, label: String) -> void:
 	await RenderingServer.frame_post_draw
 	var image := viewport.get_texture().get_image()
 	if image != null: image.save_png("res://.godot/task17-" + label + ".png")
+
+func _test_task27_planning(viewport: SubViewport, workspace: FactoryWorkspaceUI) -> void:
+	var state := GameManager.get_game_state()
+	var plans_before := state.production_plans.duplicate(true)
+	workspace.get_node("TopBar/AnalysisButton").pressed.emit()
+	var analysis: Control = workspace.get_node("CodexWorkspace")
+	analysis.get_node("Layout/Tabs/Planning").pressed.emit()
+	await _frames()
+	var panel: Control = analysis.get_node("Layout/Content/PlanningPanel")
+	var create: Button = panel.get_node("Layout/Create")
+	create.pressed.emit()
+	await _frames()
+	_expect(analysis.visible and panel.visible and state.production_plans.size() == plans_before.size() + 1, "formal analysis menu creates a production plan")
+	_expect(workspace.is_pointer_over_ui(create.global_position + create.size * 0.5), "planning controls block canvas pointer input")
+	_expect(create.size.x > 80 and create.size.y > 20 and Rect2(Vector2.ZERO, Vector2(viewport.size)).has_point(create.global_position + create.size * 0.5), "planning create button is visible and usable at 1080p")
+	await _capture(viewport, "task27-planning-1920x1080")
+	var original_size := viewport.size
+	var original_scale: float = LocalSettings.values.font_scale
+	viewport.size = Vector2i(1000, 600)
+	LocalSettings.update_preferences({"font_scale": 2.0})
+	await _frames()
+	_expect(create.size.x > 80 and panel.size.x > 200, "planning layout remains usable with a small window and large font")
+	await _capture(viewport, "task27-planning-1000x600-large-font")
+	viewport.size = original_size
+	LocalSettings.update_preferences({"font_scale": original_scale})
+	state.production_plans = plans_before
+	analysis.hide()
+	await _frames()
 
 func _test_task25_workspaces(viewport: SubViewport, workspace: FactoryWorkspaceUI) -> void:
 	var state := GameManager.get_game_state()

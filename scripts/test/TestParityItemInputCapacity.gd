@@ -1,0 +1,21 @@
+extends Node
+
+func _ready() -> void:
+	var runner := preload("res://scripts/test/ItemInputCapacityBehaviorRunner.gd")
+	var result: Dictionary = runner.new().run()
+	result.errors.append_array(runner.rejection_errors())
+	result.errors.append_array(preload("res://scripts/test/EffectQueryBehaviorRunner.gd")._ownership_rejections())
+	if result.verified_keys != [runner.KEY] or result.proofs.get(runner.KEY, {}).get("assertions", []).size() != 91392: result.errors.append("complete45696query/91392assertion item input proof missing")
+	var persistence := preload("res://scripts/test/ItemInputCapacityPersistenceRegression.gd").new().run()
+	result.errors.append_array(persistence.errors)
+	result.errors.append_array(preload("res://scripts/test/ContentPackCapacityRegression.gd").new().run())
+	var high := preload("res://scripts/test/HighPackSlotCapacityRegression.gd").new().run()
+	result.errors.append_array(high.errors)
+	if high.saves != 4: result.errors.append("four actual high-capacity/retained boundary disk roundtrips missing")
+	print("HIGH PACK CAPACITY ACTUAL SAVES: ", high.saves, "; errors: ", high.errors.size(), "; root: ", high.root)
+	if persistence.saves != 10: result.errors.append("ten actual paid/spray/balanced/override/native disk roundtrips missing")
+	print("ITEM INPUT CAPACITY ACTUAL SAVES: ", persistence.saves, "; errors: ", persistence.errors.size(), "; root: ", persistence.root)
+	for error in result.errors.slice(0, 20): printerr("FAIL: " + error)
+	print("ITEM INPUT CAPACITY ERRORS: ", result.errors.size(), "; actual keys: ", result.verified_keys.size(), "; queries: 45696; rejection cases: 29; registered pack states: 36")
+	print("PARITY ITEM INPUT CAPACITY TESTS PASSED" if result.errors.is_empty() else "PARITY ITEM INPUT CAPACITY TESTS FAILED")
+	get_tree().quit(0 if result.errors.is_empty() else 1)

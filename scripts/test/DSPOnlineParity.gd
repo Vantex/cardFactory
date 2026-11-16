@@ -9,10 +9,26 @@ static func read_json(path: String) -> Dictionary:
 	if parser.parse(FileAccess.get_file_as_string(path)) != OK or not parser.data is Dictionary: return {}
 	return parser.data
 
-static func validate(manifest: Dictionary, require_complete: bool = false, verified_behavior_keys: Array = []) -> Array[String]:
+static func read_rule_cases(path: String = ROOT + "rule_cases.json") -> Dictionary:
+	var data := read_json(path)
+	if not data.has("format_version"): return data
+	if data.format_version != 2 or not data.get("assertion_sets") is Array or not data.get("rules") is Dictionary: return {}
+	var sets: Array = data.assertion_sets
+	var rules: Dictionary = data.rules
+	for key in rules:
+		if not rules[key] is Dictionary: return {}
+		var rule: Dictionary = rules[key]
+		for field in ["acceptance", "behavior_assertions"]:
+			if not rule.has(field): continue
+			var index: Variant = rule[field]
+			if not (index is int or index is float) or index != floorf(float(index)) or index < 0 or index >= sets.size() or not sets[int(index)] is Array: return {}
+			rule[field] = sets[int(index)]
+	return rules
+
+static func validate(manifest: Dictionary, require_complete: bool = false, verified_behavior_keys: Array = [], behavior_proofs: Dictionary = {}) -> Array[String]:
 	var errors: Array[String] = []
 	var source := read_json(ROOT + "dsponline_source_catalog.json")
-	var cases := read_json(ROOT + "rule_cases.json")
+	var cases := read_rule_cases()
 	var exclusions := read_json(ROOT + "exclusions.json")
 	if source.is_empty() or cases.is_empty() or exclusions.is_empty():
 		return ["missing frozen catalog, rule cases or exclusions"]
@@ -66,6 +82,13 @@ static func validate(manifest: Dictionary, require_complete: bool = false, verif
 			if rule.get("source_key") != key or rule.get("owner_task") != row.get("owner_task") or not rule.get("acceptance") is Array or rule.acceptance.is_empty(): errors.append("invalid rule case: " + key)
 			if status == "已验证" and (not verified_behavior_keys.has(key) or not rule.get("behavior_verified", false)):
 				errors.append("behavior evidence missing: " + key)
+			if status == "已验证":
+				var proof: Dictionary = behavior_proofs.get(key, {})
+				var fixture_path := String(rule.get("behavior_fixture", ""))
+				if proof.get("suite", "") != rule.get("behavior_suite", "missing") or proof.get("fixture", "") != fixture_path or fixture_path.is_empty() or not FileAccess.file_exists(fixture_path):
+					errors.append("behavior binding missing: " + key)
+				elif proof.get("fixture_sha256", "") != FileAccess.get_sha256(fixture_path) or rule.get("behavior_fixture_sha256", "") != FileAccess.get_sha256(fixture_path) or proof.get("assertions", []).is_empty() or proof.get("assertions", []) != rule.get("behavior_assertions", []):
+					errors.append("behavior fixture drift or missing assertions: " + key)
 		if not row.get("target") is Dictionary or not row.target.get("ids") is Array:
 			errors.append("missing explicit mapping: " + key)
 			continue
@@ -84,6 +107,10 @@ static func validate(manifest: Dictionary, require_complete: bool = false, verif
 		if not seen.has(key) and not scope.has(key): errors.append("unregistered missing row: " + key)
 	for rule_id in cases:
 		if not seen_rules.has(rule_id): errors.append("orphan rule case: " + rule_id)
+	var behavior_seen := {}
+	for key in verified_behavior_keys:
+		if not seen.has(key) or online.has(key) or behavior_seen.has(key): errors.append("unknown, excluded or duplicate behavior key: " + String(key))
+		behavior_seen[key] = true
 	return errors
 
 static func _target_catalogs() -> Dictionary:

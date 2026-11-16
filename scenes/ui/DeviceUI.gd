@@ -81,7 +81,7 @@ func _style(node: Node) -> void:
 		if control is Button: control.clip_text = false
 	if control is ScrollContainer:
 		control.follow_focus = true
-		control.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+		control.horizontal_scroll_mode = int(control.get_meta("device_horizontal_scroll_mode", ScrollContainer.SCROLL_MODE_AUTO))
 	if not control.has_meta("device_colors"):
 		var original := {}
 		for property in control.get_property_list():

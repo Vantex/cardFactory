@@ -1,0 +1,1051 @@
+{
+  "source_commit": "472bf62c76b695852b5577e563c1d113192ac731",
+  "source_files": {
+    "src/game/content.ts": "6de101d86d28012c8765815aec35177a95b4d7ac5604736a4b608a100284f7ff",
+    "src/game/engine.ts": "a809a4cf72a7c2342d81732b010cf95e35cbca653313a0ebe33d56d49483b50b",
+    "src/game/galaxy.ts": "bf0e4d23f6af26d0180ff4e7303e45a7e06e782ed0289f9a94dda3de88028bfd",
+    "src/game/galaxyCatalog.ts": "fc503cfdcc7d5f38bfcd8b6c7f262b56126f1e3cc2c749c0463e5779730c2540",
+    "src/game/systemSpaceStation.ts": "1cd199e3f11036bf8e06af469bbb92fbb8f882c37c3b5d5283c3f1aaf71798ad",
+    "src/game/systemHubLogistics.ts": "b654c3bf76dc0ad685550a5b5992358de84c611eedc1dc75fa3e425cef271659",
+    "src/game/productionStatistics.ts": "b9b6680164bef7fe0f48cce4ffdff2eaf643e7c07c789903a49fe403b6cc7f73",
+    "src/game/quantityFormat.ts": "01008471e4bc2f8e49d97b859667fb41ca83ee77d8c5034361ef5ce003d92178",
+    "src/game/campaign.ts": "c9c363d746b4f51a29fa01f08462c89816686af851daec2b450e6365e683a15c",
+    "src/game/difficulty.ts": "24613016f2296036c18577ce3338f792119617d07a17f2f9dffbefddf48e423e",
+    "src/game/endgame.ts": "65af1b6317e8d4c1dccdd73672750efbec3cd00d3b751333f438a99ac8967c8a",
+    "src/game/infiniteResearch.ts": "b6650402662557b5cd17e16de89f744269d0af54aa8aa40c16625e7758cc34c3",
+    "src/game/activity.ts": "b8711f1e5711bb0ec9826a098beeec246f859eb2581e0ce489ec6bc75f260c6a",
+    "src/game/units.ts": "bf050c2a09270f762ae76bb7ac8373571af3c094a215bd17c69fc9207d138bc5",
+    "src/game/quantumLogisticsNetwork.ts": "b34f1b836401edb757eac76ad6f924f1e8f6540f221134c55b555ebcca92b4c3",
+    "src/game/recursiveCrafting.ts": "1b131b06c7ee5f8164a377cf5a26d6fee4dd873b62f95b8552bd9423ad929e2b",
+    "src/game/speedrun.ts": "6144a52c5c0320080a4b3ec2202bd76e13811dedb587bc45f871ebded1ff2b59",
+    "src/game/idleSettlement.ts": "a90fd7d585074583ba462e4c19f6c44ba751e23128acb5daa7e652b7e4c25e8a",
+    "src/game/orbitalStation.ts": "8398e7ab6c5160a62d78fbd84e54679490336141c6f0224f0eb19524f448a56b",
+    "src/game/progression.ts": "be1ea07ebf711ba6e5d5429037dac1635499ffd33df8d9cb31a56c7099d2b773",
+    "src/game/stationContracts.ts": "4f3f2571be1878a9bc248ec2939ed03812e7b63ebd080ff8c34dfe5fcaf94f88",
+    "src/game/stationMath.ts": "5a40a7055e1b76910c84d339da2601032a6d754d725f1cd02b4ba0f474d35c0e",
+    "src/game/stationDecorations.ts": "ad76a89735066ba17cb3c3519b1b726b6f33b05ff7d368c0c7cf00326fb58019",
+    "src/game/stationCargoTerminal.ts": "d920817d0655f7774540e5b325549085e363d08bbb92834c5b2cced72d607f10"
+  },
+  "belt_cases": [
+    {
+      "id": "mk1-1x1",
+      "belt": {
+        "tier": 1,
+        "lanes": 1,
+        "stackSize": 1
+      },
+      "speed": 6,
+      "capacity": 6
+    },
+    {
+      "id": "mk1-2x2",
+      "belt": {
+        "tier": 1,
+        "lanes": 2,
+        "stackSize": 2
+      },
+      "speed": 6,
+      "capacity": 24
+    },
+    {
+      "id": "mk1-7x4",
+      "belt": {
+        "tier": 1,
+        "lanes": 7,
+        "stackSize": 4
+      },
+      "speed": 6,
+      "capacity": 168
+    },
+    {
+      "id": "mk2-1x1",
+      "belt": {
+        "tier": 2,
+        "lanes": 1,
+        "stackSize": 1
+      },
+      "speed": 12,
+      "capacity": 12
+    },
+    {
+      "id": "mk2-2x2",
+      "belt": {
+        "tier": 2,
+        "lanes": 2,
+        "stackSize": 2
+      },
+      "speed": 12,
+      "capacity": 48
+    },
+    {
+      "id": "mk2-7x4",
+      "belt": {
+        "tier": 2,
+        "lanes": 7,
+        "stackSize": 4
+      },
+      "speed": 12,
+      "capacity": 336
+    },
+    {
+      "id": "mk3-1x1",
+      "belt": {
+        "tier": 3,
+        "lanes": 1,
+        "stackSize": 1
+      },
+      "speed": 30,
+      "capacity": 30
+    },
+    {
+      "id": "mk3-2x2",
+      "belt": {
+        "tier": 3,
+        "lanes": 2,
+        "stackSize": 2
+      },
+      "speed": 30,
+      "capacity": 120
+    },
+    {
+      "id": "mk3-7x4",
+      "belt": {
+        "tier": 3,
+        "lanes": 7,
+        "stackSize": 4
+      },
+      "speed": 30,
+      "capacity": 840
+    }
+  ],
+  "initial_economy": {
+    "tray": {
+      "iron_ore": 100,
+      "copper_ore": 100,
+      "stone": 100
+    },
+    "construction": {
+      "wind_turbine": 3,
+      "solar_panel": 0,
+      "geothermal_power_station": 0,
+      "thermal_power_plant": 0,
+      "mini_fusion_power_plant": 0,
+      "artificial_star": 0,
+      "accumulator": 0,
+      "energy_exchanger": 0,
+      "mining_machine": 2,
+      "arc_smelter": 3,
+      "plane_smelter": 0,
+      "assembling_machine_mk1": 3,
+      "assembling_machine_mk2": 0,
+      "assembling_machine_mk3": 0,
+      "spray_coater": 0,
+      "matrix_lab": 2,
+      "conveyor_belt_mk1": 10,
+      "conveyor_belt_mk2": 0,
+      "conveyor_belt_mk3": 0,
+      "storage_mk1": 0,
+      "material_delivery_hub": 0,
+      "orbital_cargo_terminal": 0,
+      "splitter_4way": 0,
+      "storage_tank": 0,
+      "oil_extractor": 0,
+      "oil_refinery": 0,
+      "water_pump": 0,
+      "chemical_plant": 0,
+      "quantum_chemical_plant": 0,
+      "fractionator": 0,
+      "miniature_particle_collider": 0,
+      "em_rail_ejector": 0,
+      "ray_receiver": 0,
+      "vertical_launching_silo": 0,
+      "planetary_logistics_station": 0,
+      "interstellar_logistics_station": 0,
+      "orbital_collector": 0,
+      "construction_center": 0,
+      "galactic_material_exporter": 0,
+      "micro_black_hole_connector": 0,
+      "time_warp_device": 0,
+      "space_station_construction_launcher": 0,
+      "sorter_mk1": 0,
+      "sorter_mk2": 0,
+      "sorter_mk3": 0
+    },
+    "colonies": [
+      "home"
+    ]
+  },
+  "research_rewards": [
+    {
+      "tech_id": "electromagnetic_matrix",
+      "ids": [
+        "matrix_lab"
+      ],
+      "once": {
+        "matrix_lab": 2
+      },
+      "twice": {
+        "matrix_lab": 2
+      },
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "electromagnetism",
+      "ids": [
+        "wind_turbine"
+      ],
+      "once": {
+        "wind_turbine": 2
+      },
+      "twice": {
+        "wind_turbine": 2
+      },
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "solar_energy",
+      "ids": [
+        "solar_panel"
+      ],
+      "once": {
+        "solar_panel": 2
+      },
+      "twice": {
+        "solar_panel": 2
+      },
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "basic_logistics",
+      "ids": [
+        "conveyor_belt_mk1",
+        "storage_mk1",
+        "splitter_4way"
+      ],
+      "once": {
+        "conveyor_belt_mk1": 2,
+        "storage_mk1": 2,
+        "splitter_4way": 2
+      },
+      "twice": {
+        "conveyor_belt_mk1": 2,
+        "storage_mk1": 2,
+        "splitter_4way": 2
+      },
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "thermal_power",
+      "ids": [
+        "thermal_power_plant"
+      ],
+      "once": {
+        "thermal_power_plant": 2
+      },
+      "twice": {
+        "thermal_power_plant": 2
+      },
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "high_efficiency_plasma_control",
+      "ids": [
+        "storage_tank",
+        "oil_extractor",
+        "oil_refinery"
+      ],
+      "once": {
+        "storage_tank": 2,
+        "oil_extractor": 2,
+        "oil_refinery": 2
+      },
+      "twice": {
+        "storage_tank": 2,
+        "oil_extractor": 2,
+        "oil_refinery": 2
+      },
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "energy_matrix",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "energy_storage",
+      "ids": [
+        "accumulator",
+        "energy_exchanger"
+      ],
+      "once": {
+        "accumulator": 2,
+        "energy_exchanger": 2
+      },
+      "twice": {
+        "accumulator": 2,
+        "energy_exchanger": 2
+      },
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "fractionation",
+      "ids": [
+        "fractionator"
+      ],
+      "once": {
+        "fractionator": 2
+      },
+      "twice": {
+        "fractionator": 2
+      },
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "geothermal_power",
+      "ids": [
+        "geothermal_power_station"
+      ],
+      "once": {
+        "geothermal_power_station": 2
+      },
+      "twice": {
+        "geothermal_power_station": 2
+      },
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "high_speed_assembling",
+      "ids": [
+        "assembling_machine_mk2"
+      ],
+      "once": {
+        "assembling_machine_mk2": 2
+      },
+      "twice": {
+        "assembling_machine_mk2": 2
+      },
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "high_speed_logistics",
+      "ids": [
+        "conveyor_belt_mk2"
+      ],
+      "once": {
+        "conveyor_belt_mk2": 2
+      },
+      "twice": {
+        "conveyor_belt_mk2": 2
+      },
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "mining_speed_1",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "proliferator_1",
+      "ids": [
+        "spray_coater"
+      ],
+      "once": {
+        "spray_coater": 2
+      },
+      "twice": {
+        "spray_coater": 2
+      },
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "xray_cracking",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "reforming_refine",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "high_strength_crystal",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "basic_chemical_engineering",
+      "ids": [
+        "water_pump",
+        "chemical_plant"
+      ],
+      "once": {
+        "water_pump": 2,
+        "chemical_plant": 2
+      },
+      "twice": {
+        "water_pump": 2,
+        "chemical_plant": 2
+      },
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "polymer_chemistry",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "structure_matrix",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "material_delivery_logistics",
+      "ids": [
+        "material_delivery_hub"
+      ],
+      "once": {
+        "material_delivery_hub": 2
+      },
+      "twice": {
+        "material_delivery_hub": 2
+      },
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "proliferator_2",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "titanium_alloy",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "processor",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "planetary_logistics",
+      "ids": [
+        "planetary_logistics_station"
+      ],
+      "once": {
+        "planetary_logistics_station": 2
+      },
+      "twice": {
+        "planetary_logistics_station": 2
+      },
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "interstellar_logistics",
+      "ids": [
+        "interstellar_logistics_station"
+      ],
+      "once": {
+        "interstellar_logistics_station": 2
+      },
+      "twice": {
+        "interstellar_logistics_station": 2
+      },
+      "colonies": [
+        "home",
+        "ashen",
+        "giant"
+      ]
+    },
+    {
+      "tech_id": "nanomaterials",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "rare_resource_utilization",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "quantum_chemical_engineering",
+      "ids": [
+        "quantum_chemical_plant"
+      ],
+      "once": {
+        "quantum_chemical_plant": 2
+      },
+      "twice": {
+        "quantum_chemical_plant": 2
+      },
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "orbital_collection",
+      "ids": [
+        "orbital_collector"
+      ],
+      "once": {
+        "orbital_collector": 2
+      },
+      "twice": {
+        "orbital_collector": 2
+      },
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "information_matrix",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "construction_automation",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "proliferator_3",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "research_speed_1",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "miniature_particle_collider",
+      "ids": [
+        "miniature_particle_collider"
+      ],
+      "once": {
+        "miniature_particle_collider": 2
+      },
+      "twice": {
+        "miniature_particle_collider": 2
+      },
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "fusion_power",
+      "ids": [
+        "mini_fusion_power_plant"
+      ],
+      "once": {
+        "mini_fusion_power_plant": 2
+      },
+      "twice": {
+        "mini_fusion_power_plant": 2
+      },
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "quantum_chip",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "plane_smelting",
+      "ids": [
+        "plane_smelter"
+      ],
+      "once": {
+        "plane_smelter": 2
+      },
+      "twice": {
+        "plane_smelter": 2
+      },
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "gravity_matrix",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "construction_capacity_1",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "space_warp",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "stellar_exploration",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "quantum_printing",
+      "ids": [
+        "assembling_machine_mk3"
+      ],
+      "once": {
+        "assembling_machine_mk3": 2
+      },
+      "twice": {
+        "assembling_machine_mk3": 2
+      },
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "super_magnetic_logistics",
+      "ids": [
+        "conveyor_belt_mk3"
+      ],
+      "once": {
+        "conveyor_belt_mk3": 2
+      },
+      "twice": {
+        "conveyor_belt_mk3": 2
+      },
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "research_speed_2",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "dyson_swarm",
+      "ids": [
+        "em_rail_ejector"
+      ],
+      "once": {
+        "em_rail_ejector": 2
+      },
+      "twice": {
+        "em_rail_ejector": 2
+      },
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "ray_receiver",
+      "ids": [
+        "ray_receiver"
+      ],
+      "once": {
+        "ray_receiver": 2
+      },
+      "twice": {
+        "ray_receiver": 2
+      },
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "antimatter",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "artificial_star",
+      "ids": [
+        "artificial_star"
+      ],
+      "once": {
+        "artificial_star": 2
+      },
+      "twice": {
+        "artificial_star": 2
+      },
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "universe_matrix",
+      "ids": [],
+      "once": {
+        "galactic_material_exporter": 1
+      },
+      "twice": {
+        "galactic_material_exporter": 1
+      },
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "micro_black_hole_containment",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "time_warp_engineering",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "construction_capacity_2",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "research_speed_3",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "dyson_sphere_program",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "vertical_launching_silo",
+      "ids": [
+        "vertical_launching_silo"
+      ],
+      "once": {
+        "vertical_launching_silo": 2
+      },
+      "twice": {
+        "vertical_launching_silo": 2
+      },
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "dyson_shell",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "mining_speed_2",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "mining_speed_3",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "logistics_engine_1",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "logistics_engine_2",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "logistics_capacity_1",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "logistics_capacity_2",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "solar_sail_life_1",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "solar_sail_life_2",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "ray_transmission_1",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "ray_transmission_2",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "dyson_absorption_1",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "orbital_elevator_engineering",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "orbital_multi_cargo_bus",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "orbital_energy_recovery",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "system_space_station_engineering",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "orbital_modular_assembly",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "autonomous_station_construction",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "unified_system_logistics_protocol",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    },
+    {
+      "tech_id": "quantum_logistics_network",
+      "ids": [],
+      "once": {},
+      "twice": {},
+      "colonies": [
+        "home"
+      ]
+    }
+  ],
+  "initial_scope": "Complete frozen createInitialState executed; comparison projects tray, construction and colonies only"
+}

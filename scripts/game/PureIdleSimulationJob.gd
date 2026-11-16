@@ -231,7 +231,7 @@ static func resource_safe(before: GameState, after: GameState) -> bool:
 	var depleted := {}
 	for id in before.resource_sites:
 		var site: Dictionary = before.resource_sites[id]
-		if site.get("infinite", false): continue
+		if preload("res://scripts/game/SourceResourceReserveSystem.gd").is_infinite(before, site): continue
 		if not after.resource_sites.has(id): return false
 		var delta := float(site.remaining) - float(after.resource_sites[id].remaining)
 		if delta < -0.000001: return false

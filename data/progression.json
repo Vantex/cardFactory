@@ -173,20 +173,22 @@
       "id": "dsp_foundation",
       "source_id": "foundation",
       "title": "母星点火",
+      "summary": "从第一块矿石开始，建立可持续的基础工业。",
       "objective_ids": [
-        "dsp_deploy_miner",
         "dsp_mine_first_ore",
-        "dsp_side_storage",
-        "dsp_smelt_iron"
+        "dsp_smelt_iron",
+        "dsp_deploy_miner",
+        "dsp_side_storage"
       ]
     },
     {
       "id": "dsp_blue_matrix",
       "source_id": "blue_matrix",
       "title": "蓝色矩阵",
+      "summary": "让采集、熔炼和科研第一次连成网络。",
       "objective_ids": [
-        "dsp_deploy_matrix_lab",
         "dsp_lay_first_belt",
+        "dsp_deploy_matrix_lab",
         "dsp_produce_blue_matrix"
       ]
     },
@@ -194,10 +196,11 @@
       "id": "dsp_red_matrix",
       "source_id": "red_matrix",
       "title": "石油红糖",
+      "summary": "打通原油、精炼、塑料与能源矩阵链。",
       "objective_ids": [
+        "dsp_refine_oil",
         "dsp_produce_plastic",
         "dsp_produce_red_matrix",
-        "dsp_refine_oil",
         "dsp_side_stable_power"
       ]
     },
@@ -205,9 +208,10 @@
       "id": "dsp_planetary_logistics",
       "source_id": "planetary_logistics",
       "title": "行星物流",
+      "summary": "用无人机把分散的生产节点接入同一网络。",
       "objective_ids": [
-        "dsp_complete_planetary_trip",
         "dsp_deploy_planetary_station",
+        "dsp_complete_planetary_trip",
         "dsp_produce_structure_matrix",
         "dsp_side_belt_upgrade"
       ]
@@ -216,20 +220,22 @@
       "id": "dsp_interstellar_logistics",
       "source_id": "interstellar_logistics",
       "title": "群星工业",
+      "summary": "离开母星，把生产网络扩展到新的恒星系。",
       "objective_ids": [
-        "dsp_complete_interstellar_trip",
+        "dsp_unlock_borealis",
         "dsp_deploy_interstellar_station",
-        "dsp_side_rare_resource",
-        "dsp_unlock_borealis"
+        "dsp_complete_interstellar_trip",
+        "dsp_side_rare_resource"
       ]
     },
     {
       "id": "dsp_matrix_mastery",
       "source_id": "matrix_mastery",
       "title": "矩阵全谱",
+      "summary": "完成高阶矩阵生产，为终局工程提供算力。",
       "objective_ids": [
-        "dsp_produce_gravity_matrix",
         "dsp_produce_information_matrix",
+        "dsp_produce_gravity_matrix",
         "dsp_produce_universe_matrix",
         "dsp_side_spray_coater"
       ]
@@ -238,11 +244,12 @@
       "id": "dsp_dyson_program",
       "source_id": "dyson_program",
       "title": "戴森计划",
+      "summary": "发射太阳帆与运载火箭，点亮恒星工程。",
       "objective_ids": [
-        "dsp_absorb_shell_sail",
-        "dsp_build_dyson_structure",
-        "dsp_launch_carrier_rocket",
         "dsp_launch_solar_sail",
+        "dsp_launch_carrier_rocket",
+        "dsp_build_dyson_structure",
+        "dsp_absorb_shell_sail",
         "dsp_side_blueprint"
       ]
     },
@@ -250,11 +257,12 @@
       "id": "dsp_galactic_endgame",
       "source_id": "galactic_endgame",
       "title": "银河终局",
+      "summary": "把戴森球的算力转化为无限科研、银河出口与长期挂机目标。",
       "objective_ids": [
-        "dsp_endgame_export",
         "dsp_endgame_infinite_research",
-        "dsp_endgame_mastery",
-        "dsp_endgame_score"
+        "dsp_endgame_export",
+        "dsp_endgame_score",
+        "dsp_endgame_mastery"
       ]
     }
   ],
@@ -515,194 +523,61 @@
       }
     },
     {
-      "id": "dsp_absorb_shell_sail",
-      "source_id": "absorb_shell_sail",
-      "chapter_id": "dsp_dyson_program",
-      "title": "形成首片永久壳面",
-      "description": "将太阳帆吸附到框架，完成戴森球的第一片壳面。",
+      "id": "dsp_mine_first_ore",
+      "source_id": "mine_first_ore",
+      "chapter_id": "dsp_foundation",
+      "title": "采集第一份矿石",
+      "description": "亲手采集一份固体矿物，确认这颗星球可以成为工业基地。",
       "track": "main",
       "condition": {
         "fact": "source_metric",
         "metric": {
-          "kind": "dyson",
-          "measure": "shell",
+          "kind": "manual-mined",
           "target": 1
         }
       },
-      "prerequisites": [
-        "dsp_build_dyson_structure"
-      ],
+      "prerequisites": [],
       "navigation": {
-        "kind": "dyson",
-        "systemId": "helios"
+        "kind": "recipe",
+        "itemId": "iron_ore"
       },
-      "requirements": [],
-      "reward": {
-        "planet_inventory": {},
-        "construction_inventory": {}
-      }
-    },
-    {
-      "id": "dsp_build_dyson_structure",
-      "source_id": "build_dyson_structure",
-      "chapter_id": "dsp_dyson_program",
-      "title": "完成第一个结构点",
-      "description": "让戴森球从规划图变成真正的恒星结构。",
-      "track": "main",
-      "condition": {
-        "fact": "source_metric",
-        "metric": {
-          "kind": "dyson",
-          "measure": "structure",
-          "target": 1
-        }
-      },
-      "prerequisites": [
-        "dsp_launch_carrier_rocket"
-      ],
-      "navigation": {
-        "kind": "dyson",
-        "systemId": "helios"
-      },
-      "requirements": [],
       "reward": {
         "planet_inventory": {},
         "construction_inventory": {
-          "dsp_artificial_star": 1
+          "conveyor_belt_mk1": 2
         }
       }
     },
     {
-      "id": "dsp_complete_interstellar_trip",
-      "source_id": "complete_interstellar_trip",
-      "chapter_id": "dsp_interstellar_logistics",
-      "title": "完成首次星际运输",
-      "description": "完成一趟跨恒星物流航次。",
+      "id": "dsp_smelt_iron",
+      "source_id": "smelt_iron",
+      "chapter_id": "dsp_foundation",
+      "title": "铸造基础铁块",
+      "description": "生产 4 个铁块，为后续设备制造准备材料。",
       "track": "main",
       "condition": {
         "fact": "source_metric",
         "metric": {
-          "kind": "station-trips",
-          "buildingId": "interstellar_logistics_station",
-          "target": 1
+          "kind": "produced",
+          "itemId": "iron_ingot",
+          "target": 4
         }
       },
-      "prerequisites": [
-        "dsp_deploy_interstellar_station"
-      ],
+      "prerequisites": [],
       "navigation": {
-        "kind": "building",
-        "buildingId": "interstellar_logistics_station"
+        "kind": "recipe",
+        "itemId": "iron_ingot"
       },
       "requirements": [
         {
-          "itemId": "logistics_vessel",
-          "amount": 1
-        },
-        {
-          "itemId": "space_warper",
-          "amount": 1
+          "itemId": "iron_ore",
+          "amount": 4
         }
       ],
       "reward": {
         "planet_inventory": {},
         "construction_inventory": {
-          "dsp_orbital_collector": 1
-        }
-      }
-    },
-    {
-      "id": "dsp_complete_planetary_trip",
-      "source_id": "complete_planetary_trip",
-      "chapter_id": "dsp_planetary_logistics",
-      "title": "完成首次行星配送",
-      "description": "让一趟行星物流运输真正完成。",
-      "track": "main",
-      "condition": {
-        "fact": "source_metric",
-        "metric": {
-          "kind": "station-trips",
-          "buildingId": "planetary_logistics_station",
-          "target": 1
-        }
-      },
-      "prerequisites": [
-        "dsp_deploy_planetary_station"
-      ],
-      "navigation": {
-        "kind": "building",
-        "buildingId": "planetary_logistics_station"
-      },
-      "requirements": [
-        {
-          "itemId": "logistics_drone",
-          "amount": 1
-        }
-      ],
-      "reward": {
-        "planet_inventory": {
-          "logistics_vessel": 1
-        },
-        "construction_inventory": {}
-      }
-    },
-    {
-      "id": "dsp_deploy_interstellar_station",
-      "source_id": "deploy_interstellar_station",
-      "chapter_id": "dsp_interstellar_logistics",
-      "title": "部署星际物流站",
-      "description": "把物流站扩展到跨恒星运输规格。",
-      "track": "main",
-      "condition": {
-        "fact": "source_metric",
-        "metric": {
-          "kind": "building",
-          "buildingId": "interstellar_logistics_station",
-          "target": 1
-        }
-      },
-      "prerequisites": [
-        "dsp_unlock_borealis"
-      ],
-      "navigation": {
-        "kind": "building",
-        "buildingId": "interstellar_logistics_station"
-      },
-      "requirements": [],
-      "reward": {
-        "planet_inventory": {
-          "logistics_vessel": 2
-        },
-        "construction_inventory": {}
-      }
-    },
-    {
-      "id": "dsp_deploy_matrix_lab",
-      "source_id": "deploy_matrix_lab",
-      "chapter_id": "dsp_blue_matrix",
-      "title": "部署矩阵研究站",
-      "description": "建造研究站，为第一项科技提供稳定的科研入口。",
-      "track": "main",
-      "condition": {
-        "fact": "source_metric",
-        "metric": {
-          "kind": "building",
-          "buildingId": "matrix_lab",
-          "target": 1
-        }
-      },
-      "prerequisites": [
-        "dsp_lay_first_belt"
-      ],
-      "navigation": {
-        "kind": "building",
-        "buildingId": "matrix_lab"
-      },
-      "requirements": [],
-      "reward": {
-        "planet_inventory": {},
-        "construction_inventory": {
-          "dsp_matrix_lab": 1
+          "dsp_assembling_machine_mk1": 1
         }
       }
     },
@@ -725,220 +600,10 @@
         "kind": "building",
         "buildingId": "mining_machine"
       },
-      "requirements": [],
       "reward": {
         "planet_inventory": {},
         "construction_inventory": {
           "conveyor_belt_mk1": 4
-        }
-      }
-    },
-    {
-      "id": "dsp_deploy_planetary_station",
-      "source_id": "deploy_planetary_station",
-      "chapter_id": "dsp_planetary_logistics",
-      "title": "部署行星物流站",
-      "description": "在同一颗星球上建立供需节点，让无人机接管运输。",
-      "track": "main",
-      "condition": {
-        "fact": "source_metric",
-        "metric": {
-          "kind": "building",
-          "buildingId": "planetary_logistics_station",
-          "target": 1
-        }
-      },
-      "prerequisites": [
-        "dsp_produce_red_matrix"
-      ],
-      "navigation": {
-        "kind": "building",
-        "buildingId": "planetary_logistics_station"
-      },
-      "requirements": [],
-      "reward": {
-        "planet_inventory": {
-          "logistics_drone": 2
-        },
-        "construction_inventory": {}
-      }
-    },
-    {
-      "id": "dsp_endgame_export",
-      "source_id": "endgame_export",
-      "chapter_id": "dsp_galactic_endgame",
-      "title": "完成银河出口",
-      "description": "向银河项目交付第一批终局物资，建立长期信用来源。",
-      "track": "main",
-      "condition": {
-        "fact": "source_metric",
-        "metric": {
-          "kind": "exported",
-          "target": 100
-        }
-      },
-      "prerequisites": [
-        "dsp_endgame_infinite_research"
-      ],
-      "navigation": {
-        "kind": "galactic"
-      },
-      "requirements": [],
-      "reward": {
-        "planet_inventory": {},
-        "construction_inventory": {}
-      }
-    },
-    {
-      "id": "dsp_endgame_infinite_research",
-      "source_id": "endgame_infinite_research",
-      "chapter_id": "dsp_galactic_endgame",
-      "title": "启动无限科研",
-      "description": "完成第一轮无限科技，把宇宙矩阵变成可持续的工业增幅。",
-      "track": "main",
-      "condition": {
-        "fact": "source_metric",
-        "metric": {
-          "kind": "infinite-research",
-          "target": 1
-        }
-      },
-      "prerequisites": [
-        "dsp_absorb_shell_sail"
-      ],
-      "navigation": {
-        "kind": "galactic"
-      },
-      "requirements": [
-        {
-          "itemId": "universe_matrix",
-          "amount": 250
-        }
-      ],
-      "reward": {
-        "planet_inventory": {},
-        "construction_inventory": {}
-      }
-    },
-    {
-      "id": "dsp_endgame_mastery",
-      "source_id": "endgame_mastery",
-      "chapter_id": "dsp_galactic_endgame",
-      "title": "完成银河工业协议",
-      "description": "让四类出口项目都达到第 1 级，证明生产网络可以长期自运转。",
-      "track": "main",
-      "condition": {
-        "fact": "source_metric",
-        "metric": {
-          "kind": "endgame-mastery",
-          "target": 1
-        }
-      },
-      "prerequisites": [
-        "dsp_endgame_score"
-      ],
-      "navigation": {
-        "kind": "galactic"
-      },
-      "requirements": [],
-      "reward": {
-        "planet_inventory": {},
-        "construction_inventory": {}
-      }
-    },
-    {
-      "id": "dsp_endgame_score",
-      "source_id": "endgame_score",
-      "chapter_id": "dsp_galactic_endgame",
-      "title": "达到银河级评分",
-      "description": "通过无限科研与出口项目积累 10,000 点银河评分。",
-      "track": "main",
-      "condition": {
-        "fact": "source_metric",
-        "metric": {
-          "kind": "galactic-score",
-          "target": 10000
-        }
-      },
-      "prerequisites": [
-        "dsp_endgame_export"
-      ],
-      "navigation": {
-        "kind": "galactic"
-      },
-      "requirements": [],
-      "reward": {
-        "planet_inventory": {},
-        "construction_inventory": {}
-      }
-    },
-    {
-      "id": "dsp_launch_carrier_rocket",
-      "source_id": "launch_carrier_rocket",
-      "chapter_id": "dsp_dyson_program",
-      "title": "发射第一枚运载火箭",
-      "description": "用运载火箭把戴森球骨架送上轨道。",
-      "track": "main",
-      "condition": {
-        "fact": "source_metric",
-        "metric": {
-          "kind": "dyson",
-          "measure": "rockets",
-          "target": 1
-        }
-      },
-      "prerequisites": [
-        "dsp_launch_solar_sail"
-      ],
-      "navigation": {
-        "kind": "recipe",
-        "itemId": "small_carrier_rocket"
-      },
-      "requirements": [
-        {
-          "itemId": "small_carrier_rocket",
-          "amount": 1
-        }
-      ],
-      "reward": {
-        "planet_inventory": {},
-        "construction_inventory": {
-          "dsp_vertical_launching_silo": 1
-        }
-      }
-    },
-    {
-      "id": "dsp_launch_solar_sail",
-      "source_id": "launch_solar_sail",
-      "chapter_id": "dsp_dyson_program",
-      "title": "发射第一片太阳帆",
-      "description": "把太阳帆送入恒星轨道，开启戴森云。",
-      "track": "main",
-      "condition": {
-        "fact": "source_metric",
-        "metric": {
-          "kind": "dyson",
-          "measure": "sails",
-          "target": 1
-        }
-      },
-      "prerequisites": [
-        "dsp_produce_universe_matrix"
-      ],
-      "navigation": {
-        "kind": "recipe",
-        "itemId": "solar_sail"
-      },
-      "requirements": [
-        {
-          "itemId": "solar_sail",
-          "amount": 1
-        }
-      ],
-      "reward": {
-        "planet_inventory": {},
-        "construction_inventory": {
-          "dsp_ray_receiver": 1
         }
       }
     },
@@ -963,7 +628,6 @@
         "kind": "construction",
         "constructionId": "conveyor_belt_mk1"
       },
-      "requirements": [],
       "reward": {
         "planet_inventory": {},
         "construction_inventory": {
@@ -972,29 +636,31 @@
       }
     },
     {
-      "id": "dsp_mine_first_ore",
-      "source_id": "mine_first_ore",
-      "chapter_id": "dsp_foundation",
-      "title": "采集第一份矿石",
-      "description": "亲手采集一份固体矿物，确认这颗星球可以成为工业基地。",
+      "id": "dsp_deploy_matrix_lab",
+      "source_id": "deploy_matrix_lab",
+      "chapter_id": "dsp_blue_matrix",
+      "title": "部署矩阵研究站",
+      "description": "建造研究站，为第一项科技提供稳定的科研入口。",
       "track": "main",
       "condition": {
         "fact": "source_metric",
         "metric": {
-          "kind": "manual-mined",
+          "kind": "building",
+          "buildingId": "matrix_lab",
           "target": 1
         }
       },
-      "prerequisites": [],
+      "prerequisites": [
+        "dsp_lay_first_belt"
+      ],
       "navigation": {
-        "kind": "recipe",
-        "itemId": "iron_ore"
+        "kind": "building",
+        "buildingId": "matrix_lab"
       },
-      "requirements": [],
       "reward": {
         "planet_inventory": {},
         "construction_inventory": {
-          "conveyor_belt_mk1": 2
+          "dsp_matrix_lab": 1
         }
       }
     },
@@ -1042,80 +708,37 @@
       }
     },
     {
-      "id": "dsp_produce_gravity_matrix",
-      "source_id": "produce_gravity_matrix",
-      "chapter_id": "dsp_matrix_mastery",
-      "title": "产出引力矩阵",
-      "description": "跨过粒子物理门槛，制造引力矩阵。",
+      "id": "dsp_refine_oil",
+      "source_id": "refine_oil",
+      "chapter_id": "dsp_red_matrix",
+      "title": "启动原油精炼",
+      "description": "将原油转化为精炼油，打开化工生产链。",
       "track": "main",
       "condition": {
         "fact": "source_metric",
         "metric": {
           "kind": "produced",
-          "itemId": "gravity_matrix",
+          "itemId": "refined_oil",
           "target": 1
         }
       },
       "prerequisites": [
-        "dsp_produce_information_matrix"
+        "dsp_produce_blue_matrix"
       ],
       "navigation": {
         "kind": "recipe",
-        "itemId": "gravity_matrix"
+        "itemId": "refined_oil"
       },
       "requirements": [
         {
-          "itemId": "graviton_lens",
-          "amount": 1
-        },
-        {
-          "itemId": "quantum_chip",
-          "amount": 1
+          "itemId": "crude_oil",
+          "amount": 2
         }
       ],
       "reward": {
         "planet_inventory": {},
         "construction_inventory": {
-          "dsp_em_rail_ejector": 1
-        }
-      }
-    },
-    {
-      "id": "dsp_produce_information_matrix",
-      "source_id": "produce_information_matrix",
-      "chapter_id": "dsp_matrix_mastery",
-      "title": "产出信息矩阵",
-      "description": "建立高阶信息生产线，解锁终局科研的中段。",
-      "track": "main",
-      "condition": {
-        "fact": "source_metric",
-        "metric": {
-          "kind": "produced",
-          "itemId": "information_matrix",
-          "target": 1
-        }
-      },
-      "prerequisites": [
-        "dsp_complete_interstellar_trip"
-      ],
-      "navigation": {
-        "kind": "recipe",
-        "itemId": "information_matrix"
-      },
-      "requirements": [
-        {
-          "itemId": "particle_broadband",
-          "amount": 1
-        },
-        {
-          "itemId": "processor",
-          "amount": 1
-        }
-      ],
-      "reward": {
-        "planet_inventory": {},
-        "construction_inventory": {
-          "dsp_miniature_particle_collider": 1
+          "dsp_oil_refinery": 1
         }
       }
     },
@@ -1198,6 +821,70 @@
       }
     },
     {
+      "id": "dsp_deploy_planetary_station",
+      "source_id": "deploy_planetary_station",
+      "chapter_id": "dsp_planetary_logistics",
+      "title": "部署行星物流站",
+      "description": "在同一颗星球上建立供需节点，让无人机接管运输。",
+      "track": "main",
+      "condition": {
+        "fact": "source_metric",
+        "metric": {
+          "kind": "building",
+          "buildingId": "planetary_logistics_station",
+          "target": 1
+        }
+      },
+      "prerequisites": [
+        "dsp_produce_red_matrix"
+      ],
+      "navigation": {
+        "kind": "building",
+        "buildingId": "planetary_logistics_station"
+      },
+      "reward": {
+        "planet_inventory": {
+          "logistics_drone": 2
+        },
+        "construction_inventory": {}
+      }
+    },
+    {
+      "id": "dsp_complete_planetary_trip",
+      "source_id": "complete_planetary_trip",
+      "chapter_id": "dsp_planetary_logistics",
+      "title": "完成首次行星配送",
+      "description": "让一趟行星物流运输真正完成。",
+      "track": "main",
+      "condition": {
+        "fact": "source_metric",
+        "metric": {
+          "kind": "station-trips",
+          "buildingId": "planetary_logistics_station",
+          "target": 1
+        }
+      },
+      "prerequisites": [
+        "dsp_deploy_planetary_station"
+      ],
+      "navigation": {
+        "kind": "building",
+        "buildingId": "planetary_logistics_station"
+      },
+      "requirements": [
+        {
+          "itemId": "logistics_drone",
+          "amount": 1
+        }
+      ],
+      "reward": {
+        "planet_inventory": {
+          "logistics_vessel": 1
+        },
+        "construction_inventory": {}
+      }
+    },
+    {
       "id": "dsp_produce_structure_matrix",
       "source_id": "produce_structure_matrix",
       "chapter_id": "dsp_planetary_logistics",
@@ -1233,6 +920,186 @@
         "planet_inventory": {},
         "construction_inventory": {
           "dsp_interstellar_logistics_station": 1
+        }
+      }
+    },
+    {
+      "id": "dsp_unlock_borealis",
+      "source_id": "unlock_borealis",
+      "chapter_id": "dsp_interstellar_logistics",
+      "title": "解锁下一恒星系",
+      "description": "完成一次恒星勘探，获得跨星系工业的落脚点。",
+      "track": "main",
+      "condition": {
+        "fact": "source_metric",
+        "metric": {
+          "kind": "exploration",
+          "systemId": "borealis"
+        }
+      },
+      "prerequisites": [
+        "dsp_produce_structure_matrix"
+      ],
+      "navigation": {
+        "kind": "system",
+        "systemId": "borealis"
+      },
+      "requirements": [
+        {
+          "itemId": "space_warper",
+          "amount": 1
+        }
+      ],
+      "reward": {
+        "planet_inventory": {
+          "space_warper": 1
+        },
+        "construction_inventory": {}
+      }
+    },
+    {
+      "id": "dsp_deploy_interstellar_station",
+      "source_id": "deploy_interstellar_station",
+      "chapter_id": "dsp_interstellar_logistics",
+      "title": "部署星际物流站",
+      "description": "把物流站扩展到跨恒星运输规格。",
+      "track": "main",
+      "condition": {
+        "fact": "source_metric",
+        "metric": {
+          "kind": "building",
+          "buildingId": "interstellar_logistics_station",
+          "target": 1
+        }
+      },
+      "prerequisites": [
+        "dsp_unlock_borealis"
+      ],
+      "navigation": {
+        "kind": "building",
+        "buildingId": "interstellar_logistics_station"
+      },
+      "reward": {
+        "planet_inventory": {
+          "logistics_vessel": 2
+        },
+        "construction_inventory": {}
+      }
+    },
+    {
+      "id": "dsp_complete_interstellar_trip",
+      "source_id": "complete_interstellar_trip",
+      "chapter_id": "dsp_interstellar_logistics",
+      "title": "完成首次星际运输",
+      "description": "完成一趟跨恒星物流航次。",
+      "track": "main",
+      "condition": {
+        "fact": "source_metric",
+        "metric": {
+          "kind": "station-trips",
+          "buildingId": "interstellar_logistics_station",
+          "target": 1
+        }
+      },
+      "prerequisites": [
+        "dsp_deploy_interstellar_station"
+      ],
+      "navigation": {
+        "kind": "building",
+        "buildingId": "interstellar_logistics_station"
+      },
+      "requirements": [
+        {
+          "itemId": "logistics_vessel",
+          "amount": 1
+        },
+        {
+          "itemId": "space_warper",
+          "amount": 1
+        }
+      ],
+      "reward": {
+        "planet_inventory": {},
+        "construction_inventory": {
+          "dsp_orbital_collector": 1
+        }
+      }
+    },
+    {
+      "id": "dsp_produce_information_matrix",
+      "source_id": "produce_information_matrix",
+      "chapter_id": "dsp_matrix_mastery",
+      "title": "产出信息矩阵",
+      "description": "建立高阶信息生产线，解锁终局科研的中段。",
+      "track": "main",
+      "condition": {
+        "fact": "source_metric",
+        "metric": {
+          "kind": "produced",
+          "itemId": "information_matrix",
+          "target": 1
+        }
+      },
+      "prerequisites": [
+        "dsp_complete_interstellar_trip"
+      ],
+      "navigation": {
+        "kind": "recipe",
+        "itemId": "information_matrix"
+      },
+      "requirements": [
+        {
+          "itemId": "particle_broadband",
+          "amount": 1
+        },
+        {
+          "itemId": "processor",
+          "amount": 1
+        }
+      ],
+      "reward": {
+        "planet_inventory": {},
+        "construction_inventory": {
+          "dsp_miniature_particle_collider": 1
+        }
+      }
+    },
+    {
+      "id": "dsp_produce_gravity_matrix",
+      "source_id": "produce_gravity_matrix",
+      "chapter_id": "dsp_matrix_mastery",
+      "title": "产出引力矩阵",
+      "description": "跨过粒子物理门槛，制造引力矩阵。",
+      "track": "main",
+      "condition": {
+        "fact": "source_metric",
+        "metric": {
+          "kind": "produced",
+          "itemId": "gravity_matrix",
+          "target": 1
+        }
+      },
+      "prerequisites": [
+        "dsp_produce_information_matrix"
+      ],
+      "navigation": {
+        "kind": "recipe",
+        "itemId": "gravity_matrix"
+      },
+      "requirements": [
+        {
+          "itemId": "graviton_lens",
+          "amount": 1
+        },
+        {
+          "itemId": "quantum_chip",
+          "amount": 1
+        }
+      ],
+      "reward": {
+        "planet_inventory": {},
+        "construction_inventory": {
+          "dsp_em_rail_ejector": 1
         }
       }
     },
@@ -1276,142 +1143,156 @@
       }
     },
     {
-      "id": "dsp_refine_oil",
-      "source_id": "refine_oil",
-      "chapter_id": "dsp_red_matrix",
-      "title": "启动原油精炼",
-      "description": "将原油转化为精炼油，打开化工生产链。",
+      "id": "dsp_launch_solar_sail",
+      "source_id": "launch_solar_sail",
+      "chapter_id": "dsp_dyson_program",
+      "title": "发射第一片太阳帆",
+      "description": "把太阳帆送入恒星轨道，开启戴森云。",
       "track": "main",
       "condition": {
         "fact": "source_metric",
         "metric": {
-          "kind": "produced",
-          "itemId": "refined_oil",
+          "kind": "dyson",
+          "measure": "sails",
           "target": 1
         }
       },
       "prerequisites": [
-        "dsp_produce_blue_matrix"
+        "dsp_produce_universe_matrix"
       ],
       "navigation": {
         "kind": "recipe",
-        "itemId": "refined_oil"
+        "itemId": "solar_sail"
       },
       "requirements": [
         {
-          "itemId": "crude_oil",
-          "amount": 2
+          "itemId": "solar_sail",
+          "amount": 1
         }
       ],
       "reward": {
         "planet_inventory": {},
         "construction_inventory": {
-          "dsp_oil_refinery": 1
+          "dsp_ray_receiver": 1
         }
       }
     },
     {
-      "id": "dsp_side_belt_upgrade",
-      "source_id": "side_belt_upgrade",
-      "chapter_id": "dsp_planetary_logistics",
-      "title": "升级高速运输线",
-      "description": "将至少一条传送带升级到 Mk.II。",
-      "track": "side",
+      "id": "dsp_launch_carrier_rocket",
+      "source_id": "launch_carrier_rocket",
+      "chapter_id": "dsp_dyson_program",
+      "title": "发射第一枚运载火箭",
+      "description": "用运载火箭把戴森球骨架送上轨道。",
+      "track": "main",
       "condition": {
         "fact": "source_metric",
         "metric": {
-          "kind": "belt",
-          "target": 1,
-          "minimumTier": 2
+          "kind": "dyson",
+          "measure": "rockets",
+          "target": 1
         }
       },
-      "prerequisites": [],
+      "prerequisites": [
+        "dsp_launch_solar_sail"
+      ],
       "navigation": {
-        "kind": "construction",
-        "constructionId": "conveyor_belt_mk2"
+        "kind": "recipe",
+        "itemId": "small_carrier_rocket"
       },
-      "requirements": [],
+      "requirements": [
+        {
+          "itemId": "small_carrier_rocket",
+          "amount": 1
+        }
+      ],
       "reward": {
         "planet_inventory": {},
         "construction_inventory": {
-          "conveyor_belt_mk2": 4
+          "dsp_vertical_launching_silo": 1
         }
       }
     },
     {
-      "id": "dsp_side_blueprint",
-      "source_id": "side_blueprint",
+      "id": "dsp_build_dyson_structure",
+      "source_id": "build_dyson_structure",
       "chapter_id": "dsp_dyson_program",
-      "title": "保存第一张蓝图",
-      "description": "把一段可复用的生产布局保存下来。",
-      "track": "side",
+      "title": "完成第一个结构点",
+      "description": "让戴森球从规划图变成真正的恒星结构。",
+      "track": "main",
       "condition": {
         "fact": "source_metric",
         "metric": {
-          "kind": "blueprint",
+          "kind": "dyson",
+          "measure": "structure",
           "target": 1
         }
       },
-      "prerequisites": [],
-      "navigation": {},
-      "requirements": [],
+      "prerequisites": [
+        "dsp_launch_carrier_rocket"
+      ],
+      "navigation": {
+        "kind": "dyson",
+        "systemId": "helios"
+      },
+      "reward": {
+        "planet_inventory": {},
+        "construction_inventory": {
+          "dsp_artificial_star": 1
+        }
+      }
+    },
+    {
+      "id": "dsp_absorb_shell_sail",
+      "source_id": "absorb_shell_sail",
+      "chapter_id": "dsp_dyson_program",
+      "title": "形成首片永久壳面",
+      "description": "将太阳帆吸附到框架，完成戴森球的第一片壳面。",
+      "track": "main",
+      "condition": {
+        "fact": "source_metric",
+        "metric": {
+          "kind": "dyson",
+          "measure": "shell",
+          "target": 1
+        }
+      },
+      "prerequisites": [
+        "dsp_build_dyson_structure"
+      ],
+      "navigation": {
+        "kind": "dyson",
+        "systemId": "helios"
+      },
       "reward": {
         "planet_inventory": {},
         "construction_inventory": {}
       }
     },
     {
-      "id": "dsp_side_rare_resource",
-      "source_id": "side_rare_resource",
-      "chapter_id": "dsp_interstellar_logistics",
-      "title": "采集稀有资源",
-      "description": "取得一种来自异星环境的稀有资源。",
+      "id": "dsp_side_storage",
+      "source_id": "side_storage",
+      "chapter_id": "dsp_foundation",
+      "title": "建立物流缓存",
+      "description": "部署一座仓储设施，减少生产线的手动搬运。",
       "track": "side",
       "condition": {
         "fact": "source_metric",
         "metric": {
-          "kind": "rare-resource",
-          "target": 1
-        }
-      },
-      "prerequisites": [],
-      "navigation": {
-        "kind": "planet",
-        "planetId": "frost"
-      },
-      "requirements": [],
-      "reward": {
-        "planet_inventory": {
-          "space_warper": 1
-        },
-        "construction_inventory": {}
-      }
-    },
-    {
-      "id": "dsp_side_spray_coater",
-      "source_id": "side_spray_coater",
-      "chapter_id": "dsp_matrix_mastery",
-      "title": "安装首台喷涂机",
-      "description": "给生产设备装上喷涂模块，体验增产与加速模式。",
-      "track": "side",
-      "condition": {
-        "fact": "source_metric",
-        "metric": {
-          "kind": "spray-coater",
+          "kind": "building",
+          "buildingId": "storage_mk1",
           "target": 1
         }
       },
       "prerequisites": [],
       "navigation": {
         "kind": "building",
-        "buildingId": "spray_coater"
+        "buildingId": "storage_mk1"
       },
-      "requirements": [],
       "reward": {
-        "planet_inventory": {
-          "proliferator_mk1": 10
-        },
-        "construction_inventory": {}
+        "planet_inventory": {},
+        "construction_inventory": {
+          "conveyor_belt_mk1": 2
+        }
       }
     },
     {
@@ -1447,97 +1328,208 @@
       }
     },
     {
-      "id": "dsp_side_storage",
-      "source_id": "side_storage",
-      "chapter_id": "dsp_foundation",
-      "title": "建立物流缓存",
-      "description": "部署一座仓储设施，减少生产线的手动搬运。",
+      "id": "dsp_side_belt_upgrade",
+      "source_id": "side_belt_upgrade",
+      "chapter_id": "dsp_planetary_logistics",
+      "title": "升级高速运输线",
+      "description": "将至少一条传送带升级到 Mk.II。",
       "track": "side",
       "condition": {
         "fact": "source_metric",
         "metric": {
-          "kind": "building",
-          "buildingId": "storage_mk1",
+          "kind": "belt",
+          "target": 1,
+          "minimumTier": 2
+        }
+      },
+      "prerequisites": [],
+      "navigation": {
+        "kind": "construction",
+        "constructionId": "conveyor_belt_mk2"
+      },
+      "reward": {
+        "planet_inventory": {},
+        "construction_inventory": {
+          "conveyor_belt_mk2": 4
+        }
+      }
+    },
+    {
+      "id": "dsp_side_rare_resource",
+      "source_id": "side_rare_resource",
+      "chapter_id": "dsp_interstellar_logistics",
+      "title": "采集稀有资源",
+      "description": "取得一种来自异星环境的稀有资源。",
+      "track": "side",
+      "condition": {
+        "fact": "source_metric",
+        "metric": {
+          "kind": "rare-resource",
+          "target": 1
+        }
+      },
+      "prerequisites": [],
+      "navigation": {
+        "kind": "planet",
+        "planetId": "frost"
+      },
+      "reward": {
+        "planet_inventory": {
+          "space_warper": 1
+        },
+        "construction_inventory": {}
+      }
+    },
+    {
+      "id": "dsp_side_spray_coater",
+      "source_id": "side_spray_coater",
+      "chapter_id": "dsp_matrix_mastery",
+      "title": "安装首台喷涂机",
+      "description": "给生产设备装上喷涂模块，体验增产与加速模式。",
+      "track": "side",
+      "condition": {
+        "fact": "source_metric",
+        "metric": {
+          "kind": "spray-coater",
           "target": 1
         }
       },
       "prerequisites": [],
       "navigation": {
         "kind": "building",
-        "buildingId": "storage_mk1"
+        "buildingId": "spray_coater"
       },
-      "requirements": [],
       "reward": {
-        "planet_inventory": {},
-        "construction_inventory": {
-          "conveyor_belt_mk1": 2
-        }
+        "planet_inventory": {
+          "proliferator_mk1": 10
+        },
+        "construction_inventory": {}
       }
     },
     {
-      "id": "dsp_smelt_iron",
-      "source_id": "smelt_iron",
-      "chapter_id": "dsp_foundation",
-      "title": "铸造基础铁块",
-      "description": "生产 4 个铁块，为后续设备制造准备材料。",
-      "track": "main",
+      "id": "dsp_side_blueprint",
+      "source_id": "side_blueprint",
+      "chapter_id": "dsp_dyson_program",
+      "title": "保存第一张蓝图",
+      "description": "把一段可复用的生产布局保存下来。",
+      "track": "side",
       "condition": {
         "fact": "source_metric",
         "metric": {
-          "kind": "produced",
-          "itemId": "iron_ingot",
-          "target": 4
+          "kind": "blueprint",
+          "target": 1
         }
       },
       "prerequisites": [],
-      "navigation": {
-        "kind": "recipe",
-        "itemId": "iron_ingot"
-      },
-      "requirements": [
-        {
-          "itemId": "iron_ore",
-          "amount": 4
-        }
-      ],
+      "navigation": {},
       "reward": {
         "planet_inventory": {},
-        "construction_inventory": {
-          "dsp_assembling_machine_mk1": 1
-        }
+        "construction_inventory": {}
       }
     },
     {
-      "id": "dsp_unlock_borealis",
-      "source_id": "unlock_borealis",
-      "chapter_id": "dsp_interstellar_logistics",
-      "title": "解锁下一恒星系",
-      "description": "完成一次恒星勘探，获得跨星系工业的落脚点。",
+      "id": "dsp_endgame_infinite_research",
+      "source_id": "endgame_infinite_research",
+      "chapter_id": "dsp_galactic_endgame",
+      "title": "启动无限科研",
+      "description": "完成第一轮无限科技，把宇宙矩阵变成可持续的工业增幅。",
       "track": "main",
       "condition": {
         "fact": "source_metric",
         "metric": {
-          "kind": "exploration",
-          "systemId": "borealis"
+          "kind": "infinite-research",
+          "target": 1
         }
       },
       "prerequisites": [
-        "dsp_produce_structure_matrix"
+        "dsp_absorb_shell_sail"
       ],
       "navigation": {
-        "kind": "system",
-        "systemId": "borealis"
+        "kind": "galactic"
       },
       "requirements": [
         {
-          "itemId": "space_warper",
-          "amount": 1
+          "itemId": "universe_matrix",
+          "amount": 250
         }
       ],
       "reward": {
-        "planet_inventory": {
-          "space_warper": 1
-        },
+        "planet_inventory": {},
+        "construction_inventory": {}
+      }
+    },
+    {
+      "id": "dsp_endgame_export",
+      "source_id": "endgame_export",
+      "chapter_id": "dsp_galactic_endgame",
+      "title": "完成银河出口",
+      "description": "向银河项目交付第一批终局物资，建立长期信用来源。",
+      "track": "main",
+      "condition": {
+        "fact": "source_metric",
+        "metric": {
+          "kind": "exported",
+          "target": 100
+        }
+      },
+      "prerequisites": [
+        "dsp_endgame_infinite_research"
+      ],
+      "navigation": {
+        "kind": "galactic"
+      },
+      "reward": {
+        "planet_inventory": {},
+        "construction_inventory": {}
+      }
+    },
+    {
+      "id": "dsp_endgame_score",
+      "source_id": "endgame_score",
+      "chapter_id": "dsp_galactic_endgame",
+      "title": "达到银河级评分",
+      "description": "通过无限科研与出口项目积累 10,000 点银河评分。",
+      "track": "main",
+      "condition": {
+        "fact": "source_metric",
+        "metric": {
+          "kind": "galactic-score",
+          "target": 10000
+        }
+      },
+      "prerequisites": [
+        "dsp_endgame_export"
+      ],
+      "navigation": {
+        "kind": "galactic"
+      },
+      "reward": {
+        "planet_inventory": {},
+        "construction_inventory": {}
+      }
+    },
+    {
+      "id": "dsp_endgame_mastery",
+      "source_id": "endgame_mastery",
+      "chapter_id": "dsp_galactic_endgame",
+      "title": "完成银河工业协议",
+      "description": "让四类出口项目都达到第 1 级，证明生产网络可以长期自运转。",
+      "track": "main",
+      "condition": {
+        "fact": "source_metric",
+        "metric": {
+          "kind": "endgame-mastery",
+          "target": 1
+        }
+      },
+      "prerequisites": [
+        "dsp_endgame_score"
+      ],
+      "navigation": {
+        "kind": "galactic"
+      },
+      "reward": {
+        "planet_inventory": {},
         "construction_inventory": {}
       }
     }

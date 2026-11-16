@@ -202,6 +202,9 @@ func _launch(building: Dictionary, delta: float) -> String:
 	var kind := "orbits" if building.type in ["solar_sail_ejector", "dsp_em_rail_ejector"] else "layers"
 	if not _allowed(system_id, kind == "orbits"):
 		return "戴森工程科技未解锁"
+	var recipe := DataManager.get_recipe(String(building.get("recipe_id", "")))
+	if DataManager.get_building(String(building.type)).has("source_id") and not DataManager.source_technology_unlocked(game_state, String(recipe.get("required_source_technology", ""))):
+		return "发射配方科技未解锁"
 	var system: Dictionary = game_state.dyson_systems.get(system_id, {})
 	var target: Dictionary = system.get(kind, {}).get(config.get("target_id", ""), {})
 	if target.is_empty():
@@ -226,7 +229,12 @@ func _launch(building: Dictionary, delta: float) -> String:
 		return "缺少" + DataManager.get_item(item).get("name", item)
 	var duration_key := "solar_sail_ejector" if kind == "orbits" else "dyson_sphere_launcher"
 	var duration := (12.0 if kind == "orbits" else 6.0) if source_rules else float(rules.launch_seconds[duration_key])
-	config.progress = minf(duration, float(config.get("progress", 0)) + delta * clampf(float(building.power_efficiency), 0, 1) * factor * (GameModeSystem.new(game_state).multiplier("production") * SourceTechnologyEffects.multiplier(game_state, "production_speed") if source_rules else 1.0))
+	var efficiency := clampf(float(building.power_efficiency), 0, 1)
+	var speed := efficiency * factor * (GameModeSystem.new(game_state).multiplier("production") * SourceTechnologyEffects.multiplier(game_state, "production_speed") if source_rules else 1.0)
+	config.progress = minf(duration, float(config.get("progress", 0)) + delta * speed)
+	if source_rules:
+		building.production_utilization = efficiency * factor
+		building.last_production_per_minute = 60.0 / duration * speed
 	if float(config.progress) + 0.0000001 < duration:
 		return "正在发射"
 	building.input_buffer[item] -= 1.0
@@ -309,6 +317,7 @@ func receiver_allocations() -> Dictionary:
 		if building.get("type", "") not in ["ray_receiver", "dsp_ray_receiver"]:
 			continue
 		if building.type == "dsp_ray_receiver" and (building.get("recipe_id", "") not in ["dsp_ray_power", "dsp_critical_photon"] or not SourceTechnologyEffects.completed(game_state, "ray_receiver")): continue
+		if building.type == "dsp_ray_receiver" and building.get("recipe_id", "") == "dsp_critical_photon" and not source_photon_has_space(building): continue
 		var system_id := String(galaxy.get_planet(building.planet_id).get("system_id", ""))
 		if not grouped.has(system_id):
 			grouped[system_id] = []
@@ -318,12 +327,33 @@ func receiver_allocations() -> Dictionary:
 		for id in grouped[system_id]:
 			var capacity := receiver_capacity(String(game_state.buildings[id].type))
 			total_capacity += capacity * clampf(float(game_state.buildings[id].get("generation_factor", 1)), 0, 1)
-		var power := float(get_summary(system_id).power_kw)
+		var summary := get_summary(system_id)
+		var power := float(summary.power_kw)
+		if game_state.dyson_systems.get(system_id, {}).has("source_plan"):
+			# Source reception uses the unrounded generation; the summary floors it.
+			power = (float(summary.live_sails) * 88.0 + float(summary.structure_points) * 960.0 + float(summary.absorbed_sails) * 88.0) * SourceTechnologyEffects.multiplier(game_state, "dyson_power") * float(galaxy.get_star_system(system_id).get("luminosity", 1.0))
 		for id in grouped[system_id]:
 			var capacity := receiver_capacity(String(game_state.buildings[id].type))
 			var requested := capacity * clampf(float(game_state.buildings[id].get("generation_factor", 1)), 0, 1)
 			result[id] = requested * minf(1, power / total_capacity) if total_capacity > 0 else 0.0
 	return result
+
+static func source_photon_has_space(building: Dictionary) -> bool:
+	var capacity := float(building.get("output_buffer_capacity", DataManager.get_building(String(building.type)).get("output_buffer_capacity", 120)))
+	return floori(capacity - float(building.get("output_buffer", {}).get("critical_photon", 0)) + 0.0001) >= 1
+
+func refresh_source_receiver_presentation() -> void:
+	var allocations := receiver_allocations()
+	for id in game_state.buildings:
+		var building: Dictionary = game_state.buildings[id]
+		if building.get("type", "") != "dsp_ray_receiver": continue
+		var received := float(allocations.get(id, 0))
+		building.power_output = floorf(received * 100.0 + 0.5) / 100.0
+		if building.get("recipe_id", "") == "dsp_ray_power":
+			building.progress = 0.0
+			building.last_production_per_minute = 0.0
+			var capacity := receiver_capacity(building.type)
+			building.production_utilization = floorf((received / capacity if capacity > 0 else 0.0) * 10000.0 + 0.5) / 10000.0
 
 static func _result(ok: bool, message: String, id: String = "") -> Dictionary:
 	return {"ok": ok, "message": message, "id": id}

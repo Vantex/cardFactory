@@ -39,8 +39,23 @@ static func mode_for(building: Dictionary, slot: Dictionary, remote: bool) -> St
 	if is_source(String(building.type)): return String(slot.get("remote_mode" if remote else "local_mode", "storage"))
 	return String(slot.mode)
 
-static func capacity_for(slot: Dictionary) -> float:
+static func capacity_for(slot: Dictionary, state: GameState = null, building: Dictionary = {}) -> float:
+	if state != null:
+		if String(building.get("type", "")).is_empty(): return 0.0
+		if DataManager.get_building(String(building.type)).has("source_id"):
+			return preload("res://scripts/game/SourceEntityCapacitySystem.gd").station_slot_capacity(state, building, slot)
 	return minf(float(slot.capacity), float(slot.max_stock)) if float(slot.get("max_stock", 0)) > 0 else float(slot.capacity)
+
+static func storage_capacity_for(building: Dictionary, slot: Dictionary) -> float:
+	# Saved source stock and promised deliveries survive reduced admission limits.
+	if is_source(String(building.type)):
+		var count := stack_count(building)
+		var legacy := float((2000 if building.type == TYPES[4] else 1000) * count)
+		var definition := DataManager.get_building(String(building.type))
+		var base := maxf(0, floorf(float(definition.get("source_output_capacity", 0))))
+		var source_bound := minf(preload("res://scripts/game/SourceEntityCapacitySystem.gd").MAXIMUM, base * count)
+		return maxf(legacy, source_bound)
+	return float(slot.capacity)
 
 func get_station_info(id: String) -> Dictionary:
 	return game_state.buildings.get(id, {}).get("station", {}).duplicate(true)
@@ -56,7 +71,7 @@ func logistics_snapshot(id: String) -> Dictionary:
 		if id in [route.source_id, route.target_id, route.get("owner_id", route.source_id)] or id in route.get("waypoint_ids", []): routes.append(route.duplicate(true))
 	var slots := []
 	for slot in building.station.slots:
-		slots.append({"item_id": slot.item_id, "capacity": capacity_for(slot), "minimum_local_cargo": int(ceilf(local_capacity * float(slot.min_load))), "minimum_remote_cargo": int(ceilf(remote_capacity * float(slot.min_load))), "local_mode": mode_for(building, slot, false), "remote_mode": mode_for(building, slot, true)})
+		slots.append({"item_id": slot.item_id, "capacity": capacity_for(slot, game_state, building), "minimum_local_cargo": int(ceilf(local_capacity * float(slot.min_load))), "minimum_remote_cargo": int(ceilf(remote_capacity * float(slot.min_load))), "local_mode": mode_for(building, slot, false), "remote_mode": mode_for(building, slot, true)})
 	return {"station": get_station_info(id), "slots": slots, "routes": routes, "local_cargo_capacity": local_capacity, "remote_cargo_capacity": remote_capacity, "local_trip_seconds": 8 / maxf(speed, 0.000001), "busy_drones": busy_fleet(id, "logistics_drone"), "busy_vessels": busy_fleet(id, "logistics_vessel"), "fleet": building.station.fleet.duplicate(true)}
 
 static func stack_count(building: Dictionary) -> int:
@@ -135,7 +150,7 @@ func transfer_cargo(id: String, index: int, amount: float, deposit: bool) -> Dic
 		return result(false, "请先配置物品")
 	if deposit and game_state.buildings[id].type == TYPES[4]: return result(false, "轨道采集器只支持采集和取出")
 	if deposit:
-		if float(slot.amount) + amount + reserved(id, index) > capacity_for(slot):
+		if float(slot.amount) + amount + reserved(id, index) > capacity_for(slot, game_state, game_state.buildings[id]):
 			return result(false, "槽位容量不足（含在途预留）")
 		var removed := inventory.try_remove(slot.item_id, amount, game_state.buildings[id].planet_id)
 		if not removed.ok:

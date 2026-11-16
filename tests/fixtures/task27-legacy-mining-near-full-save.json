@@ -1,0 +1,1312 @@
+{
+	"format": "card_factory_save",
+	"metadata": {
+		"active_planet": "home",
+		"digest": "06f7ec67e184e82139c765eaa9485608531dea6a9caea985c4ff815d3eae2640",
+		"elapsed_time": 0.0,
+		"saved_at": 1791281943.121,
+		"schema_version": 9
+	},
+	"state": {
+		"active_planet_id": "home",
+		"buildings": {
+			"building_1": {
+				"id": "building_1",
+				"input_buffer": {},
+				"output_buffer": {
+					"iron_ore": 179.00005
+				},
+				"output_item": "iron_ore",
+				"planet_id": "home",
+				"position": {
+					"x": -470.0,
+					"y": -250.0
+				},
+				"progress": 0.0,
+				"recipe_id": "",
+				"resource_site_id": "home_iron_ore_1",
+				"speed": 0.5,
+				"type": "dsp_mining_machine"
+			},
+			"building_2": {
+				"id": "building_2",
+				"input_buffer": {},
+				"output_buffer": {},
+				"planet_id": "home",
+				"position": {
+					"x": -470.0,
+					"y": 150.0
+				},
+				"progress": 0.0,
+				"recipe_id": "",
+				"speed": 1.0,
+				"type": "dsp_solar_panel"
+			},
+			"building_3": {
+				"id": "building_3",
+				"input_buffer": {},
+				"output_buffer": {},
+				"planet_id": "home",
+				"position": {
+					"x": -230.0,
+					"y": 150.0
+				},
+				"progress": 0.0,
+				"recipe_id": "",
+				"speed": 1.0,
+				"type": "dsp_solar_panel"
+			},
+			"building_4": {
+				"id": "building_4",
+				"input_buffer": {},
+				"output_buffer": {},
+				"planet_id": "home",
+				"position": {
+					"x": 10.0,
+					"y": 150.0
+				},
+				"progress": 0.0,
+				"recipe_id": "",
+				"speed": 1.0,
+				"type": "dsp_solar_panel"
+			},
+			"building_5": {
+				"id": "building_5",
+				"input_buffer": {},
+				"output_buffer": {},
+				"planet_id": "home",
+				"position": {
+					"x": 250.0,
+					"y": 150.0
+				},
+				"progress": 0.0,
+				"recipe_id": "",
+				"speed": 1.0,
+				"type": "dsp_solar_panel"
+			}
+		},
+		"claimed_progression_reward_ids": [],
+		"colonized_planet_ids": [
+			"home"
+		],
+		"completed_achievement_ids": [],
+		"completed_objective_ids": [],
+		"completed_technologies": [
+			"dsp_antimatter",
+			"dsp_artificial_star",
+			"dsp_autonomous_station_construction",
+			"dsp_basic_chemical_engineering",
+			"dsp_basic_logistics",
+			"dsp_construction_automation",
+			"dsp_construction_capacity_1",
+			"dsp_construction_capacity_2",
+			"dsp_dyson_absorption_1",
+			"dsp_dyson_shell",
+			"dsp_dyson_sphere_program",
+			"dsp_dyson_swarm",
+			"dsp_electromagnetic_matrix",
+			"dsp_electromagnetism",
+			"dsp_energy_matrix",
+			"dsp_energy_storage",
+			"dsp_fractionation",
+			"dsp_fusion_power",
+			"dsp_geothermal_power",
+			"dsp_gravity_matrix",
+			"dsp_high_efficiency_plasma_control",
+			"dsp_high_speed_assembling",
+			"dsp_high_speed_logistics",
+			"dsp_high_strength_crystal",
+			"dsp_information_matrix",
+			"dsp_interstellar_logistics",
+			"dsp_logistics_capacity_1",
+			"dsp_logistics_capacity_2",
+			"dsp_logistics_engine_1",
+			"dsp_logistics_engine_2",
+			"dsp_material_delivery_logistics",
+			"dsp_micro_black_hole_containment",
+			"dsp_miniature_particle_collider",
+			"dsp_mining_speed_1",
+			"dsp_mining_speed_2",
+			"dsp_mining_speed_3",
+			"dsp_nanomaterials",
+			"dsp_orbital_collection",
+			"dsp_orbital_elevator_engineering",
+			"dsp_orbital_energy_recovery",
+			"dsp_orbital_modular_assembly",
+			"dsp_orbital_multi_cargo_bus",
+			"dsp_plane_smelting",
+			"dsp_planetary_logistics",
+			"dsp_polymer_chemistry",
+			"dsp_processor",
+			"dsp_proliferator_1",
+			"dsp_proliferator_2",
+			"dsp_proliferator_3",
+			"dsp_quantum_chemical_engineering",
+			"dsp_quantum_chip",
+			"dsp_quantum_logistics_network",
+			"dsp_quantum_printing",
+			"dsp_rare_resource_utilization",
+			"dsp_ray_receiver",
+			"dsp_ray_transmission_1",
+			"dsp_ray_transmission_2",
+			"dsp_reforming_refine",
+			"dsp_research_speed_1",
+			"dsp_research_speed_2",
+			"dsp_research_speed_3",
+			"dsp_solar_energy",
+			"dsp_solar_sail_life_1",
+			"dsp_solar_sail_life_2",
+			"dsp_space_warp",
+			"dsp_stellar_exploration",
+			"dsp_structure_matrix",
+			"dsp_super_magnetic_logistics",
+			"dsp_system_space_station_engineering",
+			"dsp_thermal_power",
+			"dsp_time_warp_engineering",
+			"dsp_titanium_alloy",
+			"dsp_unified_system_logistics_protocol",
+			"dsp_universe_matrix",
+			"dsp_vertical_launching_silo",
+			"dsp_xray_cracking"
+		],
+		"connections": {},
+		"construction_inventory": {
+			"assembling_machine_mk1": 1.0,
+			"conveyor_belt_mk1": 8.0,
+			"conveyor_belt_mk2": 4.0,
+			"conveyor_belt_mk3": 2.0,
+			"dsp_mining_machine": 0.0,
+			"dsp_solar_panel": 0.0,
+			"matrix_lab": 1.0,
+			"miner": 1.0,
+			"power_generator": 1.0,
+			"smelter": 1.0
+		},
+		"cursor_payload": {
+			"amount": 0.0,
+			"item_id": ""
+		},
+		"dyson_systems": {},
+		"dyson_tick": 0,
+		"elapsed_time": 0.0,
+		"endgame": {
+			"invested": {},
+			"phase": "preparing",
+			"planet_id": "",
+			"progress_ticks": 0,
+			"reward_claimed": false
+		},
+		"exploration_missions": [],
+		"explored_system_ids": [
+			"helios"
+		],
+		"galaxy_seed": 240721,
+		"handcraft_queue": [],
+		"interplanetary_delivered": 0.0,
+		"logistics_routes": {},
+		"next_id": 6,
+		"planet_inventories": {
+			"home": {}
+		},
+		"planet_metrics": {
+			"home": {
+				"power": {
+					"consumption": 420.0,
+					"efficiency": 1.0,
+					"generation": 1598.4
+				}
+			}
+		},
+		"planet_viewports": {
+			"home": {
+				"position": {
+					"x": 0.0,
+					"y": 0.0
+				},
+				"zoom": {
+					"x": 1.0,
+					"y": 1.0
+				}
+			}
+		},
+		"portable_fleet": {
+			"logistics_drone": 0,
+			"logistics_vessel": 0
+		},
+		"progression_facts": {
+			"infinite_research": {
+				"vein_utilization": {
+					"invested": "0",
+					"level": 1.0
+				}
+			},
+			"produced": {
+				"iron_ore": 179.49505
+			}
+		},
+		"research_current_id": "",
+		"research_invested_costs": {},
+		"research_paused": false,
+		"research_progress": {},
+		"research_queue": [],
+		"research_queue_wait_reason": "",
+		"resource_sites": {
+			"home_coal_1": {
+				"capacity": 331420.0,
+				"id": "home_coal_1",
+				"infinite": false,
+				"item_id": "coal",
+				"planet_id": "home",
+				"position": {
+					"x": -470.0,
+					"y": 250.0
+				},
+				"remaining": 331420.0
+			},
+			"home_copper_ore_1": {
+				"capacity": 316537.0,
+				"id": "home_copper_ore_1",
+				"infinite": false,
+				"item_id": "copper_ore",
+				"planet_id": "home",
+				"position": {
+					"x": 470.0,
+					"y": -250.0
+				},
+				"remaining": 316537.0
+			},
+			"home_crude_oil_1": {
+				"capacity": 503297.0,
+				"id": "home_crude_oil_1",
+				"infinite": false,
+				"item_id": "crude_oil",
+				"planet_id": "home",
+				"position": {
+					"x": 0.0,
+					"y": 360.0
+				},
+				"remaining": 503297.0
+			},
+			"home_iron_ore_1": {
+				"capacity": 287105.0,
+				"id": "home_iron_ore_1",
+				"infinite": false,
+				"item_id": "iron_ore",
+				"planet_id": "home",
+				"position": {
+					"x": -470.0,
+					"y": -250.0
+				},
+				"remaining": 838.899955
+			},
+			"home_stone_1": {
+				"capacity": 280571.0,
+				"id": "home_stone_1",
+				"infinite": false,
+				"item_id": "stone",
+				"planet_id": "home",
+				"position": {
+					"x": 470.0,
+					"y": 250.0
+				},
+				"remaining": 280571.0
+			},
+			"home_water_1": {
+				"capacity": 0.0,
+				"id": "home_water_1",
+				"infinite": true,
+				"item_id": "water",
+				"planet_id": "home",
+				"position": {
+					"x": 0.0,
+					"y": -360.0
+				},
+				"remaining": 0.0
+			}
+		},
+		"schema_version": 9,
+		"source_galaxy": {
+			"planetMetadata": {},
+			"planetRoles": {
+				"abyss": "auto",
+				"ashen": "auto",
+				"aurora_giant": "auto",
+				"azure_giant": "auto",
+				"boreal_giant": "auto",
+				"cinder": "auto",
+				"crystal": "auto",
+				"dune": "auto",
+				"ember_giant": "auto",
+				"frost": "auto",
+				"giant": "auto",
+				"home": "auto",
+				"inferno": "auto",
+				"magnetar": "auto",
+				"obsidian": "auto",
+				"pelagic": "auto",
+				"prairie": "auto",
+				"salt": "auto",
+				"sirius_giant": "auto",
+				"tempest": "auto",
+				"verdant": "auto",
+				"white_giant": "auto"
+			},
+			"profiles": {
+				"abyss": {
+					"climateName": "潮汐锁定荒原",
+					"colonyCost": [
+						{
+							"amount": 4.0,
+							"itemId": "space_warper"
+						},
+						{
+							"amount": 18.0,
+							"itemId": "processor"
+						}
+					],
+					"geothermalMultiplier": 0.16,
+					"miningMultiplier": 1.4,
+					"oceanType": "none",
+					"orbitalYieldMultiplier": 1.04,
+					"orbitalYields": {},
+					"planetId": "abyss",
+					"productionSpeedMultiplier": 1.18,
+					"rareResourceIds": [
+						"unipolar_magnet"
+					],
+					"reserveScale": 0.64,
+					"resourceIds": [
+						"iron_ore",
+						"copper_ore",
+						"titanium_ore",
+						"silicon_ore",
+						"unipolar_magnet"
+					],
+					"solarMultiplier": 0.47,
+					"specialization": "particle",
+					"specializationName": "昼夜临界 · 粒子设备 +18%",
+					"sulfuricOcean": false,
+					"surveyDurationSeconds": 40.0,
+					"templateId": "tidal_locked",
+					"tidalLocked": true,
+					"travelTimeMultiplier": 1.56,
+					"windMultiplier": 0.25
+				},
+				"ashen": {
+					"climateName": "高热熔岩",
+					"colonyCost": [],
+					"geothermalMultiplier": 1.11,
+					"miningMultiplier": 1.07,
+					"oceanType": "sulfuric-acid",
+					"orbitalYieldMultiplier": 0.99,
+					"orbitalYields": {},
+					"planetId": "ashen",
+					"productionSpeedMultiplier": 1.12,
+					"rareResourceIds": [
+						"organic_crystal",
+						"kimberlite_ore",
+						"fractal_silicon"
+					],
+					"reserveScale": 1.14,
+					"resourceIds": [
+						"iron_ore",
+						"copper_ore",
+						"stone",
+						"coal",
+						"silicon_ore",
+						"titanium_ore",
+						"sulfuric_acid",
+						"organic_crystal",
+						"kimberlite_ore",
+						"fractal_silicon"
+					],
+					"solarMultiplier": 1.43,
+					"specialization": "smelting",
+					"specializationName": "高热冶金 · 熔炉 +12%",
+					"sulfuricOcean": true,
+					"surveyDurationSeconds": 0.0,
+					"templateId": "lava",
+					"tidalLocked": false,
+					"travelTimeMultiplier": 1.02,
+					"windMultiplier": 1.11
+				},
+				"aurora_giant": {
+					"climateName": "富氢气态巨星",
+					"colonyCost": [
+						{
+							"amount": 18.0,
+							"itemId": "titanium_alloy"
+						},
+						{
+							"amount": 2.0,
+							"itemId": "logistics_vessel"
+						}
+					],
+					"geothermalMultiplier": 0.0,
+					"miningMultiplier": 0.87,
+					"oceanType": "none",
+					"orbitalYieldMultiplier": 1.12,
+					"orbitalYields": {
+						"deuterium": 0.3,
+						"hydrogen": 1.25
+					},
+					"planetId": "aurora_giant",
+					"productionSpeedMultiplier": 1.28,
+					"rareResourceIds": [],
+					"reserveScale": 0.87,
+					"resourceIds": [],
+					"solarMultiplier": 0.0,
+					"specialization": "logistics",
+					"specializationName": "富氢环流 · 轨道采集 +28%",
+					"sulfuricOcean": false,
+					"surveyDurationSeconds": 41.0,
+					"templateId": "hydrogen_giant",
+					"tidalLocked": false,
+					"travelTimeMultiplier": 1.32,
+					"windMultiplier": 0.0
+				},
+				"azure_giant": {
+					"climateName": "富氢气态巨星",
+					"colonyCost": [
+						{
+							"amount": 15.0,
+							"itemId": "titanium_alloy"
+						},
+						{
+							"amount": 2.0,
+							"itemId": "logistics_vessel"
+						}
+					],
+					"geothermalMultiplier": 0.0,
+					"miningMultiplier": 1.0,
+					"oceanType": "none",
+					"orbitalYieldMultiplier": 1.29,
+					"orbitalYields": {
+						"deuterium": 0.36,
+						"hydrogen": 1.4
+					},
+					"planetId": "azure_giant",
+					"productionSpeedMultiplier": 1.28,
+					"rareResourceIds": [],
+					"reserveScale": 1.0,
+					"resourceIds": [],
+					"solarMultiplier": 0.0,
+					"specialization": "logistics",
+					"specializationName": "富氢环流 · 轨道采集 +28%",
+					"sulfuricOcean": false,
+					"surveyDurationSeconds": 40.0,
+					"templateId": "hydrogen_giant",
+					"tidalLocked": false,
+					"travelTimeMultiplier": 1.21,
+					"windMultiplier": 0.0
+				},
+				"boreal_giant": {
+					"climateName": "可燃冰冰巨星",
+					"colonyCost": [
+						{
+							"amount": 10.0,
+							"itemId": "titanium_alloy"
+						},
+						{
+							"amount": 5.0,
+							"itemId": "logistics_drone"
+						}
+					],
+					"geothermalMultiplier": 0.0,
+					"miningMultiplier": 0.98,
+					"oceanType": "none",
+					"orbitalYieldMultiplier": 1.23,
+					"orbitalYields": {
+						"deuterium": 0.13,
+						"fire_ice": 0.89,
+						"hydrogen": 0.69
+					},
+					"planetId": "boreal_giant",
+					"productionSpeedMultiplier": 1.25,
+					"rareResourceIds": [],
+					"reserveScale": 0.98,
+					"resourceIds": [],
+					"solarMultiplier": 0.0,
+					"specialization": "logistics",
+					"specializationName": "冰晶环流 · 轨道采集 +25%",
+					"sulfuricOcean": false,
+					"surveyDurationSeconds": 36.0,
+					"templateId": "fire_ice_giant",
+					"tidalLocked": false,
+					"travelTimeMultiplier": 1.32,
+					"windMultiplier": 0.0
+				},
+				"cinder": {
+					"climateName": "高热熔岩",
+					"colonyCost": [
+						{
+							"amount": 13.0,
+							"itemId": "titanium_ingot"
+						},
+						{
+							"amount": 19.0,
+							"itemId": "steel"
+						}
+					],
+					"geothermalMultiplier": 0.99,
+					"miningMultiplier": 1.02,
+					"oceanType": "sulfuric-acid",
+					"orbitalYieldMultiplier": 0.95,
+					"orbitalYields": {},
+					"planetId": "cinder",
+					"productionSpeedMultiplier": 1.12,
+					"rareResourceIds": [
+						"fractal_silicon",
+						"organic_crystal",
+						"kimberlite_ore"
+					],
+					"reserveScale": 1.09,
+					"resourceIds": [
+						"iron_ore",
+						"copper_ore",
+						"stone",
+						"coal",
+						"silicon_ore",
+						"titanium_ore",
+						"sulfuric_acid",
+						"fractal_silicon",
+						"organic_crystal",
+						"kimberlite_ore"
+					],
+					"solarMultiplier": 1.59,
+					"specialization": "smelting",
+					"specializationName": "高热冶金 · 熔炉 +12%",
+					"sulfuricOcean": true,
+					"surveyDurationSeconds": 25.0,
+					"templateId": "lava",
+					"tidalLocked": false,
+					"travelTimeMultiplier": 1.06,
+					"windMultiplier": 0.99
+				},
+				"crystal": {
+					"climateName": "潮汐锁定荒原",
+					"colonyCost": [
+						{
+							"amount": 4.0,
+							"itemId": "space_warper"
+						},
+						{
+							"amount": 20.0,
+							"itemId": "processor"
+						}
+					],
+					"geothermalMultiplier": 0.17,
+					"miningMultiplier": 1.18,
+					"oceanType": "none",
+					"orbitalYieldMultiplier": 0.87,
+					"orbitalYields": {},
+					"planetId": "crystal",
+					"productionSpeedMultiplier": 1.18,
+					"rareResourceIds": [
+						"unipolar_magnet"
+					],
+					"reserveScale": 0.54,
+					"resourceIds": [
+						"iron_ore",
+						"copper_ore",
+						"titanium_ore",
+						"silicon_ore",
+						"unipolar_magnet"
+					],
+					"solarMultiplier": 0.42,
+					"specialization": "particle",
+					"specializationName": "昼夜临界 · 粒子设备 +18%",
+					"sulfuricOcean": false,
+					"surveyDurationSeconds": 46.0,
+					"templateId": "tidal_locked",
+					"tidalLocked": true,
+					"travelTimeMultiplier": 1.44,
+					"windMultiplier": 0.26
+				},
+				"dune": {
+					"climateName": "盐湖干海盆",
+					"colonyCost": [
+						{
+							"amount": 9.0,
+							"itemId": "titanium_glass"
+						},
+						{
+							"amount": 11.0,
+							"itemId": "processor"
+						}
+					],
+					"geothermalMultiplier": 0.09,
+					"miningMultiplier": 0.92,
+					"oceanType": "none",
+					"orbitalYieldMultiplier": 0.88,
+					"orbitalYields": {},
+					"planetId": "dune",
+					"productionSpeedMultiplier": 1.1,
+					"rareResourceIds": [
+						"optical_grating_crystal"
+					],
+					"reserveScale": 1.14,
+					"resourceIds": [
+						"iron_ore",
+						"copper_ore",
+						"stone",
+						"silicon_ore",
+						"titanium_ore",
+						"optical_grating_crystal",
+						"crude_oil"
+					],
+					"solarMultiplier": 1.23,
+					"specialization": "chemical",
+					"specializationName": "盐化矿床 · 化工设备 +10%",
+					"sulfuricOcean": false,
+					"surveyDurationSeconds": 35.0,
+					"templateId": "salt_lake",
+					"tidalLocked": false,
+					"travelTimeMultiplier": 1.0,
+					"windMultiplier": 1.21
+				},
+				"ember_giant": {
+					"climateName": "富氢气态巨星",
+					"colonyCost": [
+						{
+							"amount": 17.0,
+							"itemId": "titanium_alloy"
+						},
+						{
+							"amount": 2.0,
+							"itemId": "logistics_vessel"
+						}
+					],
+					"geothermalMultiplier": 0.0,
+					"miningMultiplier": 0.89,
+					"oceanType": "none",
+					"orbitalYieldMultiplier": 1.14,
+					"orbitalYields": {
+						"deuterium": 0.3,
+						"hydrogen": 1.45
+					},
+					"planetId": "ember_giant",
+					"productionSpeedMultiplier": 1.28,
+					"rareResourceIds": [],
+					"reserveScale": 0.89,
+					"resourceIds": [],
+					"solarMultiplier": 0.0,
+					"specialization": "logistics",
+					"specializationName": "富氢环流 · 轨道采集 +28%",
+					"sulfuricOcean": false,
+					"surveyDurationSeconds": 39.0,
+					"templateId": "hydrogen_giant",
+					"tidalLocked": false,
+					"travelTimeMultiplier": 1.19,
+					"windMultiplier": 0.0
+				},
+				"frost": {
+					"climateName": "永冻冰原",
+					"colonyCost": [
+						{
+							"amount": 2.0,
+							"itemId": "titanium_ingot"
+						}
+					],
+					"geothermalMultiplier": 0.08,
+					"miningMultiplier": 0.82,
+					"oceanType": "ice",
+					"orbitalYieldMultiplier": 0.89,
+					"orbitalYields": {},
+					"planetId": "frost",
+					"productionSpeedMultiplier": 1.12,
+					"rareResourceIds": [
+						"spiniform_stalagmite_crystal",
+						"optical_grating_crystal"
+					],
+					"reserveScale": 1.14,
+					"resourceIds": [
+						"iron_ore",
+						"copper_ore",
+						"titanium_ore",
+						"silicon_ore",
+						"fire_ice",
+						"spiniform_stalagmite_crystal",
+						"optical_grating_crystal"
+					],
+					"solarMultiplier": 0.83,
+					"specialization": "chemical",
+					"specializationName": "低温化工 · 化工设备 +12%",
+					"sulfuricOcean": false,
+					"surveyDurationSeconds": 26.0,
+					"templateId": "ice_field",
+					"tidalLocked": false,
+					"travelTimeMultiplier": 1.1,
+					"windMultiplier": 1.35
+				},
+				"giant": {
+					"climateName": "冰态气态巨星",
+					"colonyCost": [],
+					"geothermalMultiplier": 0.0,
+					"miningMultiplier": 1.15,
+					"oceanType": "none",
+					"orbitalYieldMultiplier": 1.15,
+					"orbitalYields": {
+						"deuterium": 0.2,
+						"fire_ice": 0.44,
+						"hydrogen": 0.99
+					},
+					"planetId": "giant",
+					"productionSpeedMultiplier": 1.15,
+					"rareResourceIds": [],
+					"reserveScale": 1.15,
+					"resourceIds": [],
+					"solarMultiplier": 0.0,
+					"specialization": "logistics",
+					"specializationName": "轨道窗口 · 采集器 +15%",
+					"sulfuricOcean": false,
+					"surveyDurationSeconds": 0.0,
+					"templateId": "ice_giant",
+					"tidalLocked": false,
+					"travelTimeMultiplier": 1.2,
+					"windMultiplier": 0.0
+				},
+				"home": {
+					"climateName": "温带海洋",
+					"colonyCost": [],
+					"geothermalMultiplier": 0.0,
+					"miningMultiplier": 1.2,
+					"oceanType": "water",
+					"orbitalYieldMultiplier": 1.2,
+					"orbitalYields": {},
+					"planetId": "home",
+					"productionSpeedMultiplier": 1.0,
+					"rareResourceIds": [],
+					"reserveScale": 1.2,
+					"resourceIds": [
+						"iron_ore",
+						"copper_ore",
+						"stone",
+						"coal",
+						"crude_oil",
+						"water"
+					],
+					"solarMultiplier": 1.09,
+					"specialization": "balanced",
+					"specializationName": "综合工业 · 无偏置",
+					"sulfuricOcean": false,
+					"surveyDurationSeconds": 0.0,
+					"templateId": "oceanic",
+					"tidalLocked": false,
+					"travelTimeMultiplier": 0.93,
+					"windMultiplier": 0.96
+				},
+				"inferno": {
+					"climateName": "高热熔岩",
+					"colonyCost": [
+						{
+							"amount": 13.0,
+							"itemId": "titanium_ingot"
+						},
+						{
+							"amount": 20.0,
+							"itemId": "steel"
+						}
+					],
+					"geothermalMultiplier": 1.1,
+					"miningMultiplier": 1.04,
+					"oceanType": "sulfuric-acid",
+					"orbitalYieldMultiplier": 0.97,
+					"orbitalYields": {},
+					"planetId": "inferno",
+					"productionSpeedMultiplier": 1.12,
+					"rareResourceIds": [
+						"fractal_silicon",
+						"kimberlite_ore",
+						"organic_crystal"
+					],
+					"reserveScale": 1.11,
+					"resourceIds": [
+						"iron_ore",
+						"copper_ore",
+						"stone",
+						"coal",
+						"silicon_ore",
+						"titanium_ore",
+						"sulfuric_acid",
+						"fractal_silicon",
+						"kimberlite_ore",
+						"organic_crystal"
+					],
+					"solarMultiplier": 1.47,
+					"specialization": "smelting",
+					"specializationName": "高热冶金 · 熔炉 +12%",
+					"sulfuricOcean": true,
+					"surveyDurationSeconds": 22.0,
+					"templateId": "lava",
+					"tidalLocked": false,
+					"travelTimeMultiplier": 1.05,
+					"windMultiplier": 1.1
+				},
+				"magnetar": {
+					"climateName": "潮汐锁定荒原",
+					"colonyCost": [
+						{
+							"amount": 4.0,
+							"itemId": "space_warper"
+						},
+						{
+							"amount": 20.0,
+							"itemId": "processor"
+						}
+					],
+					"geothermalMultiplier": 0.17,
+					"miningMultiplier": 1.2,
+					"oceanType": "none",
+					"orbitalYieldMultiplier": 0.89,
+					"orbitalYields": {},
+					"planetId": "magnetar",
+					"productionSpeedMultiplier": 1.18,
+					"rareResourceIds": [
+						"unipolar_magnet"
+					],
+					"reserveScale": 0.55,
+					"resourceIds": [
+						"iron_ore",
+						"copper_ore",
+						"titanium_ore",
+						"silicon_ore",
+						"unipolar_magnet"
+					],
+					"solarMultiplier": 0.49,
+					"specialization": "particle",
+					"specializationName": "昼夜临界 · 粒子设备 +18%",
+					"sulfuricOcean": false,
+					"surveyDurationSeconds": 42.0,
+					"templateId": "tidal_locked",
+					"tidalLocked": true,
+					"travelTimeMultiplier": 1.48,
+					"windMultiplier": 0.26
+				},
+				"obsidian": {
+					"climateName": "高热熔岩",
+					"colonyCost": [
+						{
+							"amount": 12.0,
+							"itemId": "titanium_ingot"
+						},
+						{
+							"amount": 18.0,
+							"itemId": "steel"
+						}
+					],
+					"geothermalMultiplier": 0.9,
+					"miningMultiplier": 0.94,
+					"oceanType": "sulfuric-acid",
+					"orbitalYieldMultiplier": 0.87,
+					"orbitalYields": {},
+					"planetId": "obsidian",
+					"productionSpeedMultiplier": 1.12,
+					"rareResourceIds": [
+						"organic_crystal",
+						"fractal_silicon",
+						"kimberlite_ore"
+					],
+					"reserveScale": 1.01,
+					"resourceIds": [
+						"iron_ore",
+						"copper_ore",
+						"stone",
+						"coal",
+						"silicon_ore",
+						"titanium_ore",
+						"sulfuric_acid",
+						"organic_crystal",
+						"fractal_silicon",
+						"kimberlite_ore"
+					],
+					"solarMultiplier": 1.47,
+					"specialization": "smelting",
+					"specializationName": "高热冶金 · 熔炉 +12%",
+					"sulfuricOcean": true,
+					"surveyDurationSeconds": 26.0,
+					"templateId": "lava",
+					"tidalLocked": false,
+					"travelTimeMultiplier": 1.08,
+					"windMultiplier": 0.9
+				},
+				"pelagic": {
+					"climateName": "地中海群岛",
+					"colonyCost": [
+						{
+							"amount": 7.0,
+							"itemId": "titanium_ingot"
+						},
+						{
+							"amount": 4.0,
+							"itemId": "processor"
+						}
+					],
+					"geothermalMultiplier": 0.05,
+					"miningMultiplier": 0.91,
+					"oceanType": "water",
+					"orbitalYieldMultiplier": 0.94,
+					"orbitalYields": {},
+					"planetId": "pelagic",
+					"productionSpeedMultiplier": 1.1,
+					"rareResourceIds": [
+						"organic_crystal"
+					],
+					"reserveScale": 1.02,
+					"resourceIds": [
+						"iron_ore",
+						"copper_ore",
+						"stone",
+						"coal",
+						"crude_oil",
+						"water",
+						"organic_crystal"
+					],
+					"solarMultiplier": 1.13,
+					"specialization": "research",
+					"specializationName": "稳定气候 · 科研站 +10%",
+					"sulfuricOcean": false,
+					"surveyDurationSeconds": 25.0,
+					"templateId": "mediterranean",
+					"tidalLocked": false,
+					"travelTimeMultiplier": 0.93,
+					"windMultiplier": 0.9
+				},
+				"prairie": {
+					"climateName": "温带草原",
+					"colonyCost": [
+						{
+							"amount": 9.0,
+							"itemId": "titanium_ingot"
+						},
+						{
+							"amount": 4.0,
+							"itemId": "logistics_drone"
+						}
+					],
+					"geothermalMultiplier": 0.04,
+					"miningMultiplier": 1.17,
+					"oceanType": "water",
+					"orbitalYieldMultiplier": 1.15,
+					"orbitalYields": {},
+					"planetId": "prairie",
+					"productionSpeedMultiplier": 1.1,
+					"rareResourceIds": [
+						"organic_crystal"
+					],
+					"reserveScale": 1.35,
+					"resourceIds": [
+						"iron_ore",
+						"copper_ore",
+						"stone",
+						"coal",
+						"water",
+						"organic_crystal",
+						"crude_oil"
+					],
+					"solarMultiplier": 1.03,
+					"specialization": "logistics",
+					"specializationName": "平坦地貌 · 物流设备 +10%",
+					"sulfuricOcean": false,
+					"surveyDurationSeconds": 28.0,
+					"templateId": "prairie",
+					"tidalLocked": false,
+					"travelTimeMultiplier": 1.0,
+					"windMultiplier": 1.27
+				},
+				"salt": {
+					"climateName": "盐湖干海盆",
+					"colonyCost": [
+						{
+							"amount": 9.0,
+							"itemId": "titanium_glass"
+						},
+						{
+							"amount": 12.0,
+							"itemId": "processor"
+						}
+					],
+					"geothermalMultiplier": 0.08,
+					"miningMultiplier": 1.21,
+					"oceanType": "none",
+					"orbitalYieldMultiplier": 1.15,
+					"orbitalYields": {},
+					"planetId": "salt",
+					"productionSpeedMultiplier": 1.1,
+					"rareResourceIds": [
+						"fractal_silicon"
+					],
+					"reserveScale": 1.5,
+					"resourceIds": [
+						"iron_ore",
+						"copper_ore",
+						"stone",
+						"silicon_ore",
+						"titanium_ore",
+						"fractal_silicon"
+					],
+					"solarMultiplier": 1.29,
+					"specialization": "chemical",
+					"specializationName": "盐化矿床 · 化工设备 +10%",
+					"sulfuricOcean": false,
+					"surveyDurationSeconds": 39.0,
+					"templateId": "salt_lake",
+					"tidalLocked": false,
+					"travelTimeMultiplier": 1.06,
+					"windMultiplier": 1.08
+				},
+				"sirius_giant": {
+					"climateName": "富氢气态巨星",
+					"colonyCost": [
+						{
+							"amount": 16.0,
+							"itemId": "titanium_alloy"
+						},
+						{
+							"amount": 2.0,
+							"itemId": "logistics_vessel"
+						}
+					],
+					"geothermalMultiplier": 0.0,
+					"miningMultiplier": 0.82,
+					"oceanType": "none",
+					"orbitalYieldMultiplier": 1.04,
+					"orbitalYields": {
+						"deuterium": 0.31,
+						"hydrogen": 1.26
+					},
+					"planetId": "sirius_giant",
+					"productionSpeedMultiplier": 1.28,
+					"rareResourceIds": [],
+					"reserveScale": 0.82,
+					"resourceIds": [],
+					"solarMultiplier": 0.0,
+					"specialization": "logistics",
+					"specializationName": "富氢环流 · 轨道采集 +28%",
+					"sulfuricOcean": false,
+					"surveyDurationSeconds": 38.0,
+					"templateId": "hydrogen_giant",
+					"tidalLocked": false,
+					"travelTimeMultiplier": 1.26,
+					"windMultiplier": 0.0
+				},
+				"tempest": {
+					"climateName": "风暴稀树草原",
+					"colonyCost": [
+						{
+							"amount": 7.0,
+							"itemId": "titanium_alloy"
+						},
+						{
+							"amount": 7.0,
+							"itemId": "logistics_drone"
+						}
+					],
+					"geothermalMultiplier": 0.02,
+					"miningMultiplier": 0.91,
+					"oceanType": "water",
+					"orbitalYieldMultiplier": 0.92,
+					"orbitalYields": {},
+					"planetId": "tempest",
+					"productionSpeedMultiplier": 1.06,
+					"rareResourceIds": [
+						"organic_crystal"
+					],
+					"reserveScale": 1.03,
+					"resourceIds": [
+						"iron_ore",
+						"copper_ore",
+						"stone",
+						"coal",
+						"titanium_ore",
+						"water",
+						"organic_crystal"
+					],
+					"solarMultiplier": 1.08,
+					"specialization": "balanced",
+					"specializationName": "风光互补 · 综合工业 +6%",
+					"sulfuricOcean": false,
+					"surveyDurationSeconds": 28.0,
+					"templateId": "savanna",
+					"tidalLocked": false,
+					"travelTimeMultiplier": 1.13,
+					"windMultiplier": 1.96
+				},
+				"verdant": {
+					"climateName": "温带草原",
+					"colonyCost": [
+						{
+							"amount": 9.0,
+							"itemId": "titanium_ingot"
+						},
+						{
+							"amount": 4.0,
+							"itemId": "logistics_drone"
+						}
+					],
+					"geothermalMultiplier": 0.04,
+					"miningMultiplier": 0.98,
+					"oceanType": "water",
+					"orbitalYieldMultiplier": 0.97,
+					"orbitalYields": {},
+					"planetId": "verdant",
+					"productionSpeedMultiplier": 1.1,
+					"rareResourceIds": [
+						"organic_crystal"
+					],
+					"reserveScale": 1.14,
+					"resourceIds": [
+						"iron_ore",
+						"copper_ore",
+						"stone",
+						"coal",
+						"water",
+						"organic_crystal"
+					],
+					"solarMultiplier": 0.91,
+					"specialization": "logistics",
+					"specializationName": "平坦地貌 · 物流设备 +10%",
+					"sulfuricOcean": false,
+					"surveyDurationSeconds": 26.0,
+					"templateId": "prairie",
+					"tidalLocked": false,
+					"travelTimeMultiplier": 1.03,
+					"windMultiplier": 1.49
+				},
+				"white_giant": {
+					"climateName": "冰态气态巨星",
+					"colonyCost": [
+						{
+							"amount": 10.0,
+							"itemId": "titanium_alloy"
+						},
+						{
+							"amount": 5.0,
+							"itemId": "logistics_drone"
+						}
+					],
+					"geothermalMultiplier": 0.0,
+					"miningMultiplier": 1.1,
+					"oceanType": "none",
+					"orbitalYieldMultiplier": 1.23,
+					"orbitalYields": {
+						"deuterium": 0.14,
+						"fire_ice": 0.7,
+						"hydrogen": 0.98
+					},
+					"planetId": "white_giant",
+					"productionSpeedMultiplier": 1.18,
+					"rareResourceIds": [],
+					"reserveScale": 1.1,
+					"resourceIds": [],
+					"solarMultiplier": 0.0,
+					"specialization": "logistics",
+					"specializationName": "冰层环流 · 轨道采集 +18%",
+					"sulfuricOcean": false,
+					"surveyDurationSeconds": 33.0,
+					"templateId": "ice_giant",
+					"tidalLocked": false,
+					"travelTimeMultiplier": 1.13,
+					"windMultiplier": 0.0
+				}
+			},
+			"seed": 240721.0,
+			"systemMetadata": {},
+			"systemProfiles": {
+				"aurora": {
+					"distanceFromOriginLy": 9.09,
+					"luminosity": 1.5,
+					"massMultiplier": 1.2,
+					"positionX": 7.68,
+					"positionY": 4.87,
+					"radiusMultiplier": 1.16,
+					"starClassId": "f_main",
+					"starTypeName": "F 型主序星",
+					"systemId": "aurora"
+				},
+				"blue_giant": {
+					"distanceFromOriginLy": 30.44,
+					"luminosity": 7.59,
+					"massMultiplier": 5.97,
+					"positionX": 30.43,
+					"positionY": 0.82,
+					"radiusMultiplier": 4.33,
+					"starClassId": "o_blue_giant",
+					"starTypeName": "O 型蓝巨星",
+					"systemId": "blue_giant"
+				},
+				"borealis": {
+					"distanceFromOriginLy": 4.69,
+					"luminosity": 0.65,
+					"massMultiplier": 0.76,
+					"positionX": 4.64,
+					"positionY": -0.68,
+					"radiusMultiplier": 0.83,
+					"starClassId": "k_dwarf",
+					"starTypeName": "K 型橙矮星",
+					"systemId": "borealis"
+				},
+				"ember": {
+					"distanceFromOriginLy": 16.06,
+					"luminosity": 0.26,
+					"massMultiplier": 0.43,
+					"positionX": 14.42,
+					"positionY": 7.06,
+					"radiusMultiplier": 0.48,
+					"starClassId": "m_dwarf",
+					"starTypeName": "M 型红矮星",
+					"systemId": "ember"
+				},
+				"helios": {
+					"distanceFromOriginLy": 0.0,
+					"luminosity": 1.02,
+					"massMultiplier": 1.04,
+					"positionX": 0.0,
+					"positionY": 0.0,
+					"radiusMultiplier": 1.0,
+					"starClassId": "g_main",
+					"starTypeName": "G 型主序星",
+					"systemId": "helios"
+				},
+				"neutron": {
+					"distanceFromOriginLy": 12.13,
+					"luminosity": 0.33,
+					"massMultiplier": 1.46,
+					"positionX": 12.13,
+					"positionY": -0.16,
+					"radiusMultiplier": 0.02,
+					"starClassId": "neutron_star",
+					"starTypeName": "中子星",
+					"systemId": "neutron"
+				},
+				"sirius": {
+					"distanceFromOriginLy": 19.86,
+					"luminosity": 3.34,
+					"massMultiplier": 1.86,
+					"positionX": 19.46,
+					"positionY": 3.95,
+					"radiusMultiplier": 1.68,
+					"starClassId": "a_main",
+					"starTypeName": "A 型主序星",
+					"systemId": "sirius"
+				},
+				"white_dwarf": {
+					"distanceFromOriginLy": 18.35,
+					"luminosity": 0.7,
+					"massMultiplier": 0.89,
+					"positionX": 17.47,
+					"positionY": -5.61,
+					"radiusMultiplier": 0.12,
+					"starClassId": "white_dwarf",
+					"starTypeName": "白矮星",
+					"systemId": "white_dwarf"
+				}
+			}
+		},
+		"survey_progress_by_system": {
+			"helios": 1.0
+		},
+		"technology_levels": {},
+		"unlocked_progression_ids": []
+	}
+}

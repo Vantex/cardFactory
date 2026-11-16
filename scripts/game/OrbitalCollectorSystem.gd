@@ -39,7 +39,7 @@ func update(delta: float, statistics: StatisticsSystem = null) -> void:
 		var index := ITEMS.find(item)
 		if index < 0: continue
 		var slot: Dictionary = building.station.slots[index]
-		var free := maxi(0, int(floorf(float(slot.capacity) - float(slot.amount) - float(building.get("output_buffer", {}).get(item, 0)))))
+		var free := maxi(0, int(floorf(StationSystem.capacity_for(slot, state, building) - float(slot.amount) - float(building.get("output_buffer", {}).get(item, 0)))))
 		if free < 1:
 			building.collector_progress = 0.0
 			continue

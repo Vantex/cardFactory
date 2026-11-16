@@ -23,6 +23,12 @@ func _ready() -> void:
 	expect(queue.fund(enqueued.id).ok and state.buildings.is_empty(), "missing kits do not produce free buildings")
 	var loaded := GameStateCodec.from_persistent_dict(GameStateCodec.to_persistent_dict(state))
 	expect(loaded != null and loaded.blueprint_library == state.blueprint_library and loaded.construction_queue == state.construction_queue, "library and pending order survive codec round trip")
+	var disk := SaveSystem.new("res://.godot/blueprint-persistence-%d/" % Time.get_ticks_usec())
+	var written := disk.save_slot(0, state)
+	var reopened := disk.load_slot(0) if written.ok else {}
+	expect(written.ok and reopened.get("ok", false), "integer blueprint transforms and pending orders pass actual disk verification")
+	if reopened.get("ok", false):
+		expect(preload("res://scripts/test/SpecialProductionBehaviorRunner.gd")._difference(GameStateCodec.to_persistent_dict(reopened.state), GameStateCodec.to_persistent_dict(state)).is_empty(), "complete disk state preserves library and pending order allowing JSON number representation")
 	library.remove(id)
 	state.construction_inventory.smelter = 1.0
 	var funded := queue.fund(enqueued.id)
@@ -57,9 +63,23 @@ func _ready() -> void:
 	expect(GameStateCodec.from_persistent_dict(corrupt) == null, "invalid persisted viewport rejected")
 	_test_fleet_and_transforms()
 	_test_recipe_and_automatic_funding()
+	_test_legacy_digest()
 	if failures == 0: print("BLUEPRINT PERSISTENCE TESTS PASSED")
 	else: printerr("BLUEPRINT PERSISTENCE TESTS FAILED")
 	get_tree().quit(0 if failures == 0 else 1)
+
+func _test_legacy_digest() -> void:
+	var path := "res://.godot/legacy-blueprint-dyson-%d/" % Time.get_ticks_usec()
+	var service := SaveSystem.new(path)
+	var file := FileAccess.open(path + "save_1.json", FileAccess.WRITE)
+	expect(file != null, "legacy digest fixture destination opens")
+	if file == null: return
+	file.store_string(FileAccess.get_file_as_string("res://tests/fixtures/task27-legacy-blueprint-dyson-save.json"))
+	file.close()
+	var loaded := service.load_slot(1)
+	expect(loaded.ok, "previously successful float blueprint/orbit disk keeps its original digest")
+	if loaded.ok:
+		expect(loaded.state.blueprint_library.size() == 1 and DysonSphereSystem.new(loaded.state).get_summary("helios").launched_sails == 1, "legacy verified disk preserves blueprint and launched sail ownership")
 
 func _test_fleet_and_transforms() -> void:
 	var state := GameState.new()

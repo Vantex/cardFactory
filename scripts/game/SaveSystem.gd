@@ -29,7 +29,7 @@ func save_slot(slot: int, game_state: GameState, metadata_overrides: Dictionary 
 	if not validation_errors.is_empty():
 		return _failure_from_validation(validation_errors)
 
-	var digest := _digest_payload(_normalize_stored_digest_types(state_payload))
+	var digest := _serialized_payload_digest(state_payload)
 	var metadata := {
 		"schema_version": GameState.SCHEMA_VERSION,
 		"saved_at": maxf(wall_time(), float(metadata_overrides.get("offline_processed_until", 0.0))),
@@ -52,7 +52,7 @@ func save_slot(slot: int, game_state: GameState, metadata_overrides: Dictionary 
 	var primary_path := _get_slot_path(slot)
 	var backup_path := _get_slot_path(slot, ".bak")
 	_remove_if_exists(temporary_path)
-	var write_error := _write_text(temporary_path, JSON.stringify(envelope, "\t", true, true))
+	var write_error := _write_text(temporary_path, _json_save_text(envelope))
 	if write_error != OK:
 		return _failure("write_failed", "无法写入临时存档")
 
@@ -63,7 +63,9 @@ func save_slot(slot: int, game_state: GameState, metadata_overrides: Dictionary 
 
 	var primary_was_rotated := false
 	if FileAccess.file_exists(primary_path):
-		var existing_primary := _read_slot_file(primary_path)
+		var existing_primary := previous
+		if not previous.get("ok", false) or not _matches_verified_file(primary_path, previous):
+			existing_primary = _read_slot_file(primary_path)
 		if existing_primary.get("ok", false):
 			_remove_if_exists(backup_path)
 			var backup_error := _rename_file(primary_path, backup_path)
@@ -81,8 +83,9 @@ func save_slot(slot: int, game_state: GameState, metadata_overrides: Dictionary 
 		_remove_if_exists(temporary_path)
 		return _failure("replace_failed", "无法用已验证临时档替换主档")
 
-	var committed := _read_slot_file(primary_path)
-	if not committed.get("ok", false) or _digest_payload(_normalize_stored_digest_types(GameStateCodec.to_persistent_dict(committed.state))) != digest:
+	# The temporary file already passed migration, validation and decoded-state round trip.
+	# Read the committed file again and require the entire verified envelope to be unchanged.
+	if not _matches_verified_file(primary_path, verification):
 		return _failure("verification_failed", "主档替换后校验失败，上一份有效备份仍保留")
 	return _success({"slot": slot, "metadata": metadata.duplicate(true)})
 
@@ -115,12 +118,12 @@ func save_emergency(slot: int, state: GameState, source: String = "emergency") -
 	if not errors.is_empty(): return _failure_from_validation(errors)
 	var metadata := {"schema_version": GameState.SCHEMA_VERSION, "saved_at": wall_time(),
 		"elapsed_time": state.elapsed_time, "active_planet": state.active_planet_id,
-		"digest": _digest_payload(_normalize_stored_digest_types(payload))}
+		"digest": _serialized_payload_digest(payload)}
 	var suffix := _recovery_suffix(source)
 	if suffix == "invalid" or source in ["primary", "backup"]: return _failure("invalid_source", "未知恢复来源")
 	var temporary := _get_slot_path(slot, suffix + ".tmp")
 	var path := _get_slot_path(slot, suffix)
-	if _write_text(temporary, JSON.stringify({"format": SAVE_FORMAT, "metadata": metadata, "state": payload}, "\t", true, true)) != OK:
+	if _write_text(temporary, _json_save_text({"format": SAVE_FORMAT, "metadata": metadata, "state": payload})) != OK:
 		return _failure("emergency_write_failed", "紧急恢复点写入失败，原恢复点仍保留")
 	if not _read_slot_file(temporary).get("ok", false):
 		return _failure("emergency_verification_failed", "紧急恢复点校验失败")
@@ -330,7 +333,7 @@ func _read_slot_file(path: String) -> Dictionary:
 	if not migration_result.get("ok", false):
 		return _failure_from_validation(migration_result.get("errors", []))
 	var migrated_payload: Dictionary = migration_result["data"]
-	var decoded_state := GameStateCodec.from_persistent_dict(migrated_payload)
+	var decoded_state := GameStateCodec._decode_validated_data(migrated_payload)
 	if decoded_state == null:
 		return _failure("decode_failed", "存档状态无法恢复")
 
@@ -340,7 +343,16 @@ func _read_slot_file(path: String) -> Dictionary:
 	metadata["elapsed_time"] = decoded_state.elapsed_time
 	metadata["digest"] = actual_digest
 	metadata["active_planet"] = decoded_state.active_planet_id
-	return _success({"state": decoded_state, "metadata": metadata})
+	return _success({"state": decoded_state, "metadata": metadata, "_verified_text_hash": text.sha256_text()})
+
+func _matches_verified_file(path: String, verification: Dictionary) -> bool:
+	var expected: String = verification.get("_verified_text_hash", "")
+	if expected.is_empty(): return false
+	var file := FileAccess.open(path, FileAccess.READ)
+	if file == null: return false
+	var actual := file.get_as_text().sha256_text()
+	file.close()
+	return actual == expected
 
 func _restore_primary_from_backup(primary_path: String, backup_path: String) -> void:
 	var temporary_path := primary_path + ".tmp"
@@ -427,11 +439,45 @@ func _ensure_save_directory() -> bool:
 func _digest_payload(payload: Dictionary) -> String:
 	return JSON.stringify(payload).sha256_text()
 
+static func _json_save_text(envelope: Dictionary) -> String:
+	return _escape_json_controls(JSON.stringify(envelope, "\t", true, true))
+
+static func _escape_json_controls(serialized: String) -> String:
+	# Godot leaves some C0 characters literal; strict JSON readers require escapes.
+	# Layout tabs/newlines and the existing payload digest remain unchanged.
+	var controls := RegEx.create_from_string("[\\x00-\\x08\\x0b\\x0c\\x0e-\\x1f]|\\\\v")
+	var pieces := PackedStringArray()
+	var cursor := 0
+	for matched in controls.search_all(serialized):
+		var start := matched.get_start()
+		var replacement := "\\u%04x" % serialized.unicode_at(start)
+		if matched.get_string() == "\\v":
+			var slashes := 1
+			var preceding := start - 1
+			while preceding >= 0 and serialized.unicode_at(preceding) == 92:
+				slashes += 1
+				preceding -= 1
+			if slashes % 2 == 0: continue
+			replacement = "\\u000b"
+		pieces.append(serialized.substr(cursor, start - cursor))
+		pieces.append(replacement)
+		cursor = matched.get_end()
+	if pieces.is_empty(): return serialized
+	pieces.append(serialized.substr(cursor))
+	return "".join(pieces)
+
+func _serialized_payload_digest(payload: Dictionary) -> String:
+	# Hash the same numeric representation the verified file reader will parse.
+	# Godot's full-precision JSON parser can move a float across the default
+	# stringifier's rounding boundary; hashing the live value then fails readback.
+	var stored: Dictionary = JSON.parse_string(_escape_json_controls(JSON.stringify(payload, "", true, true)))
+	return _digest_payload(_normalize_stored_digest_types(stored))
+
 func _normalize_stored_digest_types(payload: Dictionary) -> Dictionary:
 	var normalized := payload.duplicate(true)
 	if normalized.has("production_orders"): normalized.production_orders = _json_numeric_tree(normalized.production_orders)
 	if normalized.has("progression_facts"): normalized.progression_facts = _json_numeric_tree(normalized.progression_facts)
-	for field in ["planet_tray_limits", "pure_idle", "content_packs", "speedrun_state", "time_warp", "orbital_station", "galactic_exports", "station_contracts", "quantum_network", "source_galaxy", "dyson_engineering", "system_space_stations", "galactic_hub_network"]:
+	for field in ["planet_tray_limits", "pure_idle", "content_packs", "speedrun_state", "time_warp", "orbital_station", "galactic_exports", "station_contracts", "quantum_network", "source_galaxy", "dyson_engineering", "system_space_stations", "galactic_hub_network", "blueprint_library", "construction_queue", "dyson_systems"]:
 		if normalized.has(field): normalized[field] = _json_numeric_tree(normalized[field])
 	# JSON numbers decode as floats. Use that representation for belt integers;
 	# existing successfully saved float-valued records retain their digest.

@@ -56,7 +56,7 @@ var _dock_buttons: Dictionary = {}
 var _toast_label: Label
 var _toast_timer: Timer
 var _recipe_signature := ""
-const WORKSPACES := ["BlueprintWorkspace", "CampaignWorkspace", "TechnologyPanel", "CodexWorkspace", "GalaxyMap", "StationPanel", "DysonPanel", "EndgameWorkspace", "LocalSpaceStationWorkspace", "SystemSpaceStationWorkspace", "GalacticExportWorkspace", "ProductionCatalogWorkspace", "CommandPalette"]
+const WORKSPACES := ["BlueprintWorkspace", "CampaignWorkspace", "TechnologyPanel", "CodexWorkspace", "GalaxyMap", "StationPanel", "DysonPanel", "EndgameWorkspace", "LocalSpaceStationWorkspace", "SystemSpaceStationWorkspace", "GalacticExportWorkspace", "ProductionCatalogWorkspace", "ResourceWorkspace", "CommandPalette"]
 
 func _ready() -> void:
 	_create_workspace()
@@ -230,7 +230,7 @@ func show_notice(message: String, tone: String = "info") -> void:
 		_toast_timer.start()
 
 func is_pointer_over_ui(viewport_position: Vector2) -> bool:
-	for node_name in ["TopBar", "ResourceRail", "InspectorPanel", "ConstructionDock", "BlueprintWorkspace", "CampaignWorkspace", "MiniMap", "TechnologyPanel", "CodexWorkspace", "GalaxyMap", "StationPanel", "DysonPanel", "EndgameWorkspace", "LocalSpaceStationWorkspace", "SystemSpaceStationWorkspace", "GalacticExportWorkspace", "ProductionCatalogWorkspace", "CommandPalette"]:
+	for node_name in ["TopBar", "ResourceRail", "InspectorPanel", "ConstructionDock", "MiniMap"] + WORKSPACES:
 		var region := get_node_or_null(node_name) as Control
 		if region != null and region.visible and Rect2(Vector2.ZERO, region.size).has_point(region.get_global_transform_with_canvas().affine_inverse() * viewport_position):
 			return true
@@ -251,6 +251,7 @@ func refresh_now(_arg_1 = null, _arg_2 = null, _arg_3 = null) -> void:
 		galaxy_map.call("refresh_now")
 
 func _on_building_pressed(building_type: String) -> void:
+	if GameManager.get_game_state() != null: building_type = GameManager.get_game_state().get_dock_building_type(building_type)
 	_selected_building_id = ""
 	_selected_building_type = ""
 	_placement_building_type = building_type
@@ -470,7 +471,7 @@ func _toggle_galaxy_workspace() -> void:
 			show_exclusive_workspace("GalaxyMap")
 
 func show_exclusive_workspace(workspace_name: String) -> void:
-	for candidate_name in ["TechnologyPanel", "CampaignWorkspace", "BlueprintWorkspace", "CodexWorkspace", "GalaxyMap", "StationPanel", "DysonPanel", "EndgameWorkspace", "LocalSpaceStationWorkspace", "SystemSpaceStationWorkspace", "GalacticExportWorkspace", "ProductionCatalogWorkspace", "CommandPalette"]:
+	for candidate_name in WORKSPACES:
 		var workspace := get_node_or_null(candidate_name) as Control
 		if workspace != null:
 			workspace.visible = candidate_name == workspace_name
@@ -487,6 +488,16 @@ func _create_workspace() -> void:
 	var production_catalog := preload("res://scenes/ui/ProductionCatalogWorkspace.gd").new()
 	production_catalog.name = "ProductionCatalogWorkspace"
 	add_child(production_catalog)
+	var resources := preload("res://scenes/ui/ResourceWorkspace.gd").new()
+	resources.name = "ResourceWorkspace"
+	add_child(resources)
+	var resource_button := Button.new()
+	resource_button.name = "OpenResources"
+	resource_button.text = "矿脉采集与输出"
+	resource_button.position = Vector2(16, 496)
+	resource_button.size = Vector2(184, 34)
+	resource_button.pressed.connect(func(): show_exclusive_workspace("ResourceWorkspace"))
+	get_node("ResourceRail").add_child(resource_button)
 	var catalog_button := Button.new()
 	catalog_button.name = "FullProduction"
 	catalog_button.text = "完整制造"
@@ -834,6 +845,9 @@ func _refresh_inspector(state: GameState) -> void:
 	_inspector_details.text = "类型 %s\n状态 %s  进度 %d%%\n电力 消耗 %.0f / 产出 %.0f\n交互 %s" % [_selected_building_type, building.get("status", "idle"), progress_percent, demand, generation, interaction_state]
 	_input_buffers.text = "输入  %s" % _format_buffer(building.get("input_buffer", {}))
 	_output_buffers.text = "输出  %s" % _format_buffer(building.get("output_buffer", {}))
+	var site: Dictionary = state.resource_sites.get(String(building.get("resource_site_id", "")), {})
+	if definition.has("source_id") and definition.get("kind") == "extractor" and site.has("output_buffer"):
+		_output_buffers.text = "矿脉输出  %s ×%.3f" % [DataManager.get_item(site.item_id).get("name", site.item_id), preload("res://scripts/game/SourceResourceOutputSystem.gd").raw_amount(state, site)]
 	_start_connection_button.disabled = false
 	_delete_button.disabled = false
 	_refresh_recipe_controls(state, building)
@@ -1190,8 +1204,9 @@ func _format_handcraft_preview(preview: Dictionary) -> String:
 
 func _construction_item_total(state: GameState) -> int:
 	var total := 0.0
-	for building_type in DOCK_BUILDINGS:
-		total += float(state.construction_inventory.get(building_type, 0.0))
+	for building_type in state.construction_inventory:
+		if DataManager.get_all_buildings().has(building_type):
+			total += maxf(0, float(state.construction_inventory[building_type]))
 	return int(floor(total))
 
 func _construction_stock_summary(state: GameState) -> String:
@@ -1205,16 +1220,17 @@ func _refresh_construction_dock(state: GameState) -> void:
 		var button := _dock_buttons.get(building_type) as Button
 		if button == null:
 			continue
-		var owned := int(floor(construction.get_owned_count(building_type)))
-		var missing_reason := construction.get_missing_reason(building_type)
+		var actual_type := state.get_dock_building_type(building_type)
+		var owned := int(floor(construction.get_owned_count(actual_type)))
+		var missing_reason := construction.get_missing_reason(actual_type)
 		var legacy_credit := int(floor(float(state.construction_inventory.get("legacy_credit", 0.0))))
 		var raw_legacy_cost := float(ConstructionSystem.LEGACY_COSTS.get(building_type, 0.0))
 		var legacy_cost := int(raw_legacy_cost) if is_finite(raw_legacy_cost) else 0
-		button.text = "%s %s\n已有 %d / 需要 1" % [DOCK_SHORTCUTS.get(building_type, ""), _building_name(building_type), owned]
+		button.text = "%s %s\n已有 %d / 需要 1" % [DOCK_SHORTCUTS.get(building_type, ""), _building_name(actual_type), owned]
 		if owned < 1 and legacy_credit > 0 and is_finite(raw_legacy_cost):
 			button.text = "%s %s\n旧额度 %d / 需要 %d" % [DOCK_SHORTCUTS.get(building_type, ""), _building_name(building_type), legacy_credit, legacy_cost]
 		button.disabled = not missing_reason.is_empty()
-		button.tooltip_text = DataManager.get_building(building_type).get("description", "") if missing_reason.is_empty() else missing_reason
+		button.tooltip_text = DataManager.get_building(actual_type).get("description", "") if missing_reason.is_empty() else missing_reason
 
 func _create_panel(node_name: String, color: Color) -> Panel:
 	var panel: Panel = Panel.new() if node_name == "Toast" else AdaptivePanel.new()
@@ -1470,7 +1486,7 @@ func open_command_palette() -> void:
 		{"label": "自动布局所选建筑（空选布局全厂）", "action": _auto_layout}, {"label": "连续连接所选源建筑", "action": _continuous_connect},
 		{"label": "清空会话编辑历史", "action": func(): _get_game_state().command_history.clear()},
 		{"label": "锁定所选建筑", "action": _on_batch_lock_pressed.bind(true)}, {"label": "解锁所选建筑", "action": _on_batch_lock_pressed.bind(false)}]
-	for pair in [["完整生产", "ProductionCatalogWorkspace"], ["科技", "TechnologyPanel"], ["生产资料", "CodexWorkspace"], ["蓝图", "BlueprintWorkspace"], ["星图", "GalaxyMap"]]:
+	for pair in [["完整生产", "ProductionCatalogWorkspace"], ["矿脉采集", "ResourceWorkspace"], ["科技", "TechnologyPanel"], ["生产资料", "CodexWorkspace"], ["蓝图", "BlueprintWorkspace"], ["星图", "GalaxyMap"]]:
 		commands.append({"label": "打开 " + pair[0], "action": show_exclusive_workspace.bind(pair[1])})
 	var ids := DataManager.all_buildings.keys()
 	ids.sort()

@@ -1,0 +1,4232 @@
+{
+  "source_commit": "472bf62c76b695852b5577e563c1d113192ac731",
+  "source_files": {
+    "src/game/engine.ts": "a809a4cf72a7c2342d81732b010cf95e35cbca653313a0ebe33d56d49483b50b",
+    "src/game/content.ts": "6de101d86d28012c8765815aec35177a95b4d7ac5604736a4b608a100284f7ff",
+    "src/game/galaxy.ts": "bf0e4d23f6af26d0180ff4e7303e45a7e06e782ed0289f9a94dda3de88028bfd",
+    "src/game/galaxyCatalog.ts": "fc503cfdcc7d5f38bfcd8b6c7f262b56126f1e3cc2c749c0463e5779730c2540",
+    "src/game/systemSpaceStation.ts": "1cd199e3f11036bf8e06af469bbb92fbb8f882c37c3b5d5283c3f1aaf71798ad",
+    "src/game/systemHubLogistics.ts": "b654c3bf76dc0ad685550a5b5992358de84c611eedc1dc75fa3e425cef271659",
+    "src/game/productionStatistics.ts": "b9b6680164bef7fe0f48cce4ffdff2eaf643e7c07c789903a49fe403b6cc7f73",
+    "src/game/quantityFormat.ts": "01008471e4bc2f8e49d97b859667fb41ca83ee77d8c5034361ef5ce003d92178",
+    "src/game/campaign.ts": "c9c363d746b4f51a29fa01f08462c89816686af851daec2b450e6365e683a15c",
+    "src/game/difficulty.ts": "24613016f2296036c18577ce3338f792119617d07a17f2f9dffbefddf48e423e",
+    "src/game/endgame.ts": "65af1b6317e8d4c1dccdd73672750efbec3cd00d3b751333f438a99ac8967c8a",
+    "src/game/infiniteResearch.ts": "b6650402662557b5cd17e16de89f744269d0af54aa8aa40c16625e7758cc34c3",
+    "src/game/activity.ts": "b8711f1e5711bb0ec9826a098beeec246f859eb2581e0ce489ec6bc75f260c6a",
+    "src/game/units.ts": "bf050c2a09270f762ae76bb7ac8373571af3c094a215bd17c69fc9207d138bc5",
+    "src/game/quantumLogisticsNetwork.ts": "b34f1b836401edb757eac76ad6f924f1e8f6540f221134c55b555ebcca92b4c3",
+    "src/game/recursiveCrafting.ts": "1b131b06c7ee5f8164a377cf5a26d6fee4dd873b62f95b8552bd9423ad929e2b",
+    "src/game/speedrun.ts": "6144a52c5c0320080a4b3ec2202bd76e13811dedb587bc45f871ebded1ff2b59",
+    "src/game/idleSettlement.ts": "a90fd7d585074583ba462e4c19f6c44ba751e23128acb5daa7e652b7e4c25e8a",
+    "src/game/orbitalStation.ts": "8398e7ab6c5160a62d78fbd84e54679490336141c6f0224f0eb19524f448a56b",
+    "src/game/progression.ts": "be1ea07ebf711ba6e5d5429037dac1635499ffd33df8d9cb31a56c7099d2b773",
+    "src/game/stationContracts.ts": "4f3f2571be1878a9bc248ec2939ed03812e7b63ebd080ff8c34dfe5fcaf94f88",
+    "src/game/stationMath.ts": "5a40a7055e1b76910c84d339da2601032a6d754d725f1cd02b4ba0f474d35c0e",
+    "src/game/stationDecorations.ts": "ad76a89735066ba17cb3c3519b1b726b6f33b05ff7d368c0c7cf00326fb58019",
+    "src/game/stationCargoTerminal.ts": "d920817d0655f7774540e5b325549085e363d08bbb92834c5b2cced72d607f10"
+  },
+  "source_environment": {
+    "DEV": false,
+    "PROD": true,
+    "MODE": "production"
+  },
+  "resources": [
+    "coal",
+    "copper_ore",
+    "crude_oil",
+    "fire_ice",
+    "fractal_silicon",
+    "iron_ore",
+    "kimberlite_ore",
+    "optical_grating_crystal",
+    "organic_crystal",
+    "silicon_ore",
+    "spiniform_stalagmite_crystal",
+    "stone",
+    "sulfuric_acid",
+    "titanium_ore",
+    "unipolar_magnet",
+    "water"
+  ],
+  "cases": [
+    {
+      "id": "coal-partial",
+      "input": {
+        "item": "coal",
+        "planet": "home",
+        "entity": "vein_coal",
+        "extractor": "mining_machine",
+        "level": 1,
+        "profile": "partial",
+        "intrinsic_infinite": false,
+        "remaining": 100,
+        "capacity": 331420,
+        "remainder": 0,
+        "original_source_capacity": 267835
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "2978fad138c6333f",
+          "expected": {
+            "output": 0,
+            "progress": 0.495,
+            "remaining": 100,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 118.8,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": false,
+              "remaining": 100,
+              "capacity": 331420,
+              "remainingRatio": 0.0003017319413433106,
+              "remainingPercent": 0
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 0,
+            "progress": 0.99,
+            "remaining": 100,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 118.8,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 30,
+          "reserve_ratio_le_hex": "2978fad138c6333f",
+          "expected": {
+            "output": 1,
+            "progress": 0.98,
+            "remaining": 100,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 118.8,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": false,
+              "remaining": 100,
+              "capacity": 331420,
+              "remainingRatio": 0.0003017319413433106,
+              "remainingPercent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "coal-depleted",
+      "input": {
+        "item": "coal",
+        "planet": "home",
+        "entity": "vein_coal",
+        "extractor": "mining_machine",
+        "level": 1,
+        "profile": "depleted",
+        "intrinsic_infinite": false,
+        "remaining": 0,
+        "capacity": 331420,
+        "remainder": 0,
+        "original_source_capacity": 267835
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "0000000000000000",
+          "expected": {
+            "output": 0,
+            "progress": 0,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 0,
+              "capacity": 331420,
+              "remainingRatio": 0,
+              "remainingPercent": 0
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 1,
+            "progress": 0.98,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 118.8,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "0000000000000000",
+          "expected": {
+            "output": 1,
+            "progress": 0,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 0,
+              "capacity": 331420,
+              "remainingRatio": 0,
+              "remainingPercent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "coal-last-tenth",
+      "input": {
+        "item": "coal",
+        "planet": "home",
+        "entity": "vein_coal",
+        "extractor": "mining_machine",
+        "level": 1,
+        "profile": "last-tenth",
+        "intrinsic_infinite": false,
+        "remaining": 1,
+        "capacity": 331420,
+        "remainder": 9,
+        "original_source_capacity": 267835
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "f7f5cfe3a44fc93e",
+          "expected": {
+            "output": 0,
+            "progress": 0,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 1,
+              "capacity": 331420,
+              "remainingRatio": 0.000003017319413433106,
+              "remainingPercent": 0
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 1,
+            "progress": 0.98,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 118.8,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "f7f5cfe3a44fc93e",
+          "expected": {
+            "output": 1,
+            "progress": 0,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 1,
+              "capacity": 331420,
+              "remainingRatio": 0.000003017319413433106,
+              "remainingPercent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "copper_ore-partial",
+      "input": {
+        "item": "copper_ore",
+        "planet": "home",
+        "entity": "vein_copper",
+        "extractor": "mining_machine",
+        "level": 1,
+        "profile": "partial",
+        "intrinsic_infinite": false,
+        "remaining": 100,
+        "capacity": 316537,
+        "remainder": 0,
+        "original_source_capacity": 330181
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "e614900f3db4343f",
+          "expected": {
+            "output": 0,
+            "progress": 0.495,
+            "remaining": 100,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 118.8,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": false,
+              "remaining": 100,
+              "capacity": 316537,
+              "remainingRatio": 0.0003159188341331345,
+              "remainingPercent": 0
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 0,
+            "progress": 0.99,
+            "remaining": 100,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 118.8,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 30,
+          "reserve_ratio_le_hex": "e614900f3db4343f",
+          "expected": {
+            "output": 1,
+            "progress": 0.98,
+            "remaining": 100,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 118.8,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": false,
+              "remaining": 100,
+              "capacity": 316537,
+              "remainingRatio": 0.0003159188341331345,
+              "remainingPercent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "copper_ore-depleted",
+      "input": {
+        "item": "copper_ore",
+        "planet": "home",
+        "entity": "vein_copper",
+        "extractor": "mining_machine",
+        "level": 1,
+        "profile": "depleted",
+        "intrinsic_infinite": false,
+        "remaining": 0,
+        "capacity": 316537,
+        "remainder": 0,
+        "original_source_capacity": 330181
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "0000000000000000",
+          "expected": {
+            "output": 0,
+            "progress": 0,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 0,
+              "capacity": 316537,
+              "remainingRatio": 0,
+              "remainingPercent": 0
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 1,
+            "progress": 0.98,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 118.8,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "0000000000000000",
+          "expected": {
+            "output": 1,
+            "progress": 0,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 0,
+              "capacity": 316537,
+              "remainingRatio": 0,
+              "remainingPercent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "copper_ore-last-tenth",
+      "input": {
+        "item": "copper_ore",
+        "planet": "home",
+        "entity": "vein_copper",
+        "extractor": "mining_machine",
+        "level": 1,
+        "profile": "last-tenth",
+        "intrinsic_infinite": false,
+        "remaining": 1,
+        "capacity": 316537,
+        "remainder": 9,
+        "original_source_capacity": 330181
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "268166284e80ca3e",
+          "expected": {
+            "output": 0,
+            "progress": 0,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 1,
+              "capacity": 316537,
+              "remainingRatio": 0.000003159188341331345,
+              "remainingPercent": 0
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 1,
+            "progress": 0.98,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 118.8,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "268166284e80ca3e",
+          "expected": {
+            "output": 1,
+            "progress": 0,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 1,
+              "capacity": 316537,
+              "remainingRatio": 0.000003159188341331345,
+              "remainingPercent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "crude_oil-partial",
+      "input": {
+        "item": "crude_oil",
+        "planet": "home",
+        "entity": "vein_oil",
+        "extractor": "oil_extractor",
+        "level": 1,
+        "profile": "partial",
+        "intrinsic_infinite": false,
+        "remaining": 100,
+        "capacity": 503297,
+        "remainder": 0,
+        "original_source_capacity": 510509
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "b01a0bb9ec0a2a3f",
+          "expected": {
+            "output": 0,
+            "progress": 0.33,
+            "remaining": 100,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 79.2,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": false,
+              "remaining": 100,
+              "capacity": 503297,
+              "remainingRatio": 0.00019868983920031313,
+              "remainingPercent": 0
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 0,
+            "progress": 0.66,
+            "remaining": 100,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 79.2,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 30,
+          "reserve_ratio_le_hex": "8bdf456541c8293f",
+          "expected": {
+            "output": 1,
+            "progress": 0.32,
+            "remaining": 99,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 79.2,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": false,
+              "remaining": 99,
+              "capacity": 503297,
+              "remainingRatio": 0.00019670294080831002,
+              "remainingPercent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "crude_oil-depleted",
+      "input": {
+        "item": "crude_oil",
+        "planet": "home",
+        "entity": "vein_oil",
+        "extractor": "oil_extractor",
+        "level": 1,
+        "profile": "depleted",
+        "intrinsic_infinite": false,
+        "remaining": 0,
+        "capacity": 503297,
+        "remainder": 0,
+        "original_source_capacity": 510509
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "0000000000000000",
+          "expected": {
+            "output": 0,
+            "progress": 0,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 0,
+              "capacity": 503297,
+              "remainingRatio": 0,
+              "remainingPercent": 0
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 1,
+            "progress": 0.32,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 79.2,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "0000000000000000",
+          "expected": {
+            "output": 1,
+            "progress": 0,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 0,
+              "capacity": 503297,
+              "remainingRatio": 0,
+              "remainingPercent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "crude_oil-last-tenth",
+      "input": {
+        "item": "crude_oil",
+        "planet": "home",
+        "entity": "vein_oil",
+        "extractor": "oil_extractor",
+        "level": 1,
+        "profile": "last-tenth",
+        "intrinsic_infinite": false,
+        "remaining": 1,
+        "capacity": 503297,
+        "remainder": 9,
+        "original_source_capacity": 510509
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "67c94ef1d4aac03e",
+          "expected": {
+            "output": 0,
+            "progress": 0,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 1,
+              "capacity": 503297,
+              "remainingRatio": 0.0000019868983920031316,
+              "remainingPercent": 0
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 1,
+            "progress": 0.32,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 79.2,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "67c94ef1d4aac03e",
+          "expected": {
+            "output": 1,
+            "progress": 0,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 1,
+              "capacity": 503297,
+              "remainingRatio": 0.0000019868983920031316,
+              "remainingPercent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "fire_ice-partial",
+      "input": {
+        "item": "fire_ice",
+        "planet": "frost",
+        "entity": "frost_fire_ice",
+        "extractor": "mining_machine",
+        "level": 1,
+        "profile": "partial",
+        "intrinsic_infinite": false,
+        "remaining": 100,
+        "capacity": 233886,
+        "remainder": 0,
+        "original_source_capacity": 311943
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "398ce7bd3e053c3f",
+          "expected": {
+            "output": 0,
+            "progress": 0.3388,
+            "remaining": 100,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 81.18,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": false,
+              "remaining": 100,
+              "capacity": 233886,
+              "remainingRatio": 0.00042755872519090497,
+              "remainingPercent": 0
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 0,
+            "progress": 0.6775,
+            "remaining": 100,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 81.18,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 30,
+          "reserve_ratio_le_hex": "398ce7bd3e053c3f",
+          "expected": {
+            "output": 1,
+            "progress": 0.3547,
+            "remaining": 100,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 81.18,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": false,
+              "remaining": 100,
+              "capacity": 233886,
+              "remainingRatio": 0.00042755872519090497,
+              "remainingPercent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "fire_ice-depleted",
+      "input": {
+        "item": "fire_ice",
+        "planet": "frost",
+        "entity": "frost_fire_ice",
+        "extractor": "mining_machine",
+        "level": 1,
+        "profile": "depleted",
+        "intrinsic_infinite": false,
+        "remaining": 0,
+        "capacity": 233886,
+        "remainder": 0,
+        "original_source_capacity": 311943
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "0000000000000000",
+          "expected": {
+            "output": 0,
+            "progress": 0,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 0,
+              "capacity": 233886,
+              "remainingRatio": 0,
+              "remainingPercent": 0
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 1,
+            "progress": 0.3547,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 81.18,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "0000000000000000",
+          "expected": {
+            "output": 1,
+            "progress": 0,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 0,
+              "capacity": 233886,
+              "remainingRatio": 0,
+              "remainingPercent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "fire_ice-last-tenth",
+      "input": {
+        "item": "fire_ice",
+        "planet": "frost",
+        "entity": "frost_fire_ice",
+        "extractor": "mining_machine",
+        "level": 1,
+        "profile": "last-tenth",
+        "intrinsic_infinite": false,
+        "remaining": 1,
+        "capacity": 233886,
+        "remainder": 9,
+        "original_source_capacity": 311943
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "58f38979e0eed13e",
+          "expected": {
+            "output": 0,
+            "progress": 0,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 1,
+              "capacity": 233886,
+              "remainingRatio": 0.00000427558725190905,
+              "remainingPercent": 0
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 1,
+            "progress": 0.3547,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 81.18,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "58f38979e0eed13e",
+          "expected": {
+            "output": 1,
+            "progress": 0,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 1,
+              "capacity": 233886,
+              "remainingRatio": 0.00000427558725190905,
+              "remainingPercent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "fractal_silicon-partial",
+      "input": {
+        "item": "fractal_silicon",
+        "planet": "ashen",
+        "entity": "ashen_fractal_silicon",
+        "extractor": "mining_machine",
+        "level": 1,
+        "profile": "partial",
+        "intrinsic_infinite": false,
+        "remaining": 100,
+        "capacity": 39388,
+        "remainder": 0,
+        "original_source_capacity": 44995
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "3a771aaa57cc643f",
+          "expected": {
+            "output": 0,
+            "progress": 0.441,
+            "remaining": 100,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 105.93,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": false,
+              "remaining": 100,
+              "capacity": 39388,
+              "remainingRatio": 0.0025388443180664163,
+              "remainingPercent": 0
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 0,
+            "progress": 0.882,
+            "remaining": 100,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 105.93,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 30,
+          "reserve_ratio_le_hex": "3a771aaa57cc643f",
+          "expected": {
+            "output": 1,
+            "progress": 0.764,
+            "remaining": 100,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 105.93,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": false,
+              "remaining": 100,
+              "capacity": 39388,
+              "remainingRatio": 0.0025388443180664163,
+              "remainingPercent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "fractal_silicon-depleted",
+      "input": {
+        "item": "fractal_silicon",
+        "planet": "ashen",
+        "entity": "ashen_fractal_silicon",
+        "extractor": "mining_machine",
+        "level": 1,
+        "profile": "depleted",
+        "intrinsic_infinite": false,
+        "remaining": 0,
+        "capacity": 39388,
+        "remainder": 0,
+        "original_source_capacity": 44995
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "0000000000000000",
+          "expected": {
+            "output": 0,
+            "progress": 0,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 0,
+              "capacity": 39388,
+              "remainingRatio": 0,
+              "remainingPercent": 0
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 1,
+            "progress": 0.764,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 105.93,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "0000000000000000",
+          "expected": {
+            "output": 1,
+            "progress": 0,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 0,
+              "capacity": 39388,
+              "remainingRatio": 0,
+              "remainingPercent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "fractal_silicon-last-tenth",
+      "input": {
+        "item": "fractal_silicon",
+        "planet": "ashen",
+        "entity": "ashen_fractal_silicon",
+        "extractor": "mining_machine",
+        "level": 1,
+        "profile": "last-tenth",
+        "intrinsic_infinite": false,
+        "remaining": 1,
+        "capacity": 39388,
+        "remainder": 9,
+        "original_source_capacity": 44995
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "c5f4cf87289ffa3e",
+          "expected": {
+            "output": 0,
+            "progress": 0,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 1,
+              "capacity": 39388,
+              "remainingRatio": 0.000025388443180664162,
+              "remainingPercent": 0
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 1,
+            "progress": 0.764,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 105.93,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "c5f4cf87289ffa3e",
+          "expected": {
+            "output": 1,
+            "progress": 0,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 1,
+              "capacity": 39388,
+              "remainingRatio": 0.000025388443180664162,
+              "remainingPercent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "iron_ore-partial",
+      "input": {
+        "item": "iron_ore",
+        "planet": "home",
+        "entity": "vein_iron",
+        "extractor": "mining_machine",
+        "level": 1,
+        "profile": "partial",
+        "intrinsic_infinite": false,
+        "remaining": 100,
+        "capacity": 287105,
+        "remainder": 0,
+        "original_source_capacity": 277133
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "05eda4fb94d3363f",
+          "expected": {
+            "output": 0,
+            "progress": 0.495,
+            "remaining": 100,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 118.8,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": false,
+              "remaining": 100,
+              "capacity": 287105,
+              "remainingRatio": 0.0003483046272269727,
+              "remainingPercent": 0
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 0,
+            "progress": 0.99,
+            "remaining": 100,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 118.8,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 30,
+          "reserve_ratio_le_hex": "05eda4fb94d3363f",
+          "expected": {
+            "output": 1,
+            "progress": 0.98,
+            "remaining": 100,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 118.8,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": false,
+              "remaining": 100,
+              "capacity": 287105,
+              "remainingRatio": 0.0003483046272269727,
+              "remainingPercent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "iron_ore-depleted",
+      "input": {
+        "item": "iron_ore",
+        "planet": "home",
+        "entity": "vein_iron",
+        "extractor": "mining_machine",
+        "level": 1,
+        "profile": "depleted",
+        "intrinsic_infinite": false,
+        "remaining": 0,
+        "capacity": 287105,
+        "remainder": 0,
+        "original_source_capacity": 277133
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "0000000000000000",
+          "expected": {
+            "output": 0,
+            "progress": 0,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 0,
+              "capacity": 287105,
+              "remainingRatio": 0,
+              "remainingPercent": 0
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 1,
+            "progress": 0.98,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 118.8,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "0000000000000000",
+          "expected": {
+            "output": 1,
+            "progress": 0,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 0,
+              "capacity": 287105,
+              "remainingRatio": 0,
+              "remainingPercent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "iron_ore-last-tenth",
+      "input": {
+        "item": "iron_ore",
+        "planet": "home",
+        "entity": "vein_iron",
+        "extractor": "mining_machine",
+        "level": 1,
+        "profile": "last-tenth",
+        "intrinsic_infinite": false,
+        "remaining": 1,
+        "capacity": 287105,
+        "remainder": 9,
+        "original_source_capacity": 277133
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "de432ff0c837cd3e",
+          "expected": {
+            "output": 0,
+            "progress": 0,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 1,
+              "capacity": 287105,
+              "remainingRatio": 0.000003483046272269727,
+              "remainingPercent": 0
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 1,
+            "progress": 0.98,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 118.8,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "de432ff0c837cd3e",
+          "expected": {
+            "output": 1,
+            "progress": 0,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 1,
+              "capacity": 287105,
+              "remainingRatio": 0.000003483046272269727,
+              "remainingPercent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "kimberlite_ore-partial",
+      "input": {
+        "item": "kimberlite_ore",
+        "planet": "ashen",
+        "entity": "ashen_kimberlite",
+        "extractor": "mining_machine",
+        "level": 1,
+        "profile": "partial",
+        "intrinsic_infinite": false,
+        "remaining": 100,
+        "capacity": 34623,
+        "remainder": 0,
+        "original_source_capacity": 36373
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "cb48b5461ba9673f",
+          "expected": {
+            "output": 0,
+            "progress": 0.441,
+            "remaining": 100,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 105.93,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": false,
+              "remaining": 100,
+              "capacity": 34623,
+              "remainingRatio": 0.0028882534731248014,
+              "remainingPercent": 0
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 0,
+            "progress": 0.882,
+            "remaining": 100,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 105.93,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 30,
+          "reserve_ratio_le_hex": "cb48b5461ba9673f",
+          "expected": {
+            "output": 1,
+            "progress": 0.764,
+            "remaining": 100,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 105.93,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": false,
+              "remaining": 100,
+              "capacity": 34623,
+              "remainingRatio": 0.0028882534731248014,
+              "remainingPercent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "kimberlite_ore-depleted",
+      "input": {
+        "item": "kimberlite_ore",
+        "planet": "ashen",
+        "entity": "ashen_kimberlite",
+        "extractor": "mining_machine",
+        "level": 1,
+        "profile": "depleted",
+        "intrinsic_infinite": false,
+        "remaining": 0,
+        "capacity": 34623,
+        "remainder": 0,
+        "original_source_capacity": 36373
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "0000000000000000",
+          "expected": {
+            "output": 0,
+            "progress": 0,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 0,
+              "capacity": 34623,
+              "remainingRatio": 0,
+              "remainingPercent": 0
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 1,
+            "progress": 0.764,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 105.93,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "0000000000000000",
+          "expected": {
+            "output": 1,
+            "progress": 0,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 0,
+              "capacity": 34623,
+              "remainingRatio": 0,
+              "remainingPercent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "kimberlite_ore-last-tenth",
+      "input": {
+        "item": "kimberlite_ore",
+        "planet": "ashen",
+        "entity": "ashen_kimberlite",
+        "extractor": "mining_machine",
+        "level": 1,
+        "profile": "last-tenth",
+        "intrinsic_infinite": false,
+        "remaining": 1,
+        "capacity": 34623,
+        "remainder": 9,
+        "original_source_capacity": 36373
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "fa296dac1849fe3e",
+          "expected": {
+            "output": 0,
+            "progress": 0,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 1,
+              "capacity": 34623,
+              "remainingRatio": 0.000028882534731248015,
+              "remainingPercent": 0
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 1,
+            "progress": 0.764,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 105.93,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "fa296dac1849fe3e",
+          "expected": {
+            "output": 1,
+            "progress": 0,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 1,
+              "capacity": 34623,
+              "remainingRatio": 0.000028882534731248015,
+              "remainingPercent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "optical_grating_crystal-partial",
+      "input": {
+        "item": "optical_grating_crystal",
+        "planet": "frost",
+        "entity": "vein_optical_grating",
+        "extractor": "mining_machine",
+        "level": 1,
+        "profile": "partial",
+        "intrinsic_infinite": false,
+        "remaining": 100,
+        "capacity": 38595,
+        "remainder": 0,
+        "original_source_capacity": 39550
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "21ed9e78bd39653f",
+          "expected": {
+            "output": 0,
+            "progress": 0.3388,
+            "remaining": 100,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 81.18,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": false,
+              "remaining": 100,
+              "capacity": 38595,
+              "remainingRatio": 0.002591009198082653,
+              "remainingPercent": 0
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 0,
+            "progress": 0.6775,
+            "remaining": 100,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 81.18,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 30,
+          "reserve_ratio_le_hex": "21ed9e78bd39653f",
+          "expected": {
+            "output": 1,
+            "progress": 0.3547,
+            "remaining": 100,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 81.18,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": false,
+              "remaining": 100,
+              "capacity": 38595,
+              "remainingRatio": 0.002591009198082653,
+              "remainingPercent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "optical_grating_crystal-depleted",
+      "input": {
+        "item": "optical_grating_crystal",
+        "planet": "frost",
+        "entity": "vein_optical_grating",
+        "extractor": "mining_machine",
+        "level": 1,
+        "profile": "depleted",
+        "intrinsic_infinite": false,
+        "remaining": 0,
+        "capacity": 38595,
+        "remainder": 0,
+        "original_source_capacity": 39550
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "0000000000000000",
+          "expected": {
+            "output": 0,
+            "progress": 0,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 0,
+              "capacity": 38595,
+              "remainingRatio": 0,
+              "remainingPercent": 0
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 1,
+            "progress": 0.3547,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 81.18,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "0000000000000000",
+          "expected": {
+            "output": 1,
+            "progress": 0,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 0,
+              "capacity": 38595,
+              "remainingRatio": 0,
+              "remainingPercent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "optical_grating_crystal-last-tenth",
+      "input": {
+        "item": "optical_grating_crystal",
+        "planet": "frost",
+        "entity": "vein_optical_grating",
+        "extractor": "mining_machine",
+        "level": 1,
+        "profile": "last-tenth",
+        "intrinsic_infinite": false,
+        "remaining": 1,
+        "capacity": 38595,
+        "remainder": 9,
+        "original_source_capacity": 39550
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "53fc8df62f2bfb3e",
+          "expected": {
+            "output": 0,
+            "progress": 0,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 1,
+              "capacity": 38595,
+              "remainingRatio": 0.00002591009198082653,
+              "remainingPercent": 0
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 1,
+            "progress": 0.3547,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 81.18,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "53fc8df62f2bfb3e",
+          "expected": {
+            "output": 1,
+            "progress": 0,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 1,
+              "capacity": 38595,
+              "remainingRatio": 0.00002591009198082653,
+              "remainingPercent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "organic_crystal-partial",
+      "input": {
+        "item": "organic_crystal",
+        "planet": "ashen",
+        "entity": "ashen_organic_crystal",
+        "extractor": "mining_machine",
+        "level": 1,
+        "profile": "partial",
+        "intrinsic_infinite": false,
+        "remaining": 100,
+        "capacity": 36326,
+        "remainder": 0,
+        "original_source_capacity": 40889
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "8446f7a8248d663f",
+          "expected": {
+            "output": 0,
+            "progress": 0.441,
+            "remaining": 100,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 105.93,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": false,
+              "remaining": 100,
+              "capacity": 36326,
+              "remainingRatio": 0.002752849198920883,
+              "remainingPercent": 0
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 0,
+            "progress": 0.882,
+            "remaining": 100,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 105.93,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 30,
+          "reserve_ratio_le_hex": "8446f7a8248d663f",
+          "expected": {
+            "output": 1,
+            "progress": 0.764,
+            "remaining": 100,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 105.93,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": false,
+              "remaining": 100,
+              "capacity": 36326,
+              "remainingRatio": 0.002752849198920883,
+              "remainingPercent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "organic_crystal-depleted",
+      "input": {
+        "item": "organic_crystal",
+        "planet": "ashen",
+        "entity": "ashen_organic_crystal",
+        "extractor": "mining_machine",
+        "level": 1,
+        "profile": "depleted",
+        "intrinsic_infinite": false,
+        "remaining": 0,
+        "capacity": 36326,
+        "remainder": 0,
+        "original_source_capacity": 40889
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "0000000000000000",
+          "expected": {
+            "output": 0,
+            "progress": 0,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 0,
+              "capacity": 36326,
+              "remainingRatio": 0,
+              "remainingPercent": 0
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 1,
+            "progress": 0.764,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 105.93,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "0000000000000000",
+          "expected": {
+            "output": 1,
+            "progress": 0,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 0,
+              "capacity": 36326,
+              "remainingRatio": 0,
+              "remainingPercent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "organic_crystal-last-tenth",
+      "input": {
+        "item": "organic_crystal",
+        "planet": "ashen",
+        "entity": "ashen_organic_crystal",
+        "extractor": "mining_machine",
+        "level": 1,
+        "profile": "last-tenth",
+        "intrinsic_infinite": false,
+        "remaining": 1,
+        "capacity": 36326,
+        "remainder": 9,
+        "original_source_capacity": 40889
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "2eac98909fddfc3e",
+          "expected": {
+            "output": 0,
+            "progress": 0,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 1,
+              "capacity": 36326,
+              "remainingRatio": 0.00002752849198920883,
+              "remainingPercent": 0
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 1,
+            "progress": 0.764,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 105.93,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "2eac98909fddfc3e",
+          "expected": {
+            "output": 1,
+            "progress": 0,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 1,
+              "capacity": 36326,
+              "remainingRatio": 0.00002752849198920883,
+              "remainingPercent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "silicon_ore-partial",
+      "input": {
+        "item": "silicon_ore",
+        "planet": "ashen",
+        "entity": "vein_silicon",
+        "extractor": "mining_machine",
+        "level": 1,
+        "profile": "partial",
+        "intrinsic_infinite": false,
+        "remaining": 100,
+        "capacity": 245381,
+        "remainder": 0,
+        "original_source_capacity": 264931
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "010dc3f035b53a3f",
+          "expected": {
+            "output": 0,
+            "progress": 0.441,
+            "remaining": 100,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 105.93,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": false,
+              "remaining": 100,
+              "capacity": 245381,
+              "remainingRatio": 0.0004075295153251474,
+              "remainingPercent": 0
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 0,
+            "progress": 0.882,
+            "remaining": 100,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 105.93,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 30,
+          "reserve_ratio_le_hex": "010dc3f035b53a3f",
+          "expected": {
+            "output": 1,
+            "progress": 0.764,
+            "remaining": 100,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 105.93,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": false,
+              "remaining": 100,
+              "capacity": 245381,
+              "remainingRatio": 0.0004075295153251474,
+              "remainingPercent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "silicon_ore-depleted",
+      "input": {
+        "item": "silicon_ore",
+        "planet": "ashen",
+        "entity": "vein_silicon",
+        "extractor": "mining_machine",
+        "level": 1,
+        "profile": "depleted",
+        "intrinsic_infinite": false,
+        "remaining": 0,
+        "capacity": 245381,
+        "remainder": 0,
+        "original_source_capacity": 264931
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "0000000000000000",
+          "expected": {
+            "output": 0,
+            "progress": 0,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 0,
+              "capacity": 245381,
+              "remainingRatio": 0,
+              "remainingPercent": 0
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 1,
+            "progress": 0.764,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 105.93,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "0000000000000000",
+          "expected": {
+            "output": 1,
+            "progress": 0,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 0,
+              "capacity": 245381,
+              "remainingRatio": 0,
+              "remainingPercent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "silicon_ore-last-tenth",
+      "input": {
+        "item": "silicon_ore",
+        "planet": "ashen",
+        "entity": "vein_silicon",
+        "extractor": "mining_machine",
+        "level": 1,
+        "profile": "last-tenth",
+        "intrinsic_infinite": false,
+        "remaining": 1,
+        "capacity": 245381,
+        "remainder": 9,
+        "original_source_capacity": 264931
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "b96e169ad017d13e",
+          "expected": {
+            "output": 0,
+            "progress": 0,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 1,
+              "capacity": 245381,
+              "remainingRatio": 0.000004075295153251474,
+              "remainingPercent": 0
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 1,
+            "progress": 0.764,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 105.93,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "b96e169ad017d13e",
+          "expected": {
+            "output": 1,
+            "progress": 0,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 1,
+              "capacity": 245381,
+              "remainingRatio": 0.000004075295153251474,
+              "remainingPercent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "spiniform_stalagmite_crystal-partial",
+      "input": {
+        "item": "spiniform_stalagmite_crystal",
+        "planet": "frost",
+        "entity": "ashen_spiniform",
+        "extractor": "mining_machine",
+        "level": 1,
+        "profile": "partial",
+        "intrinsic_infinite": false,
+        "remaining": 100,
+        "capacity": 44022,
+        "remainder": 0,
+        "original_source_capacity": 44662
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "50315063df9b623f",
+          "expected": {
+            "output": 0,
+            "progress": 0.3388,
+            "remaining": 100,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 81.18,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": false,
+              "remaining": 100,
+              "capacity": 44022,
+              "remainingRatio": 0.0022715914769887782,
+              "remainingPercent": 0
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 0,
+            "progress": 0.6775,
+            "remaining": 100,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 81.18,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 30,
+          "reserve_ratio_le_hex": "50315063df9b623f",
+          "expected": {
+            "output": 1,
+            "progress": 0.3547,
+            "remaining": 100,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 81.18,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": false,
+              "remaining": 100,
+              "capacity": 44022,
+              "remainingRatio": 0.0022715914769887782,
+              "remainingPercent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "spiniform_stalagmite_crystal-depleted",
+      "input": {
+        "item": "spiniform_stalagmite_crystal",
+        "planet": "frost",
+        "entity": "ashen_spiniform",
+        "extractor": "mining_machine",
+        "level": 1,
+        "profile": "depleted",
+        "intrinsic_infinite": false,
+        "remaining": 0,
+        "capacity": 44022,
+        "remainder": 0,
+        "original_source_capacity": 44662
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "0000000000000000",
+          "expected": {
+            "output": 0,
+            "progress": 0,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 0,
+              "capacity": 44022,
+              "remainingRatio": 0,
+              "remainingPercent": 0
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 1,
+            "progress": 0.3547,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 81.18,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "0000000000000000",
+          "expected": {
+            "output": 1,
+            "progress": 0,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 0,
+              "capacity": 44022,
+              "remainingRatio": 0,
+              "remainingPercent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "spiniform_stalagmite_crystal-last-tenth",
+      "input": {
+        "item": "spiniform_stalagmite_crystal",
+        "planet": "frost",
+        "entity": "ashen_spiniform",
+        "extractor": "mining_machine",
+        "level": 1,
+        "profile": "last-tenth",
+        "intrinsic_infinite": false,
+        "remaining": 1,
+        "capacity": 44022,
+        "remainder": 9,
+        "original_source_capacity": 44662
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "ec0bcdc6c1d1f73e",
+          "expected": {
+            "output": 0,
+            "progress": 0,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 1,
+              "capacity": 44022,
+              "remainingRatio": 0.000022715914769887784,
+              "remainingPercent": 0
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 1,
+            "progress": 0.3547,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 81.18,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "ec0bcdc6c1d1f73e",
+          "expected": {
+            "output": 1,
+            "progress": 0,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 1,
+              "capacity": 44022,
+              "remainingRatio": 0.000022715914769887784,
+              "remainingPercent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "stone-partial",
+      "input": {
+        "item": "stone",
+        "planet": "home",
+        "entity": "vein_stone",
+        "extractor": "mining_machine",
+        "level": 1,
+        "profile": "partial",
+        "intrinsic_infinite": false,
+        "remaining": 100,
+        "capacity": 280571,
+        "remainder": 0,
+        "original_source_capacity": 265048
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "b421a829ab5b373f",
+          "expected": {
+            "output": 0,
+            "progress": 0.495,
+            "remaining": 100,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 118.8,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": false,
+              "remaining": 100,
+              "capacity": 280571,
+              "remainingRatio": 0.00035641602303873175,
+              "remainingPercent": 0
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 0,
+            "progress": 0.99,
+            "remaining": 100,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 118.8,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 30,
+          "reserve_ratio_le_hex": "b421a829ab5b373f",
+          "expected": {
+            "output": 1,
+            "progress": 0.98,
+            "remaining": 100,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 118.8,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": false,
+              "remaining": 100,
+              "capacity": 280571,
+              "remainingRatio": 0.00035641602303873175,
+              "remainingPercent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "stone-depleted",
+      "input": {
+        "item": "stone",
+        "planet": "home",
+        "entity": "vein_stone",
+        "extractor": "mining_machine",
+        "level": 1,
+        "profile": "depleted",
+        "intrinsic_infinite": false,
+        "remaining": 0,
+        "capacity": 280571,
+        "remainder": 0,
+        "original_source_capacity": 265048
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "0000000000000000",
+          "expected": {
+            "output": 0,
+            "progress": 0,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 0,
+              "capacity": 280571,
+              "remainingRatio": 0,
+              "remainingPercent": 0
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 1,
+            "progress": 0.98,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 118.8,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "0000000000000000",
+          "expected": {
+            "output": 1,
+            "progress": 0,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 0,
+              "capacity": 280571,
+              "remainingRatio": 0,
+              "remainingPercent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "stone-last-tenth",
+      "input": {
+        "item": "stone",
+        "planet": "home",
+        "entity": "vein_stone",
+        "extractor": "mining_machine",
+        "level": 1,
+        "profile": "last-tenth",
+        "intrinsic_infinite": false,
+        "remaining": 1,
+        "capacity": 280571,
+        "remainder": 9,
+        "original_source_capacity": 265048
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "42b0ebcef9e5cd3e",
+          "expected": {
+            "output": 0,
+            "progress": 0,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 1,
+              "capacity": 280571,
+              "remainingRatio": 0.0000035641602303873173,
+              "remainingPercent": 0
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 1,
+            "progress": 0.98,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 118.8,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "42b0ebcef9e5cd3e",
+          "expected": {
+            "output": 1,
+            "progress": 0,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 1,
+              "capacity": 280571,
+              "remainingRatio": 0.0000035641602303873173,
+              "remainingPercent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "sulfuric_acid-partial",
+      "input": {
+        "item": "sulfuric_acid",
+        "planet": "ashen",
+        "entity": "ashen_sulfuric",
+        "extractor": "water_pump",
+        "level": 1,
+        "profile": "partial",
+        "intrinsic_infinite": true,
+        "remaining": 0,
+        "capacity": 0,
+        "remainder": 0,
+        "original_source_capacity": 0
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 0,
+            "progress": 0.294,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 70.62,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 0,
+            "progress": 0.588,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 70.62,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 30,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 1,
+            "progress": 0.176,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 70.62,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "sulfuric_acid-depleted",
+      "input": {
+        "item": "sulfuric_acid",
+        "planet": "ashen",
+        "entity": "ashen_sulfuric",
+        "extractor": "water_pump",
+        "level": 1,
+        "profile": "depleted",
+        "intrinsic_infinite": true,
+        "remaining": 0,
+        "capacity": 0,
+        "remainder": 0,
+        "original_source_capacity": 0
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 0,
+            "progress": 0.294,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 70.62,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 1,
+            "progress": 0.47,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 70.62,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 2,
+            "progress": 0.646,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 70.62,
+            "total_produced": 2,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "sulfuric_acid-last-tenth",
+      "input": {
+        "item": "sulfuric_acid",
+        "planet": "ashen",
+        "entity": "ashen_sulfuric",
+        "extractor": "water_pump",
+        "level": 1,
+        "profile": "last-tenth",
+        "intrinsic_infinite": true,
+        "remaining": 0,
+        "capacity": 0,
+        "remainder": 0,
+        "original_source_capacity": 0
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 0,
+            "progress": 0.294,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 70.62,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 1,
+            "progress": 0.47,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 70.62,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 2,
+            "progress": 0.646,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 70.62,
+            "total_produced": 2,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "titanium_ore-partial",
+      "input": {
+        "item": "titanium_ore",
+        "planet": "ashen",
+        "entity": "vein_titanium",
+        "extractor": "mining_machine",
+        "level": 1,
+        "profile": "partial",
+        "intrinsic_infinite": false,
+        "remaining": 100,
+        "capacity": 250185,
+        "remainder": 0,
+        "original_source_capacity": 304733
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "32d8538cec313a3f",
+          "expected": {
+            "output": 0,
+            "progress": 0.441,
+            "remaining": 100,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 105.93,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": false,
+              "remaining": 100,
+              "capacity": 250185,
+              "remainingRatio": 0.00039970421887803025,
+              "remainingPercent": 0
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 0,
+            "progress": 0.882,
+            "remaining": 100,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 105.93,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 30,
+          "reserve_ratio_le_hex": "32d8538cec313a3f",
+          "expected": {
+            "output": 1,
+            "progress": 0.764,
+            "remaining": 100,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 105.93,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": false,
+              "remaining": 100,
+              "capacity": 250185,
+              "remainingRatio": 0.00039970421887803025,
+              "remainingPercent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "titanium_ore-depleted",
+      "input": {
+        "item": "titanium_ore",
+        "planet": "ashen",
+        "entity": "vein_titanium",
+        "extractor": "mining_machine",
+        "level": 1,
+        "profile": "depleted",
+        "intrinsic_infinite": false,
+        "remaining": 0,
+        "capacity": 250185,
+        "remainder": 0,
+        "original_source_capacity": 304733
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "0000000000000000",
+          "expected": {
+            "output": 0,
+            "progress": 0,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 0,
+              "capacity": 250185,
+              "remainingRatio": 0,
+              "remainingPercent": 0
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 1,
+            "progress": 0.764,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 105.93,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "0000000000000000",
+          "expected": {
+            "output": 1,
+            "progress": 0,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 0,
+              "capacity": 250185,
+              "remainingRatio": 0,
+              "remainingPercent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "titanium_ore-last-tenth",
+      "input": {
+        "item": "titanium_ore",
+        "planet": "ashen",
+        "entity": "vein_titanium",
+        "extractor": "mining_machine",
+        "level": 1,
+        "profile": "last-tenth",
+        "intrinsic_infinite": false,
+        "remaining": 1,
+        "capacity": 250185,
+        "remainder": 9,
+        "original_source_capacity": 304733
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "86e63f97cac3d03e",
+          "expected": {
+            "output": 0,
+            "progress": 0,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 1,
+              "capacity": 250185,
+              "remainingRatio": 0.000003997042188780302,
+              "remainingPercent": 0
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 1,
+            "progress": 0.764,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 105.93,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "86e63f97cac3d03e",
+          "expected": {
+            "output": 1,
+            "progress": 0,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 1,
+              "capacity": 250185,
+              "remainingRatio": 0.000003997042188780302,
+              "remainingPercent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "unipolar_magnet-partial",
+      "input": {
+        "item": "unipolar_magnet",
+        "planet": "magnetar",
+        "entity": "ashen_unipolar",
+        "extractor": "mining_machine",
+        "level": 1,
+        "profile": "partial",
+        "intrinsic_infinite": false,
+        "remaining": 100,
+        "capacity": 18599,
+        "remainder": 0,
+        "original_source_capacity": 17729
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "4930d4f8ce05763f",
+          "expected": {
+            "output": 0,
+            "progress": 0.495,
+            "remaining": 100,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 118.8,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": false,
+              "remaining": 100,
+              "capacity": 18599,
+              "remainingRatio": 0.005376633152320017,
+              "remainingPercent": 1
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 0,
+            "progress": 0.99,
+            "remaining": 100,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 118.8,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 30,
+          "reserve_ratio_le_hex": "4930d4f8ce05763f",
+          "expected": {
+            "output": 1,
+            "progress": 0.98,
+            "remaining": 100,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 118.8,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": false,
+              "remaining": 100,
+              "capacity": 18599,
+              "remainingRatio": 0.005376633152320017,
+              "remainingPercent": 1
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "unipolar_magnet-depleted",
+      "input": {
+        "item": "unipolar_magnet",
+        "planet": "magnetar",
+        "entity": "ashen_unipolar",
+        "extractor": "mining_machine",
+        "level": 1,
+        "profile": "depleted",
+        "intrinsic_infinite": false,
+        "remaining": 0,
+        "capacity": 18599,
+        "remainder": 0,
+        "original_source_capacity": 17729
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "0000000000000000",
+          "expected": {
+            "output": 0,
+            "progress": 0,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 0,
+              "capacity": 18599,
+              "remainingRatio": 0,
+              "remainingPercent": 0
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 1,
+            "progress": 0.98,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 118.8,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "0000000000000000",
+          "expected": {
+            "output": 1,
+            "progress": 0,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 0,
+              "capacity": 18599,
+              "remainingRatio": 0,
+              "remainingPercent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "unipolar_magnet-last-tenth",
+      "input": {
+        "item": "unipolar_magnet",
+        "planet": "magnetar",
+        "entity": "ashen_unipolar",
+        "extractor": "mining_machine",
+        "level": 1,
+        "profile": "last-tenth",
+        "intrinsic_infinite": false,
+        "remaining": 1,
+        "capacity": 18599,
+        "remainder": 9,
+        "original_source_capacity": 17729
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "3f7b8a1565300c3f",
+          "expected": {
+            "output": 0,
+            "progress": 0,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 1,
+              "capacity": 18599,
+              "remainingRatio": 0.000053766331523200175,
+              "remainingPercent": 0
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 1,
+            "progress": 0.98,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 118.8,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "3f7b8a1565300c3f",
+          "expected": {
+            "output": 1,
+            "progress": 0,
+            "remaining": 1,
+            "remainder": 9,
+            "power_factor": 1,
+            "utilization": 0,
+            "production_rate": 0,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": false,
+              "exhausted": true,
+              "remaining": 1,
+              "capacity": 18599,
+              "remainingRatio": 0.000053766331523200175,
+              "remainingPercent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "water-partial",
+      "input": {
+        "item": "water",
+        "planet": "home",
+        "entity": "vein_water",
+        "extractor": "water_pump",
+        "level": 1,
+        "profile": "partial",
+        "intrinsic_infinite": true,
+        "remaining": 0,
+        "capacity": 0,
+        "remainder": 0,
+        "original_source_capacity": 0
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 0,
+            "progress": 0.33,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 79.2,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 0,
+            "progress": 0.66,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 79.2,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 30,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 1,
+            "progress": 0.32,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 79.2,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "water-depleted",
+      "input": {
+        "item": "water",
+        "planet": "home",
+        "entity": "vein_water",
+        "extractor": "water_pump",
+        "level": 1,
+        "profile": "depleted",
+        "intrinsic_infinite": true,
+        "remaining": 0,
+        "capacity": 0,
+        "remainder": 0,
+        "original_source_capacity": 0
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 0,
+            "progress": 0.33,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 79.2,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 1,
+            "progress": 0.65,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 79.2,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 2,
+            "progress": 0.97,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 79.2,
+            "total_produced": 2,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "water-last-tenth",
+      "input": {
+        "item": "water",
+        "planet": "home",
+        "entity": "vein_water",
+        "extractor": "water_pump",
+        "level": 1,
+        "profile": "last-tenth",
+        "intrinsic_infinite": true,
+        "remaining": 0,
+        "capacity": 0,
+        "remainder": 0,
+        "original_source_capacity": 0
+      },
+      "stages": [
+        {
+          "mode": "finite",
+          "ticks": 15,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 0,
+            "progress": 0.33,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 79.2,
+            "total_produced": 0,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "infinite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 1,
+            "progress": 0.65,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 79.2,
+            "total_produced": 1,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        },
+        {
+          "mode": "finite",
+          "ticks": 60,
+          "reserve_ratio_le_hex": "000000000000f03f",
+          "expected": {
+            "output": 2,
+            "progress": 0.97,
+            "remaining": 0,
+            "remainder": 0,
+            "power_factor": 1,
+            "utilization": 1,
+            "production_rate": 79.2,
+            "total_produced": 2,
+            "reserve": {
+              "infinite": true,
+              "exhausted": false,
+              "remaining": null,
+              "capacity": null,
+              "remainingRatio": 1,
+              "remainingPercent": 100
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "capacity_input_sha256": "4aa3e1cd163edaac9f1ada7e26784b79874016a2acee43d41c78b7748c464405",
+  "scope": "48 controlled finite/infinite/finite sequences on16 actual resource sites,actual paid count-one installMiner/100solar and144 public complete-tick simulation sessions+readonly reserve queries. Mode is controlled immutable settings input matching the inspected App updateSettings body;this does not execute the React confirmation callback. Completed technology/funded kits/level1 are controlled,not earned growth or save acceptance. Resource capacity is a controlled input captured from existing valid native sites;original source capacity retained per row. Expected results are computed only by frozen source. Existing initial capacity random-key mismatch remains uncorrected,not covered by this mode comparison."
+}

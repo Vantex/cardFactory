@@ -28,13 +28,24 @@ func active() -> String:
 	return String(state.progression_facts.get("active_infinite", ""))
 
 func can_work() -> bool:
-	return not active().is_empty() and not state.progression_facts.get("infinite_paused", false) and state.research_current_id.is_empty()
+	var id := active()
+	return definitions().has(id) and level(id) < int(definitions()[id].maximum) and state.completed_technologies.has("dsp_universe_matrix") and not state.progression_facts.get("infinite_paused", false) and state.research_current_id.is_empty()
 
-func select(id: String, automatic: bool = false) -> bool:
-	if not definitions().has(id) or level(id) >= int(definitions()[id].maximum) or not state.completed_technologies.has("dsp_universe_matrix") or not state.research_current_id.is_empty() or not state.research_queue.is_empty(): return false
+func select(id: String, automatic: Variant = null) -> bool:
+	if not definitions().has(id) or level(id) >= int(definitions()[id].maximum) or not state.completed_technologies.has("dsp_universe_matrix") or active() == id: return false
+	if not state.research_current_id.is_empty() and not DataManager.get_technology(state.research_current_id).get("source_research_bridge", false): return false
+	for queued in state.research_queue:
+		if not DataManager.get_technology(queued).get("source_research_bridge", false): return false
+	if automatic != null and not automatic is bool: return false
 	state.progression_facts["active_infinite"] = id
 	state.progression_facts["infinite_paused"] = false
-	state.progression_facts["infinite_auto"] = automatic
+	if automatic != null: set_automation(automatic)
+	_reset_lab_cycles()
+	return true
+
+func set_automation(enabled: bool) -> bool:
+	if state.progression_facts.get("infinite_auto", false) == enabled: return false
+	state.progression_facts["infinite_auto"] = enabled
 	return true
 
 func pause(paused: bool) -> bool:
@@ -45,21 +56,49 @@ func pause(paused: bool) -> bool:
 func cancel() -> void:
 	state.progression_facts.erase("active_infinite")
 	state.progression_facts.erase("infinite_paused")
-	state.progression_facts.erase("infinite_auto")
+	_reset_lab_cycles()
 
 func invest_one() -> bool:
 	if not can_work(): return false
-	var id := active()
-	var progress := DecimalCount.add(invested(id), "1")
-	if DecimalCount.compare(progress, cost(id)) > 0: return false
-	var current_level := level(id)
-	if progress == cost(id):
-		current_level += 1
-		progress = "0"
-		if current_level >= int(definitions()[id].maximum) or not state.progression_facts.get("infinite_auto", false): cancel()
+	return invest_budget(active(), "1") == "1"
+
+func invest_budget(id: String, requested: String) -> String:
+	if not definitions().has(id): return "0"
+	var budget := requested
+	if requested.begins_with("-") and DecimalCount.valid(requested.substr(1)): budget = "0"
+	if not DecimalCount.valid(budget) or not DecimalCount.valid(invested(id)): return "0"
+	var maximum := int(definitions()[id].maximum)
+	var current_level := clampi(level(id), 0, maximum)
+	var progress := invested(id)
+	var remaining := budget
+	var completed: Array[int] = []
+	var automatic: bool = state.progression_facts.get("infinite_auto", false)
+	while current_level < maximum:
+		var required := String(definitions()[id].costs[current_level])
+		if DecimalCount.compare(progress, required) > 0: progress = required
+		if progress == required:
+			current_level += 1
+			progress = "0"
+			completed.append(current_level)
+			if not automatic: break
+			continue
+		if remaining == "0": break
+		var needed := DecimalCount.subtract(required, progress)
+		var taken := remaining if DecimalCount.compare(remaining, needed) < 0 else needed
+		progress = DecimalCount.add(progress, taken)
+		remaining = DecimalCount.subtract(remaining, taken)
 	if not state.progression_facts.has("infinite_research"): state.progression_facts["infinite_research"] = {}
 	state.progression_facts.infinite_research[id] = {"level": current_level, "invested": progress}
-	return true
+	var exports := GalacticExportSystem.new(state)
+	for completed_level in completed: exports.award_research_completion(completed_level)
+	if current_level >= maximum or (not completed.is_empty() and not automatic):
+		state.progression_facts.erase("active_infinite")
+		state.progression_facts.erase("infinite_paused")
+	return DecimalCount.subtract(budget, remaining)
+
+func _reset_lab_cycles() -> void:
+	for building in state.buildings.values():
+		if building.get("recipe_id") == "dsp_matrix_research": building.progress = 0.0
 
 static func validate(facts: Dictionary) -> Array:
 	var errors := []

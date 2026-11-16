@@ -115,11 +115,57 @@ func set_metadata(id: String, name: String, note: String = "", tags: Array = [],
 	var field := "systemMetadata" if system else "planetMetadata"
 	var ids := "systemProfiles" if system else "profiles"
 	if not state.source_galaxy.get(ids, {}).has(id): return {"ok": false, "message": "星区目标不存在"}
-	var value := {"customName": name.strip_edges()}
-	if not system: value.merge({"note": note.strip_edges(), "tags": tags.duplicate()})
-	if not _metadata(value, system): return {"ok": false, "message": "名称最多 32 字，备注最多 240 字，标签最多 8 个且每个 16 字"}
-	state.source_galaxy[field][id] = value
+	var value := {"customName": _source_text(name, 32)}
+	var normalized_tags := []
+	var seen_units := {}
+	if not system:
+		for tag in tags:
+			var units := _source_text_units(tag, 16)
+			# Distinct source slices can have the same portable replacement text.
+			var signature := JSON.stringify(units)
+			if not units.is_empty() and not seen_units.has(signature) and normalized_tags.size() < 8:
+				seen_units[signature] = true
+				normalized_tags.append(_portable_source_text(units))
+		value.merge({"note": _source_text(note, 240), "tags": normalized_tags})
+	if value.customName.is_empty() and (system or (value.note.is_empty() and normalized_tags.is_empty())):
+		state.source_galaxy[field].erase(id)
+	else: state.source_galaxy[field][id] = value
 	return {"ok": true, "message": "本地星区说明已更新"}
+
+static func _source_text(value: Variant, maximum_units: int) -> String:
+	return _portable_source_text(_source_text_units(value, maximum_units))
+
+static func _source_text_units(value: Variant, maximum_units: int) -> Array:
+	if not value is String: return []
+	# The frozen source trims ECMAScript whitespace and limits UTF-16 units.
+	var whitespace := [9, 10, 11, 12, 13, 32, 160, 5760, 8192, 8193, 8194, 8195, 8196, 8197, 8198, 8199, 8200, 8201, 8202, 8232, 8233, 8239, 8287, 12288, 65279]
+	var start := 0
+	var end: int = value.length()
+	while start < end and whitespace.has(value.unicode_at(start)): start += 1
+	while end > start and whitespace.has(value.unicode_at(end - 1)): end -= 1
+	var result := []
+	for index in range(start, end):
+		var codepoint: int = value.unicode_at(index)
+		if codepoint > 65535:
+			result.append(55296 + ((codepoint - 65536) >> 10))
+			if result.size() >= maximum_units: break
+			result.append(56320 + ((codepoint - 65536) & 1023))
+		else: result.append(codepoint)
+		if result.size() >= maximum_units: break
+	return result
+
+static func _portable_source_text(units: Array) -> String:
+	var result := ""
+	var index := 0
+	while index < units.size():
+		var unit: int = units[index]
+		if unit >= 55296 and unit <= 56319 and index + 1 < units.size() and int(units[index + 1]) >= 56320 and int(units[index + 1]) <= 57343:
+			result += String.chr(65536 + ((unit - 55296) << 10) + int(units[index + 1]) - 56320)
+			index += 2
+		else:
+			result += "�" if unit >= 55296 and unit <= 57343 else String.chr(unit)
+			index += 1
+	return result
 
 static func _metadata(value: Variant, system: bool) -> bool:
 	if not value is Dictionary or not value.get("customName", "") is String or value.get("customName", "").length() > 32: return false
@@ -128,7 +174,8 @@ static func _metadata(value: Variant, system: bool) -> bool:
 	if system: return true
 	if not value.get("note", "") is String or value.get("note", "").length() > 240 or not value.get("tags", []) is Array or value.get("tags", []).size() > 8: return false
 	for tag in value.get("tags", []):
-		if not tag is String or tag.strip_edges().is_empty() or tag.length() > 16: return false
+		# Previously valid local saves keep their exact tags; new commands use source trim.
+		if not tag is String or (tag.strip_edges().is_empty() and _source_text(tag, 16).is_empty()) or tag.length() > 16: return false
 	return true
 
 static func validate(data: Dictionary) -> Array:

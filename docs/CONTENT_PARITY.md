@@ -16,7 +16,7 @@
 
 此表是任务 19 的差距登记，不是玩法已经对齐的证明。现有系统仍可使用；“实现中”只表示存在候选映射，未逐项验证原版数值和行为。登记门允许明确登记的缺口，最终发布门必须清零未实现/实现中。
 
-状态统计：{"实现中":749,"未实现":324,"在线排除":26}。没有把同名条目自动标为已验证。
+状态统计：{"实现中":514,"已验证":262,"在线排除":26,"未实现":297}。没有把同名条目自动标为已验证。
 
 完整来源定义保存输入输出、数值、前置、解锁、奖励和目录规则；成就判定等代码规则记录源文件及哈希，跨特殊系统行为验证仍待任务 26/27。每行的自动规则编号为 rule:类别:源ID，人工编号为 manual:类别:源ID；规则规格见 [rule_cases.json](../tests/fixtures/parity/rule_cases.json)，规格登记不等于已执行行为测试。UI 栏为原版入口/定义来源，当前候选路径和缺口见 [机器清单](../tests/fixtures/parity/dsponline_single_player_manifest.json)。
 
@@ -132,86 +132,86 @@
 
 | 源 ID | 名称 | 当前候选 ID/文件 | 状态 | 后续任务 | 来源/UI |
 |---|---|---|---|---:|---|
-| accumulator | 蓄电器 | dsp_accumulator | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| accumulator_charge | 蓄电器充电 | dsp_accumulator_charge | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| accumulator_discharge | 蓄电器放电 | dsp_accumulator_discharge | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| annihilation_constraint_sphere | 湮灭约束球 | dsp_annihilation_constraint_sphere | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| antimatter | 质能转换 | dsp_antimatter | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| antimatter_fuel_rod | 反物质燃料棒 | dsp_antimatter_fuel_rod | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| carbon_nanotube | 碳纳米管 | dsp_carbon_nanotube | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| carbon_nanotube_from_spiniform | 刺笋结晶制碳纳米管 | dsp_carbon_nanotube_from_spiniform | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| carrier_rocket_launch | 运载火箭发射 | dsp_carrier_rocket_launch | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| casimir_crystal | 卡西米尔晶体 | dsp_casimir_crystal | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| casimir_crystal_advanced | 高效卡西米尔晶体 | dsp_casimir_crystal_advanced | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| circuit_board | 电路板 | dsp_circuit_board | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| copper_ingot | 铜块 | dsp_copper_ingot | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| critical_photon | 临界光子 | dsp_critical_photon | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| crystal_silicon | 晶格硅 | dsp_crystal_silicon | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| crystal_silicon_from_fractal | 分形硅晶格化 | dsp_crystal_silicon_from_fractal | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| deuterium | 氘富集 | dsp_deuterium | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| deuterium_fractionation | 氢分馏 | dsp_deuterium_fractionation | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| deuteron_fuel_rod | 氘核燃料棒 | dsp_deuteron_fuel_rod | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| diamond | 金刚石 | dsp_diamond | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| diamond_from_kimberlite | 金伯利矿提炼 | dsp_diamond_from_kimberlite | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| dyson_sphere_component | 戴森球组件 | dsp_dyson_sphere_component | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| electric_motor | 电动机 | dsp_electric_motor | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| electromagnetic_matrix | 电磁矩阵 | dsp_electromagnetic_matrix | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| electromagnetic_turbine | 电磁涡轮 | dsp_electromagnetic_turbine | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| energetic_graphite | 高能石墨 | dsp_energetic_graphite | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| energy_matrix | 能量矩阵 | dsp_energy_matrix | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| frame_material | 框架材料 | dsp_frame_material | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| gear | 齿轮 | dsp_gear | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| glass | 玻璃 | dsp_glass | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| graphene | 石墨烯 | dsp_graphene | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| graphene_from_fire_ice | 可燃冰裂解 | dsp_graphene_from_fire_ice | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| graviton_lens | 引力透镜 | dsp_graviton_lens | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| gravity_matrix | 引力矩阵 | dsp_gravity_matrix | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| high_purity_silicon | 高纯硅块 | dsp_high_purity_silicon | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| hydrogen_fuel_rod | 氢燃料棒 | dsp_hydrogen_fuel_rod | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| information_matrix | 信息矩阵 | dsp_information_matrix | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| iron_ingot | 铁块 | dsp_iron_ingot | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| logistics_drone | 物流运输机 | dsp_logistics_drone | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| logistics_vessel | 物流运输船 | dsp_logistics_vessel | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| magnet | 磁铁 | dsp_magnet | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| magnetic_coil | 磁线圈 | dsp_magnetic_coil | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| matrix_research | 科研模式 | dsp_matrix_research | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| microcrystalline_component | 微晶元件 | dsp_microcrystalline_component | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| organic_crystal | 有机晶体 | dsp_organic_crystal | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| particle_broadband | 粒子宽带 | dsp_particle_broadband | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| particle_container | 粒子容器 | dsp_particle_container | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| particle_container_from_unipolar | 单极磁石粒子容器 | dsp_particle_container_from_unipolar | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| photon_combiner | 光子合并器 | dsp_photon_combiner | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| photon_combiner_from_grating | 光栅石光子合并器 | dsp_photon_combiner_from_grating | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| plane_filter | 位面过滤器 | dsp_plane_filter | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| plasma_exciter | 电浆激发器 | dsp_plasma_exciter | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| plasma_refining | 等离子精炼 | dsp_plasma_refining | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| plastic | 塑料 | dsp_plastic | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| prism | 棱镜 | dsp_prism | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| processor | 处理器 | dsp_processor | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| proliferator_mk1 | 增产剂 Mk.I | dsp_proliferator_mk1 | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| proliferator_mk2 | 增产剂 Mk.II | dsp_proliferator_mk2 | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| proliferator_mk3 | 增产剂 Mk.III | dsp_proliferator_mk3 | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| quantum_chip | 量子芯片 | dsp_quantum_chip | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| ray_power | 电力接收 | dsp_ray_power | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| reforming_refine | 重整精炼 | dsp_reforming_refine | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| silicon_ore_from_stone | 石矿提炼硅石 | dsp_silicon_ore_from_stone | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| small_carrier_rocket | 小型运载火箭 | dsp_small_carrier_rocket | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| solar_sail | 太阳帆 | dsp_solar_sail | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| solar_sail_launch | 太阳帆发射 | dsp_solar_sail_launch | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| space_warper | 空间翘曲器 | dsp_space_warper | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| space_warper_from_gravity_matrix | 引力矩阵制空间翘曲器 | dsp_space_warper_from_gravity_matrix | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| steel | 钢材 | dsp_steel | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| stone_brick | 石材 | dsp_stone_brick | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| strange_matter | 奇异物质 | dsp_strange_matter | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| structure_matrix | 结构矩阵 | dsp_structure_matrix | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| sulfuric_acid | 硫酸 | dsp_sulfuric_acid | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| super_magnetic_ring | 超级磁场环 | dsp_super_magnetic_ring | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| titanium_alloy | 钛合金 | dsp_titanium_alloy | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| titanium_crystal | 钛晶石 | dsp_titanium_crystal | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| titanium_glass | 钛化玻璃 | dsp_titanium_glass | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| titanium_ingot | 钛块 | dsp_titanium_ingot | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| universe_matrix | 宇宙矩阵 | dsp_universe_matrix | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
-| xray_cracking | X 射线裂解 | dsp_xray_cracking | 实现中 | 22 | src/components/RecipeWorkspace.tsx |
+| accumulator | 蓄电器 | dsp_accumulator | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| accumulator_charge | 蓄电器充电 | dsp_accumulator_charge | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| accumulator_discharge | 蓄电器放电 | dsp_accumulator_discharge | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| annihilation_constraint_sphere | 湮灭约束球 | dsp_annihilation_constraint_sphere | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| antimatter | 质能转换 | dsp_antimatter | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| antimatter_fuel_rod | 反物质燃料棒 | dsp_antimatter_fuel_rod | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| carbon_nanotube | 碳纳米管 | dsp_carbon_nanotube | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| carbon_nanotube_from_spiniform | 刺笋结晶制碳纳米管 | dsp_carbon_nanotube_from_spiniform | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| carrier_rocket_launch | 运载火箭发射 | dsp_carrier_rocket_launch | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| casimir_crystal | 卡西米尔晶体 | dsp_casimir_crystal | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| casimir_crystal_advanced | 高效卡西米尔晶体 | dsp_casimir_crystal_advanced | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| circuit_board | 电路板 | dsp_circuit_board | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| copper_ingot | 铜块 | dsp_copper_ingot | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| critical_photon | 临界光子 | dsp_critical_photon | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| crystal_silicon | 晶格硅 | dsp_crystal_silicon | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| crystal_silicon_from_fractal | 分形硅晶格化 | dsp_crystal_silicon_from_fractal | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| deuterium | 氘富集 | dsp_deuterium | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| deuterium_fractionation | 氢分馏 | dsp_deuterium_fractionation | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| deuteron_fuel_rod | 氘核燃料棒 | dsp_deuteron_fuel_rod | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| diamond | 金刚石 | dsp_diamond | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| diamond_from_kimberlite | 金伯利矿提炼 | dsp_diamond_from_kimberlite | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| dyson_sphere_component | 戴森球组件 | dsp_dyson_sphere_component | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| electric_motor | 电动机 | dsp_electric_motor | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| electromagnetic_matrix | 电磁矩阵 | dsp_electromagnetic_matrix | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| electromagnetic_turbine | 电磁涡轮 | dsp_electromagnetic_turbine | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| energetic_graphite | 高能石墨 | dsp_energetic_graphite | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| energy_matrix | 能量矩阵 | dsp_energy_matrix | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| frame_material | 框架材料 | dsp_frame_material | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| gear | 齿轮 | dsp_gear | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| glass | 玻璃 | dsp_glass | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| graphene | 石墨烯 | dsp_graphene | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| graphene_from_fire_ice | 可燃冰裂解 | dsp_graphene_from_fire_ice | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| graviton_lens | 引力透镜 | dsp_graviton_lens | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| gravity_matrix | 引力矩阵 | dsp_gravity_matrix | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| high_purity_silicon | 高纯硅块 | dsp_high_purity_silicon | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| hydrogen_fuel_rod | 氢燃料棒 | dsp_hydrogen_fuel_rod | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| information_matrix | 信息矩阵 | dsp_information_matrix | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| iron_ingot | 铁块 | dsp_iron_ingot | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| logistics_drone | 物流运输机 | dsp_logistics_drone | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| logistics_vessel | 物流运输船 | dsp_logistics_vessel | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| magnet | 磁铁 | dsp_magnet | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| magnetic_coil | 磁线圈 | dsp_magnetic_coil | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| matrix_research | 科研模式 | dsp_matrix_research | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| microcrystalline_component | 微晶元件 | dsp_microcrystalline_component | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| organic_crystal | 有机晶体 | dsp_organic_crystal | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| particle_broadband | 粒子宽带 | dsp_particle_broadband | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| particle_container | 粒子容器 | dsp_particle_container | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| particle_container_from_unipolar | 单极磁石粒子容器 | dsp_particle_container_from_unipolar | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| photon_combiner | 光子合并器 | dsp_photon_combiner | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| photon_combiner_from_grating | 光栅石光子合并器 | dsp_photon_combiner_from_grating | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| plane_filter | 位面过滤器 | dsp_plane_filter | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| plasma_exciter | 电浆激发器 | dsp_plasma_exciter | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| plasma_refining | 等离子精炼 | dsp_plasma_refining | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| plastic | 塑料 | dsp_plastic | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| prism | 棱镜 | dsp_prism | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| processor | 处理器 | dsp_processor | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| proliferator_mk1 | 增产剂 Mk.I | dsp_proliferator_mk1 | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| proliferator_mk2 | 增产剂 Mk.II | dsp_proliferator_mk2 | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| proliferator_mk3 | 增产剂 Mk.III | dsp_proliferator_mk3 | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| quantum_chip | 量子芯片 | dsp_quantum_chip | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| ray_power | 电力接收 | dsp_ray_power | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| reforming_refine | 重整精炼 | dsp_reforming_refine | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| silicon_ore_from_stone | 石矿提炼硅石 | dsp_silicon_ore_from_stone | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| small_carrier_rocket | 小型运载火箭 | dsp_small_carrier_rocket | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| solar_sail | 太阳帆 | dsp_solar_sail | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| solar_sail_launch | 太阳帆发射 | dsp_solar_sail_launch | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| space_warper | 空间翘曲器 | dsp_space_warper | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| space_warper_from_gravity_matrix | 引力矩阵制空间翘曲器 | dsp_space_warper_from_gravity_matrix | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| steel | 钢材 | dsp_steel | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| stone_brick | 石材 | dsp_stone_brick | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| strange_matter | 奇异物质 | dsp_strange_matter | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| structure_matrix | 结构矩阵 | dsp_structure_matrix | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| sulfuric_acid | 硫酸 | dsp_sulfuric_acid | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| super_magnetic_ring | 超级磁场环 | dsp_super_magnetic_ring | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| titanium_alloy | 钛合金 | dsp_titanium_alloy | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| titanium_crystal | 钛晶石 | dsp_titanium_crystal | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| titanium_glass | 钛化玻璃 | dsp_titanium_glass | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| titanium_ingot | 钛块 | dsp_titanium_ingot | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| universe_matrix | 宇宙矩阵 | dsp_universe_matrix | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
+| xray_cracking | X 射线裂解 | dsp_xray_cracking | 已验证 | 22 | src/components/RecipeWorkspace.tsx |
 
 ### buildings
 
@@ -261,137 +261,137 @@
 
 | 源 ID | 名称 | 当前候选 ID/文件 | 状态 | 后续任务 | 来源/UI |
 |---|---|---|---|---:|---|
-| antimatter | 质能储存 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| artificial_star | 人造恒星 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| autonomous_station_construction | 自律空间站建造 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| basic_chemical_engineering | 基础化工 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| basic_logistics | 基础物流系统 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| construction_automation | 巨构建筑制造 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| construction_capacity_1 | 建筑仓储扩容 I | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| construction_capacity_2 | 建筑仓储扩容 II | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| dyson_absorption_1 | 壳面吸附效率 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| dyson_shell | 戴森壳面 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| dyson_sphere_program | 戴森球计划 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| dyson_swarm | 戴森云 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| electromagnetic_matrix | 电磁矩阵 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| electromagnetism | 电磁学 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| energy_matrix | 能量矩阵 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| energy_storage | 能量储存 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| fractionation | 流体分馏 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| fusion_power | 可控核聚变 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| geothermal_power | 地热发电 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| gravity_matrix | 引力矩阵 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| high_efficiency_plasma_control | 高效电浆控制 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| high_speed_assembling | 高速装配工艺 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| high_speed_logistics | 高速物流系统 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| high_strength_crystal | 高强度晶体 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| information_matrix | 信息矩阵 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| interstellar_logistics | 星际物流系统 | interstellar_logistics | 实现中 | 25 | src/components/TechnologyWorkspace.tsx |
-| logistics_capacity_1 | 物流载荷扩容 I | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| logistics_capacity_2 | 物流载荷扩容 II | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| logistics_engine_1 | 物流运输引擎 I | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| logistics_engine_2 | 物流运输引擎 II | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| material_delivery_logistics | 物资直送物流 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| micro_black_hole_containment | 微型黑洞约束工程 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| miniature_particle_collider | 微型粒子对撞机 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| mining_speed_1 | 高效采矿 I | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| mining_speed_2 | 高效采矿 II | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| mining_speed_3 | 高效采矿 III | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| nanomaterials | 纳米材料 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| orbital_collection | 气态行星开采 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| orbital_elevator_engineering | 轨道升降工程 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| orbital_energy_recovery | 轨道升降能量回收 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| orbital_modular_assembly | 轨道模块化装配 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| orbital_multi_cargo_bus | 多物质轨道汇流 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| plane_smelting | 位面冶金 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| planetary_logistics | 行星物流系统 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| polymer_chemistry | 高分子化工 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| processor | 处理器 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| proliferator_1 | 增产剂 Mk.I | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| proliferator_2 | 增产剂 Mk.II | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| proliferator_3 | 增产剂 Mk.III | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| quantum_chemical_engineering | 量子化工 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| quantum_chip | 量子芯片 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| quantum_logistics_network | 量子物流网络 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| quantum_printing | 量子打印技术 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| rare_resource_utilization | 稀有资源利用 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| ray_receiver | 射线接收站 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| ray_transmission_1 | 射线传输效率 I | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| ray_transmission_2 | 射线传输效率 II | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| reforming_refine | 重整精炼 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| research_speed_1 | 科研速度 I | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| research_speed_2 | 科研速度 II | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| research_speed_3 | 科研速度 III | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| solar_energy | 太阳能收集 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| solar_sail_life_1 | 太阳帆轨道寿命 I | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| solar_sail_life_2 | 太阳帆轨道寿命 II | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| space_warp | 空间翘曲 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| stellar_exploration | 恒星探索 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| structure_matrix | 结构矩阵 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| super_magnetic_logistics | 超级磁场物流 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| system_space_station_engineering | 恒星系空间站工程 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| thermal_power | 火力发电 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| time_warp_engineering | 时间扭曲工程 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| titanium_alloy | 钛合金 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| unified_system_logistics_protocol | 恒星系联合物流协议 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| universe_matrix | 宇宙矩阵 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| vertical_launching_silo | 垂直发射井 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
-| xray_cracking | X 射线裂解 | 待映射 | 未实现 | 25 | src/components/TechnologyWorkspace.tsx |
+| antimatter | 质能储存 | dsp_antimatter | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| artificial_star | 人造恒星 | dsp_artificial_star | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| autonomous_station_construction | 自律空间站建造 | dsp_autonomous_station_construction | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| basic_chemical_engineering | 基础化工 | dsp_basic_chemical_engineering | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| basic_logistics | 基础物流系统 | dsp_basic_logistics | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| construction_automation | 巨构建筑制造 | dsp_construction_automation | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| construction_capacity_1 | 建筑仓储扩容 I | dsp_construction_capacity_1 | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| construction_capacity_2 | 建筑仓储扩容 II | dsp_construction_capacity_2 | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| dyson_absorption_1 | 壳面吸附效率 | dsp_dyson_absorption_1 | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| dyson_shell | 戴森壳面 | dsp_dyson_shell | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| dyson_sphere_program | 戴森球计划 | dsp_dyson_sphere_program | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| dyson_swarm | 戴森云 | dsp_dyson_swarm | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| electromagnetic_matrix | 电磁矩阵 | dsp_electromagnetic_matrix | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| electromagnetism | 电磁学 | dsp_electromagnetism | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| energy_matrix | 能量矩阵 | dsp_energy_matrix | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| energy_storage | 能量储存 | dsp_energy_storage | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| fractionation | 流体分馏 | dsp_fractionation | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| fusion_power | 可控核聚变 | dsp_fusion_power | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| geothermal_power | 地热发电 | dsp_geothermal_power | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| gravity_matrix | 引力矩阵 | dsp_gravity_matrix | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| high_efficiency_plasma_control | 高效电浆控制 | dsp_high_efficiency_plasma_control | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| high_speed_assembling | 高速装配工艺 | dsp_high_speed_assembling | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| high_speed_logistics | 高速物流系统 | dsp_high_speed_logistics | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| high_strength_crystal | 高强度晶体 | dsp_high_strength_crystal | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| information_matrix | 信息矩阵 | dsp_information_matrix | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| interstellar_logistics | 星际物流系统 | dsp_interstellar_logistics | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| logistics_capacity_1 | 物流载荷扩容 I | dsp_logistics_capacity_1 | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| logistics_capacity_2 | 物流载荷扩容 II | dsp_logistics_capacity_2 | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| logistics_engine_1 | 物流运输引擎 I | dsp_logistics_engine_1 | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| logistics_engine_2 | 物流运输引擎 II | dsp_logistics_engine_2 | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| material_delivery_logistics | 物资直送物流 | dsp_material_delivery_logistics | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| micro_black_hole_containment | 微型黑洞约束工程 | dsp_micro_black_hole_containment | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| miniature_particle_collider | 微型粒子对撞机 | dsp_miniature_particle_collider | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| mining_speed_1 | 高效采矿 I | dsp_mining_speed_1 | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| mining_speed_2 | 高效采矿 II | dsp_mining_speed_2 | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| mining_speed_3 | 高效采矿 III | dsp_mining_speed_3 | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| nanomaterials | 纳米材料 | dsp_nanomaterials | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| orbital_collection | 气态行星开采 | dsp_orbital_collection | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| orbital_elevator_engineering | 轨道升降工程 | dsp_orbital_elevator_engineering | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| orbital_energy_recovery | 轨道升降能量回收 | dsp_orbital_energy_recovery | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| orbital_modular_assembly | 轨道模块化装配 | dsp_orbital_modular_assembly | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| orbital_multi_cargo_bus | 多物质轨道汇流 | dsp_orbital_multi_cargo_bus | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| plane_smelting | 位面冶金 | dsp_plane_smelting | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| planetary_logistics | 行星物流系统 | dsp_planetary_logistics | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| polymer_chemistry | 高分子化工 | dsp_polymer_chemistry | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| processor | 处理器 | dsp_processor | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| proliferator_1 | 增产剂 Mk.I | dsp_proliferator_1 | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| proliferator_2 | 增产剂 Mk.II | dsp_proliferator_2 | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| proliferator_3 | 增产剂 Mk.III | dsp_proliferator_3 | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| quantum_chemical_engineering | 量子化工 | dsp_quantum_chemical_engineering | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| quantum_chip | 量子芯片 | dsp_quantum_chip | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| quantum_logistics_network | 量子物流网络 | dsp_quantum_logistics_network | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| quantum_printing | 量子打印技术 | dsp_quantum_printing | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| rare_resource_utilization | 稀有资源利用 | dsp_rare_resource_utilization | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| ray_receiver | 射线接收站 | dsp_ray_receiver | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| ray_transmission_1 | 射线传输效率 I | dsp_ray_transmission_1 | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| ray_transmission_2 | 射线传输效率 II | dsp_ray_transmission_2 | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| reforming_refine | 重整精炼 | dsp_reforming_refine | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| research_speed_1 | 科研速度 I | dsp_research_speed_1 | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| research_speed_2 | 科研速度 II | dsp_research_speed_2 | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| research_speed_3 | 科研速度 III | dsp_research_speed_3 | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| solar_energy | 太阳能收集 | dsp_solar_energy | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| solar_sail_life_1 | 太阳帆轨道寿命 I | dsp_solar_sail_life_1 | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| solar_sail_life_2 | 太阳帆轨道寿命 II | dsp_solar_sail_life_2 | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| space_warp | 空间翘曲 | dsp_space_warp | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| stellar_exploration | 恒星探索 | dsp_stellar_exploration | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| structure_matrix | 结构矩阵 | dsp_structure_matrix | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| super_magnetic_logistics | 超级磁场物流 | dsp_super_magnetic_logistics | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| system_space_station_engineering | 恒星系空间站工程 | dsp_system_space_station_engineering | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| thermal_power | 火力发电 | dsp_thermal_power | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| time_warp_engineering | 时间扭曲工程 | dsp_time_warp_engineering | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| titanium_alloy | 钛合金 | dsp_titanium_alloy | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| unified_system_logistics_protocol | 恒星系联合物流协议 | dsp_unified_system_logistics_protocol | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| universe_matrix | 宇宙矩阵 | dsp_universe_matrix | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| vertical_launching_silo | 垂直发射井 | dsp_vertical_launching_silo | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
+| xray_cracking | X 射线裂解 | dsp_xray_cracking | 已验证 | 25 | src/components/TechnologyWorkspace.tsx |
 
 ### campaign
 
 | 源 ID | 名称 | 当前候选 ID/文件 | 状态 | 后续任务 | 来源/UI |
 |---|---|---|---|---:|---|
-| absorb_shell_sail | 形成首片永久壳面 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| build_dyson_structure | 完成第一个结构点 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| complete_interstellar_trip | 完成首次星际运输 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| complete_planetary_trip | 完成首次行星配送 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| deploy_interstellar_station | 部署星际物流站 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| deploy_matrix_lab | 部署矩阵研究站 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| deploy_miner | 部署第一台采矿机 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| deploy_planetary_station | 部署行星物流站 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| endgame_export | 完成银河出口 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| endgame_infinite_research | 启动无限科研 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| endgame_mastery | 完成银河工业协议 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| endgame_score | 达到银河级评分 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| launch_carrier_rocket | 发射第一枚运载火箭 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| launch_solar_sail | 发射第一片太阳帆 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| lay_first_belt | 铺设第一条传送带 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| mine_first_ore | 采集第一份矿石 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| produce_blue_matrix | 产出电磁矩阵 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| produce_gravity_matrix | 产出引力矩阵 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| produce_information_matrix | 产出信息矩阵 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| produce_plastic | 合成塑料 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| produce_red_matrix | 产出能量矩阵 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| produce_structure_matrix | 产出结构矩阵 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| produce_universe_matrix | 产出宇宙矩阵 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| refine_oil | 启动原油精炼 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| side_belt_upgrade | 升级高速运输线 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| side_blueprint | 保存第一张蓝图 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| side_rare_resource | 采集稀有资源 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| side_spray_coater | 安装首台喷涂机 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| side_stable_power | 稳定火力电网 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| side_storage | 建立物流缓存 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| smelt_iron | 铸造基础铁块 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| unlock_borealis | 解锁下一恒星系 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
+| absorb_shell_sail | 形成首片永久壳面 | dsp_absorb_shell_sail | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| build_dyson_structure | 完成第一个结构点 | dsp_build_dyson_structure | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| complete_interstellar_trip | 完成首次星际运输 | dsp_complete_interstellar_trip | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| complete_planetary_trip | 完成首次行星配送 | dsp_complete_planetary_trip | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| deploy_interstellar_station | 部署星际物流站 | dsp_deploy_interstellar_station | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| deploy_matrix_lab | 部署矩阵研究站 | dsp_deploy_matrix_lab | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| deploy_miner | 部署第一台采矿机 | dsp_deploy_miner | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| deploy_planetary_station | 部署行星物流站 | dsp_deploy_planetary_station | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| endgame_export | 完成银河出口 | dsp_endgame_export | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| endgame_infinite_research | 启动无限科研 | dsp_endgame_infinite_research | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| endgame_mastery | 完成银河工业协议 | dsp_endgame_mastery | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| endgame_score | 达到银河级评分 | dsp_endgame_score | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| launch_carrier_rocket | 发射第一枚运载火箭 | dsp_launch_carrier_rocket | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| launch_solar_sail | 发射第一片太阳帆 | dsp_launch_solar_sail | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| lay_first_belt | 铺设第一条传送带 | dsp_lay_first_belt | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| mine_first_ore | 采集第一份矿石 | dsp_mine_first_ore | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| produce_blue_matrix | 产出电磁矩阵 | dsp_produce_blue_matrix | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| produce_gravity_matrix | 产出引力矩阵 | dsp_produce_gravity_matrix | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| produce_information_matrix | 产出信息矩阵 | dsp_produce_information_matrix | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| produce_plastic | 合成塑料 | dsp_produce_plastic | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| produce_red_matrix | 产出能量矩阵 | dsp_produce_red_matrix | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| produce_structure_matrix | 产出结构矩阵 | dsp_produce_structure_matrix | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| produce_universe_matrix | 产出宇宙矩阵 | dsp_produce_universe_matrix | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| refine_oil | 启动原油精炼 | dsp_refine_oil | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| side_belt_upgrade | 升级高速运输线 | dsp_side_belt_upgrade | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| side_blueprint | 保存第一张蓝图 | dsp_side_blueprint | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| side_rare_resource | 采集稀有资源 | dsp_side_rare_resource | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| side_spray_coater | 安装首台喷涂机 | dsp_side_spray_coater | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| side_stable_power | 稳定火力电网 | dsp_side_stable_power | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| side_storage | 建立物流缓存 | dsp_side_storage | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| smelt_iron | 铸造基础铁块 | dsp_smelt_iron | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| unlock_borealis | 解锁下一恒星系 | dsp_unlock_borealis | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
 
 ### achievements
 
 | 源 ID | 名称 | 当前候选 ID/文件 | 状态 | 后续任务 | 来源/UI |
 |---|---|---|---|---:|---|
-| automated_mining | 自动化开端 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| dyson_swarm_online | 逐日之帆 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| electromagnetic_matrix_online | 蓝色火花 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| energy_matrix_online | 红色燃流 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| first_logistics_line | 物流脉搏 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| first_manual_mine | 第一镐 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| interstellar_delivery | 星际航次 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| multi_system_industry | 群星工业 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| permanent_dyson_structure | 恒星骨架 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| planetary_logistics_online | 行星配送 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| rare_resource_harvest | 奇珍样本 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| six_matrix_mastery | 矩阵全谱 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| stable_power_grid | 电网并轨 | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
+| automated_mining | 自动化开端 | dsp_automated_mining | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| dyson_swarm_online | 逐日之帆 | dsp_dyson_swarm_online | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| electromagnetic_matrix_online | 蓝色火花 | dsp_electromagnetic_matrix_online | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| energy_matrix_online | 红色燃流 | dsp_energy_matrix_online | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| first_logistics_line | 物流脉搏 | dsp_first_logistics_line | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| first_manual_mine | 第一镐 | dsp_first_manual_mine | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| interstellar_delivery | 星际航次 | dsp_interstellar_delivery | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| multi_system_industry | 群星工业 | dsp_multi_system_industry | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| permanent_dyson_structure | 恒星骨架 | dsp_permanent_dyson_structure | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| planetary_logistics_online | 行星配送 | dsp_planetary_logistics_online | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| rare_resource_harvest | 奇珍样本 | dsp_rare_resource_harvest | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| six_matrix_mastery | 矩阵全谱 | dsp_six_matrix_mastery | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
+| stable_power_grid | 电网并轨 | dsp_stable_power_grid | 已验证 | 25 | 战役 → 主线 / 支线 / 成就 |
 
 ### difficulties
 
@@ -416,9 +416,9 @@
 
 | 源 ID | 名称 | 当前候选 ID/文件 | 状态 | 后续任务 | 来源/UI |
 |---|---|---|---|---:|---|
-| conveyor_belt_mk1 | conveyor_belt_mk1 | 待映射 | 未实现 | 23 | src/components/RecipeWorkspace.tsx |
-| conveyor_belt_mk2 | conveyor_belt_mk2 | 待映射 | 未实现 | 23 | src/components/RecipeWorkspace.tsx |
-| conveyor_belt_mk3 | conveyor_belt_mk3 | 待映射 | 未实现 | 23 | src/components/RecipeWorkspace.tsx |
+| conveyor_belt_mk1 | conveyor_belt_mk1 | scripts/game/GameState.gd::get_belt_configuration | 已验证 | 23 | src/components/RecipeWorkspace.tsx |
+| conveyor_belt_mk2 | conveyor_belt_mk2 | scripts/game/GameState.gd::get_belt_configuration | 已验证 | 23 | src/components/RecipeWorkspace.tsx |
+| conveyor_belt_mk3 | conveyor_belt_mk3 | scripts/game/GameState.gd::get_belt_configuration | 已验证 | 23 | src/components/RecipeWorkspace.tsx |
 
 ### construction
 
@@ -480,7 +480,7 @@
 | 源 ID | 名称 | 当前候选 ID/文件 | 状态 | 后续任务 | 来源/UI |
 |---|---|---|---|---:|---|
 | BlueprintWorkspace | BlueprintWorkspace | scenes/ui/BlueprintWorkspace.gd::_ready | 实现中 | 24 | src/components/BlueprintWorkspace.tsx |
-| CampaignWorkspace | CampaignWorkspace | scenes/ui/CampaignWorkspace.gd | 实现中 | 25 | src/components/CampaignWorkspace.tsx |
+| CampaignWorkspace | CampaignWorkspace | scenes/ui/CampaignWorkspace.gd::_ready | 已验证 | 25 | 战役 → 任务跟踪 / 导航 / 主线与支线 |
 | ConstructionCenterWorkspace | ConstructionCenterWorkspace | scenes/ui/ProductionCatalogWorkspace.gd | 实现中 | 22 | src/components/ConstructionCenterWorkspace.tsx |
 | DysonPlannerWorkspace | DysonPlannerWorkspace | scenes/ui/DysonUI.gd | 实现中 | 26 | src/components/DysonPlannerWorkspace.tsx |
 | GalaxyWorkspace | GalaxyWorkspace | 范围排除 | 在线排除 | 26 | src/components/GalaxyWorkspace.tsx |
@@ -534,9 +534,9 @@
 | BlueprintWorkspace.onUnlock | onUnlock | 待映射 | 未实现 | 24 | src/components/BlueprintWorkspace.tsx |
 | BlueprintWorkspace.onUpgrade | onUpgrade | 待映射 | 未实现 | 24 | src/components/BlueprintWorkspace.tsx |
 | BlueprintWorkspace.onUpgradeBelts | onUpgradeBelts | 待映射 | 未实现 | 24 | src/components/BlueprintWorkspace.tsx |
-| CampaignWorkspace.onClose | onClose | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| CampaignWorkspace.onNavigate | onNavigate | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
-| CampaignWorkspace.onSelectTask | onSelectTask | 待映射 | 未实现 | 25 | src/components/CampaignWorkspace.tsx |
+| CampaignWorkspace.onClose | onClose | scenes/ui/CampaignWorkspace.gd::_close_workspace | 已验证 | 25 | 战役 → 任务跟踪 / 导航 / 主线与支线 |
+| CampaignWorkspace.onNavigate | onNavigate | scenes/ui/CampaignWorkspace.gd::_navigate_source | 已验证 | 25 | 战役 → 任务跟踪 / 导航 / 主线与支线 |
+| CampaignWorkspace.onSelectTask | onSelectTask | scenes/ui/CampaignWorkspace.gd::_source_action | 已验证 | 25 | 战役 → 任务跟踪 / 导航 / 主线与支线 |
 | CanvasBeltLayer.onUnavailable | onUnavailable | 待映射 | 未实现 | 23 | src/components/CanvasBeltLayer.tsx |
 | CanvasInteractionOverlay.onPointerPosition | onPointerPosition | 待映射 | 未实现 | 23 | src/components/CanvasInteractionOverlay.tsx |
 | CanvasMiniMap.onCenter | onCenter | 待映射 | 未实现 | 23 | src/components/CanvasMiniMap.tsx |
@@ -621,21 +621,21 @@
 | engine.autoConnectDysonLayer | autoConnectDysonLayer | scripts/game/SourceDysonEngineering.gd::auto_connect | 实现中 | 26 | src/game/engine.ts |
 | engine.batchIncreaseSelection | batchIncreaseSelection | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.cancelConstructionQueueEntry | cancelConstructionQueueEntry | scripts/game/ConstructionQueueSystem.gd::cancel | 实现中 | 24 | src/game/engine.ts |
-| engine.cancelCurrentResearch | cancelCurrentResearch | 待映射 | 未实现 | 25 | src/game/engine.ts |
+| engine.cancelCurrentResearch | cancelCurrentResearch | scripts/game/TechnologySystem.gd::cancel_research | 已验证 | 25 | 科技 → 选择 / 暂停 / 恢复 / 取消 / 队列移除 |
 | engine.cancelHandcraftQueueEntry | cancelHandcraftQueueEntry | scripts/game/ConstructionAutomationSystem.gd::cancel | 实现中 | 22 | src/game/engine.ts |
 | engine.cancelQuantumStationAttachment | cancelQuantumStationAttachment | scripts/game/QuantumLogisticsSystem.gd::cancel | 实现中 | 26 | src/game/engine.ts |
-| engine.canColonizePlanet | canColonizePlanet | scripts/game/PlanetSystem.gd::get_colonization_requirements | 实现中 | 26 | src/game/engine.ts |
+| engine.canColonizePlanet | canColonizePlanet | scripts/game/PlanetSystem.gd::can_colonize_source_planet | 已验证 | 26 | 星图 → 勘探 / 殖民条件与行星托盘 |
 | engine.canConnectBelt | canConnectBelt | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.canCraftConstruction | canCraftConstruction | scripts/game/CraftingPlanner.gd::plan | 实现中 | 22 | src/game/engine.ts |
 | engine.canEntityAcceptBeltItem | canEntityAcceptBeltItem | 待映射 | 未实现 | 23 | src/game/engine.ts |
-| engine.canExploreStarSystem | canExploreStarSystem | 待映射 | 未实现 | 23 | src/game/engine.ts |
+| engine.canExploreStarSystem | canExploreStarSystem | scripts/game/GalaxySystem.gd::can_explore_source_system | 已验证 | 23 | 星图 → 勘探 / 殖民条件与行星托盘 |
 | engine.canHandcraftRecipe | canHandcraftRecipe | scripts/game/CraftingPlanner.gd::plan | 实现中 | 22 | src/game/engine.ts |
 | engine.canInstallSprayCoater | canInstallSprayCoater | scripts/game/ProliferatorSystem.gd::eligible | 实现中 | 22 | src/game/engine.ts |
 | engine.canPlaceBlueprint | canPlaceBlueprint | 待映射 | 未实现 | 24 | src/game/engine.ts |
 | engine.canQueueBlueprint | canQueueBlueprint | scripts/game/ConstructionQueueSystem.gd::_preview | 实现中 | 24 | src/game/engine.ts |
 | engine.canQueueHandcraftRecipe | canQueueHandcraftRecipe | scripts/game/CraftingPlanner.gd::plan | 实现中 | 22 | src/game/engine.ts |
-| engine.canQueueTechnology | canQueueTechnology | 待映射 | 未实现 | 25 | src/game/engine.ts |
-| engine.canSelectTechnology | canSelectTechnology | 待映射 | 未实现 | 25 | src/game/engine.ts |
+| engine.canQueueTechnology | canQueueTechnology | scripts/game/TechnologySystem.gd::can_queue_source_technology | 已验证 | 25 | 科技 → 研究条件与当前研究查询 |
+| engine.canSelectTechnology | canSelectTechnology | scripts/game/TechnologySystem.gd::can_select_source_technology | 已验证 | 25 | 科技 → 研究条件与当前研究查询 |
 | engine.canSetBeltStackSize | canSetBeltStackSize | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.canUpgradeBelt | canUpgradeBelt | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.canUpgradeEntities | canUpgradeEntities | 待映射 | 未实现 | 23 | src/game/engine.ts |
@@ -643,7 +643,7 @@
 | engine.canUpgradeSorter | canUpgradeSorter | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.clearDysonShells | clearDysonShells | scripts/game/SourceDysonEngineering.gd::clear_shells | 实现中 | 26 | src/game/engine.ts |
 | engine.clearOrbitalCargoPort | clearOrbitalCargoPort | 待映射 | 未实现 | 23 | src/game/engine.ts |
-| engine.colonizePlanet | colonizePlanet | scripts/game/PlanetSystem.gd::try_colonize_planet | 实现中 | 26 | src/game/engine.ts |
+| engine.colonizePlanet | colonizePlanet | scripts/game/PlanetSystem.gd::try_colonize_planet | 已验证 | 26 | 星图 → 勘探信标 / 殖民 / 前往行星 |
 | engine.completeSimulationStep | completeSimulationStep | scripts/game/SimulationEngine.gd::update | 实现中 | 26 | src/game/engine.ts |
 | engine.connectBelt | connectBelt | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.connectBeltsAtomically | connectBeltsAtomically | scripts/game/GameState.gd::try_add_connections | 实现中 | 23 | src/game/engine.ts |
@@ -657,13 +657,13 @@
 | engine.createSimulationLookupContext | createSimulationLookupContext | scripts/game/SimulationEngine.gd::_init | 实现中 | 26 | src/game/engine.ts |
 | engine.createSimulationPlanetPhaseLookup | createSimulationPlanetPhaseLookup | scripts/game/SimulationEngine.gd::_init | 实现中 | 26 | src/game/engine.ts |
 | engine.createStandardDysonLayer | createStandardDysonLayer | scripts/game/SourceDysonEngineering.gd::standard_layer | 实现中 | 26 | src/game/engine.ts |
-| engine.discardConstructionInventory | discardConstructionInventory | 待映射 | 未实现 | 23 | src/game/engine.ts |
-| engine.discardPlanetTrayItems | discardPlanetTrayItems | scripts/game/PlanetTraySystem.gd::discard | 实现中 | 26 | src/game/engine.ts |
+| engine.discardConstructionInventory | discardConstructionInventory | scripts/game/ConstructionSystem.gd::discard_inventory | 已验证 | 23 | 星图 → 确认丢弃托盘 / 完整制造 → 施工设备 → 确认永久丢弃 |
+| engine.discardPlanetTrayItems | discardPlanetTrayItems | scripts/game/PlanetTraySystem.gd::discard_batch | 已验证 | 26 | 星图 → 确认丢弃托盘 / 完整制造 → 施工设备 → 确认永久丢弃 |
 | engine.dispatchGalacticExport | dispatchGalacticExport | scripts/game/GalacticExportSystem.gd::dispatch | 实现中 | 26 | src/game/engine.ts |
 | engine.dropCargoToEntity | dropCargoToEntity | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.dropCargoToTray | dropCargoToTray | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.ensureSimulationDynamicRouteLookup | ensureSimulationDynamicRouteLookup | scripts/game/SimulationEngine.gd::_init | 实现中 | 26 | src/game/engine.ts |
-| engine.exploreStarSystem | exploreStarSystem | 待映射 | 未实现 | 23 | src/game/engine.ts |
+| engine.exploreStarSystem | exploreStarSystem | scripts/game/GalaxySystem.gd::try_explore_system | 已验证 | 23 | 星图 → 勘探信标 / 殖民 / 前往行星 |
 | engine.fillStationFleet | fillStationFleet | scripts/game/StationSystem.gd::set_fleet_target | 实现中 | 26 | src/game/engine.ts |
 | engine.findInterstellarPeer | findInterstellarPeer | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.findPlanetaryPeer | findPlanetaryPeer | scripts/game/LogisticsSystem.gd::_dispatch | 实现中 | 26 | src/game/engine.ts |
@@ -677,7 +677,7 @@
 | engine.getBlueprintEligibleEntityIds | getBlueprintEligibleEntityIds | 待映射 | 未实现 | 24 | src/game/engine.ts |
 | engine.getBlueprintFleetLoadPreview | getBlueprintFleetLoadPreview | 待映射 | 未实现 | 24 | src/game/engine.ts |
 | engine.getBlueprintPlacementPreview | getBlueprintPlacementPreview | 待映射 | 未实现 | 24 | src/game/engine.ts |
-| engine.getColonizationRequirements | getColonizationRequirements | scripts/game/PlanetSystem.gd::get_colonization_requirements | 实现中 | 23 | src/game/engine.ts |
+| engine.getColonizationRequirements | getColonizationRequirements | scripts/game/PlanetSystem.gd::get_source_colonization_requirements | 已验证 | 23 | 星图 → 勘探 / 殖民条件与行星托盘 |
 | engine.getConstructionAutomationCycleSeconds | getConstructionAutomationCycleSeconds | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.getConstructionAutomationMaterialSeconds | getConstructionAutomationMaterialSeconds | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.getConstructionAutomationStatus | getConstructionAutomationStatus | 待映射 | 未实现 | 23 | src/game/engine.ts |
@@ -689,71 +689,71 @@
 | engine.getConstructionQueueDetails | getConstructionQueueDetails | 待映射 | 未实现 | 24 | src/game/engine.ts |
 | engine.getConstructionQuickCraftPlan | getConstructionQuickCraftPlan | scripts/game/CraftingPlanner.gd::plan | 实现中 | 22 | src/game/engine.ts |
 | engine.getDysonEngineeringSnapshot | getDysonEngineeringSnapshot | scripts/game/DysonSphereSystem.gd::get_summary | 实现中 | 26 | src/game/engine.ts |
-| engine.getDysonSailAbsorptionMultiplier | getDysonSailAbsorptionMultiplier | scripts/game/SourceTechnologyEffects.gd::multiplier | 实现中 | 26 | src/game/engine.ts |
+| engine.getDysonSailAbsorptionMultiplier | getDysonSailAbsorptionMultiplier | scripts/game/SourceTechnologyEffects.gd::multiplier | 已验证 | 26 | 后台科技效果查询（生产/采集/物流/戴森数值），仅受控查询证据 |
 | engine.getDysonShellCapacity | getDysonShellCapacity | scripts/game/DysonSphereSystem.gd::get_summary | 实现中 | 26 | src/game/engine.ts |
 | engine.getEffectiveSimulationMultiplier | getEffectiveSimulationMultiplier | scripts/game/TimeWarpSystem.gd::effective_multiplier | 实现中 | 26 | src/game/engine.ts |
 | engine.getEjectorOrbitTargetStatus | getEjectorOrbitTargetStatus | 待映射 | 未实现 | 23 | src/game/engine.ts |
-| engine.getEntityBufferLimit | getEntityBufferLimit | scripts/game/GameState.gd::get_entity_buffer_limit | 实现中 | 23 | src/game/engine.ts |
+| engine.getEntityBufferLimit | getEntityBufferLimit | scripts/game/GameState.gd::get_entity_buffer_limit | 已验证 | 23 | 建筑与矿脉容量后台查询；受控只读金标，存档覆盖铁矿/熔炉/仓储，不证明全部资源采集或吞吐 |
 | engine.getEntityCycleRatePerSimulationSecond | getEntityCycleRatePerSimulationSecond | scripts/game/ProductionSystem.gd::_update_building | 实现中 | 26 | src/game/engine.ts |
-| engine.getEntityInputCapacity | getEntityInputCapacity | scripts/game/GameState.gd::get_entity_input_capacity | 实现中 | 23 | src/game/engine.ts |
-| engine.getEntityItemInputCapacity | getEntityItemInputCapacity | 待映射 | 未实现 | 23 | src/game/engine.ts |
+| engine.getEntityInputCapacity | getEntityInputCapacity | scripts/game/GameState.gd::get_entity_input_capacity | 已验证 | 23 | 建筑与矿脉容量后台查询；受控只读金标，存档覆盖铁矿/熔炉/仓储，不证明全部资源采集或吞吐 |
+| engine.getEntityItemInputCapacity | getEntityItemInputCapacity | scripts/game/GameState.gd::get_entity_item_input_capacity,scripts/game/SourceEntityCapacitySystem.gd::item_input_capacity | 已验证 | 23 | 传送带实际物品准入容量；冻结源只读查询，付费station/spray/均分/core覆盖/native与保存边界另有专项 |
 | engine.getEntityOperatingStatus | getEntityOperatingStatus | 待映射 | 未实现 | 23 | src/game/engine.ts |
-| engine.getEntityOutputCapacity | getEntityOutputCapacity | scripts/game/GameState.gd::get_entity_output_capacity | 实现中 | 23 | src/game/engine.ts |
+| engine.getEntityOutputCapacity | getEntityOutputCapacity | scripts/game/GameState.gd::get_entity_output_capacity | 已验证 | 23 | 建筑与矿脉容量后台查询；受控只读金标，存档覆盖铁矿/熔炉/仓储，不证明全部资源采集或吞吐 |
 | engine.getEntityPowerFactor | getEntityPowerFactor | scripts/game/GameState.gd::get_entity_power_factor | 实现中 | 21 | src/game/engine.ts |
 | engine.getEntityRecipeCycleCapacityPerSimulationSecond | getEntityRecipeCycleCapacityPerSimulationSecond | scripts/game/ProductionSystem.gd::_update_building | 实现中 | 26 | src/game/engine.ts |
 | engine.getEntityRemovalPreview | getEntityRemovalPreview | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.getEntityStackTargetCheck | getEntityStackTargetCheck | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.getGalacticIndustrySnapshot | getGalacticIndustrySnapshot | scripts/game/GalacticExportSystem.gd::industry_snapshot | 实现中 | 26 | src/game/engine.ts |
-| engine.getIndustrialEfficiencyMultiplier | getIndustrialEfficiencyMultiplier | 待映射 | 未实现 | 23 | src/game/engine.ts |
-| engine.getInfiniteResourceCollectionSpeedMultiplier | getInfiniteResourceCollectionSpeedMultiplier | 待映射 | 未实现 | 23 | src/game/engine.ts |
-| engine.getInterstellarCargoCapacity | getInterstellarCargoCapacity | 待映射 | 未实现 | 23 | src/game/engine.ts |
-| engine.getInterstellarRouteEconomics | getInterstellarRouteEconomics | 待映射 | 未实现 | 23 | src/game/engine.ts |
-| engine.getInterstellarTripSeconds | getInterstellarTripSeconds | 待映射 | 未实现 | 23 | src/game/engine.ts |
-| engine.getLogisticsSpeedMultiplier | getLogisticsSpeedMultiplier | 待映射 | 未实现 | 23 | src/game/engine.ts |
+| engine.getIndustrialEfficiencyMultiplier | getIndustrialEfficiencyMultiplier | scripts/game/SourceTechnologyEffects.gd::multiplier | 已验证 | 23 | 后台科技效果查询（生产/采集/物流/戴森数值），仅受控查询证据 |
+| engine.getInfiniteResourceCollectionSpeedMultiplier | getInfiniteResourceCollectionSpeedMultiplier | scripts/game/SourceTechnologyEffects.gd::multiplier | 已验证 | 23 | 后台科技效果查询（生产/采集/物流/戴森数值），仅受控查询证据 |
+| engine.getInterstellarCargoCapacity | getInterstellarCargoCapacity | scripts/game/StationSystem.gd::logistics_snapshot | 已验证 | 23 | 物流站诊断：货运容量和本地航程时间，仅受控只读查询证据 |
+| engine.getInterstellarRouteEconomics | getInterstellarRouteEconomics | scripts/game/InterstellarRouteSystem.gd::query_economics | 已验证 | 23 | 后台只读航程/航线经济查询；仅受控查询证据，实际派遣继续使用独立守卫 |
+| engine.getInterstellarTripSeconds | getInterstellarTripSeconds | scripts/game/InterstellarRouteSystem.gd::trip_seconds | 已验证 | 23 | 后台只读航程/航线经济查询；仅受控查询证据，实际派遣继续使用独立守卫 |
+| engine.getLogisticsSpeedMultiplier | getLogisticsSpeedMultiplier | scripts/game/SourceTechnologyEffects.gd::multiplier,scripts/game/GameModeSystem.gd::multiplier | 已验证 | 23 | 后台科技效果查询（生产/采集/物流/戴森数值），仅受控查询证据 |
 | engine.getMaterialDeliverySlotChangeCheck | getMaterialDeliverySlotChangeCheck | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.getMaxConstructionQuickCraftBatches | getMaxConstructionQuickCraftBatches | 待映射 | 未实现 | 22 | src/game/engine.ts |
 | engine.getMaxHandcraftBatches | getMaxHandcraftBatches | 待映射 | 未实现 | 22 | src/game/engine.ts |
 | engine.getMaxRecursiveHandcraftBatches | getMaxRecursiveHandcraftBatches | 待映射 | 未实现 | 22 | src/game/engine.ts |
-| engine.getMiningSpeedMultiplier | getMiningSpeedMultiplier | 待映射 | 未实现 | 23 | src/game/engine.ts |
+| engine.getMiningSpeedMultiplier | getMiningSpeedMultiplier | scripts/game/SourceTechnologyEffects.gd::multiplier,scripts/game/GameModeSystem.gd::multiplier | 已验证 | 23 | 后台科技效果查询（生产/采集/物流/戴森数值），仅受控查询证据 |
 | engine.getOrbitalCargoPortClearCheck | getOrbitalCargoPortClearCheck | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.getOrbitalCollectorQuantumStatus | getOrbitalCollectorQuantumStatus | scripts/game/QuantumLogisticsSystem.gd::snapshot | 实现中 | 26 | src/game/engine.ts |
-| engine.getPlanetaryCargoCapacity | getPlanetaryCargoCapacity | scripts/game/StationSystem.gd::logistics_snapshot | 实现中 | 26 | src/game/engine.ts |
-| engine.getPlanetaryTripSeconds | getPlanetaryTripSeconds | scripts/game/StationSystem.gd::logistics_snapshot | 实现中 | 26 | src/game/engine.ts |
+| engine.getPlanetaryCargoCapacity | getPlanetaryCargoCapacity | scripts/game/StationSystem.gd::logistics_snapshot | 已验证 | 26 | 物流站诊断：货运容量和本地航程时间，仅受控只读查询证据 |
+| engine.getPlanetaryTripSeconds | getPlanetaryTripSeconds | scripts/game/StationSystem.gd::logistics_snapshot | 已验证 | 26 | 物流站诊断：货运容量和本地航程时间，仅受控只读查询证据 |
 | engine.getPlanetMetrics | getPlanetMetrics | scripts/game/PlanetSystem.gd::get_planet_industrial_summary | 实现中 | 26 | src/game/engine.ts |
-| engine.getPlanetTrayItemFreeCapacity | getPlanetTrayItemFreeCapacity | scripts/game/PlanetTraySystem.gd::limit | 实现中 | 26 | src/game/engine.ts |
-| engine.getPlanetTrayItemLimit | getPlanetTrayItemLimit | scripts/game/PlanetTraySystem.gd::limit | 实现中 | 26 | src/game/engine.ts |
+| engine.getPlanetTrayItemFreeCapacity | getPlanetTrayItemFreeCapacity | scripts/game/PlanetTraySystem.gd::free_capacity | 已验证 | 26 | 星图 → 勘探 / 殖民条件与行星托盘 |
+| engine.getPlanetTrayItemLimit | getPlanetTrayItemLimit | scripts/game/PlanetTraySystem.gd::limit | 已验证 | 26 | 星图 → 勘探 / 殖民条件与行星托盘 |
 | engine.getPowerGridMetrics | getPowerGridMetrics | scripts/game/PowerSystem.gd::get_grid_info | 实现中 | 21 | src/game/engine.ts |
 | engine.getQuantumAttachmentStatus | getQuantumAttachmentStatus | scripts/game/QuantumLogisticsSystem.gd::snapshot | 实现中 | 26 | src/game/engine.ts |
-| engine.getRayReceiverCapacityKw | getRayReceiverCapacityKw | 待映射 | 未实现 | 23 | src/game/engine.ts |
+| engine.getRayReceiverCapacityKw | getRayReceiverCapacityKw | scripts/game/DysonSphereSystem.gd::receiver_capacity | 已验证 | 23 | 后台科技效果查询（生产/采集/物流/戴森数值），仅受控查询证据 |
 | engine.getRecipeCompatibleEntityIds | getRecipeCompatibleEntityIds | 待映射 | 未实现 | 23 | src/game/engine.ts |
-| engine.getRecipeSpeedMultiplier | getRecipeSpeedMultiplier | 待映射 | 未实现 | 23 | src/game/engine.ts |
+| engine.getRecipeSpeedMultiplier | getRecipeSpeedMultiplier | scripts/game/SourceTechnologyEffects.gd::multiplier,scripts/game/GameModeSystem.gd::multiplier | 已验证 | 23 | 后台科技效果查询（生产/采集/物流/戴森数值），仅受控查询证据 |
 | engine.getRecursiveHandcraftPlan | getRecursiveHandcraftPlan | scripts/game/CraftingPlanner.gd::plan | 实现中 | 22 | src/game/engine.ts |
 | engine.getResourceReserveSnapshot | getResourceReserveSnapshot | scripts/game/PlanetSystem.gd::get_planet_resource_sites | 实现中 | 26 | src/game/engine.ts |
-| engine.getSolarSailLifetimeSeconds | getSolarSailLifetimeSeconds | 待映射 | 未实现 | 23 | src/game/engine.ts |
+| engine.getSolarSailLifetimeSeconds | getSolarSailLifetimeSeconds | scripts/game/SourceDysonEngineering.gd::sail_lifetime_seconds | 已验证 | 23 | 后台戴森太阳帆寿命查询；仅受控只读查询证据 |
 | engine.getSprayCoaterInstallCheck | getSprayCoaterInstallCheck | 待映射 | 未实现 | 22 | src/game/engine.ts |
 | engine.getSprayCoaterRemovalRefund | getSprayCoaterRemovalRefund | scripts/game/ProliferatorSystem.gd::_refund | 实现中 | 22 | src/game/engine.ts |
 | engine.getStationActiveRoutes | getStationActiveRoutes | scripts/game/StationSystem.gd::logistics_snapshot | 实现中 | 26 | src/game/engine.ts |
 | engine.getStationBusyVehicleCount | getStationBusyVehicleCount | scripts/game/StationSystem.gd::logistics_snapshot | 实现中 | 26 | src/game/engine.ts |
 | engine.getStationFleetDiagnostic | getStationFleetDiagnostic | scripts/game/StationSystem.gd::logistics_snapshot | 实现中 | 26 | src/game/engine.ts |
 | engine.getStationMinimumCargo | getStationMinimumCargo | scripts/game/StationSystem.gd::logistics_snapshot | 实现中 | 26 | src/game/engine.ts |
-| engine.getStationSlotCapacity | getStationSlotCapacity | scripts/game/StationSystem.gd::logistics_snapshot | 实现中 | 26 | src/game/engine.ts |
+| engine.getStationSlotCapacity | getStationSlotCapacity | scripts/game/StationSystem.gd::capacity_for,scripts/game/SourceEntityCapacitySystem.gd::station_slot_capacity | 已验证 | 26 | 物流站槽位容量诊断；冻结源只读查询，实际扣件/存取/量子/采集/满站派遣与保存边界另有专项证据 |
 | engine.getStationTemplateCompatibleEntityIds | getStationTemplateCompatibleEntityIds | scripts/game/StationSystem.gd::logistics_snapshot | 实现中 | 26 | src/game/engine.ts |
 | engine.getStationWarperRefillSnapshot | getStationWarperRefillSnapshot | scripts/game/StationSystem.gd::logistics_snapshot | 实现中 | 26 | src/game/engine.ts |
-| engine.getVeinConsumptionMultiplier | getVeinConsumptionMultiplier | 待映射 | 未实现 | 23 | src/game/engine.ts |
+| engine.getVeinConsumptionMultiplier | getVeinConsumptionMultiplier | scripts/game/SourceTechnologyEffects.gd::multiplier | 已验证 | 23 | 后台科技效果查询（生产/采集/物流/戴森数值），仅受控查询证据 |
 | engine.handcraftRecipe | handcraftRecipe | scripts/game/ConstructionAutomationSystem.gd::queue | 实现中 | 22 | src/game/engine.ts |
 | engine.handcraftRecipeWithUpstream | handcraftRecipeWithUpstream | scripts/game/ConstructionAutomationSystem.gd::queue | 实现中 | 22 | src/game/engine.ts |
-| engine.hasActiveResearch | hasActiveResearch | 待映射 | 未实现 | 25 | src/game/engine.ts |
+| engine.hasActiveResearch | hasActiveResearch | scripts/game/TechnologySystem.gd::has_active_source_research | 已验证 | 25 | 科技 → 研究条件与当前研究查询 |
 | engine.hasBlueprintExactOverlap | hasBlueprintExactOverlap | 待映射 | 未实现 | 24 | src/game/engine.ts |
 | engine.hasExactEntityPositionOverlap | hasExactEntityPositionOverlap | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.installMiner | installMiner | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.installSprayCoater | installSprayCoater | scripts/game/ProliferatorSystem.gd::configure | 实现中 | 22 | src/game/engine.ts |
 | engine.installSprayCoaters | installSprayCoaters | scripts/game/ProliferatorSystem.gd::configure_batch | 实现中 | 22 | src/game/engine.ts |
-| engine.investInfiniteResearchBudgetInPlace | investInfiniteResearchBudgetInPlace | 待映射 | 未实现 | 25 | src/game/engine.ts |
+| engine.investInfiniteResearchBudgetInPlace | investInfiniteResearchBudgetInPlace | scripts/game/InfiniteResearchSystem.gd::invest_budget | 已验证 | 25 | 科技 → 无限研究 / 矩阵实验室 |
 | engine.isEntityInPowerCoverage | isEntityInPowerCoverage | 待映射 | 未实现 | 21 | src/game/engine.ts |
 | engine.isEntityInteractionLocked | isEntityInteractionLocked | scripts/game/GameState.gd::is_entity_interaction_locked | 实现中 | 23 | src/game/engine.ts |
-| engine.isPlanetColonized | isPlanetColonized | scripts/game/PlanetSystem.gd::get_planet | 实现中 | 26 | src/game/engine.ts |
-| engine.isStarSystemUnlocked | isStarSystemUnlocked | 待映射 | 未实现 | 23 | src/game/engine.ts |
-| engine.isTechnologyCompleted | isTechnologyCompleted | scripts/game/GameState.gd::is_technology_completed, scripts/game/TechnologySystem.gd::is_technology_completed | 实现中 | 25 | src/game/engine.ts |
+| engine.isPlanetColonized | isPlanetColonized | scripts/game/PlanetSystem.gd::is_source_planet_colonized | 已验证 | 26 | 星图 → 勘探 / 殖民条件与行星托盘 |
+| engine.isStarSystemUnlocked | isStarSystemUnlocked | scripts/game/GalaxySystem.gd::is_source_system_unlocked | 已验证 | 23 | 星图 → 勘探 / 殖民条件与行星托盘 |
+| engine.isTechnologyCompleted | isTechnologyCompleted | scripts/game/TechnologySystem.gd::is_technology_completed | 已验证 | 25 | 科技 → 研究条件与当前研究查询 |
 | engine.manualMine | manualMine | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.mergeSimulationPlanetPhaseResults | mergeSimulationPlanetPhaseResults | scripts/game/GameState.gd::install_state | 实现中 | 26 | src/game/engine.ts |
 | engine.moveEntities | moveEntities | scripts/game/GameState.gd::move_entities | 实现中 | 23 | src/game/engine.ts |
@@ -764,7 +764,7 @@
 | engine.moveEntityOutputToTray | moveEntityOutputToTray | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.moveTrayItemToEntity | moveTrayItemToEntity | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.pasteDysonLayerTemplate | pasteDysonLayerTemplate | scripts/game/SourceDysonEngineering.gd::paste_template | 实现中 | 26 | src/game/engine.ts |
-| engine.pauseCurrentResearch | pauseCurrentResearch | 待映射 | 未实现 | 25 | src/game/engine.ts |
+| engine.pauseCurrentResearch | pauseCurrentResearch | scripts/game/TechnologySystem.gd::pause_research | 已验证 | 25 | 科技 → 选择 / 暂停 / 恢复 / 取消 / 队列移除 |
 | engine.pickFromEntity | pickFromEntity | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.pickFromEntityInput | pickFromEntityInput | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.pickFromTray | pickFromTray | 待映射 | 未实现 | 23 | src/game/engine.ts |
@@ -789,18 +789,18 @@
 | engine.removeDysonSwarmOrbit | removeDysonSwarmOrbit | scripts/game/DysonSphereSystem.gd::remove_plan | 实现中 | 26 | src/game/engine.ts |
 | engine.removeEntities | removeEntities | scripts/game/GameState.gd::remove_entities | 实现中 | 23 | src/game/engine.ts |
 | engine.removeEntity | removeEntity | 待映射 | 未实现 | 23 | src/game/engine.ts |
-| engine.removeQueuedTechnology | removeQueuedTechnology | 待映射 | 未实现 | 25 | src/game/engine.ts |
+| engine.removeQueuedTechnology | removeQueuedTechnology | scripts/game/TechnologySystem.gd::remove_from_queue | 已验证 | 25 | 科技 → 选择 / 暂停 / 恢复 / 取消 / 队列移除 |
 | engine.removeSprayCoater | removeSprayCoater | scripts/game/ProliferatorSystem.gd::remove | 实现中 | 22 | src/game/engine.ts |
 | engine.renameBlueprint | renameBlueprint | scripts/game/BlueprintLibrary.gd::rename | 实现中 | 24 | src/game/engine.ts |
 | engine.renameCanvasBookmark | renameCanvasBookmark | scripts/game/CanvasNavigation.gd::rename | 实现中 | 24 | src/game/engine.ts |
 | engine.resizeCanvasRegion | resizeCanvasRegion | scripts/game/CanvasNavigation.gd::save_region | 实现中 | 24 | src/game/engine.ts |
-| engine.resumePausedResearch | resumePausedResearch | 待映射 | 未实现 | 25 | src/game/engine.ts |
+| engine.resumePausedResearch | resumePausedResearch | scripts/game/TechnologySystem.gd::resume_research | 已验证 | 25 | 科技 → 选择 / 暂停 / 恢复 / 取消 / 队列移除 |
 | engine.runPlanetSimulationPhase | runPlanetSimulationPhase | scripts/game/SimulationEngine.gd::update | 实现中 | 26 | src/game/engine.ts |
-| engine.selectInfiniteResearch | selectInfiniteResearch | 待映射 | 未实现 | 25 | src/game/engine.ts |
-| engine.selectTechnology | selectTechnology | 待映射 | 未实现 | 25 | src/game/engine.ts |
+| engine.selectInfiniteResearch | selectInfiniteResearch | scripts/game/InfiniteResearchSystem.gd::select | 已验证 | 25 | 科技 → 无限研究 / 矩阵实验室 |
+| engine.selectTechnology | selectTechnology | scripts/game/TechnologySystem.gd::start_research | 已验证 | 25 | 科技 → 选择 / 暂停 / 恢复 / 取消 / 队列移除 |
 | engine.setActiveDysonLayer | setActiveDysonLayer | scenes/ui/DysonUI.gd | 实现中 | 26 | src/game/engine.ts |
 | engine.setActiveDysonSwarmOrbit | setActiveDysonSwarmOrbit | scenes/ui/DysonUI.gd | 实现中 | 26 | src/game/engine.ts |
-| engine.setActivePlanet | setActivePlanet | scripts/game/PlanetSystem.gd::try_set_active_planet | 实现中 | 26 | src/game/engine.ts |
+| engine.setActivePlanet | setActivePlanet | scripts/game/PlanetSystem.gd::try_set_active_planet | 已验证 | 26 | 星图 → 勘探信标 / 殖民 / 前往行星 |
 | engine.setAllOrbitalCollectorsQuantumMode | setAllOrbitalCollectorsQuantumMode | scripts/game/QuantumLogisticsSystem.gd::set_all_collectors | 实现中 | 26 | src/game/engine.ts |
 | engine.setBeltLaneCount | setBeltLaneCount | scripts/game/GameState.gd::set_belt_lane_count | 实现中 | 23 | src/game/engine.ts |
 | engine.setBeltMonitorEnabled | setBeltMonitorEnabled | scripts/game/GameState.gd::set_belt_monitor_enabled | 实现中 | 23 | src/game/engine.ts |
@@ -837,14 +837,14 @@
 | engine.setGalacticExportEnabled | setGalacticExportEnabled | scripts/game/GalacticExportSystem.gd::configure | 实现中 | 26 | src/game/engine.ts |
 | engine.setGalacticExportPriority | setGalacticExportPriority | scripts/game/GalacticExportSystem.gd::configure | 实现中 | 26 | src/game/engine.ts |
 | engine.setGalacticMaterialExporterPaused | setGalacticMaterialExporterPaused | 范围排除 | 在线排除 | 26 | src/game/engine.ts |
-| engine.setInfiniteResearchAutomation | setInfiniteResearchAutomation | 待映射 | 未实现 | 25 | src/game/engine.ts |
+| engine.setInfiniteResearchAutomation | setInfiniteResearchAutomation | scripts/game/InfiniteResearchSystem.gd::set_automation | 已验证 | 25 | 科技 → 无限研究 / 矩阵实验室 |
 | engine.setLogisticsItem | setLogisticsItem | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.setMaterialDeliverySlot | setMaterialDeliverySlot | 待映射 | 未实现 | 23 | src/game/engine.ts |
 | engine.setOrbitalCollectorQuantumMode | setOrbitalCollectorQuantumMode | scripts/game/QuantumLogisticsSystem.gd::set_collector_mode | 实现中 | 26 | src/game/engine.ts |
 | engine.setPaused | setPaused | 待映射 | 未实现 | 23 | src/game/engine.ts |
-| engine.setPlanetDisplayMetadata | setPlanetDisplayMetadata | scripts/game/SourceGalaxySystem.gd::set_metadata | 实现中 | 26 | src/game/engine.ts |
-| engine.setPlanetIndustryRole | setPlanetIndustryRole | scripts/game/SourceGalaxySystem.gd::set_role | 实现中 | 26 | src/game/engine.ts |
-| engine.setPlanetTrayItemLimit | setPlanetTrayItemLimit | scripts/game/PlanetTraySystem.gd::set_limit | 实现中 | 26 | src/game/engine.ts |
+| engine.setPlanetDisplayMetadata | setPlanetDisplayMetadata | scripts/game/SourceGalaxySystem.gd::set_metadata | 已验证 | 26 | 星图 → 工业角色 / 行星说明 / 星系名称 / 托盘容量 |
+| engine.setPlanetIndustryRole | setPlanetIndustryRole | scripts/game/SourceGalaxySystem.gd::set_role | 已验证 | 26 | 星图 → 工业角色 / 行星说明 / 星系名称 / 托盘容量 |
+| engine.setPlanetTrayItemLimit | setPlanetTrayItemLimit | scripts/game/PlanetTraySystem.gd::set_limit | 已验证 | 26 | 星图 → 工业角色 / 行星说明 / 星系名称 / 托盘容量 |
 | engine.setProliferatorConfiguration | setProliferatorConfiguration | scripts/game/ProliferatorSystem.gd::configure | 实现中 | 22 | src/game/engine.ts |
 | engine.setQuantumLogisticsItemCapacity | setQuantumLogisticsItemCapacity | scripts/game/QuantumLogisticsSystem.gd::set_item_capacity | 实现中 | 26 | src/game/engine.ts |
 | engine.setRecipeFocus | setRecipeFocus | 待映射 | 未实现 | 22 | src/game/engine.ts |
@@ -854,7 +854,7 @@
 | engine.setRemoteStationFleetTarget | setRemoteStationFleetTarget | scripts/game/StationSystem.gd::set_fleet_target | 实现中 | 26 | src/game/engine.ts |
 | engine.setRemoteStationSlotItem | setRemoteStationSlotItem | scripts/game/StationSystem.gd::configure_slots | 实现中 | 26 | src/game/engine.ts |
 | engine.setSplitterMode | setSplitterMode | 待映射 | 未实现 | 22 | src/game/engine.ts |
-| engine.setStarSystemDisplayName | setStarSystemDisplayName | 待映射 | 未实现 | 23 | src/game/engine.ts |
+| engine.setStarSystemDisplayName | setStarSystemDisplayName | scripts/game/SourceGalaxySystem.gd::set_metadata | 已验证 | 23 | 星图 → 工业角色 / 行星说明 / 星系名称 / 托盘容量 |
 | engine.setStationFleetTarget | setStationFleetTarget | scripts/game/StationSystem.gd::set_fleet_target | 实现中 | 26 | src/game/engine.ts |
 | engine.setStationHubConfiguration | setStationHubConfiguration | scripts/game/StationSystem.gd::set_hub | 实现中 | 26 | src/game/engine.ts |
 | engine.setStationMinimumLoad | setStationMinimumLoad | scripts/game/StationSystem.gd::configure_slots | 实现中 | 26 | src/game/engine.ts |
@@ -872,8 +872,8 @@
 | engine.setTimeWarpController | setTimeWarpController | scripts/game/TimeWarpSystem.gd::select_controller | 实现中 | 26 | src/game/engine.ts |
 | engine.setTimeWarpEnabled | setTimeWarpEnabled | scripts/game/TimeWarpSystem.gd::set_enabled | 实现中 | 26 | src/game/engine.ts |
 | engine.setTimeWarpRequestedMultiplier | setTimeWarpRequestedMultiplier | scripts/game/TimeWarpSystem.gd::set_requested | 实现中 | 26 | src/game/engine.ts |
-| engine.settleCompletedResearchBoundaries | settleCompletedResearchBoundaries | 待映射 | 未实现 | 25 | src/game/engine.ts |
-| engine.settleCompletedResearchBoundariesInPlace | settleCompletedResearchBoundariesInPlace | 待映射 | 未实现 | 25 | src/game/engine.ts |
+| engine.settleCompletedResearchBoundaries | settleCompletedResearchBoundaries | scripts/game/TechnologySystem.gd::settle_completed_source_research | 已验证 | 25 | 科技 → 已付研究完成边界 |
+| engine.settleCompletedResearchBoundariesInPlace | settleCompletedResearchBoundariesInPlace | scripts/game/TechnologySystem.gd::settle_completed_source_research_in_place | 已验证 | 25 | 科技 → 已付研究完成边界 |
 | engine.updateCanvasRegion | updateCanvasRegion | scripts/game/CanvasNavigation.gd::save_region | 实现中 | 24 | src/game/engine.ts |
 | engine.upgradeBelt | upgradeBelt | scripts/game/GameState.gd::upgrade_belt | 实现中 | 23 | src/game/engine.ts |
 | engine.upgradeBeltNetwork | upgradeBeltNetwork | scripts/game/GameState.gd::upgrade_belt_network | 实现中 | 23 | src/game/engine.ts |
@@ -947,7 +947,7 @@
 | GamePanels.onMaterialDeliverySlotChange | onMaterialDeliverySlotChange | 待映射 | 未实现 | 23 | src/components/GamePanels.tsx |
 | GamePanels.onMissingCraftNavigate | onMissingCraftNavigate | 待映射 | 未实现 | 22 | src/components/GamePanels.tsx |
 | GamePanels.onMonitorChange | onMonitorChange | 待映射 | 未实现 | 23 | src/components/GamePanels.tsx |
-| GamePanels.onOpenCampaign | onOpenCampaign | 待映射 | 未实现 | 25 | src/components/GamePanels.tsx |
+| GamePanels.onOpenCampaign | onOpenCampaign | scenes/ui/CampaignWorkspace.gd::_show_workspace | 已验证 | 25 | 战役 → 任务跟踪 / 导航 / 主线与支线 |
 | GamePanels.onOpenCommandPalette | onOpenCommandPalette | scenes/ui/FactoryWorkspaceUI.gd::open_command_palette | 实现中 | 23 | src/components/GamePanels.tsx |
 | GamePanels.onOpenConstructionCenter | onOpenConstructionCenter | 待映射 | 未实现 | 22 | src/components/GamePanels.tsx |
 | GamePanels.onOpenDysonPlanner | onOpenDysonPlanner | scenes/ui/DysonUI.gd | 实现中 | 26 | src/components/GamePanels.tsx |
@@ -1161,7 +1161,7 @@
 | StatisticsWorkspace.onBulkRecipeChange | onBulkRecipeChange | 待映射 | 未实现 | 23 | src/components/StatisticsWorkspace.tsx |
 | StatisticsWorkspace.onBulkStationSlotApply | onBulkStationSlotApply | scripts/game/StationSystem.gd::configure_slots | 实现中 | 26 | src/components/StatisticsWorkspace.tsx |
 | StatisticsWorkspace.onClose | onClose | 待映射 | 未实现 | 23 | src/components/StatisticsWorkspace.tsx |
-| StatisticsWorkspace.onCreatePlan | onCreatePlan | 待映射 | 未实现 | 23 | src/components/StatisticsWorkspace.tsx |
+| StatisticsWorkspace.onCreatePlan | onCreatePlan | scripts/game/ProductionPlanningSystem.gd::create_plan | 已验证 | 23 | 生产分析 → 计划 |
 | StatisticsWorkspace.onDispatchGalacticExport | onDispatchGalacticExport | scripts/game/GalacticExportSystem.gd::dispatch | 实现中 | 26 | src/components/StatisticsWorkspace.tsx |
 | StatisticsWorkspace.onFocusBeltNetwork | onFocusBeltNetwork | 待映射 | 未实现 | 23 | src/components/StatisticsWorkspace.tsx |
 | StatisticsWorkspace.onFocusEntity | onFocusEntity | 待映射 | 未实现 | 23 | src/components/StatisticsWorkspace.tsx |
@@ -1173,11 +1173,11 @@
 | StatisticsWorkspace.onInfiniteResearchAutomation | onInfiniteResearchAutomation | 待映射 | 未实现 | 25 | src/components/StatisticsWorkspace.tsx |
 | StatisticsWorkspace.onOpenCanvasBookmark | onOpenCanvasBookmark | scenes/ui/CanvasNavigationControls.gd::_navigate | 实现中 | 24 | src/components/StatisticsWorkspace.tsx |
 | StatisticsWorkspace.onRemoveCanvasBookmark | onRemoveCanvasBookmark | 待映射 | 未实现 | 24 | src/components/StatisticsWorkspace.tsx |
-| StatisticsWorkspace.onRemovePlan | onRemovePlan | 待映射 | 未实现 | 23 | src/components/StatisticsWorkspace.tsx |
+| StatisticsWorkspace.onRemovePlan | onRemovePlan | scripts/game/ProductionPlanningSystem.gd::remove_plan | 已验证 | 23 | 生产分析 → 计划 |
 | StatisticsWorkspace.onRenameCanvasBookmark | onRenameCanvasBookmark | 待映射 | 未实现 | 24 | src/components/StatisticsWorkspace.tsx |
 | StatisticsWorkspace.onSelectInfiniteResearch | onSelectInfiniteResearch | 待映射 | 未实现 | 25 | src/components/StatisticsWorkspace.tsx |
-| StatisticsWorkspace.onSetPlanRecipe | onSetPlanRecipe | 待映射 | 未实现 | 23 | src/components/StatisticsWorkspace.tsx |
-| StatisticsWorkspace.onUpdatePlan | onUpdatePlan | 待映射 | 未实现 | 23 | src/components/StatisticsWorkspace.tsx |
+| StatisticsWorkspace.onSetPlanRecipe | onSetPlanRecipe | scripts/game/ProductionPlanningSystem.gd::set_recipe | 已验证 | 23 | 生产分析 → 计划 |
+| StatisticsWorkspace.onUpdatePlan | onUpdatePlan | scripts/game/ProductionPlanningSystem.gd::update_plan | 已验证 | 23 | 生产分析 → 计划 |
 | SystemSpaceStationWorkspace.onClose | onClose | scenes/ui/SystemSpaceStationWorkspace.gd | 实现中 | 26 | src/components/SystemSpaceStationWorkspace.tsx |
 | SystemSpaceStationWorkspace.onDeliverMaterial | onDeliverMaterial | scripts/game/SystemSpaceStationSystem.gd::deliver | 实现中 | 26 | src/components/SystemSpaceStationWorkspace.tsx |
 | SystemSpaceStationWorkspace.onRequestMode | onRequestMode | scripts/game/SystemHubLogisticsSystem.gd::request_mode | 实现中 | 26 | src/components/SystemSpaceStationWorkspace.tsx |
@@ -1219,3 +1219,14 @@
 固定在线与用户范围排除条目见 [exclusions.json](../tests/fixtures/parity/exclusions.json)，每项均有理由。账号、云、公共银河网络不实现；手机、国际化和 DSPONLINE 旧存档导入不在范围内。
 
 来源数据：Copyright 2026 snowsnow0926，PolyForm Noncommercial 1.0.0。仅冻结目录和操作标识，不复制原版实现、素材或玩家数据；原始许可与来源说明见 [来源说明](../tests/fixtures/parity/NOTICE.md)。
+
+## 资源容量与手采差异记录（2026-10-07）
+
+以下为已复现单机差异，矩阵状态保持原值；不能用受控容量或资源领域投影将整个key标为已验证。
+
+| 关联现有key | 源契约/实际差异 | 证据与修复边界 |
+|---|---|---|
+| commands:engine.getResourceReserveSnapshot | 初始容量差距已修：GalaxySystem使用实际source vein ID，保留本地资源点ID/位置；GameStateValidator精确接收新源容量或合法旧seed容量，不重建旧储量 | .godot/task27-next-resource-capacity/绑定12源初始状态/1268资源点与全部登记储量的12primary；19金标漂移和36非法容量拒绝，三份实际旧档重存/完整续采与pre-fix MAIN全字段相同。MAIN及PCK专项已验，殖民前置为受控输入；实体位置/输出所有权等全契约未验，不授整个query key |
+| commands:engine.manualMine | src/game/engine.ts:7526返回资源实体outputs的产出；现有SourceProgressionFacts.mine存入planet tray，输出容量、可搬运所有权和完整UI契约尚不同 | 312实际源调用只对照数量、储量余数、produced/manual事实；源金标scope注明目的地差距，未授manualMine key。下一批补资源实体缓存/提取与手采目标守卫的完整契约 |
+
+资源模式设置源由App.tsx:6697的settings合并及OperationsWorkspace.tsx:721确认回调组成；源没有setResourceMode engine公开函数，不新增同名虚构key。原生旧小数储量查询exhausted采用实际raw可采量，显示remaining/ratio仍按源取整；明确源vein投影仍全量匹配4328金标。

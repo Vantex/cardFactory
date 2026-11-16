@@ -8,4 +8,4 @@ Copyright 2026 snowsnow0926.
 Commercial use requires a separate written license from the licensor.
 原版目录数据使用 PolyForm Noncommercial License 1.0.0，完整条款见 DSPONLINE_LICENSE.txt。本目录的来源数据保留该许可及署名，不因生成 JSON 而改为其他许可。
 
-冻结内容包括数据目录数值、稳定标识、桌面回调契约名称以及来源文件哈希。不包含原版实现、图片、商标素材、账号、玩家存档或服务器数据。代码定义的判定规则通过源文件、符号和哈希定位，未复制函数实现；后续行为测试不能用这些引用代替运行验证。
+冻结夹具包括目录数值、稳定标识、桌面回调契约、实际执行源函数所得金标及来源哈希，不含图片、商标素材、账号、玩家存档或服务器数据。任务 27 的 ProductionPlanningSystem.gd 移植 planning.ts 的计划规则，data/planning/source_recipe_order.json 保留源默认配方顺序；源设备的生产、电力、发射及科技适配保留 engine.ts 的规则与来源金标。这些派生内容同样保留上述许可及署名。来源定位不能代替实际运行验证。

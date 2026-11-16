@@ -9,6 +9,11 @@ var cursor_speed: HSlider
 var status: Label
 var font_label: Label
 var resolution_label: Label
+var resource_group: VBoxContainer
+var resource_buttons := {}
+var resource_dialog: ConfirmationDialog
+var _pending_resource_mode := ""
+var _mode_state: GameState
 
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -37,6 +42,24 @@ func _ready() -> void:
 	content.add_child(invert_zoom)
 	_label(content, "手柄光标速度")
 	cursor_speed = _slider(content, 0.5, 2.0, 0.1)
+	resource_group = VBoxContainer.new()
+	content.add_child(resource_group)
+	_label(resource_group, "当前存档 · 资源模式")
+	var resource_row := HBoxContainer.new()
+	resource_group.add_child(resource_row)
+	for mode in ["finite", "infinite"]:
+		var button := Button.new()
+		button.text = "有限矿脉" if mode == "finite" else "无限矿脉"
+		button.pressed.connect(_request_resource_mode.bind(mode))
+		resource_buttons[mode] = button
+		resource_row.add_child(button)
+	resource_dialog = ConfirmationDialog.new()
+	resource_dialog.title = "切换资源模式"
+	resource_dialog.get_ok_button().text = "确认切换"
+	resource_dialog.get_cancel_button().text = "取消"
+	resource_dialog.confirmed.connect(_confirm_resource_mode)
+	resource_dialog.canceled.connect(_clear_resource_request)
+	add_child(resource_dialog)
 	_label(content, "Tab / 方向键导航，Enter / 手柄 A 确认，Escape / B 返回。\nF6 / 手柄 Y 在界面与画布之间切换焦点。画布方向键 / 左摇杆移动光标，Enter / A 选择或放置，M / 左摇杆按下移动选中建筑，C / 右摇杆按下连线，Delete / X 请求删除；LB / RB 缩放，右摇杆平移。")
 	status = _label(content, "")
 	_button(content, "开始性能监测（清空上次采样）", func():
@@ -48,14 +71,47 @@ func _ready() -> void:
 		status.text = "报告已保存：" + result.path if result.ok else result.message)
 	_button(content, "保存并应用", apply_preferences)
 	_button(content, "恢复默认设置", func(): _show_values(SettingsSystem.DEFAULTS))
-	_button(content, "返回", func(): hide(); dismissed.emit())
+	_button(content, "返回", func(): close(); dismissed.emit())
 	hide()
 
 func open() -> void:
 	_show_values(LocalSettings.values)
 	status.text = LocalSettings.load_error
+	_clear_resource_request()
+	_refresh_resource_mode()
 	show()
 	theme_choice.grab_focus()
+
+func close() -> void:
+	_clear_resource_request()
+	hide()
+
+func _refresh_resource_mode() -> void:
+	resource_group.visible = GameManager.is_session_active()
+	if not resource_group.visible: return
+	for mode in resource_buttons:
+		resource_buttons[mode].disabled = GameManager.get_game_state().resource_mode == mode
+
+func _request_resource_mode(mode: String) -> void:
+	if not GameManager.is_session_active(): return
+	var state := GameManager.get_game_state()
+	if state.resource_mode == mode: return
+	_pending_resource_mode = mode
+	_mode_state = state
+	resource_dialog.dialog_text = "确认切换为%s？现有矿机、线路、缓存和剩余储量会保留。%s" % ["有限矿脉" if mode == "finite" else "无限矿脉", "矿脉将继续消耗原储量。" if mode == "finite" else "已枯竭矿脉将恢复生产。"]
+	resource_dialog.popup_centered(Vector2i(500, 180))
+
+func _confirm_resource_mode() -> void:
+	if _pending_resource_mode.is_empty(): return
+	var result := GameManager.set_resource_mode(_pending_resource_mode, _mode_state)
+	status.text = ("已切换为有限矿脉" if result.get("mode") == "finite" else "已切换为无限矿脉") if result.ok else String(result.error.message)
+	_clear_resource_request()
+	_refresh_resource_mode()
+
+func _clear_resource_request() -> void:
+	_pending_resource_mode = ""
+	_mode_state = null
+	if resource_dialog != null: resource_dialog.hide()
 
 func _show_values(settings: Dictionary) -> void:
 	theme_choice.select(0 if settings.theme == "dark" else 1)

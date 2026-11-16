@@ -178,7 +178,10 @@ func build_catalog(packs: Dictionary) -> Dictionary:
 		for entry in manifest.buildingOverrides:
 			var target := resolve("buildings", entry.id)
 			for field in FIELD_MAP:
-				if entry.has(field): catalog.buildings[target][FIELD_MAP[field]] = entry[field]
+				if entry.has(field):
+					catalog.buildings[target][FIELD_MAP[field]] = entry[field]
+					var capacity_field: String = {"inputCapacity": "source_input_capacity", "outputCapacity": "source_output_capacity"}.get(field, "")
+					if not capacity_field.is_empty() and catalog.buildings[target].has(capacity_field): catalog.buildings[target][capacity_field] = entry[field]
 		for entry in manifest.recipes:
 			var definition := {"id": entry.id, "name": entry.name.strip_edges().substr(0, 80), "building_id": resolve("buildings", entry.buildingId), "duration": maxf(0.05, entry.duration), "inputs": [], "outputs": [], "required_source_technology": resolve("technologies", entry.get("requiredTechId", "")), "source_content_pack": id}
 			for direction in ["inputs", "outputs"]:
@@ -187,7 +190,10 @@ func build_catalog(packs: Dictionary) -> Dictionary:
 		for entry in manifest.technologies:
 			var prerequisites := []
 			for parent in entry.get("prerequisites", []): prerequisites.append(resolve("technologies", parent))
-			catalog.technologies[entry.id] = {"id": entry.id, "name": entry.name.strip_edges().substr(0, 80), "description": entry.get("summary", manifest.name + " 提供的科技"), "tier": "planetary", "duration": 1.0, "cost": amount_map(entry.get("costs", [])), "prerequisites": prerequisites, "unlocks": [], "source_content_pack": id, "source_research_bridge": true, "effects": {}}
+			var cost := amount_map(entry.get("costs", []))
+			var matrices := 0.0
+			for amount in cost.values(): matrices += float(amount)
+			catalog.technologies[entry.id] = {"id": entry.id, "name": entry.name.strip_edges().substr(0, 80), "description": entry.get("summary", manifest.name + " 提供的科技"), "tier": "planetary", "duration": maxf(1.0, matrices * float(catalog.recipes.dsp_matrix_research.duration)), "cost": cost, "prerequisites": prerequisites, "unlocks": [], "source_content_pack": id, "source_research_bridge": true, "effects": {}}
 		for entry in manifest.belts:
 			catalog.belts[entry.id] = {"tier": entry.tier, "speed": entry.speed, "name": entry.name, "source_content_pack": id}
 			catalog.construction[entry.id] = {"name": entry.name, "id": entry.id, "costs": amount_map(entry.costs), "output_amount": entry.get("outputAmount", 3), "required_source_technology": resolve("technologies", entry.get("requiredTechId", ""))}

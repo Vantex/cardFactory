@@ -30,13 +30,13 @@ static func load_catalog(path: String = DEFAULT_CATALOG_PATH) -> Dictionary:
 		_default_catalog_cache = loaded.duplicate(true)
 	return loaded
 
-func get_progress(state: GameState, objective: Dictionary) -> Dictionary:
-	return get_condition_progress(state, objective.get("condition", {}))
+func get_progress(state: GameState, objective: Dictionary, facts: Variant = null) -> Dictionary:
+	return get_condition_progress(state, objective.get("condition", {}), facts)
 
-func is_complete(state: GameState, objective: Dictionary) -> bool:
-	return bool(get_progress(state, objective).get("complete", false))
+func is_complete(state: GameState, objective: Dictionary, facts: Variant = null) -> bool:
+	return bool(get_progress(state, objective, facts).get("complete", false))
 
-func get_condition_progress(state: GameState, condition: Dictionary) -> Dictionary:
+func get_condition_progress(state: GameState, condition: Dictionary, facts: Variant = null) -> Dictionary:
 	var fact := String(condition.get("fact", ""))
 	var required := float(condition.get("at_least", 1.0))
 	var current := 0.0
@@ -44,7 +44,11 @@ func get_condition_progress(state: GameState, condition: Dictionary) -> Dictiona
 		"source_metric":
 			var metric: Dictionary = condition.get("metric", {})
 			required = maxf(1, float(metric.get("target", 1)))
-			current = clampf(floorf(SourceProgressionFacts.value(state, metric)), 0, required)
+			var buildings := {}
+			if facts is Dictionary and metric.get("kind", "") in ["building", "miner", "spray-coater", "industrial-systems", "station-trips"]:
+				if not facts.has("buildings"): facts.buildings = SourceProgressionFacts.building_snapshot(state)
+				buildings = facts.buildings
+			current = clampf(floorf(SourceProgressionFacts.value(state, metric, buildings)), 0, required)
 		"interplanetary_delivered":
 			current = state.interplanetary_delivered
 		"building_count":
@@ -105,6 +109,8 @@ func _count_valid_connections(state: GameState) -> int:
 
 func _get_item_amount(state: GameState, item_id: String) -> float:
 	var total := float(state.get_active_planet_inventory().get(item_id, 0.0))
+	for site in state.resource_sites.values():
+		if site.get("planet_id") == state.active_planet_id: total += float(site.get("output_buffer", {}).get(item_id, 0))
 	for building_value in state.buildings.values():
 		var building: Dictionary = building_value
 		if String(building.get("planet_id", "")) != state.active_planet_id:

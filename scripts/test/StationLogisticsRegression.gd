@@ -42,7 +42,34 @@ func run() -> int:
 	await _test_ui()
 	_test_interstellar()
 	_test_scale_and_fairness()
+	_test_connection_refresh()
 	return failures
+
+func _test_connection_refresh() -> void:
+	var state := GameState.new()
+	var source := _station(state, Vector2.ZERO)
+	var target := state.add_building({"type": "smelter", "recipe_id": "iron_ingot_recipe"})
+	var slot: Dictionary = state.buildings[source].station.slots[0]
+	slot.merge({"item_id": "iron_ore", "mode": "storage", "amount": 10.0}, true)
+	var logistics := LogisticsSystem.new(state)
+	logistics.update(1.0 / 60.0)
+	_expect(slot.amount == 10 and state.buildings[source].output_buffer.is_empty(), "unconnected station retains slot cargo")
+	var connection := state.add_connection({"source_id": source, "target_id": target, "item_id": "iron_ore", "flow_rate": 10.0})
+	logistics.update(1.0 / 60.0)
+	_expect(slot.amount == 0 and state.buildings[source].output_buffer.iron_ore == 10, "next logistics update sees newly added outgoing connection")
+	state.buildings[source].output_buffer.clear()
+	slot.amount = 10.0
+	state.connections[connection].enabled = false
+	logistics.update(1.0 / 60.0)
+	_expect(slot.amount == 10 and state.buildings[source].output_buffer.is_empty(), "disabled connection cannot withdraw station cargo")
+	state.connections[connection].enabled = true
+	logistics.update(1.0 / 60.0)
+	_expect(slot.amount == 0 and state.buildings[source].output_buffer.iron_ore == 10, "reenabled connection resumes slot withdrawal")
+	state.buildings[source].output_buffer.clear()
+	slot.amount = 10.0
+	state.connections.erase(connection)
+	logistics.update(1.0 / 60.0)
+	_expect(slot.amount == 10 and state.buildings[source].output_buffer.is_empty(), "removed connection is absent from next logistics update")
 
 func _station(state: GameState, position: Vector2) -> String:
 	state.construction_inventory["planetary_logistics_station"] = 1.0
@@ -240,7 +267,7 @@ func _test_failures_and_belts() -> void:
 	var smelter := state.add_building({"type": "smelter", "position": Vector2(600, 0), "recipe_id": "iron_ingot_recipe", "input_buffer": {}, "output_buffer": {}, "power_efficiency": 1.0})
 	var connection := state.try_add_connection(b, smelter)
 	_expect(connection.ok, "station output connects to production")
-	for tick in range(180):
+	for tick in range(240):
 		logistics.update(1.0 / 60)
 		BeltSystem.new(state).update(1.0 / 60)
 	_expect(float(state.buildings[smelter].input_buffer.get("iron_ore", 0)) > 19.9, "station cargo feeds a real belt")

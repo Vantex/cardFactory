@@ -19,6 +19,10 @@ func unlocked() -> bool:
 func snapshot() -> Dictionary:
 	return {"unlocked": unlocked(), "state": state.galactic_exports.duplicate(true) if not state.galactic_exports.is_empty() else _initial_state()}
 
+func award_research_completion(completed_level: int) -> void:
+	_ensure_state()
+	state.galactic_exports.score = floorf(float(state.galactic_exports.score) + 1000 + completed_level * 250)
+
 func industry_snapshot(statistics: StatisticsSystem = null) -> Dictionary:
 	var result := {"unlocked": unlocked(), "totalProductionPerMinute": 0.0, "totalConsumptionPerMinute": 0.0, "netPerMinute": 0.0, "activePlanets": 0, "operatingEntities": 0, "blockedEntities": 0, "logisticsTrips": state.logistics_routes.size(), "networkInventory": 0.0, "generationKw": 0.0, "demandKw": 0.0, "dysonGenerationKw": 0.0, "exportedPerMinute": 0.0, "totalExported": state.galactic_exports.get("total_exported", 0), "galacticCredits": state.galactic_exports.get("credits", 0), "galacticScore": state.galactic_exports.get("score", 0), "infiniteResearchLevels": 0}
 	var active_planets := {}

@@ -20,6 +20,7 @@ func _ready() -> void:
 		_test_storage()
 		_test_configuration()
 		_test_exchanger_and_dispatch()
+		_test_environment_refresh()
 	if failures == 0: print("POWER GRID TESTS PASSED")
 	else: printerr("POWER GRID TESTS FAILED")
 	get_tree().quit(0 if failures == 0 else 1)
@@ -51,6 +52,30 @@ func check(ok: bool, message: String) -> void:
 	else:
 		failures += 1
 		printerr("FAIL: " + message)
+
+func _test_environment_refresh() -> void:
+	var state := GameState.new()
+	SourceGalaxySystem.new(state).initialize(240721, true)
+	var first := state.add_building({"type": "dsp_solar_panel", "planet_id": "home", "generation_factor": 1.0})
+	var second := state.add_building({"type": "dsp_solar_panel", "planet_id": "home", "generation_factor": 0.5, "power_grid_id": "grid-b"})
+	var distant := state.add_building({"type": "dsp_solar_panel", "planet_id": "frost"})
+	var consumer := state.add_building({"type": "smelter", "planet_id": "home"})
+	var power := PowerSystem.new(state)
+	power.update(1.0)
+	var rated := float(DataManager.get_building("dsp_solar_panel").power_generation)
+	check(is_equal_approx(state.buildings[first].power_output, rated * PowerSystem.source_environment_multiplier(state, "dsp_solar_panel", "home")), "source solar uses current home environment")
+	check(is_equal_approx(state.buildings[second].power_output, state.buildings[first].power_output * 0.5), "shared planet environment preserves individual factors across grids")
+	check(is_equal_approx(state.buildings[distant].power_output, rated * PowerSystem.source_environment_multiplier(state, "dsp_solar_panel", "frost")), "planet environments remain isolated")
+	var previous := float(state.buildings[first].power_output)
+	var system_id: String = GalaxySystem.new(state).get_planet("home").system_id
+	state.source_galaxy.systemProfiles[system_id].luminosity *= 0.5
+	state.difficulty = "hard"
+	power.update(1.0)
+	check(is_equal_approx(state.buildings[first].power_output, previous * 0.5), "next power update refreshes changed stellar luminosity")
+	check(is_equal_approx(state.buildings[consumer].power_requested, float(DataManager.get_building("smelter").power_demand) * 1.2), "next power update refreshes difficulty demand")
+	state.buildings[second].generation_factor = 0.25
+	power.update(1.0)
+	check(is_equal_approx(state.buildings[second].power_output, state.buildings[first].power_output * 0.25), "next power update refreshes individual generation factor")
 func _test_exchanger_and_dispatch() -> void:
 	var state := GameState.new()
 	var solar := state.add_building({"type": "solar_panel", "position": Vector2.ZERO})

@@ -4,26 +4,55 @@ extends RefCounted
 const MATRICES := ["electromagnetic_matrix", "energy_matrix", "structure_matrix", "information_matrix", "gravity_matrix", "universe_matrix"]
 const RARES := ["fire_ice", "kimberlite_ore", "fractal_silicon", "organic_crystal", "optical_grating_crystal", "spiniform_stalagmite_crystal", "unipolar_magnet"]
 
-static func value(state: GameState, metric: Dictionary) -> float:
+static func building_snapshot(state: GameState) -> Dictionary:
+	var facts := {"counts": {}, "miners": 0, "sprayed": 0, "systems": 0, "station_trips": {}}
+	var planets := {}
+	for building in state.buildings.values():
+		var definition := DataManager.get_building(String(building.type))
+		var kind: String = definition.get("source_id", building.type)
+		facts.counts[kind] = int(facts.counts.get(kind, 0)) + 1
+		if definition.get("kind") == "extractor": facts.miners += 1
+		if building.get("spray_coater_installed", false): facts.sprayed = 1
+		if definition.get("kind") != "extractor": planets[building.planet_id] = true
+		facts.station_trips[kind] = float(facts.station_trips.get(kind, 0)) + float(state.progression_facts.get("station_trips", {}).get(building.id, 0))
+	var systems := {}
+	var galaxy := GalaxySystem.new(state)
+	for planet in planets: systems[galaxy.get_planet(planet).get("system_id", "")] = true
+	facts.systems = systems.size()
+	return facts
+
+static func value(state: GameState, metric: Dictionary, buildings: Dictionary = {}) -> float:
 	var result := 0.0
 	var produced: Dictionary = state.progression_facts.get("produced", {})
+	if not buildings.is_empty():
+		match String(metric.get("kind", "")):
+			"building": return float(buildings.counts.get(metric.get("buildingId"), 0))
+			"miner": return float(buildings.miners)
+			"spray-coater": return float(buildings.sprayed)
+			"industrial-systems": return float(buildings.systems)
+			"station-trips": return float(buildings.station_trips.get(metric.get("buildingId"), 0))
 	match String(metric.get("kind", "")):
 		"manual-mined": return float(state.progression_facts.get("manual_mined", 0))
 		"produced": return float(produced.get(metric.get("itemId", ""), 0))
 		"research": return float(int(state.completed_technologies.has("dsp_" + String(metric.get("techId", "")))))
 		"exploration": return float(int(state.explored_system_ids.has(metric.get("systemId", ""))))
 		"blueprint": return float(state.blueprint_library.size())
-		"building", "miner", "spray-coater", "industrial-systems":
+		"industrial-systems":
+			var planets := {}
+			for building in state.buildings.values():
+				if DataManager.get_building(String(building.type)).get("kind") != "extractor": planets[building.planet_id] = true
 			var systems := {}
-			var galaxy := GalaxySystem.new(state) if metric.kind == "industrial-systems" else null
+			var galaxy := GalaxySystem.new(state)
+			for planet in planets: systems[galaxy.get_planet(planet).get("system_id", "")] = true
+			return float(systems.size())
+		"building", "miner", "spray-coater":
 			for building in state.buildings.values():
 				var definition := DataManager.get_building(String(building.type))
 				var kind := String(metric.kind)
 				if kind == "building" and PowerGridSystem.kind_id(building) == metric.get("buildingId"): result += 1
 				if kind == "miner" and definition.get("kind") == "extractor": result += 1
 				if kind == "spray-coater" and building.get("spray_coater_installed", false): result = 1
-				if kind == "industrial-systems": systems[galaxy.get_planet(building.planet_id).get("system_id", "")] = true
-			return float(systems.size()) if metric.kind == "industrial-systems" else result
+			return result
 		"belt":
 			for connection in state.connections.values():
 				var tier := String(connection.get("tier", "conveyor_belt_mk1"))
@@ -41,14 +70,18 @@ static func value(state: GameState, metric: Dictionary) -> float:
 				if float(produced.get(item, 0)) >= 1: return 1
 		"power":
 			var by_planet := {}
+			for planet in state.planet_metrics:
+				var cached: Dictionary = state.planet_metrics[planet].get("power", {})
+				if not cached.is_empty(): by_planet[planet] = cached.duplicate(true)
 			for building in state.buildings.values():
 				var key := String(building.planet_id)
+				if state.planet_metrics.get(key, {}).has("power"): continue
 				if not by_planet.has(key): by_planet[key] = {"consumption": 0.0, "supplied": 0.0, "generation": 0.0}
 				by_planet[key].consumption += float(building.get("power_requested", 0))
 				by_planet[key].supplied += float(building.get("power_requested", 0)) * float(building.get("power_efficiency", 0))
 				by_planet[key].generation += float(building.get("power_output", 0))
 			for metrics in by_planet.values():
-				metrics["efficiency"] = float(metrics.supplied) / float(metrics.consumption) if float(metrics.consumption) > 0 else 0.0
+				if metrics.has("supplied"): metrics["efficiency"] = float(metrics.supplied) / float(metrics.consumption) if float(metrics.consumption) > 0 else 0.0
 				if float(metrics.get("consumption", 0)) > 0 and float(metrics.get("efficiency", 0)) >= 0.999 and (not metric.get("requireGeneration", false) or float(metrics.get("generation", 0)) > 0): return 1
 		"dyson":
 			var field: String = {"sails": "launched_sails", "rockets": "rockets_launched", "structure": "structure_points", "shell": "absorbed_sails"}.get(metric.get("measure"), "")
@@ -71,13 +104,29 @@ static func record_produced(state: GameState, item: String, amount: float) -> vo
 	var produced: Dictionary = state.progression_facts.produced
 	produced[item] = float(produced.get(item, 0)) + amount
 
-static func mine(state: GameState, site_id: String) -> Dictionary:
+static func mine(state: GameState, site_id: String, requested: float = 1.0) -> Dictionary:
+	if state.source_galaxy.is_empty(): return _mine_legacy(state, site_id)
+	var site: Dictionary = state.resource_sites.get(site_id, {})
+	if site.is_empty() or DataManager.get_item(String(site.get("item_id", ""))).get("kind") != "solid": return {"ok": false, "message": "请选择固体矿脉"}
+	if not is_finite(requested): return {"ok": false, "message": "采集数量必须是有限数值"}
+	var output := preload("res://scripts/game/SourceResourceOutputSystem.gd")
+	var reserve := preload("res://scripts/game/SourceResourceReserveSystem.gd")
+	var current := output.raw_amount(state, site)
+	var mined := maxf(0, floorf(minf(requested, minf(output.manual_capacity(state, site) - current, reserve.available_output(state, site)))))
+	output.add_manual(state, site, mined)
+	reserve.consume_output(state, site, int(mined))
+	state.progression_facts["manual_mined"] = floorf(float(state.progression_facts.get("manual_mined", 0)) + mined)
+	if not state.progression_facts.has("produced"): state.progression_facts.produced = {}
+	state.progression_facts.produced[site.item_id] = floorf(float(state.progression_facts.produced.get(site.item_id, 0)) + mined)
+	return {"ok": mined > 0, "amount": mined, "message": "已采集到矿脉输出缓存" if mined > 0 else "矿脉已耗尽或输出缓存已满"}
+
+static func _mine_legacy(state: GameState, site_id: String) -> Dictionary:
 	var site: Dictionary = state.resource_sites.get(site_id, {})
 	if site.is_empty() or site.get("planet_id") != state.active_planet_id or DataManager.get_item(String(site.get("item_id", ""))).get("kind") != "solid": return {"ok": false, "message": "请选择当前行星的固体矿脉"}
-	if not site.get("infinite", false) and float(site.get("remaining", 0)) < 1: return {"ok": false, "message": "矿脉已耗尽"}
+	if preload("res://scripts/game/SourceResourceReserveSystem.gd").available_output(state, site) < 1: return {"ok": false, "message": "矿脉已耗尽"}
 	var result := InventorySystem.new(state).try_add_batch({String(site.item_id): 1.0})
 	if not result.ok: return result
-	if not site.get("infinite", false): site.remaining -= 1.0
+	preload("res://scripts/game/SourceResourceReserveSystem.gd").consume_output(state, site, 1)
 	state.progression_facts["manual_mined"] = float(state.progression_facts.get("manual_mined", 0)) + 1
 	record_produced(state, site.item_id, 1)
 	return {"ok": true, "message": "已采集一份矿物"}
@@ -87,7 +136,8 @@ static func validate(data: Dictionary) -> Array:
 	var facts: Variant = data.get("progression_facts", {})
 	if not facts is Dictionary: return ["领域进度记录必须是字典"]
 	for key in facts:
-		if not ["produced", "manual_mined", "station_trips", "infinite_research", "active_infinite", "infinite_paused", "infinite_auto"].has(key): errors.append("未知领域进度字段")
+		if not ["produced", "manual_mined", "station_trips", "infinite_research", "active_infinite", "infinite_paused", "infinite_auto", "source_campaign_enabled"].has(key): errors.append("未知领域进度字段")
+	if facts.has("source_campaign_enabled") and not facts.source_campaign_enabled is bool: errors.append("源战役标记必须是布尔值")
 	for key in ["produced", "station_trips"]:
 		var counts: Variant = facts.get(key, {})
 		if not counts is Dictionary:
@@ -110,8 +160,13 @@ static func validate(data: Dictionary) -> Array:
 					if (desired is int or desired is float) and float(desired) > stock_limit: errors.append("制造目标超过已解锁仓储上限")
 	var active: Variant = facts.get("active_infinite", "")
 	if active is String and not active.is_empty():
-		if not data.get("completed_technologies", []).has("dsp_universe_matrix"): errors.append("无限研究缺少宇宙矩阵科技")
-		if data.get("research_current_id", "") != "" or not data.get("research_queue", []).is_empty(): errors.append("有限和无限研究不能同时进行")
+		if not completed.has("dsp_universe_matrix"): errors.append("无限研究缺少宇宙矩阵科技")
+		var current: Variant = data.get("research_current_id", "")
+		if current is String and not current.is_empty() and not DataManager.get_technology(current).get("source_research_bridge", false): errors.append("原生教学和无限研究不能同时进行")
+		var queue: Variant = data.get("research_queue", [])
+		if queue is Array:
+			for id in queue:
+				if id is String and not DataManager.get_technology(id).get("source_research_bridge", false): errors.append("原生教学队列和无限研究不能同时进行")
 		if InfiniteResearchSystem.definitions().has(active) and int(facts.get("infinite_research", {}).get(active, {}).get("level", 0)) >= int(InfiniteResearchSystem.definitions()[active].maximum): errors.append("满级无限研究不能继续运行")
 	var selected: Variant = data.get("selected_source_objective", "")
 	if not selected is String: errors.append("选中任务必须是字符串")
@@ -125,6 +180,7 @@ static func validate(data: Dictionary) -> Array:
 static func network_stock(state: GameState, item: String) -> float:
 	var total := 0.0
 	for planet in state.colonized_planet_ids: total += float(state.get_planet_inventory(planet).get(item, 0))
+	for site in state.resource_sites.values(): total += float(site.get("output_buffer", {}).get(item, 0))
 	for building in state.buildings.values():
 		total += float(building.get("input_buffer", {}).get(item, 0)) + float(building.get("output_buffer", {}).get(item, 0))
 	if state.cursor_payload.get("item_id") == item: total += float(state.cursor_payload.get("amount", 0))

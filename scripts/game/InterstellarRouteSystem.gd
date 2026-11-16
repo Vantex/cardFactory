@@ -9,15 +9,24 @@ func _init(game_state: GameState) -> void:
 	galaxy = GalaxySystem.new(state)
 
 func economics(source: Dictionary, target: Dictionary, count: int = 1, options: Dictionary = {}) -> Dictionary:
+	return _economics(source, target, count, options, true)
+
+func query_economics(source: Dictionary, target: Dictionary, count: int = 1, options: Dictionary = {}) -> Dictionary:
+	return _economics(source, target, count, options, false)
+
+func trip_seconds(requires_warp: bool = false) -> float:
+	var speed := state.get_technology_effect_multiplier("logistics_speed") * GameModeSystem.new(state).multiplier("logistics")
+	return (12.0 if requires_warp else 30.0) / speed
+
+func _economics(source: Dictionary, target: Dictionary, count: int, options: Dictionary, for_dispatch: bool) -> Dictionary:
 	var ap := galaxy.get_planet(source.planet_id)
 	var bp := galaxy.get_planet(target.planet_id)
 	var warp: bool = ap.system_id != bp.system_id
 	var budget := clampi(int(options.get("warper_budget", 2)), 1, 4)
-	var path := _path(source, target, String(options.get("route_policy", "relay-preferred")), budget) if warp else {}
+	var path := _path(source, target, String(options.get("route_policy", "relay-preferred")), budget, for_dispatch) if warp else {}
 	var environment := (_environment(source) + _environment(target)) / 2.0
-	var speed := state.get_technology_effect_multiplier("logistics_speed") * GameModeSystem.new(state).multiplier("logistics")
 	var orbit := maxf(1, absf(float(ap.orbit) - float(bp.orbit)))
-	var duration := float(path.get("duration", 12.0 / speed * environment * 4.0)) if warp else 30.0 / speed * environment * (0.9 + orbit * 0.1)
+	var duration := float(path.get("duration", trip_seconds(true) * environment * 4.0)) if warp else trip_seconds(false) * environment * (0.9 + orbit * 0.1)
 	duration = SourceGalaxySystem.rounded(duration)
 	var ids: Array = path.get("ids", [])
 	var waypoints: Array = ids.slice(1, ids.size() - 1) if ids.size() > 2 else []
@@ -30,11 +39,11 @@ func economics(source: Dictionary, target: Dictionary, count: int = 1, options: 
 	var distance := float(path.get("distance", galaxy.get_system_distance(ap.system_id, bp.system_id))) if warp else 0.0
 	return {"distance_ly": SourceGalaxySystem.rounded(distance), "orbit_span": orbit, "requires_warp": warp, "duration": duration, "cargo_per_trip": cargo, "throughput_per_minute": SourceGalaxySystem.rounded(cargo * 60.0 / maxf(1, duration)), "warpers_per_trip": hops * vessels, "warpers_per_vessel": hops, "power_kw": power, "energy_mj_per_trip": SourceGalaxySystem.rounded(power * duration / 1000.0), "available": not warp or not path.is_empty(), "kind": "local" if not warp else "relay" if not waypoints.is_empty() else "direct", "waypoint_ids": waypoints, "hop_count": hops, "max_leg_distance_ly": SourceGalaxySystem.rounded(float(path.get("max_leg", distance)))}
 
-func _path(source: Dictionary, target: Dictionary, policy: String, budget: int) -> Dictionary:
+func _path(source: Dictionary, target: Dictionary, policy: String, budget: int, for_dispatch: bool) -> Dictionary:
 	var endpoints := [galaxy.get_planet(source.planet_id).system_id, galaxy.get_planet(target.planet_id).system_id]
 	var hubs := {}
 	for station in state.buildings.values():
-		if SystemHubLogisticsSystem.is_elevator(station) or station.get("station", {}).has("mode_transition"): continue
+		if for_dispatch and (SystemHubLogisticsSystem.is_elevator(station) or station.get("station", {}).has("mode_transition")): continue
 		if station.type != "dsp_interstellar_logistics_station" or station.id in [source.id, target.id] or not station.get("station", {}).get("hub_enabled", false): continue
 		var system: String = galaxy.get_planet(station.planet_id).system_id
 		if system in endpoints or not state.explored_system_ids.has(system): continue
@@ -75,15 +84,14 @@ func _visit(stations: Array, remaining: Array, target: Dictionary, policy: Strin
 
 func _leg(source: Dictionary, target: Dictionary) -> Dictionary:
 	var distance := galaxy.get_system_distance(galaxy.get_planet(source.planet_id).system_id, galaxy.get_planet(target.planet_id).system_id)
-	var speed := state.get_technology_effect_multiplier("logistics_speed") * GameModeSystem.new(state).multiplier("logistics")
 	var penalty := 1.0 + (distance - 12.0) / 14.0 if distance > 12.0 else 1.0
-	return {"distance": distance, "duration": 12.0 / speed * (_environment(source) + _environment(target)) / 2.0 * (0.75 + distance / 24.0) * penalty}
+	return {"distance": distance, "duration": trip_seconds(true) * (_environment(source) + _environment(target)) / 2.0 * (0.75 + distance / 24.0) * penalty}
 
 func _environment(building: Dictionary) -> float:
 	return float(galaxy.get_planet(building.planet_id).get("travel_multiplier", 1.0))
 
 func _rated_power(building: Dictionary) -> float:
-	return float(DataManager.get_building(building.type).get("power_demand", 0)) * maxf(1, float(building.get("machine_count", 1)))
+	return float(DataManager.get_building(building.type).get("power_demand", 0)) * maxf(1, float(building.get("station_stack_count", building.get("machine_count", 1))))
 
 func hub_power(ids: Array) -> float:
 	var factor := 1.0

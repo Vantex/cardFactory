@@ -1,0 +1,6944 @@
+{
+  "source_commit": "472bf62c76b695852b5577e563c1d113192ac731",
+  "source_files": {
+    "src/game/engine.ts": "a809a4cf72a7c2342d81732b010cf95e35cbca653313a0ebe33d56d49483b50b",
+    "src/game/content.ts": "6de101d86d28012c8765815aec35177a95b4d7ac5604736a4b608a100284f7ff",
+    "src/game/galaxy.ts": "bf0e4d23f6af26d0180ff4e7303e45a7e06e782ed0289f9a94dda3de88028bfd",
+    "src/game/galaxyCatalog.ts": "fc503cfdcc7d5f38bfcd8b6c7f262b56126f1e3cc2c749c0463e5779730c2540",
+    "src/game/systemSpaceStation.ts": "1cd199e3f11036bf8e06af469bbb92fbb8f882c37c3b5d5283c3f1aaf71798ad",
+    "src/game/systemHubLogistics.ts": "b654c3bf76dc0ad685550a5b5992358de84c611eedc1dc75fa3e425cef271659",
+    "src/game/productionStatistics.ts": "b9b6680164bef7fe0f48cce4ffdff2eaf643e7c07c789903a49fe403b6cc7f73",
+    "src/game/quantityFormat.ts": "01008471e4bc2f8e49d97b859667fb41ca83ee77d8c5034361ef5ce003d92178",
+    "src/game/campaign.ts": "c9c363d746b4f51a29fa01f08462c89816686af851daec2b450e6365e683a15c",
+    "src/game/difficulty.ts": "24613016f2296036c18577ce3338f792119617d07a17f2f9dffbefddf48e423e",
+    "src/game/endgame.ts": "65af1b6317e8d4c1dccdd73672750efbec3cd00d3b751333f438a99ac8967c8a",
+    "src/game/infiniteResearch.ts": "b6650402662557b5cd17e16de89f744269d0af54aa8aa40c16625e7758cc34c3",
+    "src/game/activity.ts": "b8711f1e5711bb0ec9826a098beeec246f859eb2581e0ce489ec6bc75f260c6a",
+    "src/game/units.ts": "bf050c2a09270f762ae76bb7ac8373571af3c094a215bd17c69fc9207d138bc5",
+    "src/game/quantumLogisticsNetwork.ts": "b34f1b836401edb757eac76ad6f924f1e8f6540f221134c55b555ebcca92b4c3",
+    "src/game/recursiveCrafting.ts": "1b131b06c7ee5f8164a377cf5a26d6fee4dd873b62f95b8552bd9423ad929e2b",
+    "src/game/speedrun.ts": "6144a52c5c0320080a4b3ec2202bd76e13811dedb587bc45f871ebded1ff2b59",
+    "src/game/idleSettlement.ts": "a90fd7d585074583ba462e4c19f6c44ba751e23128acb5daa7e652b7e4c25e8a",
+    "src/game/orbitalStation.ts": "8398e7ab6c5160a62d78fbd84e54679490336141c6f0224f0eb19524f448a56b",
+    "src/game/progression.ts": "be1ea07ebf711ba6e5d5429037dac1635499ffd33df8d9cb31a56c7099d2b773",
+    "src/game/stationContracts.ts": "4f3f2571be1878a9bc248ec2939ed03812e7b63ebd080ff8c34dfe5fcaf94f88",
+    "src/game/stationMath.ts": "5a40a7055e1b76910c84d339da2601032a6d754d725f1cd02b4ba0f474d35c0e",
+    "src/game/stationDecorations.ts": "ad76a89735066ba17cb3c3519b1b726b6f33b05ff7d368c0c7cf00326fb58019",
+    "src/game/stationCargoTerminal.ts": "d920817d0655f7774540e5b325549085e363d08bbb92834c5b2cced72d607f10"
+  },
+  "source_environment": {
+    "DEV": false,
+    "PROD": true,
+    "MODE": "production"
+  },
+  "scope": "Actual read-only cargo/trip scalar queries for all 16 finite engine/capacity combinations, nine integer infinite galactic-logistics levels and three difficulties. Local comparison uses actual station logistics_snapshot after a separately funded paid station placement. This proves capacities/rounding/local-trip numbers and query immutability, not route economics, dispatched cargo, throughput, earned growth or save validity.",
+  "functions": [
+    "getPlanetaryCargoCapacity",
+    "getInterstellarCargoCapacity",
+    "getPlanetaryTripSeconds"
+  ],
+  "finite": [
+    "logistics_engine_1",
+    "logistics_engine_2",
+    "logistics_capacity_1",
+    "logistics_capacity_2"
+  ],
+  "levels": [
+    0,
+    1,
+    2,
+    9,
+    10,
+    11,
+    99,
+    999,
+    1000
+  ],
+  "cases": [
+    {
+      "id": "relaxed-0-0",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 25,
+        "getInterstellarCargoCapacity": 100,
+        "getPlanetaryTripSeconds": 7.2727272727272725
+      }
+    },
+    {
+      "id": "relaxed-0-1",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 26,
+        "getInterstellarCargoCapacity": 105,
+        "getPlanetaryTripSeconds": 6.926406926406925
+      }
+    },
+    {
+      "id": "relaxed-0-2",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 28,
+        "getInterstellarCargoCapacity": 110,
+        "getPlanetaryTripSeconds": 6.611570247933884
+      }
+    },
+    {
+      "id": "relaxed-0-9",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 36,
+        "getInterstellarCargoCapacity": 145,
+        "getPlanetaryTripSeconds": 5.015673981191223
+      }
+    },
+    {
+      "id": "relaxed-0-10",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 38,
+        "getInterstellarCargoCapacity": 150,
+        "getPlanetaryTripSeconds": 4.848484848484848
+      }
+    },
+    {
+      "id": "relaxed-0-11",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 39,
+        "getInterstellarCargoCapacity": 155,
+        "getPlanetaryTripSeconds": 4.6920821114369495
+      }
+    },
+    {
+      "id": "relaxed-0-99",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 149,
+        "getInterstellarCargoCapacity": 595,
+        "getPlanetaryTripSeconds": 1.2223071046600458
+      }
+    },
+    {
+      "id": "relaxed-0-999",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1274,
+        "getInterstellarCargoCapacity": 5095,
+        "getPlanetaryTripSeconds": 0.14274243911142828
+      }
+    },
+    {
+      "id": "relaxed-0-1000",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1275,
+        "getInterstellarCargoCapacity": 5100,
+        "getPlanetaryTripSeconds": 0.14260249554367202
+      }
+    },
+    {
+      "id": "relaxed-1-0",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 25,
+        "getInterstellarCargoCapacity": 100,
+        "getPlanetaryTripSeconds": 4.848484848484848
+      }
+    },
+    {
+      "id": "relaxed-1-1",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 26,
+        "getInterstellarCargoCapacity": 105,
+        "getPlanetaryTripSeconds": 4.617604617604616
+      }
+    },
+    {
+      "id": "relaxed-1-2",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 28,
+        "getInterstellarCargoCapacity": 110,
+        "getPlanetaryTripSeconds": 4.407713498622589
+      }
+    },
+    {
+      "id": "relaxed-1-9",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 36,
+        "getInterstellarCargoCapacity": 145,
+        "getPlanetaryTripSeconds": 3.3437826541274815
+      }
+    },
+    {
+      "id": "relaxed-1-10",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 38,
+        "getInterstellarCargoCapacity": 150,
+        "getPlanetaryTripSeconds": 3.2323232323232323
+      }
+    },
+    {
+      "id": "relaxed-1-11",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 39,
+        "getInterstellarCargoCapacity": 155,
+        "getPlanetaryTripSeconds": 3.128054740957966
+      }
+    },
+    {
+      "id": "relaxed-1-99",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 149,
+        "getInterstellarCargoCapacity": 595,
+        "getPlanetaryTripSeconds": 0.8148714031066971
+      }
+    },
+    {
+      "id": "relaxed-1-999",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1274,
+        "getInterstellarCargoCapacity": 5095,
+        "getPlanetaryTripSeconds": 0.09516162607428552
+      }
+    },
+    {
+      "id": "relaxed-1-1000",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1275,
+        "getInterstellarCargoCapacity": 5100,
+        "getPlanetaryTripSeconds": 0.09506833036244801
+      }
+    },
+    {
+      "id": "relaxed-2-0",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_2"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 25,
+        "getInterstellarCargoCapacity": 100,
+        "getPlanetaryTripSeconds": 4.848484848484848
+      }
+    },
+    {
+      "id": "relaxed-2-1",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_2"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 26,
+        "getInterstellarCargoCapacity": 105,
+        "getPlanetaryTripSeconds": 4.617604617604616
+      }
+    },
+    {
+      "id": "relaxed-2-2",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_2"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 28,
+        "getInterstellarCargoCapacity": 110,
+        "getPlanetaryTripSeconds": 4.407713498622589
+      }
+    },
+    {
+      "id": "relaxed-2-9",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_2"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 36,
+        "getInterstellarCargoCapacity": 145,
+        "getPlanetaryTripSeconds": 3.3437826541274815
+      }
+    },
+    {
+      "id": "relaxed-2-10",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_2"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 38,
+        "getInterstellarCargoCapacity": 150,
+        "getPlanetaryTripSeconds": 3.2323232323232323
+      }
+    },
+    {
+      "id": "relaxed-2-11",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_2"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 39,
+        "getInterstellarCargoCapacity": 155,
+        "getPlanetaryTripSeconds": 3.128054740957966
+      }
+    },
+    {
+      "id": "relaxed-2-99",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_2"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 149,
+        "getInterstellarCargoCapacity": 595,
+        "getPlanetaryTripSeconds": 0.8148714031066971
+      }
+    },
+    {
+      "id": "relaxed-2-999",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_2"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1274,
+        "getInterstellarCargoCapacity": 5095,
+        "getPlanetaryTripSeconds": 0.09516162607428552
+      }
+    },
+    {
+      "id": "relaxed-2-1000",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_2"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1275,
+        "getInterstellarCargoCapacity": 5100,
+        "getPlanetaryTripSeconds": 0.09506833036244801
+      }
+    },
+    {
+      "id": "relaxed-3-0",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 25,
+        "getInterstellarCargoCapacity": 100,
+        "getPlanetaryTripSeconds": 3.6363636363636362
+      }
+    },
+    {
+      "id": "relaxed-3-1",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 26,
+        "getInterstellarCargoCapacity": 105,
+        "getPlanetaryTripSeconds": 3.4632034632034623
+      }
+    },
+    {
+      "id": "relaxed-3-2",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 28,
+        "getInterstellarCargoCapacity": 110,
+        "getPlanetaryTripSeconds": 3.305785123966942
+      }
+    },
+    {
+      "id": "relaxed-3-9",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 36,
+        "getInterstellarCargoCapacity": 145,
+        "getPlanetaryTripSeconds": 2.5078369905956115
+      }
+    },
+    {
+      "id": "relaxed-3-10",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 38,
+        "getInterstellarCargoCapacity": 150,
+        "getPlanetaryTripSeconds": 2.424242424242424
+      }
+    },
+    {
+      "id": "relaxed-3-11",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 39,
+        "getInterstellarCargoCapacity": 155,
+        "getPlanetaryTripSeconds": 2.3460410557184748
+      }
+    },
+    {
+      "id": "relaxed-3-99",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 149,
+        "getInterstellarCargoCapacity": 595,
+        "getPlanetaryTripSeconds": 0.6111535523300229
+      }
+    },
+    {
+      "id": "relaxed-3-999",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1274,
+        "getInterstellarCargoCapacity": 5095,
+        "getPlanetaryTripSeconds": 0.07137121955571414
+      }
+    },
+    {
+      "id": "relaxed-3-1000",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1275,
+        "getInterstellarCargoCapacity": 5100,
+        "getPlanetaryTripSeconds": 0.07130124777183601
+      }
+    },
+    {
+      "id": "relaxed-4-0",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_capacity_1"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 38,
+        "getInterstellarCargoCapacity": 150,
+        "getPlanetaryTripSeconds": 7.2727272727272725
+      }
+    },
+    {
+      "id": "relaxed-4-1",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_capacity_1"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 39,
+        "getInterstellarCargoCapacity": 158,
+        "getPlanetaryTripSeconds": 6.926406926406925
+      }
+    },
+    {
+      "id": "relaxed-4-2",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_capacity_1"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 41,
+        "getInterstellarCargoCapacity": 165,
+        "getPlanetaryTripSeconds": 6.611570247933884
+      }
+    },
+    {
+      "id": "relaxed-4-9",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_capacity_1"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 54,
+        "getInterstellarCargoCapacity": 217,
+        "getPlanetaryTripSeconds": 5.015673981191223
+      }
+    },
+    {
+      "id": "relaxed-4-10",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_capacity_1"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 56,
+        "getInterstellarCargoCapacity": 225,
+        "getPlanetaryTripSeconds": 4.848484848484848
+      }
+    },
+    {
+      "id": "relaxed-4-11",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_capacity_1"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 58,
+        "getInterstellarCargoCapacity": 233,
+        "getPlanetaryTripSeconds": 4.6920821114369495
+      }
+    },
+    {
+      "id": "relaxed-4-99",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_capacity_1"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 223,
+        "getInterstellarCargoCapacity": 893,
+        "getPlanetaryTripSeconds": 1.2223071046600458
+      }
+    },
+    {
+      "id": "relaxed-4-999",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_capacity_1"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1911,
+        "getInterstellarCargoCapacity": 7643,
+        "getPlanetaryTripSeconds": 0.14274243911142828
+      }
+    },
+    {
+      "id": "relaxed-4-1000",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_capacity_1"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1913,
+        "getInterstellarCargoCapacity": 7650,
+        "getPlanetaryTripSeconds": 0.14260249554367202
+      }
+    },
+    {
+      "id": "relaxed-5-0",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 38,
+        "getInterstellarCargoCapacity": 150,
+        "getPlanetaryTripSeconds": 4.848484848484848
+      }
+    },
+    {
+      "id": "relaxed-5-1",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 39,
+        "getInterstellarCargoCapacity": 158,
+        "getPlanetaryTripSeconds": 4.617604617604616
+      }
+    },
+    {
+      "id": "relaxed-5-2",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 41,
+        "getInterstellarCargoCapacity": 165,
+        "getPlanetaryTripSeconds": 4.407713498622589
+      }
+    },
+    {
+      "id": "relaxed-5-9",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 54,
+        "getInterstellarCargoCapacity": 217,
+        "getPlanetaryTripSeconds": 3.3437826541274815
+      }
+    },
+    {
+      "id": "relaxed-5-10",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 56,
+        "getInterstellarCargoCapacity": 225,
+        "getPlanetaryTripSeconds": 3.2323232323232323
+      }
+    },
+    {
+      "id": "relaxed-5-11",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 58,
+        "getInterstellarCargoCapacity": 233,
+        "getPlanetaryTripSeconds": 3.128054740957966
+      }
+    },
+    {
+      "id": "relaxed-5-99",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 223,
+        "getInterstellarCargoCapacity": 893,
+        "getPlanetaryTripSeconds": 0.8148714031066971
+      }
+    },
+    {
+      "id": "relaxed-5-999",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1911,
+        "getInterstellarCargoCapacity": 7643,
+        "getPlanetaryTripSeconds": 0.09516162607428552
+      }
+    },
+    {
+      "id": "relaxed-5-1000",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1913,
+        "getInterstellarCargoCapacity": 7650,
+        "getPlanetaryTripSeconds": 0.09506833036244801
+      }
+    },
+    {
+      "id": "relaxed-6-0",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 38,
+        "getInterstellarCargoCapacity": 150,
+        "getPlanetaryTripSeconds": 4.848484848484848
+      }
+    },
+    {
+      "id": "relaxed-6-1",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 39,
+        "getInterstellarCargoCapacity": 158,
+        "getPlanetaryTripSeconds": 4.617604617604616
+      }
+    },
+    {
+      "id": "relaxed-6-2",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 41,
+        "getInterstellarCargoCapacity": 165,
+        "getPlanetaryTripSeconds": 4.407713498622589
+      }
+    },
+    {
+      "id": "relaxed-6-9",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 54,
+        "getInterstellarCargoCapacity": 217,
+        "getPlanetaryTripSeconds": 3.3437826541274815
+      }
+    },
+    {
+      "id": "relaxed-6-10",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 56,
+        "getInterstellarCargoCapacity": 225,
+        "getPlanetaryTripSeconds": 3.2323232323232323
+      }
+    },
+    {
+      "id": "relaxed-6-11",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 58,
+        "getInterstellarCargoCapacity": 233,
+        "getPlanetaryTripSeconds": 3.128054740957966
+      }
+    },
+    {
+      "id": "relaxed-6-99",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 223,
+        "getInterstellarCargoCapacity": 893,
+        "getPlanetaryTripSeconds": 0.8148714031066971
+      }
+    },
+    {
+      "id": "relaxed-6-999",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1911,
+        "getInterstellarCargoCapacity": 7643,
+        "getPlanetaryTripSeconds": 0.09516162607428552
+      }
+    },
+    {
+      "id": "relaxed-6-1000",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1913,
+        "getInterstellarCargoCapacity": 7650,
+        "getPlanetaryTripSeconds": 0.09506833036244801
+      }
+    },
+    {
+      "id": "relaxed-7-0",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 38,
+        "getInterstellarCargoCapacity": 150,
+        "getPlanetaryTripSeconds": 3.6363636363636362
+      }
+    },
+    {
+      "id": "relaxed-7-1",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 39,
+        "getInterstellarCargoCapacity": 158,
+        "getPlanetaryTripSeconds": 3.4632034632034623
+      }
+    },
+    {
+      "id": "relaxed-7-2",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 41,
+        "getInterstellarCargoCapacity": 165,
+        "getPlanetaryTripSeconds": 3.305785123966942
+      }
+    },
+    {
+      "id": "relaxed-7-9",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 54,
+        "getInterstellarCargoCapacity": 217,
+        "getPlanetaryTripSeconds": 2.5078369905956115
+      }
+    },
+    {
+      "id": "relaxed-7-10",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 56,
+        "getInterstellarCargoCapacity": 225,
+        "getPlanetaryTripSeconds": 2.424242424242424
+      }
+    },
+    {
+      "id": "relaxed-7-11",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 58,
+        "getInterstellarCargoCapacity": 233,
+        "getPlanetaryTripSeconds": 2.3460410557184748
+      }
+    },
+    {
+      "id": "relaxed-7-99",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 223,
+        "getInterstellarCargoCapacity": 893,
+        "getPlanetaryTripSeconds": 0.6111535523300229
+      }
+    },
+    {
+      "id": "relaxed-7-999",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1911,
+        "getInterstellarCargoCapacity": 7643,
+        "getPlanetaryTripSeconds": 0.07137121955571414
+      }
+    },
+    {
+      "id": "relaxed-7-1000",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1913,
+        "getInterstellarCargoCapacity": 7650,
+        "getPlanetaryTripSeconds": 0.07130124777183601
+      }
+    },
+    {
+      "id": "relaxed-8-0",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_capacity_2"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 38,
+        "getInterstellarCargoCapacity": 150,
+        "getPlanetaryTripSeconds": 7.2727272727272725
+      }
+    },
+    {
+      "id": "relaxed-8-1",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_capacity_2"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 39,
+        "getInterstellarCargoCapacity": 158,
+        "getPlanetaryTripSeconds": 6.926406926406925
+      }
+    },
+    {
+      "id": "relaxed-8-2",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_capacity_2"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 41,
+        "getInterstellarCargoCapacity": 165,
+        "getPlanetaryTripSeconds": 6.611570247933884
+      }
+    },
+    {
+      "id": "relaxed-8-9",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_capacity_2"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 54,
+        "getInterstellarCargoCapacity": 217,
+        "getPlanetaryTripSeconds": 5.015673981191223
+      }
+    },
+    {
+      "id": "relaxed-8-10",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_capacity_2"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 56,
+        "getInterstellarCargoCapacity": 225,
+        "getPlanetaryTripSeconds": 4.848484848484848
+      }
+    },
+    {
+      "id": "relaxed-8-11",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_capacity_2"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 58,
+        "getInterstellarCargoCapacity": 233,
+        "getPlanetaryTripSeconds": 4.6920821114369495
+      }
+    },
+    {
+      "id": "relaxed-8-99",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_capacity_2"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 223,
+        "getInterstellarCargoCapacity": 893,
+        "getPlanetaryTripSeconds": 1.2223071046600458
+      }
+    },
+    {
+      "id": "relaxed-8-999",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_capacity_2"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1911,
+        "getInterstellarCargoCapacity": 7643,
+        "getPlanetaryTripSeconds": 0.14274243911142828
+      }
+    },
+    {
+      "id": "relaxed-8-1000",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_capacity_2"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1913,
+        "getInterstellarCargoCapacity": 7650,
+        "getPlanetaryTripSeconds": 0.14260249554367202
+      }
+    },
+    {
+      "id": "relaxed-9-0",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_2"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 38,
+        "getInterstellarCargoCapacity": 150,
+        "getPlanetaryTripSeconds": 4.848484848484848
+      }
+    },
+    {
+      "id": "relaxed-9-1",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_2"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 39,
+        "getInterstellarCargoCapacity": 158,
+        "getPlanetaryTripSeconds": 4.617604617604616
+      }
+    },
+    {
+      "id": "relaxed-9-2",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_2"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 41,
+        "getInterstellarCargoCapacity": 165,
+        "getPlanetaryTripSeconds": 4.407713498622589
+      }
+    },
+    {
+      "id": "relaxed-9-9",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_2"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 54,
+        "getInterstellarCargoCapacity": 217,
+        "getPlanetaryTripSeconds": 3.3437826541274815
+      }
+    },
+    {
+      "id": "relaxed-9-10",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_2"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 56,
+        "getInterstellarCargoCapacity": 225,
+        "getPlanetaryTripSeconds": 3.2323232323232323
+      }
+    },
+    {
+      "id": "relaxed-9-11",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_2"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 58,
+        "getInterstellarCargoCapacity": 233,
+        "getPlanetaryTripSeconds": 3.128054740957966
+      }
+    },
+    {
+      "id": "relaxed-9-99",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_2"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 223,
+        "getInterstellarCargoCapacity": 893,
+        "getPlanetaryTripSeconds": 0.8148714031066971
+      }
+    },
+    {
+      "id": "relaxed-9-999",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_2"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1911,
+        "getInterstellarCargoCapacity": 7643,
+        "getPlanetaryTripSeconds": 0.09516162607428552
+      }
+    },
+    {
+      "id": "relaxed-9-1000",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_2"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1913,
+        "getInterstellarCargoCapacity": 7650,
+        "getPlanetaryTripSeconds": 0.09506833036244801
+      }
+    },
+    {
+      "id": "relaxed-10-0",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 38,
+        "getInterstellarCargoCapacity": 150,
+        "getPlanetaryTripSeconds": 4.848484848484848
+      }
+    },
+    {
+      "id": "relaxed-10-1",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 39,
+        "getInterstellarCargoCapacity": 158,
+        "getPlanetaryTripSeconds": 4.617604617604616
+      }
+    },
+    {
+      "id": "relaxed-10-2",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 41,
+        "getInterstellarCargoCapacity": 165,
+        "getPlanetaryTripSeconds": 4.407713498622589
+      }
+    },
+    {
+      "id": "relaxed-10-9",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 54,
+        "getInterstellarCargoCapacity": 217,
+        "getPlanetaryTripSeconds": 3.3437826541274815
+      }
+    },
+    {
+      "id": "relaxed-10-10",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 56,
+        "getInterstellarCargoCapacity": 225,
+        "getPlanetaryTripSeconds": 3.2323232323232323
+      }
+    },
+    {
+      "id": "relaxed-10-11",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 58,
+        "getInterstellarCargoCapacity": 233,
+        "getPlanetaryTripSeconds": 3.128054740957966
+      }
+    },
+    {
+      "id": "relaxed-10-99",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 223,
+        "getInterstellarCargoCapacity": 893,
+        "getPlanetaryTripSeconds": 0.8148714031066971
+      }
+    },
+    {
+      "id": "relaxed-10-999",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1911,
+        "getInterstellarCargoCapacity": 7643,
+        "getPlanetaryTripSeconds": 0.09516162607428552
+      }
+    },
+    {
+      "id": "relaxed-10-1000",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1913,
+        "getInterstellarCargoCapacity": 7650,
+        "getPlanetaryTripSeconds": 0.09506833036244801
+      }
+    },
+    {
+      "id": "relaxed-11-0",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 38,
+        "getInterstellarCargoCapacity": 150,
+        "getPlanetaryTripSeconds": 3.6363636363636362
+      }
+    },
+    {
+      "id": "relaxed-11-1",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 39,
+        "getInterstellarCargoCapacity": 158,
+        "getPlanetaryTripSeconds": 3.4632034632034623
+      }
+    },
+    {
+      "id": "relaxed-11-2",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 41,
+        "getInterstellarCargoCapacity": 165,
+        "getPlanetaryTripSeconds": 3.305785123966942
+      }
+    },
+    {
+      "id": "relaxed-11-9",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 54,
+        "getInterstellarCargoCapacity": 217,
+        "getPlanetaryTripSeconds": 2.5078369905956115
+      }
+    },
+    {
+      "id": "relaxed-11-10",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 56,
+        "getInterstellarCargoCapacity": 225,
+        "getPlanetaryTripSeconds": 2.424242424242424
+      }
+    },
+    {
+      "id": "relaxed-11-11",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 58,
+        "getInterstellarCargoCapacity": 233,
+        "getPlanetaryTripSeconds": 2.3460410557184748
+      }
+    },
+    {
+      "id": "relaxed-11-99",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 223,
+        "getInterstellarCargoCapacity": 893,
+        "getPlanetaryTripSeconds": 0.6111535523300229
+      }
+    },
+    {
+      "id": "relaxed-11-999",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1911,
+        "getInterstellarCargoCapacity": 7643,
+        "getPlanetaryTripSeconds": 0.07137121955571414
+      }
+    },
+    {
+      "id": "relaxed-11-1000",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1913,
+        "getInterstellarCargoCapacity": 7650,
+        "getPlanetaryTripSeconds": 0.07130124777183601
+      }
+    },
+    {
+      "id": "relaxed-12-0",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 50,
+        "getInterstellarCargoCapacity": 200,
+        "getPlanetaryTripSeconds": 7.2727272727272725
+      }
+    },
+    {
+      "id": "relaxed-12-1",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 53,
+        "getInterstellarCargoCapacity": 210,
+        "getPlanetaryTripSeconds": 6.926406926406925
+      }
+    },
+    {
+      "id": "relaxed-12-2",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 55,
+        "getInterstellarCargoCapacity": 220,
+        "getPlanetaryTripSeconds": 6.611570247933884
+      }
+    },
+    {
+      "id": "relaxed-12-9",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 73,
+        "getInterstellarCargoCapacity": 290,
+        "getPlanetaryTripSeconds": 5.015673981191223
+      }
+    },
+    {
+      "id": "relaxed-12-10",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 75,
+        "getInterstellarCargoCapacity": 300,
+        "getPlanetaryTripSeconds": 4.848484848484848
+      }
+    },
+    {
+      "id": "relaxed-12-11",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 78,
+        "getInterstellarCargoCapacity": 310,
+        "getPlanetaryTripSeconds": 4.6920821114369495
+      }
+    },
+    {
+      "id": "relaxed-12-99",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 298,
+        "getInterstellarCargoCapacity": 1190,
+        "getPlanetaryTripSeconds": 1.2223071046600458
+      }
+    },
+    {
+      "id": "relaxed-12-999",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 2548,
+        "getInterstellarCargoCapacity": 10190,
+        "getPlanetaryTripSeconds": 0.14274243911142828
+      }
+    },
+    {
+      "id": "relaxed-12-1000",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 2550,
+        "getInterstellarCargoCapacity": 10200,
+        "getPlanetaryTripSeconds": 0.14260249554367202
+      }
+    },
+    {
+      "id": "relaxed-13-0",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 50,
+        "getInterstellarCargoCapacity": 200,
+        "getPlanetaryTripSeconds": 4.848484848484848
+      }
+    },
+    {
+      "id": "relaxed-13-1",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 53,
+        "getInterstellarCargoCapacity": 210,
+        "getPlanetaryTripSeconds": 4.617604617604616
+      }
+    },
+    {
+      "id": "relaxed-13-2",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 55,
+        "getInterstellarCargoCapacity": 220,
+        "getPlanetaryTripSeconds": 4.407713498622589
+      }
+    },
+    {
+      "id": "relaxed-13-9",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 73,
+        "getInterstellarCargoCapacity": 290,
+        "getPlanetaryTripSeconds": 3.3437826541274815
+      }
+    },
+    {
+      "id": "relaxed-13-10",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 75,
+        "getInterstellarCargoCapacity": 300,
+        "getPlanetaryTripSeconds": 3.2323232323232323
+      }
+    },
+    {
+      "id": "relaxed-13-11",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 78,
+        "getInterstellarCargoCapacity": 310,
+        "getPlanetaryTripSeconds": 3.128054740957966
+      }
+    },
+    {
+      "id": "relaxed-13-99",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 298,
+        "getInterstellarCargoCapacity": 1190,
+        "getPlanetaryTripSeconds": 0.8148714031066971
+      }
+    },
+    {
+      "id": "relaxed-13-999",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 2548,
+        "getInterstellarCargoCapacity": 10190,
+        "getPlanetaryTripSeconds": 0.09516162607428552
+      }
+    },
+    {
+      "id": "relaxed-13-1000",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 2550,
+        "getInterstellarCargoCapacity": 10200,
+        "getPlanetaryTripSeconds": 0.09506833036244801
+      }
+    },
+    {
+      "id": "relaxed-14-0",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 50,
+        "getInterstellarCargoCapacity": 200,
+        "getPlanetaryTripSeconds": 4.848484848484848
+      }
+    },
+    {
+      "id": "relaxed-14-1",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 53,
+        "getInterstellarCargoCapacity": 210,
+        "getPlanetaryTripSeconds": 4.617604617604616
+      }
+    },
+    {
+      "id": "relaxed-14-2",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 55,
+        "getInterstellarCargoCapacity": 220,
+        "getPlanetaryTripSeconds": 4.407713498622589
+      }
+    },
+    {
+      "id": "relaxed-14-9",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 73,
+        "getInterstellarCargoCapacity": 290,
+        "getPlanetaryTripSeconds": 3.3437826541274815
+      }
+    },
+    {
+      "id": "relaxed-14-10",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 75,
+        "getInterstellarCargoCapacity": 300,
+        "getPlanetaryTripSeconds": 3.2323232323232323
+      }
+    },
+    {
+      "id": "relaxed-14-11",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 78,
+        "getInterstellarCargoCapacity": 310,
+        "getPlanetaryTripSeconds": 3.128054740957966
+      }
+    },
+    {
+      "id": "relaxed-14-99",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 298,
+        "getInterstellarCargoCapacity": 1190,
+        "getPlanetaryTripSeconds": 0.8148714031066971
+      }
+    },
+    {
+      "id": "relaxed-14-999",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 2548,
+        "getInterstellarCargoCapacity": 10190,
+        "getPlanetaryTripSeconds": 0.09516162607428552
+      }
+    },
+    {
+      "id": "relaxed-14-1000",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 2550,
+        "getInterstellarCargoCapacity": 10200,
+        "getPlanetaryTripSeconds": 0.09506833036244801
+      }
+    },
+    {
+      "id": "relaxed-15-0",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 50,
+        "getInterstellarCargoCapacity": 200,
+        "getPlanetaryTripSeconds": 3.6363636363636362
+      }
+    },
+    {
+      "id": "relaxed-15-1",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 53,
+        "getInterstellarCargoCapacity": 210,
+        "getPlanetaryTripSeconds": 3.4632034632034623
+      }
+    },
+    {
+      "id": "relaxed-15-2",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 55,
+        "getInterstellarCargoCapacity": 220,
+        "getPlanetaryTripSeconds": 3.305785123966942
+      }
+    },
+    {
+      "id": "relaxed-15-9",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 73,
+        "getInterstellarCargoCapacity": 290,
+        "getPlanetaryTripSeconds": 2.5078369905956115
+      }
+    },
+    {
+      "id": "relaxed-15-10",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 75,
+        "getInterstellarCargoCapacity": 300,
+        "getPlanetaryTripSeconds": 2.424242424242424
+      }
+    },
+    {
+      "id": "relaxed-15-11",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 78,
+        "getInterstellarCargoCapacity": 310,
+        "getPlanetaryTripSeconds": 2.3460410557184748
+      }
+    },
+    {
+      "id": "relaxed-15-99",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 298,
+        "getInterstellarCargoCapacity": 1190,
+        "getPlanetaryTripSeconds": 0.6111535523300229
+      }
+    },
+    {
+      "id": "relaxed-15-999",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 2548,
+        "getInterstellarCargoCapacity": 10190,
+        "getPlanetaryTripSeconds": 0.07137121955571414
+      }
+    },
+    {
+      "id": "relaxed-15-1000",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 2550,
+        "getInterstellarCargoCapacity": 10200,
+        "getPlanetaryTripSeconds": 0.07130124777183601
+      }
+    },
+    {
+      "id": "standard-0-0",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 25,
+        "getInterstellarCargoCapacity": 100,
+        "getPlanetaryTripSeconds": 8
+      }
+    },
+    {
+      "id": "standard-0-1",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 26,
+        "getInterstellarCargoCapacity": 105,
+        "getPlanetaryTripSeconds": 7.619047619047619
+      }
+    },
+    {
+      "id": "standard-0-2",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 28,
+        "getInterstellarCargoCapacity": 110,
+        "getPlanetaryTripSeconds": 7.2727272727272725
+      }
+    },
+    {
+      "id": "standard-0-9",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 36,
+        "getInterstellarCargoCapacity": 145,
+        "getPlanetaryTripSeconds": 5.517241379310345
+      }
+    },
+    {
+      "id": "standard-0-10",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 38,
+        "getInterstellarCargoCapacity": 150,
+        "getPlanetaryTripSeconds": 5.333333333333333
+      }
+    },
+    {
+      "id": "standard-0-11",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 39,
+        "getInterstellarCargoCapacity": 155,
+        "getPlanetaryTripSeconds": 5.161290322580645
+      }
+    },
+    {
+      "id": "standard-0-99",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 149,
+        "getInterstellarCargoCapacity": 595,
+        "getPlanetaryTripSeconds": 1.3445378151260503
+      }
+    },
+    {
+      "id": "standard-0-999",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1274,
+        "getInterstellarCargoCapacity": 5095,
+        "getPlanetaryTripSeconds": 0.15701668302257113
+      }
+    },
+    {
+      "id": "standard-0-1000",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1275,
+        "getInterstellarCargoCapacity": 5100,
+        "getPlanetaryTripSeconds": 0.1568627450980392
+      }
+    },
+    {
+      "id": "standard-1-0",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 25,
+        "getInterstellarCargoCapacity": 100,
+        "getPlanetaryTripSeconds": 5.333333333333333
+      }
+    },
+    {
+      "id": "standard-1-1",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 26,
+        "getInterstellarCargoCapacity": 105,
+        "getPlanetaryTripSeconds": 5.079365079365079
+      }
+    },
+    {
+      "id": "standard-1-2",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 28,
+        "getInterstellarCargoCapacity": 110,
+        "getPlanetaryTripSeconds": 4.848484848484848
+      }
+    },
+    {
+      "id": "standard-1-9",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 36,
+        "getInterstellarCargoCapacity": 145,
+        "getPlanetaryTripSeconds": 3.6781609195402303
+      }
+    },
+    {
+      "id": "standard-1-10",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 38,
+        "getInterstellarCargoCapacity": 150,
+        "getPlanetaryTripSeconds": 3.5555555555555554
+      }
+    },
+    {
+      "id": "standard-1-11",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 39,
+        "getInterstellarCargoCapacity": 155,
+        "getPlanetaryTripSeconds": 3.440860215053763
+      }
+    },
+    {
+      "id": "standard-1-99",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 149,
+        "getInterstellarCargoCapacity": 595,
+        "getPlanetaryTripSeconds": 0.8963585434173669
+      }
+    },
+    {
+      "id": "standard-1-999",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1274,
+        "getInterstellarCargoCapacity": 5095,
+        "getPlanetaryTripSeconds": 0.10467778868171408
+      }
+    },
+    {
+      "id": "standard-1-1000",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1275,
+        "getInterstellarCargoCapacity": 5100,
+        "getPlanetaryTripSeconds": 0.10457516339869281
+      }
+    },
+    {
+      "id": "standard-2-0",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_2"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 25,
+        "getInterstellarCargoCapacity": 100,
+        "getPlanetaryTripSeconds": 5.333333333333333
+      }
+    },
+    {
+      "id": "standard-2-1",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_2"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 26,
+        "getInterstellarCargoCapacity": 105,
+        "getPlanetaryTripSeconds": 5.079365079365079
+      }
+    },
+    {
+      "id": "standard-2-2",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_2"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 28,
+        "getInterstellarCargoCapacity": 110,
+        "getPlanetaryTripSeconds": 4.848484848484848
+      }
+    },
+    {
+      "id": "standard-2-9",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_2"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 36,
+        "getInterstellarCargoCapacity": 145,
+        "getPlanetaryTripSeconds": 3.6781609195402303
+      }
+    },
+    {
+      "id": "standard-2-10",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_2"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 38,
+        "getInterstellarCargoCapacity": 150,
+        "getPlanetaryTripSeconds": 3.5555555555555554
+      }
+    },
+    {
+      "id": "standard-2-11",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_2"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 39,
+        "getInterstellarCargoCapacity": 155,
+        "getPlanetaryTripSeconds": 3.440860215053763
+      }
+    },
+    {
+      "id": "standard-2-99",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_2"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 149,
+        "getInterstellarCargoCapacity": 595,
+        "getPlanetaryTripSeconds": 0.8963585434173669
+      }
+    },
+    {
+      "id": "standard-2-999",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_2"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1274,
+        "getInterstellarCargoCapacity": 5095,
+        "getPlanetaryTripSeconds": 0.10467778868171408
+      }
+    },
+    {
+      "id": "standard-2-1000",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_2"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1275,
+        "getInterstellarCargoCapacity": 5100,
+        "getPlanetaryTripSeconds": 0.10457516339869281
+      }
+    },
+    {
+      "id": "standard-3-0",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 25,
+        "getInterstellarCargoCapacity": 100,
+        "getPlanetaryTripSeconds": 4
+      }
+    },
+    {
+      "id": "standard-3-1",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 26,
+        "getInterstellarCargoCapacity": 105,
+        "getPlanetaryTripSeconds": 3.8095238095238093
+      }
+    },
+    {
+      "id": "standard-3-2",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 28,
+        "getInterstellarCargoCapacity": 110,
+        "getPlanetaryTripSeconds": 3.6363636363636362
+      }
+    },
+    {
+      "id": "standard-3-9",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 36,
+        "getInterstellarCargoCapacity": 145,
+        "getPlanetaryTripSeconds": 2.7586206896551726
+      }
+    },
+    {
+      "id": "standard-3-10",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 38,
+        "getInterstellarCargoCapacity": 150,
+        "getPlanetaryTripSeconds": 2.6666666666666665
+      }
+    },
+    {
+      "id": "standard-3-11",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 39,
+        "getInterstellarCargoCapacity": 155,
+        "getPlanetaryTripSeconds": 2.5806451612903225
+      }
+    },
+    {
+      "id": "standard-3-99",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 149,
+        "getInterstellarCargoCapacity": 595,
+        "getPlanetaryTripSeconds": 0.6722689075630252
+      }
+    },
+    {
+      "id": "standard-3-999",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1274,
+        "getInterstellarCargoCapacity": 5095,
+        "getPlanetaryTripSeconds": 0.07850834151128556
+      }
+    },
+    {
+      "id": "standard-3-1000",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1275,
+        "getInterstellarCargoCapacity": 5100,
+        "getPlanetaryTripSeconds": 0.0784313725490196
+      }
+    },
+    {
+      "id": "standard-4-0",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_capacity_1"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 38,
+        "getInterstellarCargoCapacity": 150,
+        "getPlanetaryTripSeconds": 8
+      }
+    },
+    {
+      "id": "standard-4-1",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_capacity_1"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 39,
+        "getInterstellarCargoCapacity": 158,
+        "getPlanetaryTripSeconds": 7.619047619047619
+      }
+    },
+    {
+      "id": "standard-4-2",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_capacity_1"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 41,
+        "getInterstellarCargoCapacity": 165,
+        "getPlanetaryTripSeconds": 7.2727272727272725
+      }
+    },
+    {
+      "id": "standard-4-9",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_capacity_1"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 54,
+        "getInterstellarCargoCapacity": 217,
+        "getPlanetaryTripSeconds": 5.517241379310345
+      }
+    },
+    {
+      "id": "standard-4-10",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_capacity_1"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 56,
+        "getInterstellarCargoCapacity": 225,
+        "getPlanetaryTripSeconds": 5.333333333333333
+      }
+    },
+    {
+      "id": "standard-4-11",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_capacity_1"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 58,
+        "getInterstellarCargoCapacity": 233,
+        "getPlanetaryTripSeconds": 5.161290322580645
+      }
+    },
+    {
+      "id": "standard-4-99",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_capacity_1"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 223,
+        "getInterstellarCargoCapacity": 893,
+        "getPlanetaryTripSeconds": 1.3445378151260503
+      }
+    },
+    {
+      "id": "standard-4-999",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_capacity_1"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1911,
+        "getInterstellarCargoCapacity": 7643,
+        "getPlanetaryTripSeconds": 0.15701668302257113
+      }
+    },
+    {
+      "id": "standard-4-1000",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_capacity_1"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1913,
+        "getInterstellarCargoCapacity": 7650,
+        "getPlanetaryTripSeconds": 0.1568627450980392
+      }
+    },
+    {
+      "id": "standard-5-0",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 38,
+        "getInterstellarCargoCapacity": 150,
+        "getPlanetaryTripSeconds": 5.333333333333333
+      }
+    },
+    {
+      "id": "standard-5-1",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 39,
+        "getInterstellarCargoCapacity": 158,
+        "getPlanetaryTripSeconds": 5.079365079365079
+      }
+    },
+    {
+      "id": "standard-5-2",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 41,
+        "getInterstellarCargoCapacity": 165,
+        "getPlanetaryTripSeconds": 4.848484848484848
+      }
+    },
+    {
+      "id": "standard-5-9",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 54,
+        "getInterstellarCargoCapacity": 217,
+        "getPlanetaryTripSeconds": 3.6781609195402303
+      }
+    },
+    {
+      "id": "standard-5-10",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 56,
+        "getInterstellarCargoCapacity": 225,
+        "getPlanetaryTripSeconds": 3.5555555555555554
+      }
+    },
+    {
+      "id": "standard-5-11",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 58,
+        "getInterstellarCargoCapacity": 233,
+        "getPlanetaryTripSeconds": 3.440860215053763
+      }
+    },
+    {
+      "id": "standard-5-99",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 223,
+        "getInterstellarCargoCapacity": 893,
+        "getPlanetaryTripSeconds": 0.8963585434173669
+      }
+    },
+    {
+      "id": "standard-5-999",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1911,
+        "getInterstellarCargoCapacity": 7643,
+        "getPlanetaryTripSeconds": 0.10467778868171408
+      }
+    },
+    {
+      "id": "standard-5-1000",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1913,
+        "getInterstellarCargoCapacity": 7650,
+        "getPlanetaryTripSeconds": 0.10457516339869281
+      }
+    },
+    {
+      "id": "standard-6-0",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 38,
+        "getInterstellarCargoCapacity": 150,
+        "getPlanetaryTripSeconds": 5.333333333333333
+      }
+    },
+    {
+      "id": "standard-6-1",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 39,
+        "getInterstellarCargoCapacity": 158,
+        "getPlanetaryTripSeconds": 5.079365079365079
+      }
+    },
+    {
+      "id": "standard-6-2",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 41,
+        "getInterstellarCargoCapacity": 165,
+        "getPlanetaryTripSeconds": 4.848484848484848
+      }
+    },
+    {
+      "id": "standard-6-9",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 54,
+        "getInterstellarCargoCapacity": 217,
+        "getPlanetaryTripSeconds": 3.6781609195402303
+      }
+    },
+    {
+      "id": "standard-6-10",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 56,
+        "getInterstellarCargoCapacity": 225,
+        "getPlanetaryTripSeconds": 3.5555555555555554
+      }
+    },
+    {
+      "id": "standard-6-11",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 58,
+        "getInterstellarCargoCapacity": 233,
+        "getPlanetaryTripSeconds": 3.440860215053763
+      }
+    },
+    {
+      "id": "standard-6-99",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 223,
+        "getInterstellarCargoCapacity": 893,
+        "getPlanetaryTripSeconds": 0.8963585434173669
+      }
+    },
+    {
+      "id": "standard-6-999",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1911,
+        "getInterstellarCargoCapacity": 7643,
+        "getPlanetaryTripSeconds": 0.10467778868171408
+      }
+    },
+    {
+      "id": "standard-6-1000",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1913,
+        "getInterstellarCargoCapacity": 7650,
+        "getPlanetaryTripSeconds": 0.10457516339869281
+      }
+    },
+    {
+      "id": "standard-7-0",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 38,
+        "getInterstellarCargoCapacity": 150,
+        "getPlanetaryTripSeconds": 4
+      }
+    },
+    {
+      "id": "standard-7-1",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 39,
+        "getInterstellarCargoCapacity": 158,
+        "getPlanetaryTripSeconds": 3.8095238095238093
+      }
+    },
+    {
+      "id": "standard-7-2",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 41,
+        "getInterstellarCargoCapacity": 165,
+        "getPlanetaryTripSeconds": 3.6363636363636362
+      }
+    },
+    {
+      "id": "standard-7-9",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 54,
+        "getInterstellarCargoCapacity": 217,
+        "getPlanetaryTripSeconds": 2.7586206896551726
+      }
+    },
+    {
+      "id": "standard-7-10",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 56,
+        "getInterstellarCargoCapacity": 225,
+        "getPlanetaryTripSeconds": 2.6666666666666665
+      }
+    },
+    {
+      "id": "standard-7-11",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 58,
+        "getInterstellarCargoCapacity": 233,
+        "getPlanetaryTripSeconds": 2.5806451612903225
+      }
+    },
+    {
+      "id": "standard-7-99",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 223,
+        "getInterstellarCargoCapacity": 893,
+        "getPlanetaryTripSeconds": 0.6722689075630252
+      }
+    },
+    {
+      "id": "standard-7-999",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1911,
+        "getInterstellarCargoCapacity": 7643,
+        "getPlanetaryTripSeconds": 0.07850834151128556
+      }
+    },
+    {
+      "id": "standard-7-1000",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1913,
+        "getInterstellarCargoCapacity": 7650,
+        "getPlanetaryTripSeconds": 0.0784313725490196
+      }
+    },
+    {
+      "id": "standard-8-0",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_capacity_2"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 38,
+        "getInterstellarCargoCapacity": 150,
+        "getPlanetaryTripSeconds": 8
+      }
+    },
+    {
+      "id": "standard-8-1",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_capacity_2"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 39,
+        "getInterstellarCargoCapacity": 158,
+        "getPlanetaryTripSeconds": 7.619047619047619
+      }
+    },
+    {
+      "id": "standard-8-2",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_capacity_2"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 41,
+        "getInterstellarCargoCapacity": 165,
+        "getPlanetaryTripSeconds": 7.2727272727272725
+      }
+    },
+    {
+      "id": "standard-8-9",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_capacity_2"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 54,
+        "getInterstellarCargoCapacity": 217,
+        "getPlanetaryTripSeconds": 5.517241379310345
+      }
+    },
+    {
+      "id": "standard-8-10",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_capacity_2"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 56,
+        "getInterstellarCargoCapacity": 225,
+        "getPlanetaryTripSeconds": 5.333333333333333
+      }
+    },
+    {
+      "id": "standard-8-11",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_capacity_2"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 58,
+        "getInterstellarCargoCapacity": 233,
+        "getPlanetaryTripSeconds": 5.161290322580645
+      }
+    },
+    {
+      "id": "standard-8-99",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_capacity_2"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 223,
+        "getInterstellarCargoCapacity": 893,
+        "getPlanetaryTripSeconds": 1.3445378151260503
+      }
+    },
+    {
+      "id": "standard-8-999",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_capacity_2"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1911,
+        "getInterstellarCargoCapacity": 7643,
+        "getPlanetaryTripSeconds": 0.15701668302257113
+      }
+    },
+    {
+      "id": "standard-8-1000",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_capacity_2"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1913,
+        "getInterstellarCargoCapacity": 7650,
+        "getPlanetaryTripSeconds": 0.1568627450980392
+      }
+    },
+    {
+      "id": "standard-9-0",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_2"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 38,
+        "getInterstellarCargoCapacity": 150,
+        "getPlanetaryTripSeconds": 5.333333333333333
+      }
+    },
+    {
+      "id": "standard-9-1",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_2"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 39,
+        "getInterstellarCargoCapacity": 158,
+        "getPlanetaryTripSeconds": 5.079365079365079
+      }
+    },
+    {
+      "id": "standard-9-2",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_2"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 41,
+        "getInterstellarCargoCapacity": 165,
+        "getPlanetaryTripSeconds": 4.848484848484848
+      }
+    },
+    {
+      "id": "standard-9-9",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_2"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 54,
+        "getInterstellarCargoCapacity": 217,
+        "getPlanetaryTripSeconds": 3.6781609195402303
+      }
+    },
+    {
+      "id": "standard-9-10",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_2"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 56,
+        "getInterstellarCargoCapacity": 225,
+        "getPlanetaryTripSeconds": 3.5555555555555554
+      }
+    },
+    {
+      "id": "standard-9-11",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_2"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 58,
+        "getInterstellarCargoCapacity": 233,
+        "getPlanetaryTripSeconds": 3.440860215053763
+      }
+    },
+    {
+      "id": "standard-9-99",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_2"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 223,
+        "getInterstellarCargoCapacity": 893,
+        "getPlanetaryTripSeconds": 0.8963585434173669
+      }
+    },
+    {
+      "id": "standard-9-999",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_2"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1911,
+        "getInterstellarCargoCapacity": 7643,
+        "getPlanetaryTripSeconds": 0.10467778868171408
+      }
+    },
+    {
+      "id": "standard-9-1000",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_2"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1913,
+        "getInterstellarCargoCapacity": 7650,
+        "getPlanetaryTripSeconds": 0.10457516339869281
+      }
+    },
+    {
+      "id": "standard-10-0",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 38,
+        "getInterstellarCargoCapacity": 150,
+        "getPlanetaryTripSeconds": 5.333333333333333
+      }
+    },
+    {
+      "id": "standard-10-1",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 39,
+        "getInterstellarCargoCapacity": 158,
+        "getPlanetaryTripSeconds": 5.079365079365079
+      }
+    },
+    {
+      "id": "standard-10-2",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 41,
+        "getInterstellarCargoCapacity": 165,
+        "getPlanetaryTripSeconds": 4.848484848484848
+      }
+    },
+    {
+      "id": "standard-10-9",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 54,
+        "getInterstellarCargoCapacity": 217,
+        "getPlanetaryTripSeconds": 3.6781609195402303
+      }
+    },
+    {
+      "id": "standard-10-10",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 56,
+        "getInterstellarCargoCapacity": 225,
+        "getPlanetaryTripSeconds": 3.5555555555555554
+      }
+    },
+    {
+      "id": "standard-10-11",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 58,
+        "getInterstellarCargoCapacity": 233,
+        "getPlanetaryTripSeconds": 3.440860215053763
+      }
+    },
+    {
+      "id": "standard-10-99",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 223,
+        "getInterstellarCargoCapacity": 893,
+        "getPlanetaryTripSeconds": 0.8963585434173669
+      }
+    },
+    {
+      "id": "standard-10-999",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1911,
+        "getInterstellarCargoCapacity": 7643,
+        "getPlanetaryTripSeconds": 0.10467778868171408
+      }
+    },
+    {
+      "id": "standard-10-1000",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1913,
+        "getInterstellarCargoCapacity": 7650,
+        "getPlanetaryTripSeconds": 0.10457516339869281
+      }
+    },
+    {
+      "id": "standard-11-0",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 38,
+        "getInterstellarCargoCapacity": 150,
+        "getPlanetaryTripSeconds": 4
+      }
+    },
+    {
+      "id": "standard-11-1",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 39,
+        "getInterstellarCargoCapacity": 158,
+        "getPlanetaryTripSeconds": 3.8095238095238093
+      }
+    },
+    {
+      "id": "standard-11-2",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 41,
+        "getInterstellarCargoCapacity": 165,
+        "getPlanetaryTripSeconds": 3.6363636363636362
+      }
+    },
+    {
+      "id": "standard-11-9",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 54,
+        "getInterstellarCargoCapacity": 217,
+        "getPlanetaryTripSeconds": 2.7586206896551726
+      }
+    },
+    {
+      "id": "standard-11-10",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 56,
+        "getInterstellarCargoCapacity": 225,
+        "getPlanetaryTripSeconds": 2.6666666666666665
+      }
+    },
+    {
+      "id": "standard-11-11",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 58,
+        "getInterstellarCargoCapacity": 233,
+        "getPlanetaryTripSeconds": 2.5806451612903225
+      }
+    },
+    {
+      "id": "standard-11-99",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 223,
+        "getInterstellarCargoCapacity": 893,
+        "getPlanetaryTripSeconds": 0.6722689075630252
+      }
+    },
+    {
+      "id": "standard-11-999",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1911,
+        "getInterstellarCargoCapacity": 7643,
+        "getPlanetaryTripSeconds": 0.07850834151128556
+      }
+    },
+    {
+      "id": "standard-11-1000",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1913,
+        "getInterstellarCargoCapacity": 7650,
+        "getPlanetaryTripSeconds": 0.0784313725490196
+      }
+    },
+    {
+      "id": "standard-12-0",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 50,
+        "getInterstellarCargoCapacity": 200,
+        "getPlanetaryTripSeconds": 8
+      }
+    },
+    {
+      "id": "standard-12-1",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 53,
+        "getInterstellarCargoCapacity": 210,
+        "getPlanetaryTripSeconds": 7.619047619047619
+      }
+    },
+    {
+      "id": "standard-12-2",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 55,
+        "getInterstellarCargoCapacity": 220,
+        "getPlanetaryTripSeconds": 7.2727272727272725
+      }
+    },
+    {
+      "id": "standard-12-9",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 73,
+        "getInterstellarCargoCapacity": 290,
+        "getPlanetaryTripSeconds": 5.517241379310345
+      }
+    },
+    {
+      "id": "standard-12-10",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 75,
+        "getInterstellarCargoCapacity": 300,
+        "getPlanetaryTripSeconds": 5.333333333333333
+      }
+    },
+    {
+      "id": "standard-12-11",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 78,
+        "getInterstellarCargoCapacity": 310,
+        "getPlanetaryTripSeconds": 5.161290322580645
+      }
+    },
+    {
+      "id": "standard-12-99",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 298,
+        "getInterstellarCargoCapacity": 1190,
+        "getPlanetaryTripSeconds": 1.3445378151260503
+      }
+    },
+    {
+      "id": "standard-12-999",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 2548,
+        "getInterstellarCargoCapacity": 10190,
+        "getPlanetaryTripSeconds": 0.15701668302257113
+      }
+    },
+    {
+      "id": "standard-12-1000",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 2550,
+        "getInterstellarCargoCapacity": 10200,
+        "getPlanetaryTripSeconds": 0.1568627450980392
+      }
+    },
+    {
+      "id": "standard-13-0",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 50,
+        "getInterstellarCargoCapacity": 200,
+        "getPlanetaryTripSeconds": 5.333333333333333
+      }
+    },
+    {
+      "id": "standard-13-1",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 53,
+        "getInterstellarCargoCapacity": 210,
+        "getPlanetaryTripSeconds": 5.079365079365079
+      }
+    },
+    {
+      "id": "standard-13-2",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 55,
+        "getInterstellarCargoCapacity": 220,
+        "getPlanetaryTripSeconds": 4.848484848484848
+      }
+    },
+    {
+      "id": "standard-13-9",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 73,
+        "getInterstellarCargoCapacity": 290,
+        "getPlanetaryTripSeconds": 3.6781609195402303
+      }
+    },
+    {
+      "id": "standard-13-10",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 75,
+        "getInterstellarCargoCapacity": 300,
+        "getPlanetaryTripSeconds": 3.5555555555555554
+      }
+    },
+    {
+      "id": "standard-13-11",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 78,
+        "getInterstellarCargoCapacity": 310,
+        "getPlanetaryTripSeconds": 3.440860215053763
+      }
+    },
+    {
+      "id": "standard-13-99",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 298,
+        "getInterstellarCargoCapacity": 1190,
+        "getPlanetaryTripSeconds": 0.8963585434173669
+      }
+    },
+    {
+      "id": "standard-13-999",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 2548,
+        "getInterstellarCargoCapacity": 10190,
+        "getPlanetaryTripSeconds": 0.10467778868171408
+      }
+    },
+    {
+      "id": "standard-13-1000",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 2550,
+        "getInterstellarCargoCapacity": 10200,
+        "getPlanetaryTripSeconds": 0.10457516339869281
+      }
+    },
+    {
+      "id": "standard-14-0",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 50,
+        "getInterstellarCargoCapacity": 200,
+        "getPlanetaryTripSeconds": 5.333333333333333
+      }
+    },
+    {
+      "id": "standard-14-1",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 53,
+        "getInterstellarCargoCapacity": 210,
+        "getPlanetaryTripSeconds": 5.079365079365079
+      }
+    },
+    {
+      "id": "standard-14-2",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 55,
+        "getInterstellarCargoCapacity": 220,
+        "getPlanetaryTripSeconds": 4.848484848484848
+      }
+    },
+    {
+      "id": "standard-14-9",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 73,
+        "getInterstellarCargoCapacity": 290,
+        "getPlanetaryTripSeconds": 3.6781609195402303
+      }
+    },
+    {
+      "id": "standard-14-10",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 75,
+        "getInterstellarCargoCapacity": 300,
+        "getPlanetaryTripSeconds": 3.5555555555555554
+      }
+    },
+    {
+      "id": "standard-14-11",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 78,
+        "getInterstellarCargoCapacity": 310,
+        "getPlanetaryTripSeconds": 3.440860215053763
+      }
+    },
+    {
+      "id": "standard-14-99",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 298,
+        "getInterstellarCargoCapacity": 1190,
+        "getPlanetaryTripSeconds": 0.8963585434173669
+      }
+    },
+    {
+      "id": "standard-14-999",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 2548,
+        "getInterstellarCargoCapacity": 10190,
+        "getPlanetaryTripSeconds": 0.10467778868171408
+      }
+    },
+    {
+      "id": "standard-14-1000",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 2550,
+        "getInterstellarCargoCapacity": 10200,
+        "getPlanetaryTripSeconds": 0.10457516339869281
+      }
+    },
+    {
+      "id": "standard-15-0",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 50,
+        "getInterstellarCargoCapacity": 200,
+        "getPlanetaryTripSeconds": 4
+      }
+    },
+    {
+      "id": "standard-15-1",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 53,
+        "getInterstellarCargoCapacity": 210,
+        "getPlanetaryTripSeconds": 3.8095238095238093
+      }
+    },
+    {
+      "id": "standard-15-2",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 55,
+        "getInterstellarCargoCapacity": 220,
+        "getPlanetaryTripSeconds": 3.6363636363636362
+      }
+    },
+    {
+      "id": "standard-15-9",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 73,
+        "getInterstellarCargoCapacity": 290,
+        "getPlanetaryTripSeconds": 2.7586206896551726
+      }
+    },
+    {
+      "id": "standard-15-10",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 75,
+        "getInterstellarCargoCapacity": 300,
+        "getPlanetaryTripSeconds": 2.6666666666666665
+      }
+    },
+    {
+      "id": "standard-15-11",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 78,
+        "getInterstellarCargoCapacity": 310,
+        "getPlanetaryTripSeconds": 2.5806451612903225
+      }
+    },
+    {
+      "id": "standard-15-99",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 298,
+        "getInterstellarCargoCapacity": 1190,
+        "getPlanetaryTripSeconds": 0.6722689075630252
+      }
+    },
+    {
+      "id": "standard-15-999",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 2548,
+        "getInterstellarCargoCapacity": 10190,
+        "getPlanetaryTripSeconds": 0.07850834151128556
+      }
+    },
+    {
+      "id": "standard-15-1000",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 2550,
+        "getInterstellarCargoCapacity": 10200,
+        "getPlanetaryTripSeconds": 0.0784313725490196
+      }
+    },
+    {
+      "id": "hard-0-0",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 25,
+        "getInterstellarCargoCapacity": 100,
+        "getPlanetaryTripSeconds": 8.88888888888889
+      }
+    },
+    {
+      "id": "hard-0-1",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 26,
+        "getInterstellarCargoCapacity": 105,
+        "getPlanetaryTripSeconds": 8.465608465608465
+      }
+    },
+    {
+      "id": "hard-0-2",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 28,
+        "getInterstellarCargoCapacity": 110,
+        "getPlanetaryTripSeconds": 8.08080808080808
+      }
+    },
+    {
+      "id": "hard-0-9",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 36,
+        "getInterstellarCargoCapacity": 145,
+        "getPlanetaryTripSeconds": 6.130268199233717
+      }
+    },
+    {
+      "id": "hard-0-10",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 38,
+        "getInterstellarCargoCapacity": 150,
+        "getPlanetaryTripSeconds": 5.925925925925926
+      }
+    },
+    {
+      "id": "hard-0-11",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 39,
+        "getInterstellarCargoCapacity": 155,
+        "getPlanetaryTripSeconds": 5.734767025089606
+      }
+    },
+    {
+      "id": "hard-0-99",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 149,
+        "getInterstellarCargoCapacity": 595,
+        "getPlanetaryTripSeconds": 1.4939309056956114
+      }
+    },
+    {
+      "id": "hard-0-999",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1274,
+        "getInterstellarCargoCapacity": 5095,
+        "getPlanetaryTripSeconds": 0.17446298113619016
+      }
+    },
+    {
+      "id": "hard-0-1000",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1275,
+        "getInterstellarCargoCapacity": 5100,
+        "getPlanetaryTripSeconds": 0.17429193899782136
+      }
+    },
+    {
+      "id": "hard-1-0",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 25,
+        "getInterstellarCargoCapacity": 100,
+        "getPlanetaryTripSeconds": 5.925925925925926
+      }
+    },
+    {
+      "id": "hard-1-1",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 26,
+        "getInterstellarCargoCapacity": 105,
+        "getPlanetaryTripSeconds": 5.643738977072309
+      }
+    },
+    {
+      "id": "hard-1-2",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 28,
+        "getInterstellarCargoCapacity": 110,
+        "getPlanetaryTripSeconds": 5.387205387205387
+      }
+    },
+    {
+      "id": "hard-1-9",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 36,
+        "getInterstellarCargoCapacity": 145,
+        "getPlanetaryTripSeconds": 4.086845466155811
+      }
+    },
+    {
+      "id": "hard-1-10",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 38,
+        "getInterstellarCargoCapacity": 150,
+        "getPlanetaryTripSeconds": 3.9506172839506175
+      }
+    },
+    {
+      "id": "hard-1-11",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 39,
+        "getInterstellarCargoCapacity": 155,
+        "getPlanetaryTripSeconds": 3.8231780167264033
+      }
+    },
+    {
+      "id": "hard-1-99",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 149,
+        "getInterstellarCargoCapacity": 595,
+        "getPlanetaryTripSeconds": 0.9959539371304076
+      }
+    },
+    {
+      "id": "hard-1-999",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1274,
+        "getInterstellarCargoCapacity": 5095,
+        "getPlanetaryTripSeconds": 0.11630865409079343
+      }
+    },
+    {
+      "id": "hard-1-1000",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1275,
+        "getInterstellarCargoCapacity": 5100,
+        "getPlanetaryTripSeconds": 0.11619462599854755
+      }
+    },
+    {
+      "id": "hard-2-0",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_2"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 25,
+        "getInterstellarCargoCapacity": 100,
+        "getPlanetaryTripSeconds": 5.925925925925926
+      }
+    },
+    {
+      "id": "hard-2-1",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_2"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 26,
+        "getInterstellarCargoCapacity": 105,
+        "getPlanetaryTripSeconds": 5.643738977072309
+      }
+    },
+    {
+      "id": "hard-2-2",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_2"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 28,
+        "getInterstellarCargoCapacity": 110,
+        "getPlanetaryTripSeconds": 5.387205387205387
+      }
+    },
+    {
+      "id": "hard-2-9",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_2"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 36,
+        "getInterstellarCargoCapacity": 145,
+        "getPlanetaryTripSeconds": 4.086845466155811
+      }
+    },
+    {
+      "id": "hard-2-10",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_2"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 38,
+        "getInterstellarCargoCapacity": 150,
+        "getPlanetaryTripSeconds": 3.9506172839506175
+      }
+    },
+    {
+      "id": "hard-2-11",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_2"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 39,
+        "getInterstellarCargoCapacity": 155,
+        "getPlanetaryTripSeconds": 3.8231780167264033
+      }
+    },
+    {
+      "id": "hard-2-99",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_2"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 149,
+        "getInterstellarCargoCapacity": 595,
+        "getPlanetaryTripSeconds": 0.9959539371304076
+      }
+    },
+    {
+      "id": "hard-2-999",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_2"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1274,
+        "getInterstellarCargoCapacity": 5095,
+        "getPlanetaryTripSeconds": 0.11630865409079343
+      }
+    },
+    {
+      "id": "hard-2-1000",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_2"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1275,
+        "getInterstellarCargoCapacity": 5100,
+        "getPlanetaryTripSeconds": 0.11619462599854755
+      }
+    },
+    {
+      "id": "hard-3-0",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 25,
+        "getInterstellarCargoCapacity": 100,
+        "getPlanetaryTripSeconds": 4.444444444444445
+      }
+    },
+    {
+      "id": "hard-3-1",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 26,
+        "getInterstellarCargoCapacity": 105,
+        "getPlanetaryTripSeconds": 4.232804232804233
+      }
+    },
+    {
+      "id": "hard-3-2",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 28,
+        "getInterstellarCargoCapacity": 110,
+        "getPlanetaryTripSeconds": 4.04040404040404
+      }
+    },
+    {
+      "id": "hard-3-9",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 36,
+        "getInterstellarCargoCapacity": 145,
+        "getPlanetaryTripSeconds": 3.0651340996168583
+      }
+    },
+    {
+      "id": "hard-3-10",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 38,
+        "getInterstellarCargoCapacity": 150,
+        "getPlanetaryTripSeconds": 2.962962962962963
+      }
+    },
+    {
+      "id": "hard-3-11",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 39,
+        "getInterstellarCargoCapacity": 155,
+        "getPlanetaryTripSeconds": 2.867383512544803
+      }
+    },
+    {
+      "id": "hard-3-99",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 149,
+        "getInterstellarCargoCapacity": 595,
+        "getPlanetaryTripSeconds": 0.7469654528478057
+      }
+    },
+    {
+      "id": "hard-3-999",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1274,
+        "getInterstellarCargoCapacity": 5095,
+        "getPlanetaryTripSeconds": 0.08723149056809508
+      }
+    },
+    {
+      "id": "hard-3-1000",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1275,
+        "getInterstellarCargoCapacity": 5100,
+        "getPlanetaryTripSeconds": 0.08714596949891068
+      }
+    },
+    {
+      "id": "hard-4-0",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_capacity_1"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 38,
+        "getInterstellarCargoCapacity": 150,
+        "getPlanetaryTripSeconds": 8.88888888888889
+      }
+    },
+    {
+      "id": "hard-4-1",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_capacity_1"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 39,
+        "getInterstellarCargoCapacity": 158,
+        "getPlanetaryTripSeconds": 8.465608465608465
+      }
+    },
+    {
+      "id": "hard-4-2",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_capacity_1"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 41,
+        "getInterstellarCargoCapacity": 165,
+        "getPlanetaryTripSeconds": 8.08080808080808
+      }
+    },
+    {
+      "id": "hard-4-9",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_capacity_1"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 54,
+        "getInterstellarCargoCapacity": 217,
+        "getPlanetaryTripSeconds": 6.130268199233717
+      }
+    },
+    {
+      "id": "hard-4-10",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_capacity_1"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 56,
+        "getInterstellarCargoCapacity": 225,
+        "getPlanetaryTripSeconds": 5.925925925925926
+      }
+    },
+    {
+      "id": "hard-4-11",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_capacity_1"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 58,
+        "getInterstellarCargoCapacity": 233,
+        "getPlanetaryTripSeconds": 5.734767025089606
+      }
+    },
+    {
+      "id": "hard-4-99",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_capacity_1"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 223,
+        "getInterstellarCargoCapacity": 893,
+        "getPlanetaryTripSeconds": 1.4939309056956114
+      }
+    },
+    {
+      "id": "hard-4-999",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_capacity_1"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1911,
+        "getInterstellarCargoCapacity": 7643,
+        "getPlanetaryTripSeconds": 0.17446298113619016
+      }
+    },
+    {
+      "id": "hard-4-1000",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_capacity_1"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1913,
+        "getInterstellarCargoCapacity": 7650,
+        "getPlanetaryTripSeconds": 0.17429193899782136
+      }
+    },
+    {
+      "id": "hard-5-0",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 38,
+        "getInterstellarCargoCapacity": 150,
+        "getPlanetaryTripSeconds": 5.925925925925926
+      }
+    },
+    {
+      "id": "hard-5-1",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 39,
+        "getInterstellarCargoCapacity": 158,
+        "getPlanetaryTripSeconds": 5.643738977072309
+      }
+    },
+    {
+      "id": "hard-5-2",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 41,
+        "getInterstellarCargoCapacity": 165,
+        "getPlanetaryTripSeconds": 5.387205387205387
+      }
+    },
+    {
+      "id": "hard-5-9",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 54,
+        "getInterstellarCargoCapacity": 217,
+        "getPlanetaryTripSeconds": 4.086845466155811
+      }
+    },
+    {
+      "id": "hard-5-10",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 56,
+        "getInterstellarCargoCapacity": 225,
+        "getPlanetaryTripSeconds": 3.9506172839506175
+      }
+    },
+    {
+      "id": "hard-5-11",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 58,
+        "getInterstellarCargoCapacity": 233,
+        "getPlanetaryTripSeconds": 3.8231780167264033
+      }
+    },
+    {
+      "id": "hard-5-99",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 223,
+        "getInterstellarCargoCapacity": 893,
+        "getPlanetaryTripSeconds": 0.9959539371304076
+      }
+    },
+    {
+      "id": "hard-5-999",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1911,
+        "getInterstellarCargoCapacity": 7643,
+        "getPlanetaryTripSeconds": 0.11630865409079343
+      }
+    },
+    {
+      "id": "hard-5-1000",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1913,
+        "getInterstellarCargoCapacity": 7650,
+        "getPlanetaryTripSeconds": 0.11619462599854755
+      }
+    },
+    {
+      "id": "hard-6-0",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 38,
+        "getInterstellarCargoCapacity": 150,
+        "getPlanetaryTripSeconds": 5.925925925925926
+      }
+    },
+    {
+      "id": "hard-6-1",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 39,
+        "getInterstellarCargoCapacity": 158,
+        "getPlanetaryTripSeconds": 5.643738977072309
+      }
+    },
+    {
+      "id": "hard-6-2",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 41,
+        "getInterstellarCargoCapacity": 165,
+        "getPlanetaryTripSeconds": 5.387205387205387
+      }
+    },
+    {
+      "id": "hard-6-9",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 54,
+        "getInterstellarCargoCapacity": 217,
+        "getPlanetaryTripSeconds": 4.086845466155811
+      }
+    },
+    {
+      "id": "hard-6-10",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 56,
+        "getInterstellarCargoCapacity": 225,
+        "getPlanetaryTripSeconds": 3.9506172839506175
+      }
+    },
+    {
+      "id": "hard-6-11",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 58,
+        "getInterstellarCargoCapacity": 233,
+        "getPlanetaryTripSeconds": 3.8231780167264033
+      }
+    },
+    {
+      "id": "hard-6-99",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 223,
+        "getInterstellarCargoCapacity": 893,
+        "getPlanetaryTripSeconds": 0.9959539371304076
+      }
+    },
+    {
+      "id": "hard-6-999",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1911,
+        "getInterstellarCargoCapacity": 7643,
+        "getPlanetaryTripSeconds": 0.11630865409079343
+      }
+    },
+    {
+      "id": "hard-6-1000",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1913,
+        "getInterstellarCargoCapacity": 7650,
+        "getPlanetaryTripSeconds": 0.11619462599854755
+      }
+    },
+    {
+      "id": "hard-7-0",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 38,
+        "getInterstellarCargoCapacity": 150,
+        "getPlanetaryTripSeconds": 4.444444444444445
+      }
+    },
+    {
+      "id": "hard-7-1",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 39,
+        "getInterstellarCargoCapacity": 158,
+        "getPlanetaryTripSeconds": 4.232804232804233
+      }
+    },
+    {
+      "id": "hard-7-2",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 41,
+        "getInterstellarCargoCapacity": 165,
+        "getPlanetaryTripSeconds": 4.04040404040404
+      }
+    },
+    {
+      "id": "hard-7-9",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 54,
+        "getInterstellarCargoCapacity": 217,
+        "getPlanetaryTripSeconds": 3.0651340996168583
+      }
+    },
+    {
+      "id": "hard-7-10",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 56,
+        "getInterstellarCargoCapacity": 225,
+        "getPlanetaryTripSeconds": 2.962962962962963
+      }
+    },
+    {
+      "id": "hard-7-11",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 58,
+        "getInterstellarCargoCapacity": 233,
+        "getPlanetaryTripSeconds": 2.867383512544803
+      }
+    },
+    {
+      "id": "hard-7-99",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 223,
+        "getInterstellarCargoCapacity": 893,
+        "getPlanetaryTripSeconds": 0.7469654528478057
+      }
+    },
+    {
+      "id": "hard-7-999",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1911,
+        "getInterstellarCargoCapacity": 7643,
+        "getPlanetaryTripSeconds": 0.08723149056809508
+      }
+    },
+    {
+      "id": "hard-7-1000",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1913,
+        "getInterstellarCargoCapacity": 7650,
+        "getPlanetaryTripSeconds": 0.08714596949891068
+      }
+    },
+    {
+      "id": "hard-8-0",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_capacity_2"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 38,
+        "getInterstellarCargoCapacity": 150,
+        "getPlanetaryTripSeconds": 8.88888888888889
+      }
+    },
+    {
+      "id": "hard-8-1",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_capacity_2"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 39,
+        "getInterstellarCargoCapacity": 158,
+        "getPlanetaryTripSeconds": 8.465608465608465
+      }
+    },
+    {
+      "id": "hard-8-2",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_capacity_2"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 41,
+        "getInterstellarCargoCapacity": 165,
+        "getPlanetaryTripSeconds": 8.08080808080808
+      }
+    },
+    {
+      "id": "hard-8-9",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_capacity_2"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 54,
+        "getInterstellarCargoCapacity": 217,
+        "getPlanetaryTripSeconds": 6.130268199233717
+      }
+    },
+    {
+      "id": "hard-8-10",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_capacity_2"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 56,
+        "getInterstellarCargoCapacity": 225,
+        "getPlanetaryTripSeconds": 5.925925925925926
+      }
+    },
+    {
+      "id": "hard-8-11",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_capacity_2"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 58,
+        "getInterstellarCargoCapacity": 233,
+        "getPlanetaryTripSeconds": 5.734767025089606
+      }
+    },
+    {
+      "id": "hard-8-99",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_capacity_2"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 223,
+        "getInterstellarCargoCapacity": 893,
+        "getPlanetaryTripSeconds": 1.4939309056956114
+      }
+    },
+    {
+      "id": "hard-8-999",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_capacity_2"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1911,
+        "getInterstellarCargoCapacity": 7643,
+        "getPlanetaryTripSeconds": 0.17446298113619016
+      }
+    },
+    {
+      "id": "hard-8-1000",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_capacity_2"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1913,
+        "getInterstellarCargoCapacity": 7650,
+        "getPlanetaryTripSeconds": 0.17429193899782136
+      }
+    },
+    {
+      "id": "hard-9-0",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_2"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 38,
+        "getInterstellarCargoCapacity": 150,
+        "getPlanetaryTripSeconds": 5.925925925925926
+      }
+    },
+    {
+      "id": "hard-9-1",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_2"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 39,
+        "getInterstellarCargoCapacity": 158,
+        "getPlanetaryTripSeconds": 5.643738977072309
+      }
+    },
+    {
+      "id": "hard-9-2",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_2"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 41,
+        "getInterstellarCargoCapacity": 165,
+        "getPlanetaryTripSeconds": 5.387205387205387
+      }
+    },
+    {
+      "id": "hard-9-9",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_2"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 54,
+        "getInterstellarCargoCapacity": 217,
+        "getPlanetaryTripSeconds": 4.086845466155811
+      }
+    },
+    {
+      "id": "hard-9-10",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_2"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 56,
+        "getInterstellarCargoCapacity": 225,
+        "getPlanetaryTripSeconds": 3.9506172839506175
+      }
+    },
+    {
+      "id": "hard-9-11",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_2"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 58,
+        "getInterstellarCargoCapacity": 233,
+        "getPlanetaryTripSeconds": 3.8231780167264033
+      }
+    },
+    {
+      "id": "hard-9-99",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_2"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 223,
+        "getInterstellarCargoCapacity": 893,
+        "getPlanetaryTripSeconds": 0.9959539371304076
+      }
+    },
+    {
+      "id": "hard-9-999",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_2"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1911,
+        "getInterstellarCargoCapacity": 7643,
+        "getPlanetaryTripSeconds": 0.11630865409079343
+      }
+    },
+    {
+      "id": "hard-9-1000",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_2"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1913,
+        "getInterstellarCargoCapacity": 7650,
+        "getPlanetaryTripSeconds": 0.11619462599854755
+      }
+    },
+    {
+      "id": "hard-10-0",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 38,
+        "getInterstellarCargoCapacity": 150,
+        "getPlanetaryTripSeconds": 5.925925925925926
+      }
+    },
+    {
+      "id": "hard-10-1",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 39,
+        "getInterstellarCargoCapacity": 158,
+        "getPlanetaryTripSeconds": 5.643738977072309
+      }
+    },
+    {
+      "id": "hard-10-2",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 41,
+        "getInterstellarCargoCapacity": 165,
+        "getPlanetaryTripSeconds": 5.387205387205387
+      }
+    },
+    {
+      "id": "hard-10-9",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 54,
+        "getInterstellarCargoCapacity": 217,
+        "getPlanetaryTripSeconds": 4.086845466155811
+      }
+    },
+    {
+      "id": "hard-10-10",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 56,
+        "getInterstellarCargoCapacity": 225,
+        "getPlanetaryTripSeconds": 3.9506172839506175
+      }
+    },
+    {
+      "id": "hard-10-11",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 58,
+        "getInterstellarCargoCapacity": 233,
+        "getPlanetaryTripSeconds": 3.8231780167264033
+      }
+    },
+    {
+      "id": "hard-10-99",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 223,
+        "getInterstellarCargoCapacity": 893,
+        "getPlanetaryTripSeconds": 0.9959539371304076
+      }
+    },
+    {
+      "id": "hard-10-999",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1911,
+        "getInterstellarCargoCapacity": 7643,
+        "getPlanetaryTripSeconds": 0.11630865409079343
+      }
+    },
+    {
+      "id": "hard-10-1000",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1913,
+        "getInterstellarCargoCapacity": 7650,
+        "getPlanetaryTripSeconds": 0.11619462599854755
+      }
+    },
+    {
+      "id": "hard-11-0",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 38,
+        "getInterstellarCargoCapacity": 150,
+        "getPlanetaryTripSeconds": 4.444444444444445
+      }
+    },
+    {
+      "id": "hard-11-1",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 39,
+        "getInterstellarCargoCapacity": 158,
+        "getPlanetaryTripSeconds": 4.232804232804233
+      }
+    },
+    {
+      "id": "hard-11-2",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 41,
+        "getInterstellarCargoCapacity": 165,
+        "getPlanetaryTripSeconds": 4.04040404040404
+      }
+    },
+    {
+      "id": "hard-11-9",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 54,
+        "getInterstellarCargoCapacity": 217,
+        "getPlanetaryTripSeconds": 3.0651340996168583
+      }
+    },
+    {
+      "id": "hard-11-10",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 56,
+        "getInterstellarCargoCapacity": 225,
+        "getPlanetaryTripSeconds": 2.962962962962963
+      }
+    },
+    {
+      "id": "hard-11-11",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 58,
+        "getInterstellarCargoCapacity": 233,
+        "getPlanetaryTripSeconds": 2.867383512544803
+      }
+    },
+    {
+      "id": "hard-11-99",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 223,
+        "getInterstellarCargoCapacity": 893,
+        "getPlanetaryTripSeconds": 0.7469654528478057
+      }
+    },
+    {
+      "id": "hard-11-999",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1911,
+        "getInterstellarCargoCapacity": 7643,
+        "getPlanetaryTripSeconds": 0.08723149056809508
+      }
+    },
+    {
+      "id": "hard-11-1000",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_2"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 1913,
+        "getInterstellarCargoCapacity": 7650,
+        "getPlanetaryTripSeconds": 0.08714596949891068
+      }
+    },
+    {
+      "id": "hard-12-0",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 50,
+        "getInterstellarCargoCapacity": 200,
+        "getPlanetaryTripSeconds": 8.88888888888889
+      }
+    },
+    {
+      "id": "hard-12-1",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 53,
+        "getInterstellarCargoCapacity": 210,
+        "getPlanetaryTripSeconds": 8.465608465608465
+      }
+    },
+    {
+      "id": "hard-12-2",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 55,
+        "getInterstellarCargoCapacity": 220,
+        "getPlanetaryTripSeconds": 8.08080808080808
+      }
+    },
+    {
+      "id": "hard-12-9",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 73,
+        "getInterstellarCargoCapacity": 290,
+        "getPlanetaryTripSeconds": 6.130268199233717
+      }
+    },
+    {
+      "id": "hard-12-10",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 75,
+        "getInterstellarCargoCapacity": 300,
+        "getPlanetaryTripSeconds": 5.925925925925926
+      }
+    },
+    {
+      "id": "hard-12-11",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 78,
+        "getInterstellarCargoCapacity": 310,
+        "getPlanetaryTripSeconds": 5.734767025089606
+      }
+    },
+    {
+      "id": "hard-12-99",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 298,
+        "getInterstellarCargoCapacity": 1190,
+        "getPlanetaryTripSeconds": 1.4939309056956114
+      }
+    },
+    {
+      "id": "hard-12-999",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 2548,
+        "getInterstellarCargoCapacity": 10190,
+        "getPlanetaryTripSeconds": 0.17446298113619016
+      }
+    },
+    {
+      "id": "hard-12-1000",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 2550,
+        "getInterstellarCargoCapacity": 10200,
+        "getPlanetaryTripSeconds": 0.17429193899782136
+      }
+    },
+    {
+      "id": "hard-13-0",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 50,
+        "getInterstellarCargoCapacity": 200,
+        "getPlanetaryTripSeconds": 5.925925925925926
+      }
+    },
+    {
+      "id": "hard-13-1",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 53,
+        "getInterstellarCargoCapacity": 210,
+        "getPlanetaryTripSeconds": 5.643738977072309
+      }
+    },
+    {
+      "id": "hard-13-2",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 55,
+        "getInterstellarCargoCapacity": 220,
+        "getPlanetaryTripSeconds": 5.387205387205387
+      }
+    },
+    {
+      "id": "hard-13-9",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 73,
+        "getInterstellarCargoCapacity": 290,
+        "getPlanetaryTripSeconds": 4.086845466155811
+      }
+    },
+    {
+      "id": "hard-13-10",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 75,
+        "getInterstellarCargoCapacity": 300,
+        "getPlanetaryTripSeconds": 3.9506172839506175
+      }
+    },
+    {
+      "id": "hard-13-11",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 78,
+        "getInterstellarCargoCapacity": 310,
+        "getPlanetaryTripSeconds": 3.8231780167264033
+      }
+    },
+    {
+      "id": "hard-13-99",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 298,
+        "getInterstellarCargoCapacity": 1190,
+        "getPlanetaryTripSeconds": 0.9959539371304076
+      }
+    },
+    {
+      "id": "hard-13-999",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 2548,
+        "getInterstellarCargoCapacity": 10190,
+        "getPlanetaryTripSeconds": 0.11630865409079343
+      }
+    },
+    {
+      "id": "hard-13-1000",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 2550,
+        "getInterstellarCargoCapacity": 10200,
+        "getPlanetaryTripSeconds": 0.11619462599854755
+      }
+    },
+    {
+      "id": "hard-14-0",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 50,
+        "getInterstellarCargoCapacity": 200,
+        "getPlanetaryTripSeconds": 5.925925925925926
+      }
+    },
+    {
+      "id": "hard-14-1",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 53,
+        "getInterstellarCargoCapacity": 210,
+        "getPlanetaryTripSeconds": 5.643738977072309
+      }
+    },
+    {
+      "id": "hard-14-2",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 55,
+        "getInterstellarCargoCapacity": 220,
+        "getPlanetaryTripSeconds": 5.387205387205387
+      }
+    },
+    {
+      "id": "hard-14-9",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 73,
+        "getInterstellarCargoCapacity": 290,
+        "getPlanetaryTripSeconds": 4.086845466155811
+      }
+    },
+    {
+      "id": "hard-14-10",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 75,
+        "getInterstellarCargoCapacity": 300,
+        "getPlanetaryTripSeconds": 3.9506172839506175
+      }
+    },
+    {
+      "id": "hard-14-11",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 78,
+        "getInterstellarCargoCapacity": 310,
+        "getPlanetaryTripSeconds": 3.8231780167264033
+      }
+    },
+    {
+      "id": "hard-14-99",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 298,
+        "getInterstellarCargoCapacity": 1190,
+        "getPlanetaryTripSeconds": 0.9959539371304076
+      }
+    },
+    {
+      "id": "hard-14-999",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 2548,
+        "getInterstellarCargoCapacity": 10190,
+        "getPlanetaryTripSeconds": 0.11630865409079343
+      }
+    },
+    {
+      "id": "hard-14-1000",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 2550,
+        "getInterstellarCargoCapacity": 10200,
+        "getPlanetaryTripSeconds": 0.11619462599854755
+      }
+    },
+    {
+      "id": "hard-15-0",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 0
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 50,
+        "getInterstellarCargoCapacity": 200,
+        "getPlanetaryTripSeconds": 4.444444444444445
+      }
+    },
+    {
+      "id": "hard-15-1",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 1
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 53,
+        "getInterstellarCargoCapacity": 210,
+        "getPlanetaryTripSeconds": 4.232804232804233
+      }
+    },
+    {
+      "id": "hard-15-2",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 2
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 55,
+        "getInterstellarCargoCapacity": 220,
+        "getPlanetaryTripSeconds": 4.04040404040404
+      }
+    },
+    {
+      "id": "hard-15-9",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 9
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 73,
+        "getInterstellarCargoCapacity": 290,
+        "getPlanetaryTripSeconds": 3.0651340996168583
+      }
+    },
+    {
+      "id": "hard-15-10",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 10
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 75,
+        "getInterstellarCargoCapacity": 300,
+        "getPlanetaryTripSeconds": 2.962962962962963
+      }
+    },
+    {
+      "id": "hard-15-11",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 11
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 78,
+        "getInterstellarCargoCapacity": 310,
+        "getPlanetaryTripSeconds": 2.867383512544803
+      }
+    },
+    {
+      "id": "hard-15-99",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 99
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 298,
+        "getInterstellarCargoCapacity": 1190,
+        "getPlanetaryTripSeconds": 0.7469654528478057
+      }
+    },
+    {
+      "id": "hard-15-999",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 999
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 2548,
+        "getInterstellarCargoCapacity": 10190,
+        "getPlanetaryTripSeconds": 0.08723149056809508
+      }
+    },
+    {
+      "id": "hard-15-1000",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2"
+        ],
+        "level": 1000
+      },
+      "expected": {
+        "getPlanetaryCargoCapacity": 2550,
+        "getInterstellarCargoCapacity": 10200,
+        "getPlanetaryTripSeconds": 0.08714596949891068
+      }
+    }
+  ]
+}

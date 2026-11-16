@@ -164,7 +164,7 @@ func _settle() -> void:
 				var accepted := deposit(slot.item_id, int(floorf(maxf(0, float(slot.amount) - float(slot.get("min_stock", 0))))))
 				slot.amount -= float(accepted)
 				continue
-			var requested := int(floorf(maxf(0, float(slot.amount) - float(slot.get("min_stock", 0))))) if mode == "supply" else int(floorf(maxf(0, StationSystem.capacity_for(slot) - float(slot.amount))))
+			var requested := int(floorf(maxf(0, float(slot.amount) - float(slot.get("min_stock", 0))))) if mode == "supply" else int(floorf(maxf(0, StationSystem.capacity_for(slot, state, building) - float(slot.amount))))
 			if requested < 1 or mode == "storage": continue
 			var entry := {"key": "%s:%d" % [id, index], "id": id, "index": index, "item": slot.item_id, "amount": requested, "priority": int(slot.priority)}
 			if mode == "supply": uploads.append(entry)

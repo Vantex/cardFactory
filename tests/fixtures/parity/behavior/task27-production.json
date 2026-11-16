@@ -1,0 +1,3270 @@
+{
+  "source_commit": "472bf62c76b695852b5577e563c1d113192ac731",
+  "source_files": {
+    "src/game/content.ts": "6de101d86d28012c8765815aec35177a95b4d7ac5604736a4b608a100284f7ff",
+    "src/game/engine.ts": "a809a4cf72a7c2342d81732b010cf95e35cbca653313a0ebe33d56d49483b50b",
+    "src/game/galaxy.ts": "bf0e4d23f6af26d0180ff4e7303e45a7e06e782ed0289f9a94dda3de88028bfd",
+    "src/game/galaxyCatalog.ts": "fc503cfdcc7d5f38bfcd8b6c7f262b56126f1e3cc2c749c0463e5779730c2540",
+    "src/game/systemSpaceStation.ts": "1cd199e3f11036bf8e06af469bbb92fbb8f882c37c3b5d5283c3f1aaf71798ad",
+    "src/game/systemHubLogistics.ts": "b654c3bf76dc0ad685550a5b5992358de84c611eedc1dc75fa3e425cef271659",
+    "src/game/productionStatistics.ts": "b9b6680164bef7fe0f48cce4ffdff2eaf643e7c07c789903a49fe403b6cc7f73",
+    "src/game/quantityFormat.ts": "01008471e4bc2f8e49d97b859667fb41ca83ee77d8c5034361ef5ce003d92178",
+    "src/game/campaign.ts": "c9c363d746b4f51a29fa01f08462c89816686af851daec2b450e6365e683a15c",
+    "src/game/difficulty.ts": "24613016f2296036c18577ce3338f792119617d07a17f2f9dffbefddf48e423e",
+    "src/game/endgame.ts": "65af1b6317e8d4c1dccdd73672750efbec3cd00d3b751333f438a99ac8967c8a",
+    "src/game/infiniteResearch.ts": "b6650402662557b5cd17e16de89f744269d0af54aa8aa40c16625e7758cc34c3",
+    "src/game/activity.ts": "b8711f1e5711bb0ec9826a098beeec246f859eb2581e0ce489ec6bc75f260c6a",
+    "src/game/units.ts": "bf050c2a09270f762ae76bb7ac8373571af3c094a215bd17c69fc9207d138bc5",
+    "src/game/quantumLogisticsNetwork.ts": "b34f1b836401edb757eac76ad6f924f1e8f6540f221134c55b555ebcca92b4c3",
+    "src/game/recursiveCrafting.ts": "1b131b06c7ee5f8164a377cf5a26d6fee4dd873b62f95b8552bd9423ad929e2b",
+    "src/game/speedrun.ts": "6144a52c5c0320080a4b3ec2202bd76e13811dedb587bc45f871ebded1ff2b59",
+    "src/game/idleSettlement.ts": "a90fd7d585074583ba462e4c19f6c44ba751e23128acb5daa7e652b7e4c25e8a",
+    "src/game/orbitalStation.ts": "8398e7ab6c5160a62d78fbd84e54679490336141c6f0224f0eb19524f448a56b",
+    "src/game/progression.ts": "be1ea07ebf711ba6e5d5429037dac1635499ffd33df8d9cb31a56c7099d2b773",
+    "src/game/stationContracts.ts": "4f3f2571be1878a9bc248ec2939ed03812e7b63ebd080ff8c34dfe5fcaf94f88",
+    "src/game/stationMath.ts": "5a40a7055e1b76910c84d339da2601032a6d754d725f1cd02b4ba0f474d35c0e",
+    "src/game/stationDecorations.ts": "ad76a89735066ba17cb3c3519b1b726b6f33b05ff7d368c0c7cf00326fb58019",
+    "src/game/stationCargoTerminal.ts": "d920817d0655f7774540e5b325549085e363d08bbb92834c5b2cced72d607f10"
+  },
+  "source_environment": {
+    "DEV": false,
+    "PROD": true,
+    "MODE": "production"
+  },
+  "scope": "Fixture-funded powered machines, full source simulation; compares core material conversion and normalized cycle phase, not clean-game progression or power dispatch. Source rounds phase to six decimals per step; the bound is half one decimal unit per actual source step.",
+  "cases": [
+    {
+      "id": "iron_ingot",
+      "seconds": 1.5,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "arc_smelter",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "iron_ingot",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "iron_ore": 3
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "utilization": 0,
+        "productionRate": 0
+      },
+      "phase_rounding_bound": 0.0000011,
+      "expected": {
+        "inputs": {
+          "iron_ore": 2
+        },
+        "outputs": {
+          "iron_ingot": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 60
+      }
+    },
+    {
+      "id": "copper_ingot",
+      "seconds": 1.5,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "arc_smelter",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "copper_ingot",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "copper_ore": 3
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000011,
+      "expected": {
+        "inputs": {
+          "copper_ore": 2
+        },
+        "outputs": {
+          "copper_ingot": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 60
+      }
+    },
+    {
+      "id": "magnet",
+      "seconds": 2.25,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "arc_smelter",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "magnet",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "iron_ore": 3
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000016,
+      "expected": {
+        "inputs": {
+          "iron_ore": 2
+        },
+        "outputs": {
+          "magnet": 1
+        },
+        "progress": 0.500001,
+        "utilization": 1,
+        "production_rate": 40
+      }
+    },
+    {
+      "id": "stone_brick",
+      "seconds": 1.5,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "arc_smelter",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "stone_brick",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "stone": 3
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000011,
+      "expected": {
+        "inputs": {
+          "stone": 2
+        },
+        "outputs": {
+          "stone_brick": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 60
+      }
+    },
+    {
+      "id": "glass",
+      "seconds": 3,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "arc_smelter",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "glass",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "stone": 6
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000016,
+      "expected": {
+        "inputs": {
+          "stone": 4
+        },
+        "outputs": {
+          "glass": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 30
+      }
+    },
+    {
+      "id": "steel",
+      "seconds": 4.5,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "arc_smelter",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "steel",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "iron_ingot": 9
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000025999999999999997,
+      "expected": {
+        "inputs": {
+          "iron_ingot": 6
+        },
+        "outputs": {
+          "steel": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 20
+      }
+    },
+    {
+      "id": "energetic_graphite",
+      "seconds": 3,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "arc_smelter",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "energetic_graphite",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "coal": 6
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000016,
+      "expected": {
+        "inputs": {
+          "coal": 4
+        },
+        "outputs": {
+          "energetic_graphite": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 30
+      }
+    },
+    {
+      "id": "gear",
+      "seconds": 2,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "assembling_machine_mk1",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "gear",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "iron_ingot": 3
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "utilization": 0,
+        "productionRate": 0
+      },
+      "phase_rounding_bound": 0.0000011,
+      "expected": {
+        "inputs": {
+          "iron_ingot": 2
+        },
+        "outputs": {
+          "gear": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 45
+      }
+    },
+    {
+      "id": "magnetic_coil",
+      "seconds": 2,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "assembling_machine_mk1",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "magnetic_coil",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "magnet": 6,
+          "copper_ingot": 3
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000011,
+      "expected": {
+        "inputs": {
+          "magnet": 4,
+          "copper_ingot": 2
+        },
+        "outputs": {
+          "magnetic_coil": 2
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 90
+      }
+    },
+    {
+      "id": "circuit_board",
+      "seconds": 2,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "assembling_machine_mk1",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "circuit_board",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "iron_ingot": 6,
+          "copper_ingot": 3
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000011,
+      "expected": {
+        "inputs": {
+          "iron_ingot": 4,
+          "copper_ingot": 2
+        },
+        "outputs": {
+          "circuit_board": 2
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 90
+      }
+    },
+    {
+      "id": "prism",
+      "seconds": 4,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "assembling_machine_mk1",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "prism",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "glass": 9
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000021,
+      "expected": {
+        "inputs": {
+          "glass": 6
+        },
+        "outputs": {
+          "prism": 2
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 45
+      }
+    },
+    {
+      "id": "plasma_exciter",
+      "seconds": 4,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "assembling_machine_mk1",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "plasma_exciter",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "magnetic_coil": 12,
+          "prism": 6
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000021,
+      "expected": {
+        "inputs": {
+          "magnetic_coil": 8,
+          "prism": 4
+        },
+        "outputs": {
+          "plasma_exciter": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 22.5
+      }
+    },
+    {
+      "id": "plasma_refining",
+      "seconds": 6,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "oil_refinery",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "plasma_refining",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "crude_oil": 6
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "utilization": 0,
+        "productionRate": 0
+      },
+      "phase_rounding_bound": 0.0000031,
+      "expected": {
+        "inputs": {
+          "crude_oil": 4
+        },
+        "outputs": {
+          "refined_oil": 2,
+          "hydrogen": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 45
+      }
+    },
+    {
+      "id": "xray_cracking",
+      "seconds": 6,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "oil_refinery",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "xray_cracking",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "refined_oil": 6,
+          "hydrogen": 3
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000031,
+      "expected": {
+        "inputs": {
+          "refined_oil": 4,
+          "hydrogen": 2
+        },
+        "outputs": {
+          "energetic_graphite": 1,
+          "hydrogen": 3
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 60
+      }
+    },
+    {
+      "id": "reforming_refine",
+      "seconds": 6,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "oil_refinery",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "reforming_refine",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "coal": 3,
+          "hydrogen": 3,
+          "refined_oil": 6
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000031,
+      "expected": {
+        "inputs": {
+          "coal": 2,
+          "hydrogen": 2,
+          "refined_oil": 4
+        },
+        "outputs": {
+          "refined_oil": 3
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 45
+      }
+    },
+    {
+      "id": "high_purity_silicon",
+      "seconds": 3,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "arc_smelter",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "high_purity_silicon",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "silicon_ore": 6
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000016,
+      "expected": {
+        "inputs": {
+          "silicon_ore": 4
+        },
+        "outputs": {
+          "high_purity_silicon": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 30
+      }
+    },
+    {
+      "id": "silicon_ore_from_stone",
+      "seconds": 15,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "arc_smelter",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "silicon_ore_from_stone",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "stone": 30
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.000007599999999999999,
+      "expected": {
+        "inputs": {
+          "stone": 20
+        },
+        "outputs": {
+          "silicon_ore": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 6
+      }
+    },
+    {
+      "id": "titanium_ingot",
+      "seconds": 3,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "arc_smelter",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "titanium_ingot",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "titanium_ore": 6
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000016,
+      "expected": {
+        "inputs": {
+          "titanium_ore": 4
+        },
+        "outputs": {
+          "titanium_ingot": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 30
+      }
+    },
+    {
+      "id": "sulfuric_acid",
+      "seconds": 9,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "chemical_plant",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "sulfuric_acid",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "refined_oil": 18,
+          "stone": 24,
+          "water": 12
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "utilization": 0,
+        "productionRate": 0
+      },
+      "phase_rounding_bound": 0.0000046,
+      "expected": {
+        "inputs": {
+          "refined_oil": 12,
+          "stone": 16,
+          "water": 8
+        },
+        "outputs": {
+          "sulfuric_acid": 4
+        },
+        "progress": 0.500003,
+        "utilization": 1,
+        "production_rate": 40
+      }
+    },
+    {
+      "id": "titanium_alloy",
+      "seconds": 18,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "arc_smelter",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "titanium_alloy",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "titanium_ingot": 12,
+          "steel": 12,
+          "sulfuric_acid": 24
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.000009100000000000001,
+      "expected": {
+        "inputs": {
+          "titanium_ingot": 8,
+          "steel": 8,
+          "sulfuric_acid": 16
+        },
+        "outputs": {
+          "titanium_alloy": 4
+        },
+        "progress": 0.499998,
+        "utilization": 1,
+        "production_rate": 20
+      }
+    },
+    {
+      "id": "microcrystalline_component",
+      "seconds": 4,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "assembling_machine_mk1",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "microcrystalline_component",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "high_purity_silicon": 6,
+          "copper_ingot": 3
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000021,
+      "expected": {
+        "inputs": {
+          "high_purity_silicon": 4,
+          "copper_ingot": 2
+        },
+        "outputs": {
+          "microcrystalline_component": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 22.5
+      }
+    },
+    {
+      "id": "processor",
+      "seconds": 6,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "assembling_machine_mk1",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "processor",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "circuit_board": 6,
+          "microcrystalline_component": 6
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000031,
+      "expected": {
+        "inputs": {
+          "circuit_board": 4,
+          "microcrystalline_component": 4
+        },
+        "outputs": {
+          "processor": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 15
+      }
+    },
+    {
+      "id": "logistics_drone",
+      "seconds": 8,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "assembling_machine_mk1",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "logistics_drone",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "steel": 15,
+          "processor": 6,
+          "electromagnetic_turbine": 6
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000041,
+      "expected": {
+        "inputs": {
+          "steel": 10,
+          "processor": 4,
+          "electromagnetic_turbine": 4
+        },
+        "outputs": {
+          "logistics_drone": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 11.25
+      }
+    },
+    {
+      "id": "logistics_vessel",
+      "seconds": 16,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "assembling_machine_mk1",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "logistics_vessel",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "titanium_alloy": 30,
+          "processor": 30,
+          "plasma_exciter": 12
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000081,
+      "expected": {
+        "inputs": {
+          "titanium_alloy": 20,
+          "processor": 20,
+          "plasma_exciter": 8
+        },
+        "outputs": {
+          "logistics_vessel": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 5.63
+      }
+    },
+    {
+      "id": "space_warper",
+      "seconds": 20,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "assembling_machine_mk1",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "space_warper",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "graviton_lens": 3
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000101,
+      "expected": {
+        "inputs": {
+          "graviton_lens": 2
+        },
+        "outputs": {
+          "space_warper": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 4.5
+      }
+    },
+    {
+      "id": "space_warper_from_gravity_matrix",
+      "seconds": 20,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "assembling_machine_mk1",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "space_warper_from_gravity_matrix",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "gravity_matrix": 3
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000101,
+      "expected": {
+        "inputs": {
+          "gravity_matrix": 2
+        },
+        "outputs": {
+          "space_warper": 8
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 36
+      }
+    },
+    {
+      "id": "accumulator",
+      "seconds": 10,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "assembling_machine_mk1",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "accumulator",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "iron_ingot": 18,
+          "magnetic_coil": 18,
+          "circuit_board": 12
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000050999999999999995,
+      "expected": {
+        "inputs": {
+          "iron_ingot": 12,
+          "magnetic_coil": 12,
+          "circuit_board": 8
+        },
+        "outputs": {
+          "accumulator": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 9
+      }
+    },
+    {
+      "id": "hydrogen_fuel_rod",
+      "seconds": 12,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "assembling_machine_mk1",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "hydrogen_fuel_rod",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "titanium_ingot": 3,
+          "hydrogen": 30
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000061,
+      "expected": {
+        "inputs": {
+          "titanium_ingot": 2,
+          "hydrogen": 20
+        },
+        "outputs": {
+          "hydrogen_fuel_rod": 2
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 15
+      }
+    },
+    {
+      "id": "deuterium_fractionation",
+      "seconds": 1.5,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "fractionator",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "deuterium_fractionation",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "hydrogen": 30
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "utilization": 0,
+        "productionRate": 0
+      },
+      "phase_rounding_bound": 0.0000011,
+      "expected": {
+        "inputs": {
+          "hydrogen": 20
+        },
+        "outputs": {
+          "hydrogen": 9,
+          "deuterium": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 600
+      }
+    },
+    {
+      "id": "graphene",
+      "seconds": 4.5,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "chemical_plant",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "graphene",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "energetic_graphite": 9,
+          "sulfuric_acid": 3
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000025999999999999997,
+      "expected": {
+        "inputs": {
+          "energetic_graphite": 6,
+          "sulfuric_acid": 2
+        },
+        "outputs": {
+          "graphene": 2
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 40
+      }
+    },
+    {
+      "id": "graphene_from_fire_ice",
+      "seconds": 3,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "chemical_plant",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "graphene_from_fire_ice",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "fire_ice": 6
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000016,
+      "expected": {
+        "inputs": {
+          "fire_ice": 4
+        },
+        "outputs": {
+          "graphene": 2,
+          "hydrogen": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 90
+      }
+    },
+    {
+      "id": "carbon_nanotube",
+      "seconds": 6,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "chemical_plant",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "carbon_nanotube",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "graphene": 9,
+          "titanium_ingot": 3
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000031,
+      "expected": {
+        "inputs": {
+          "graphene": 6,
+          "titanium_ingot": 2
+        },
+        "outputs": {
+          "carbon_nanotube": 2
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 30
+      }
+    },
+    {
+      "id": "carbon_nanotube_from_spiniform",
+      "seconds": 6,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "chemical_plant",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "carbon_nanotube_from_spiniform",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "spiniform_stalagmite_crystal": 18
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000031,
+      "expected": {
+        "inputs": {
+          "spiniform_stalagmite_crystal": 12
+        },
+        "outputs": {
+          "carbon_nanotube": 2
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 30
+      }
+    },
+    {
+      "id": "proliferator_mk1",
+      "seconds": 1,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "assembling_machine_mk1",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "proliferator_mk1",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "coal": 3
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 6e-7,
+      "expected": {
+        "inputs": {
+          "coal": 2
+        },
+        "outputs": {
+          "proliferator_mk1": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 90
+      }
+    },
+    {
+      "id": "proliferator_mk2",
+      "seconds": 2,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "assembling_machine_mk1",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "proliferator_mk2",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "proliferator_mk1": 6,
+          "diamond": 3
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000011,
+      "expected": {
+        "inputs": {
+          "proliferator_mk1": 4,
+          "diamond": 2
+        },
+        "outputs": {
+          "proliferator_mk2": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 45
+      }
+    },
+    {
+      "id": "proliferator_mk3",
+      "seconds": 4,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "assembling_machine_mk1",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "proliferator_mk3",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "proliferator_mk2": 6,
+          "carbon_nanotube": 3
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000021,
+      "expected": {
+        "inputs": {
+          "proliferator_mk2": 4,
+          "carbon_nanotube": 2
+        },
+        "outputs": {
+          "proliferator_mk3": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 22.5
+      }
+    },
+    {
+      "id": "crystal_silicon",
+      "seconds": 3,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "arc_smelter",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "crystal_silicon",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "high_purity_silicon": 3
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000016,
+      "expected": {
+        "inputs": {
+          "high_purity_silicon": 2
+        },
+        "outputs": {
+          "crystal_silicon": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 30
+      }
+    },
+    {
+      "id": "crystal_silicon_from_fractal",
+      "seconds": 2.25,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "arc_smelter",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "crystal_silicon_from_fractal",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "fractal_silicon": 3
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000016,
+      "expected": {
+        "inputs": {
+          "fractal_silicon": 2
+        },
+        "outputs": {
+          "crystal_silicon": 2
+        },
+        "progress": 0.500001,
+        "utilization": 1,
+        "production_rate": 80
+      }
+    },
+    {
+      "id": "particle_broadband",
+      "seconds": 16,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "assembling_machine_mk1",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "particle_broadband",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "carbon_nanotube": 6,
+          "crystal_silicon": 6,
+          "plastic": 3
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000081,
+      "expected": {
+        "inputs": {
+          "carbon_nanotube": 4,
+          "crystal_silicon": 4,
+          "plastic": 2
+        },
+        "outputs": {
+          "particle_broadband": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 5.63
+      }
+    },
+    {
+      "id": "electric_motor",
+      "seconds": 4,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "assembling_machine_mk1",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "electric_motor",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "iron_ingot": 6,
+          "gear": 3,
+          "magnetic_coil": 3
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000021,
+      "expected": {
+        "inputs": {
+          "iron_ingot": 4,
+          "gear": 2,
+          "magnetic_coil": 2
+        },
+        "outputs": {
+          "electric_motor": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 22.5
+      }
+    },
+    {
+      "id": "electromagnetic_turbine",
+      "seconds": 4,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "assembling_machine_mk1",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "electromagnetic_turbine",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "electric_motor": 6,
+          "magnetic_coil": 6
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000021,
+      "expected": {
+        "inputs": {
+          "electric_motor": 4,
+          "magnetic_coil": 4
+        },
+        "outputs": {
+          "electromagnetic_turbine": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 22.5
+      }
+    },
+    {
+      "id": "super_magnetic_ring",
+      "seconds": 6,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "assembling_machine_mk1",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "super_magnetic_ring",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "electromagnetic_turbine": 6,
+          "magnet": 9,
+          "energetic_graphite": 3
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000031,
+      "expected": {
+        "inputs": {
+          "electromagnetic_turbine": 4,
+          "magnet": 6,
+          "energetic_graphite": 2
+        },
+        "outputs": {
+          "super_magnetic_ring": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 15
+      }
+    },
+    {
+      "id": "particle_container",
+      "seconds": 8,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "assembling_machine_mk1",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "particle_container",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "electromagnetic_turbine": 6,
+          "copper_ingot": 6,
+          "graphene": 6
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000041,
+      "expected": {
+        "inputs": {
+          "electromagnetic_turbine": 4,
+          "copper_ingot": 4,
+          "graphene": 4
+        },
+        "outputs": {
+          "particle_container": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 11.25
+      }
+    },
+    {
+      "id": "particle_container_from_unipolar",
+      "seconds": 8,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "assembling_machine_mk1",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "particle_container_from_unipolar",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "unipolar_magnet": 30,
+          "copper_ingot": 6
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000041,
+      "expected": {
+        "inputs": {
+          "unipolar_magnet": 20,
+          "copper_ingot": 4
+        },
+        "outputs": {
+          "particle_container": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 11.25
+      }
+    },
+    {
+      "id": "deuterium",
+      "seconds": 7.5,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "miniature_particle_collider",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "deuterium",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "hydrogen": 30
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "utilization": 0,
+        "productionRate": 0
+      },
+      "phase_rounding_bound": 0.0000041,
+      "expected": {
+        "inputs": {
+          "hydrogen": 20
+        },
+        "outputs": {
+          "deuterium": 5
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 60
+      }
+    },
+    {
+      "id": "deuteron_fuel_rod",
+      "seconds": 12,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "assembling_machine_mk1",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "deuteron_fuel_rod",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "titanium_alloy": 3,
+          "deuterium": 60,
+          "super_magnetic_ring": 3
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000061,
+      "expected": {
+        "inputs": {
+          "titanium_alloy": 2,
+          "deuterium": 40,
+          "super_magnetic_ring": 2
+        },
+        "outputs": {
+          "deuteron_fuel_rod": 2
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 15
+      }
+    },
+    {
+      "id": "titanium_glass",
+      "seconds": 10,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "assembling_machine_mk1",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "titanium_glass",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "glass": 6,
+          "titanium_ingot": 6,
+          "water": 6
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000050999999999999995,
+      "expected": {
+        "inputs": {
+          "glass": 4,
+          "titanium_ingot": 4,
+          "water": 4
+        },
+        "outputs": {
+          "titanium_glass": 2
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 18
+      }
+    },
+    {
+      "id": "casimir_crystal",
+      "seconds": 8,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "assembling_machine_mk1",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "casimir_crystal",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "titanium_crystal": 3,
+          "graphene": 6,
+          "hydrogen": 36
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000041,
+      "expected": {
+        "inputs": {
+          "titanium_crystal": 2,
+          "graphene": 4,
+          "hydrogen": 24
+        },
+        "outputs": {
+          "casimir_crystal": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 11.25
+      }
+    },
+    {
+      "id": "casimir_crystal_advanced",
+      "seconds": 8,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "assembling_machine_mk1",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "casimir_crystal_advanced",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "optical_grating_crystal": 12,
+          "graphene": 6,
+          "hydrogen": 36
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000041,
+      "expected": {
+        "inputs": {
+          "optical_grating_crystal": 8,
+          "graphene": 4,
+          "hydrogen": 24
+        },
+        "outputs": {
+          "casimir_crystal": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 11.25
+      }
+    },
+    {
+      "id": "plane_filter",
+      "seconds": 24,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "assembling_machine_mk1",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "plane_filter",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "casimir_crystal": 3,
+          "titanium_glass": 6
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.000012100000000000001,
+      "expected": {
+        "inputs": {
+          "casimir_crystal": 2,
+          "titanium_glass": 4
+        },
+        "outputs": {
+          "plane_filter": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 3.75
+      }
+    },
+    {
+      "id": "quantum_chip",
+      "seconds": 12,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "assembling_machine_mk1",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "quantum_chip",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "processor": 6,
+          "plane_filter": 6
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000061,
+      "expected": {
+        "inputs": {
+          "processor": 4,
+          "plane_filter": 4
+        },
+        "outputs": {
+          "quantum_chip": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 7.5
+      }
+    },
+    {
+      "id": "strange_matter",
+      "seconds": 12,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "miniature_particle_collider",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "strange_matter",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "particle_container": 6,
+          "iron_ingot": 6,
+          "deuterium": 30
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000061,
+      "expected": {
+        "inputs": {
+          "particle_container": 4,
+          "iron_ingot": 4,
+          "deuterium": 20
+        },
+        "outputs": {
+          "strange_matter": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 7.5
+      }
+    },
+    {
+      "id": "graviton_lens",
+      "seconds": 12,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "assembling_machine_mk1",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "graviton_lens",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "diamond": 12,
+          "strange_matter": 3
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000061,
+      "expected": {
+        "inputs": {
+          "diamond": 8,
+          "strange_matter": 2
+        },
+        "outputs": {
+          "graviton_lens": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 7.5
+      }
+    },
+    {
+      "id": "photon_combiner",
+      "seconds": 6,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "assembling_machine_mk1",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "photon_combiner",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "prism": 6,
+          "circuit_board": 3
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000031,
+      "expected": {
+        "inputs": {
+          "prism": 4,
+          "circuit_board": 2
+        },
+        "outputs": {
+          "photon_combiner": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 15
+      }
+    },
+    {
+      "id": "photon_combiner_from_grating",
+      "seconds": 6,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "assembling_machine_mk1",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "photon_combiner_from_grating",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "optical_grating_crystal": 3,
+          "circuit_board": 3
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000031,
+      "expected": {
+        "inputs": {
+          "optical_grating_crystal": 2,
+          "circuit_board": 2
+        },
+        "outputs": {
+          "photon_combiner": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 15
+      }
+    },
+    {
+      "id": "solar_sail",
+      "seconds": 8,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "assembling_machine_mk1",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "solar_sail",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "graphene": 3,
+          "photon_combiner": 3
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000041,
+      "expected": {
+        "inputs": {
+          "graphene": 2,
+          "photon_combiner": 2
+        },
+        "outputs": {
+          "solar_sail": 2
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 22.5
+      }
+    },
+    {
+      "id": "antimatter",
+      "seconds": 3,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "miniature_particle_collider",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "antimatter",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "critical_photon": 6
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000016,
+      "expected": {
+        "inputs": {
+          "critical_photon": 4
+        },
+        "outputs": {
+          "hydrogen": 2,
+          "antimatter": 2
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 120
+      }
+    },
+    {
+      "id": "annihilation_constraint_sphere",
+      "seconds": 40,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "assembling_machine_mk1",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "annihilation_constraint_sphere",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "particle_container": 3,
+          "processor": 3
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.000020099999999999997,
+      "expected": {
+        "inputs": {
+          "particle_container": 2,
+          "processor": 2
+        },
+        "outputs": {
+          "annihilation_constraint_sphere": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 2.25
+      }
+    },
+    {
+      "id": "antimatter_fuel_rod",
+      "seconds": 24,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "assembling_machine_mk1",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "antimatter_fuel_rod",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "antimatter": 30,
+          "hydrogen": 30,
+          "annihilation_constraint_sphere": 3,
+          "titanium_alloy": 3
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.000012100000000000001,
+      "expected": {
+        "inputs": {
+          "antimatter": 20,
+          "hydrogen": 20,
+          "annihilation_constraint_sphere": 2,
+          "titanium_alloy": 2
+        },
+        "outputs": {
+          "antimatter_fuel_rod": 2
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 7.5
+      }
+    },
+    {
+      "id": "frame_material",
+      "seconds": 12,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "assembling_machine_mk1",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "frame_material",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "carbon_nanotube": 12,
+          "titanium_alloy": 3,
+          "high_purity_silicon": 3
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000061,
+      "expected": {
+        "inputs": {
+          "carbon_nanotube": 8,
+          "titanium_alloy": 2,
+          "high_purity_silicon": 2
+        },
+        "outputs": {
+          "frame_material": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 7.5
+      }
+    },
+    {
+      "id": "dyson_sphere_component",
+      "seconds": 16,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "assembling_machine_mk1",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "dyson_sphere_component",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "frame_material": 9,
+          "solar_sail": 9,
+          "processor": 9
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000081,
+      "expected": {
+        "inputs": {
+          "frame_material": 6,
+          "solar_sail": 6,
+          "processor": 6
+        },
+        "outputs": {
+          "dyson_sphere_component": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 5.63
+      }
+    },
+    {
+      "id": "small_carrier_rocket",
+      "seconds": 12,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "assembling_machine_mk1",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "small_carrier_rocket",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "dyson_sphere_component": 6,
+          "deuteron_fuel_rod": 12,
+          "quantum_chip": 6
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000061,
+      "expected": {
+        "inputs": {
+          "dyson_sphere_component": 4,
+          "deuteron_fuel_rod": 8,
+          "quantum_chip": 4
+        },
+        "outputs": {
+          "small_carrier_rocket": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 7.5
+      }
+    },
+    {
+      "id": "diamond",
+      "seconds": 3,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "arc_smelter",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "diamond",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "energetic_graphite": 3
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000016,
+      "expected": {
+        "inputs": {
+          "energetic_graphite": 2
+        },
+        "outputs": {
+          "diamond": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 30
+      }
+    },
+    {
+      "id": "diamond_from_kimberlite",
+      "seconds": 2.25,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "arc_smelter",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "diamond_from_kimberlite",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "kimberlite_ore": 3
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000016,
+      "expected": {
+        "inputs": {
+          "kimberlite_ore": 2
+        },
+        "outputs": {
+          "diamond": 2
+        },
+        "progress": 0.500001,
+        "utilization": 1,
+        "production_rate": 80
+      }
+    },
+    {
+      "id": "plastic",
+      "seconds": 4.5,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "chemical_plant",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "plastic",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "refined_oil": 6,
+          "energetic_graphite": 3
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000025999999999999997,
+      "expected": {
+        "inputs": {
+          "refined_oil": 4,
+          "energetic_graphite": 2
+        },
+        "outputs": {
+          "plastic": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 20
+      }
+    },
+    {
+      "id": "organic_crystal",
+      "seconds": 9,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "chemical_plant",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "organic_crystal",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "plastic": 6,
+          "refined_oil": 3,
+          "water": 3
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000046,
+      "expected": {
+        "inputs": {
+          "plastic": 4,
+          "refined_oil": 2,
+          "water": 2
+        },
+        "outputs": {
+          "organic_crystal": 1
+        },
+        "progress": 0.500003,
+        "utilization": 1,
+        "production_rate": 10
+      }
+    },
+    {
+      "id": "titanium_crystal",
+      "seconds": 8,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "assembling_machine_mk1",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "titanium_crystal",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "titanium_ingot": 9,
+          "organic_crystal": 3
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000041,
+      "expected": {
+        "inputs": {
+          "titanium_ingot": 6,
+          "organic_crystal": 2
+        },
+        "outputs": {
+          "titanium_crystal": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 11.25
+      }
+    },
+    {
+      "id": "electromagnetic_matrix",
+      "seconds": 4.5,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "matrix_lab",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "electromagnetic_matrix",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "magnetic_coil": 3,
+          "circuit_board": 3
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "utilization": 0,
+        "productionRate": 0
+      },
+      "phase_rounding_bound": 0.0000025999999999999997,
+      "expected": {
+        "inputs": {
+          "magnetic_coil": 2,
+          "circuit_board": 2
+        },
+        "outputs": {
+          "electromagnetic_matrix": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 20
+      }
+    },
+    {
+      "id": "energy_matrix",
+      "seconds": 9,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "matrix_lab",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "energy_matrix",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "energetic_graphite": 6,
+          "hydrogen": 6
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000046,
+      "expected": {
+        "inputs": {
+          "energetic_graphite": 4,
+          "hydrogen": 4
+        },
+        "outputs": {
+          "energy_matrix": 1
+        },
+        "progress": 0.500003,
+        "utilization": 1,
+        "production_rate": 10
+      }
+    },
+    {
+      "id": "structure_matrix",
+      "seconds": 12,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "matrix_lab",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "structure_matrix",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "diamond": 3,
+          "titanium_crystal": 3
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000061,
+      "expected": {
+        "inputs": {
+          "diamond": 2,
+          "titanium_crystal": 2
+        },
+        "outputs": {
+          "structure_matrix": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 7.5
+      }
+    },
+    {
+      "id": "information_matrix",
+      "seconds": 15,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "matrix_lab",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "information_matrix",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "particle_broadband": 3,
+          "processor": 6
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.000007599999999999999,
+      "expected": {
+        "inputs": {
+          "particle_broadband": 2,
+          "processor": 4
+        },
+        "outputs": {
+          "information_matrix": 1
+        },
+        "progress": 0.5,
+        "utilization": 1,
+        "production_rate": 6
+      }
+    },
+    {
+      "id": "gravity_matrix",
+      "seconds": 36,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "matrix_lab",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "gravity_matrix",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "graviton_lens": 3,
+          "quantum_chip": 3
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000181,
+      "expected": {
+        "inputs": {
+          "graviton_lens": 2,
+          "quantum_chip": 2
+        },
+        "outputs": {
+          "gravity_matrix": 2
+        },
+        "progress": 0.500012,
+        "utilization": 1,
+        "production_rate": 5
+      }
+    },
+    {
+      "id": "universe_matrix",
+      "seconds": 22.5,
+      "input": {
+        "id": "entity_2",
+        "kind": "machine",
+        "planetId": "home",
+        "position": {
+          "x": 100,
+          "y": 0
+        },
+        "interactionLocked": false,
+        "buildingId": "matrix_lab",
+        "powerGridId": "grid-a",
+        "powerPriority": 2,
+        "recipeId": "universe_matrix",
+        "machineCount": 1,
+        "minerCount": 0,
+        "inputs": {
+          "electromagnetic_matrix": 3,
+          "energy_matrix": 3,
+          "structure_matrix": 3,
+          "information_matrix": 3,
+          "gravity_matrix": 3,
+          "antimatter": 3
+        },
+        "outputs": {},
+        "progress": 0,
+        "routingCursor": 0,
+        "stationLastSupplyPeerBySlot": {},
+        "utilization": 0,
+        "productionRate": 0,
+        "proliferatorBonusProgress": {}
+      },
+      "phase_rounding_bound": 0.0000116,
+      "expected": {
+        "inputs": {
+          "electromagnetic_matrix": 2,
+          "energy_matrix": 2,
+          "structure_matrix": 2,
+          "information_matrix": 2,
+          "gravity_matrix": 2,
+          "antimatter": 2
+        },
+        "outputs": {
+          "universe_matrix": 1
+        },
+        "progress": 0.500007,
+        "utilization": 1,
+        "production_rate": 4
+      }
+    }
+  ],
+  "excluded": [
+    {
+      "recipe_id": "accumulator_charge",
+      "reason": "dedicated subsystem, power conversion or no material output; requires its own behavior fixture"
+    },
+    {
+      "recipe_id": "accumulator_discharge",
+      "reason": "dedicated subsystem, power conversion or no material output; requires its own behavior fixture"
+    },
+    {
+      "recipe_id": "solar_sail_launch",
+      "reason": "dedicated subsystem, power conversion or no material output; requires its own behavior fixture"
+    },
+    {
+      "recipe_id": "ray_power",
+      "reason": "dedicated subsystem, power conversion or no material output; requires its own behavior fixture"
+    },
+    {
+      "recipe_id": "critical_photon",
+      "reason": "dedicated subsystem, power conversion or no material output; requires its own behavior fixture"
+    },
+    {
+      "recipe_id": "carrier_rocket_launch",
+      "reason": "dedicated subsystem, power conversion or no material output; requires its own behavior fixture"
+    },
+    {
+      "recipe_id": "matrix_research",
+      "reason": "dedicated subsystem, power conversion or no material output; requires its own behavior fixture"
+    }
+  ]
+}

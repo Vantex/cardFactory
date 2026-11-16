@@ -14,6 +14,8 @@ const BUILDING_RUNTIME_FIELDS := {
 	"power_input": true,
 	"power_requested": true,
 	"power_covered": true,
+	"production_utilization": true,
+	"last_production_per_minute": true,
 }
 const CONNECTION_RUNTIME_FIELDS := {
 	"active": true,
@@ -22,6 +24,13 @@ const CONNECTION_RUNTIME_FIELDS := {
 }
 
 static func to_persistent_dict(state: GameState) -> Dictionary:
+	# Canonical source saves include the repair performed by frozen source loading.
+	if TechnologySystem.new(state).source_boundary_due() or ProgressionSystem.new(state).source_boundary_due():
+		var settled := GameState.new()
+		settled.copy_from(state)
+		TechnologySystem.new(settled, false).settle_source_research_boundaries()
+		ProgressionSystem.new(settled).settle_source_campaign()
+		return to_persistent_dict(settled)
 	state.sync_active_planet_inventory()
 	var completed_technologies: Array = state.completed_technologies.duplicate(true)
 	completed_technologies.sort()
@@ -33,7 +42,7 @@ static func to_persistent_dict(state: GameState) -> Dictionary:
 	completed_achievement_ids.sort()
 	var unlocked_progression_ids: Array = state.unlocked_progression_ids.duplicate(true)
 	unlocked_progression_ids.sort()
-	var research_queue: Array = state.research_queue.duplicate(true)
+	var research_queue: Array = _encode_research_queue(state)
 	var research_progress := state.research_progress.duplicate(true)
 	var research_invested_costs := state.research_invested_costs.duplicate(true)
 	var endgame_payload := {"endgame": state.endgame.duplicate(true)}
@@ -77,10 +86,16 @@ static func to_persistent_dict(state: GameState) -> Dictionary:
 		"connections": _encode_connections(state),
 	}
 	if not state.progression_facts.is_empty(): payload["progression_facts"] = state.progression_facts.duplicate(true)
+	if ProgressionSystem.uses_source_campaign(state):
+		if not payload.has("progression_facts"): payload["progression_facts"] = {}
+		payload.progression_facts["source_campaign_enabled"] = true
+	if not state.research_paused_id.is_empty() and state.research_paused_id != state.research_current_id and not state.completed_technologies.has(state.research_paused_id): payload["research_paused_id"] = state.research_paused_id
 	if state.save_mode != "normal": payload["save_mode"] = state.save_mode
 	if state.difficulty != "standard": payload["difficulty"] = state.difficulty
+	if state.resource_mode != "finite": payload["resource_mode"] = state.resource_mode
 	if not state.speedrun_state.is_empty(): payload["speedrun_state"] = state.speedrun_state.duplicate(true)
 	if not state.planet_tray_limits.is_empty(): payload["planet_tray_limits"] = state.planet_tray_limits.duplicate(true)
+	if not state.source_buffer_limits.is_empty(): payload["source_buffer_limits"] = state.source_buffer_limits.duplicate(true)
 	if not state.content_packs.is_empty(): payload["content_packs"] = state.content_packs.duplicate(true)
 	if not state.pure_idle.is_empty(): payload["pure_idle"] = state.pure_idle.duplicate(true)
 	if not state.time_warp.is_empty(): payload["time_warp"] = {"controller_id": state.time_warp.get("controller_id", ""), "enabled": state.time_warp.get("enabled", false), "requested": state.time_warp.get("requested", 5)}
@@ -94,22 +109,28 @@ static func to_persistent_dict(state: GameState) -> Dictionary:
 	if not state.dyson_engineering.is_empty(): payload["dyson_engineering"] = state.dyson_engineering.duplicate(true)
 	if not state.selected_source_objective.is_empty(): payload["selected_source_objective"] = state.selected_source_objective
 	if not state.production_orders.is_empty(): payload["production_orders"] = state.production_orders.duplicate(true)
+	if not state.production_plans.is_empty(): payload["production_plans"] = state.production_plans.duplicate(true)
 	for field in ["blueprint_library", "construction_queue", "canvas_regions", "canvas_bookmarks"]:
 		if not state.get(field).is_empty(): payload[field] = state.get(field).duplicate(true)
-	return _encode_dictionary(payload, ROOT_RUNTIME_FIELDS)
+	return _encode_dictionary(payload, ROOT_RUNTIME_FIELDS, {"buildings": true, "connections": true})
 
 static func from_persistent_dict(payload: Variant) -> GameState:
 	var migration_result := SaveMigrationRegistry.migrate_to_current(payload)
 	if not migration_result.get("ok", false):
 		return null
 
-	var data: Dictionary = migration_result["data"]
+	return _decode_validated_data(migration_result["data"])
+
+# Internal callers use the current migration result, which already passed validation.
+static func _decode_validated_data(data: Dictionary) -> GameState:
 	var state := GameState.new()
 	state.elapsed_time = float(data["elapsed_time"])
 	state.save_mode = String(data.get("save_mode", "normal"))
 	state.difficulty = String(data.get("difficulty", "standard"))
+	state.resource_mode = String(data.get("resource_mode", "finite"))
 	state.speedrun_state = data.get("speedrun_state", {}).duplicate(true)
 	state.planet_tray_limits = data.get("planet_tray_limits", {}).duplicate(true)
+	state.source_buffer_limits = data.get("source_buffer_limits", {}).duplicate(true)
 	state.content_packs = data.get("content_packs", []).duplicate(true)
 	state.pure_idle = data.get("pure_idle", {}).duplicate(true)
 	state.time_warp = data.get("time_warp", {}).duplicate(true)
@@ -144,6 +165,7 @@ static func from_persistent_dict(payload: Variant) -> GameState:
 	state.cursor_payload = data["cursor_payload"].duplicate(true)
 	state.handcraft_queue = data["handcraft_queue"].duplicate(true)
 	state.production_orders = data.get("production_orders", []).duplicate(true)
+	state.production_plans = data.get("production_plans", []).duplicate(true)
 	state.blueprint_library = data.get("blueprint_library", {}).duplicate(true)
 	state.construction_queue = data.get("construction_queue", []).duplicate(true)
 	state.canvas_regions = data.get("canvas_regions", []).duplicate(true)
@@ -154,6 +176,7 @@ static func from_persistent_dict(payload: Variant) -> GameState:
 	state.research_progress = data["research_progress"].duplicate(true)
 	state.research_invested_costs = data["research_invested_costs"].duplicate(true)
 	state.research_paused = bool(data["research_paused"])
+	state.research_paused_id = String(data.get("research_paused_id", ""))
 	state.research_queue_wait_reason = String(data["research_queue_wait_reason"])
 	state.technology_levels = data["technology_levels"].duplicate(true)
 	state.progression_facts = data.get("progression_facts", {}).duplicate(true)
@@ -167,7 +190,22 @@ static func from_persistent_dict(payload: Variant) -> GameState:
 	state.connections = _decode_connections(data["connections"])
 	state.planet_inventory = state.get_active_planet_inventory()
 	state.sync_active_planet_inventory()
+	TechnologySystem.new(state, false).settle_source_research_boundaries()
+	ProgressionSystem.new(state).settle_source_campaign()
 	return state
+
+static func _encode_research_queue(state: GameState) -> Array:
+	var planned := {}
+	for id in state.completed_technologies: planned[id] = true
+	for id in [state.research_current_id, state.research_paused_id]:
+		if not id.is_empty(): planned[id] = true
+	var queue := []
+	for id in state.research_queue:
+		var technology := DataManager.get_technology(id)
+		if technology.get("source_research_bridge", false) and (planned.has(id) or not technology.get("prerequisites", []).all(func(parent): return planned.has(parent))): continue
+		queue.append(id)
+		planned[id] = true
+	return queue
 
 static func state_digest_payload(state: GameState) -> Dictionary:
 	return to_persistent_dict(state)
@@ -179,7 +217,7 @@ static func _encode_entity_collection(source: Dictionary, runtime_fields: Dictio
 	for key_value in keys:
 		var entity_value: Variant = source[key_value]
 		if entity_value is Dictionary:
-			var entity: Dictionary = entity_value.duplicate(true)
+			var entity: Dictionary = entity_value.duplicate()
 			if String(entity.get("planet_id", "")).is_empty():
 				entity["planet_id"] = fallback_planet_id
 			encoded[String(key_value)] = _encode_dictionary(entity, runtime_fields)
@@ -194,7 +232,7 @@ static func _encode_handcraft_queue(source: Array) -> Array:
 		encoded.append(value.duplicate(true))
 	return encoded
 
-static func _encode_dictionary(source: Dictionary, excluded_fields: Dictionary = {}) -> Dictionary:
+static func _encode_dictionary(source: Dictionary, excluded_fields: Dictionary = {}, encoded_fields: Dictionary = {}) -> Dictionary:
 	var encoded: Dictionary = {}
 	var keys: Array = source.keys()
 	keys.sort_custom(func(left: Variant, right: Variant) -> bool:
@@ -203,6 +241,9 @@ static func _encode_dictionary(source: Dictionary, excluded_fields: Dictionary =
 	for key_value in keys:
 		var key := String(key_value)
 		if excluded_fields.has(key):
+			continue
+		if encoded_fields.has(key):
+			encoded[key] = source[key_value]
 			continue
 		var encoded_value := _encode_value(source[key_value])
 		if encoded_value.get("ok", false):

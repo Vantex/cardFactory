@@ -34,7 +34,8 @@ func try_place_building(building_type: String, position: Vector2) -> Dictionary:
 		return _failure("technology_locked", "需要星际物流科技")
 	if building_type in ["solar_sail_ejector", "dyson_sphere_launcher", "ray_receiver"] and not game_state.completed_technologies.has("dyson_engineering"):
 		return _failure("technology_locked", "需要戴森工程科技")
-	if not DataManager.source_technology_unlocked(game_state, String(building_definition.get("required_source_technology", ""))):
+	var owned_source_kit := building_type.begins_with("dsp_") and building_definition.has("source_id") and _has_construction_item(building_type)
+	if not owned_source_kit and not DataManager.source_technology_unlocked(game_state, String(building_definition.get("required_source_technology", ""))):
 		return _failure("technology_locked", "建筑科技尚未解锁")
 	var pending := DataManager.building_pending_reason(building_type)
 	if not pending.is_empty(): return _failure("feature_pending", pending)
@@ -52,13 +53,16 @@ func try_place_building(building_type: String, position: Vector2) -> Dictionary:
 	if not _has_construction_item(building_type):
 		return _failure("missing_construction_item", "缺少%s施工件" % building_definition.get("name", building_type))
 	var resource_site_id := ""
+	var selected_extraction_item := ""
 	var extraction: Dictionary = building_definition.get("extraction", {})
 	if building_definition.get("kind", "") == "extractor":
 		var output_item := String(extraction.get("item_id", ""))
-		var nearest := PlanetSystem.new(game_state).find_nearest_resource_site(game_state.active_planet_id, output_item, position)
+		var allowed_items: Array = extraction.get("items", [output_item]) if building_definition.has("source_id") else [output_item]
+		var nearest := PlanetSystem.new(game_state).find_nearest_resource_site_for_items(game_state.active_planet_id, allowed_items, position)
 		if nearest.is_empty():
 			return _failure("invalid_resource_site", "附近没有可用资源点")
 		resource_site_id = String(nearest.get("id", ""))
+		selected_extraction_item = String(nearest.get("item_id", ""))
 
 	_consume_construction_item(building_type)
 	var building_data := {
@@ -73,7 +77,7 @@ func try_place_building(building_type: String, position: Vector2) -> Dictionary:
 		"planet_id": game_state.active_planet_id,
 	}
 	if building_definition.get("kind", "") == "extractor":
-		building_data["output_item"] = String(extraction.get("item_id", ""))
+		building_data["output_item"] = selected_extraction_item
 		building_data["resource_site_id"] = resource_site_id
 	var fuel_rule: Dictionary = building_definition.get("fuel", {})
 	if not fuel_rule.is_empty():
@@ -103,6 +107,15 @@ func try_remove_building(building_id: String) -> Dictionary:
 
 func get_owned_count(building_type: String) -> float:
 	return float(game_state.construction_inventory.get(building_type, 0.0))
+
+func discard_inventory(construction_id: String, confirmed: bool) -> Dictionary:
+	if not confirmed: return _failure("confirmation_required", "请确认永久丢弃施工件")
+	var stock_id := CraftingPlanner.construction_stock_id(construction_id)
+	var amount: Variant = game_state.construction_inventory.get(stock_id)
+	if not (amount is int or amount is float) or not is_finite(float(amount)) or floorf(float(amount)) < 1:
+		return _failure("empty_construction_inventory", "施工件库存已为空，未执行丢弃")
+	game_state.construction_inventory[stock_id] = 0.0
+	return {"ok": true, "reason": "", "message": "施工件已永久丢弃；已放置建筑和制造目标保留", "details": {"stock_id": stock_id, "removed": amount}}
 
 func get_missing_reason(building_type: String) -> String:
 	if DataManager.get_building(building_type).is_empty():

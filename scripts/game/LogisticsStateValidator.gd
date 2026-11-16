@@ -49,9 +49,10 @@ static func validate(data: Dictionary) -> Array:
 			var max_capacity := 1000 if StationSystem.is_source(b.type) else 999
 			if b.type == OrbitalCollectorSystem.TYPE: max_capacity = 2000
 			if StationSystem.is_source(b.type): max_capacity *= StationSystem.stack_count(b)
-			if slot.get("mode") not in ["supply", "demand", "storage"] or not _number(slot.get("capacity"), 1, max_capacity) or not _number(slot.get("amount"), 0, max_capacity) or not _number(slot.get("min_load"), 0.01, 1) or not _integer(slot.get("priority"), 0, 2) or not _integer(slot.get("cursor"), 0, 1000000):
+			var retained_bound := StationSystem.storage_capacity_for(b, slot) if StationSystem.is_source(b.type) else float(max_capacity)
+			if slot.get("mode") not in ["supply", "demand", "storage"] or not _number(slot.get("capacity"), 1, max_capacity) or not _number(slot.get("amount"), 0, retained_bound) or not _number(slot.get("min_load"), 0.01, 1) or not _integer(slot.get("priority"), 0, 2) or not _integer(slot.get("cursor"), 0, 1000000):
 				errors.append(_error("槽位数值无效"))
-			elif float(slot.amount) > float(slot.capacity) or (item == "" and slot.amount != 0):
+			elif float(slot.amount) > StationSystem.storage_capacity_for(b, slot) or (item == "" and slot.amount != 0):
 				errors.append(_error("槽位容量或空槽物资无效"))
 			if StationSystem.is_source(b.type) and (slot.get("local_mode") not in ["supply", "demand", "storage"] or slot.get("remote_mode") not in ["supply", "demand", "storage"] or slot.get("min_load") not in [0.1, 0.25, 0.5, 1.0] or not _number(slot.get("min_stock"), 0, 100000000) or not _number(slot.get("max_stock"), 0, 100000000)): errors.append(_error("源物流站范围和库存限额无效"))
 	if not errors.is_empty():

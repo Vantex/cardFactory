@@ -99,7 +99,7 @@ func start_new_game(slot: int, mode_id: String = "normal", difficulty_id: String
 	new_state.content_packs = DataManager.content_pack_system.references()
 	if not GameModeSystem.new(new_state).configure_new_game(mode_id, difficulty_id): return _failure("invalid_game_mode", "新游戏模式或难度无效")
 	SourceGalaxySystem.new(new_state).initialize(randi(), false)
-	new_state.initialize_new_game_home_inventory()
+	new_state.initialize_new_game_home_inventory(true)
 	PlanetSystem.new(new_state).initialize_colonized_resource_sites()
 	var save_result := _commit_state(slot, new_state, "new_game")
 	if not save_result.get("ok", false):
@@ -262,6 +262,16 @@ func set_autosave_interval(seconds: float) -> void:
 func get_active_planet() -> String:
 	return game_state.active_planet_id
 
+func set_resource_mode(mode: Variant, expected_state: GameState = null) -> Dictionary:
+	if not _session_active or _save_in_progress or (_offline_job != null and _offline_job.phase in ["simulating", "ready"]):
+		return _failure("session_busy", "请先进入存档并完成当前保存或结算")
+	if expected_state != null and expected_state != game_state:
+		return _failure("stale_session", "当前存档已变化，请重新确认")
+	if not game_state.set_resource_mode(mode):
+		return _failure("invalid_resource_mode", "资源模式无效")
+	EventBus.simulation_updated.emit()
+	return {"ok": true, "mode": game_state.resource_mode}
+
 func configure_pure_idle(enabled: bool, mode: String = "stable") -> Dictionary:
 	if not _session_active or _save_in_progress: return _failure("session_busy", "当前无法修改纯挂机")
 	if enabled and simulation_engine.get_pending_simulation_time() + SimulationEngine.STEP_EPSILON >= SimulationEngine.FIXED_DELTA: return _failure("simulation_pending", "请等待模拟积压处理完成")
@@ -329,6 +339,8 @@ func create_recovery_snapshot() -> Dictionary:
 
 func get_content_pack_protected_payloads() -> Dictionary:
 	var payloads := [GameStateCodec.to_persistent_dict(game_state)]
+	# Source loading can remove blocked queue entries; the live session still owns them.
+	payloads.append({"research_current_id": game_state.research_current_id, "research_paused_id": game_state.research_paused_id, "research_queue": game_state.research_queue.duplicate()})
 	var directory := DirAccess.open(_save_system._save_path)
 	if directory != null:
 		for file_name in directory.get_files():

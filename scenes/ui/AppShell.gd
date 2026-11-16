@@ -250,7 +250,7 @@ func open_settings() -> void:
 	_settings.open()
 
 func close_settings() -> void:
-	_settings.hide()
+	_settings.close()
 	if _settings_return == "game" and GameManager.is_session_active():
 		_on_session_started(GameManager.get_current_slot(), false)
 		_focus_first.call_deferred(_workspace_ui)

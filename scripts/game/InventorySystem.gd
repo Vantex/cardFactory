@@ -131,6 +131,10 @@ func try_collect_output(building_id: String, item_id: String = "", amount: float
 	var building: Dictionary = game_state.buildings.get(building_id, {})
 	if building.is_empty() or String(building.get("planet_id", "")) != game_state.active_planet_id:
 		return _failure("只能收取当前行星建筑产物")
+	var site: Dictionary = game_state.resource_sites.get(String(building.get("resource_site_id", "")), {})
+	var definition := DataManager.get_building(String(building.get("type", "")))
+	if not game_state.source_galaxy.is_empty() and definition.has("source_id") and definition.get("kind") == "extractor" and site.has("output_buffer") and item_id.is_empty() and amount == 0:
+		return try_collect_resource_output(String(site.id))
 	var buffer: Dictionary = building.get("output_buffer", {}).duplicate(true)
 	var items := buffer.duplicate(true)
 	if not item_id.is_empty():
@@ -147,6 +151,22 @@ func try_collect_output(building_id: String, item_id: String = "", amount: float
 			buffer[key] = remaining
 	building["output_buffer"] = buffer
 	return _success("产物已收进行星托盘")
+
+func try_collect_resource_output(site_id: String) -> Dictionary:
+	var site: Dictionary = game_state.resource_sites.get(site_id, {})
+	if game_state.source_galaxy.is_empty() or site.is_empty():
+		return _failure("请选择源版资源点")
+	var item := String(site.item_id)
+	var output := preload("res://scripts/game/SourceResourceOutputSystem.gd")
+	# Whole-unit collection keeps legal native fractions with their original owners.
+	var available := floorf(output.raw_amount(game_state, site))
+	var inventory := get_planet_inventory()
+	var free := floorf(maxf(0, PlanetTraySystem.new(game_state).limit() - float(inventory.get(item, 0))))
+	var moved := minf(available, free)
+	if moved < 1: return _failure("没有可收取产物或托盘容量不足")
+	if output.take(game_state, site, moved) != moved: return _failure("资源输出不足")
+	inventory[item] = float(inventory.get(item, 0)) + moved
+	return {"ok": true, "amount": moved, "message": "矿脉产物已收进行星托盘"}
 
 func _remove_without_validation(item_id: String, amount: float, planet_id: String = "") -> void:
 	var inventory := get_planet_inventory(planet_id)

@@ -49,6 +49,7 @@ var _discard_dialog: ConfirmationDialog
 var _discard_planet := ""
 var _discard_selected := ""
 var _discard_count := 0.0
+var _discard_state: GameState
 var _role: OptionButton
 var _metadata_notice: Label
 var _editing_planet_id := ""
@@ -225,14 +226,16 @@ func _build_ui() -> void:
 	_discard_amount.value = 1
 	_source_controls.add_child(_discard_amount)
 	_source_controls.add_child(_make_action_button("DiscardTrayStock", "丢弃托盘物料…", func():
+		_discard_state = game_state
 		_discard_planet = _selected_planet_id
 		_discard_selected = str(_discard_item.get_item_metadata(_discard_item.selected))
 		_discard_count = _discard_amount.value
 		_discard_dialog.dialog_text = "确认丢弃 %s × %d？丢弃后不能恢复。" % [DataManager.get_item(_discard_selected).name, _discard_count]
 		_discard_dialog.popup_centered()))
 	_discard_dialog = ConfirmationDialog.new()
-	_discard_dialog.confirmed.connect(func():
-		_metadata_notice.text = PlanetTraySystem.new(game_state).discard(_discard_planet, _discard_selected, _discard_count, true).get("message", "物料已丢弃"))
+	_discard_dialog.name = "DiscardTrayConfirmation"
+	_discard_dialog.confirmed.connect(_confirm_tray_discard)
+	_discard_dialog.canceled.connect(_clear_tray_discard)
 	add_child(_discard_dialog)
 	_metadata_notice = _make_wrapped_label("MetadataNotice", ACCENT_YELLOW)
 	_source_controls.add_child(_metadata_notice)
@@ -328,6 +331,7 @@ func _refresh_details() -> void:
 	_resource_summary.text = "资源\n%s" % _resource_site_text(planet.get("resource_sites", []))
 	var colonization: Dictionary = planet.get("colonization", {})
 	_colonization_summary.text = "殖民\n状态：%s\n成本：%s" % ["活动" if colonization.get("active", false) else ("已殖民" if colonization.get("colonized", false) else "未殖民"), _cost_text(colonization.get("requirements", {}))]
+	if not game_state.source_galaxy.is_empty(): _colonization_summary.text += "\n" + String(colonization.get("source_requirements", {}).get("reason", ""))
 	var industry: Dictionary = planet.get("industry", {})
 	_industry_summary.text = "工业\n建筑 %d · 运行 %d · 阻塞 %d · 线路 %d · 资源点 %d\n发电 %.1f · 需求 %.1f\n托盘：%s" % [int(industry.get("building_count", 0)), int(industry.get("running_count", 0)), int(industry.get("blocked_count", 0)), int(industry.get("connection_count", 0)), int(industry.get("resource_site_count", 0)), float(industry.get("generation", 0.0)), float(industry.get("demand", 0.0)), _inventory_text(industry.get("inventory", {}))]
 	_source_controls.visible = not game_state.source_galaxy.is_empty()
@@ -358,11 +362,25 @@ func _metadata_input(node_name: String, placeholder: String) -> LineEdit:
 	_source_controls.add_child(control)
 	return control
 
+func _confirm_tray_discard() -> void:
+	if _discard_state == null or _discard_state != game_state:
+		_metadata_notice.text = "工厂会话已变化，未执行丢弃"
+		_clear_tray_discard()
+		return
+	_metadata_notice.text = PlanetTraySystem.new(game_state).discard(_discard_planet, _discard_selected, _discard_count, true).message
+	_clear_tray_discard()
+	_refresh_details()
+
+func _clear_tray_discard() -> void:
+	_discard_state = null
+	_discard_planet = ""
+	_discard_selected = ""
+	_discard_count = 0.0
+
 func _save_planet_metadata() -> void:
 	var tags := []
 	for part in _local_tags.text.replace("，", ",").split(",", false):
-		var tag: String = part.strip_edges()
-		if not tag.is_empty() and not tags.has(tag): tags.append(tag)
+		tags.append(part)
 	var result := SourceGalaxySystem.new(game_state).set_metadata(_selected_planet_id, _local_name.text, _local_note.text, tags)
 	_metadata_notice.text = result.message
 	_system_signature = ""
@@ -389,6 +407,9 @@ func _refresh_action_states(system: Dictionary, planet: Dictionary) -> void:
 func _colonization_availability(planet: Dictionary) -> Dictionary:
 	if planet.is_empty():
 		return {"ok": false, "message": "目标行星不存在"}
+	if not game_state.source_galaxy.is_empty():
+		var requirements: Dictionary = planet.get("colonization", {}).get("source_requirements", {})
+		return {"ok": requirements.get("status") == "ready", "message": requirements.get("reason", "请选择行星")}
 	var planet_id := String(planet.get("id", ""))
 	if game_state.colonized_planet_ids.has(planet_id):
 		return {"ok": false, "message": "目标行星已殖民"}
@@ -412,6 +433,9 @@ func _travel_availability(planet: Dictionary) -> Dictionary:
 	if planet.is_empty():
 		return {"ok": false, "message": "目标行星不存在"}
 	var planet_id := String(planet.get("id", ""))
+	if not game_state.source_galaxy.is_empty():
+		var available := planet_system.is_source_planet_colonized(planet_id) and galaxy_system.is_source_system_unlocked(String(planet.get("system_id", ""))) and game_state.active_planet_id != planet_id
+		return {"ok": available, "message": "可以前往" if available else "目标行星不可前往或已是活动行星"}
 	if not game_state.colonized_planet_ids.has(planet_id):
 		return {"ok": false, "message": "目标行星尚未殖民"}
 	if not game_state.explored_system_ids.has(String(planet.get("system_id", ""))):
@@ -460,7 +484,7 @@ func _resource_site_text(sites: Array) -> String:
 			continue
 		var site: Dictionary = site_value
 		var item_id := String(site.get("item_id", ""))
-		var reserve := "无限" if bool(site.get("infinite", false)) else "剩余 %.0f / %.0f" % [float(site.get("remaining", 0.0)), float(site.get("capacity", 0.0))]
+		var reserve := "无限" if preload("res://scripts/game/SourceResourceReserveSystem.gd").is_infinite(game_state, site) else "剩余 %.0f / %.0f" % [float(site.get("remaining", 0.0)), float(site.get("capacity", 0.0))]
 		entries.append("%s [%s] %s" % [DataManager.get_item(item_id).get("name", item_id), String(site.get("id", "")), reserve])
 	return "\n".join(entries) if not entries.is_empty() else "无目录资源"
 

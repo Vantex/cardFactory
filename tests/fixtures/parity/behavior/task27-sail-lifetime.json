@@ -1,0 +1,3532 @@
+{
+  "source_commit": "472bf62c76b695852b5577e563c1d113192ac731",
+  "source_files": {
+    "src/game/engine.ts": "a809a4cf72a7c2342d81732b010cf95e35cbca653313a0ebe33d56d49483b50b",
+    "src/game/content.ts": "6de101d86d28012c8765815aec35177a95b4d7ac5604736a4b608a100284f7ff",
+    "src/game/galaxy.ts": "bf0e4d23f6af26d0180ff4e7303e45a7e06e782ed0289f9a94dda3de88028bfd",
+    "src/game/galaxyCatalog.ts": "fc503cfdcc7d5f38bfcd8b6c7f262b56126f1e3cc2c749c0463e5779730c2540",
+    "src/game/systemSpaceStation.ts": "1cd199e3f11036bf8e06af469bbb92fbb8f882c37c3b5d5283c3f1aaf71798ad",
+    "src/game/systemHubLogistics.ts": "b654c3bf76dc0ad685550a5b5992358de84c611eedc1dc75fa3e425cef271659",
+    "src/game/productionStatistics.ts": "b9b6680164bef7fe0f48cce4ffdff2eaf643e7c07c789903a49fe403b6cc7f73",
+    "src/game/quantityFormat.ts": "01008471e4bc2f8e49d97b859667fb41ca83ee77d8c5034361ef5ce003d92178",
+    "src/game/campaign.ts": "c9c363d746b4f51a29fa01f08462c89816686af851daec2b450e6365e683a15c",
+    "src/game/difficulty.ts": "24613016f2296036c18577ce3338f792119617d07a17f2f9dffbefddf48e423e",
+    "src/game/endgame.ts": "65af1b6317e8d4c1dccdd73672750efbec3cd00d3b751333f438a99ac8967c8a",
+    "src/game/infiniteResearch.ts": "b6650402662557b5cd17e16de89f744269d0af54aa8aa40c16625e7758cc34c3",
+    "src/game/activity.ts": "b8711f1e5711bb0ec9826a098beeec246f859eb2581e0ce489ec6bc75f260c6a",
+    "src/game/units.ts": "bf050c2a09270f762ae76bb7ac8373571af3c094a215bd17c69fc9207d138bc5",
+    "src/game/quantumLogisticsNetwork.ts": "b34f1b836401edb757eac76ad6f924f1e8f6540f221134c55b555ebcca92b4c3",
+    "src/game/recursiveCrafting.ts": "1b131b06c7ee5f8164a377cf5a26d6fee4dd873b62f95b8552bd9423ad929e2b",
+    "src/game/speedrun.ts": "6144a52c5c0320080a4b3ec2202bd76e13811dedb587bc45f871ebded1ff2b59",
+    "src/game/idleSettlement.ts": "a90fd7d585074583ba462e4c19f6c44ba751e23128acb5daa7e652b7e4c25e8a",
+    "src/game/orbitalStation.ts": "8398e7ab6c5160a62d78fbd84e54679490336141c6f0224f0eb19524f448a56b",
+    "src/game/progression.ts": "be1ea07ebf711ba6e5d5429037dac1635499ffd33df8d9cb31a56c7099d2b773",
+    "src/game/stationContracts.ts": "4f3f2571be1878a9bc248ec2939ed03812e7b63ebd080ff8c34dfe5fcaf94f88",
+    "src/game/stationMath.ts": "5a40a7055e1b76910c84d339da2601032a6d754d725f1cd02b4ba0f474d35c0e",
+    "src/game/stationDecorations.ts": "ad76a89735066ba17cb3c3519b1b726b6f33b05ff7d368c0c7cf00326fb58019",
+    "src/game/stationCargoTerminal.ts": "d920817d0655f7774540e5b325549085e363d08bbb92834c5b2cced72d607f10"
+  },
+  "source_environment": {
+    "DEV": false,
+    "PROD": true,
+    "MODE": "production"
+  },
+  "scope": "Only getSolarSailLifetimeSeconds: three difficulties, finite solar lifetime technologies alone and together, unrelated finite and independent infinite controls. Actual frozen source return values and immutable input. Controlled query scope; no earned growth, decay or saving claim.",
+  "functions": [
+    "getSolarSailLifetimeSeconds"
+  ],
+  "finite": [
+    "research_speed_1",
+    "research_speed_2",
+    "research_speed_3",
+    "mining_speed_1",
+    "mining_speed_2",
+    "mining_speed_3",
+    "logistics_engine_1",
+    "logistics_engine_2",
+    "ray_transmission_1",
+    "ray_transmission_2",
+    "dyson_absorption_1",
+    "solar_sail_life_1",
+    "solar_sail_life_2"
+  ],
+  "infinite": [
+    "matrix_compression",
+    "vein_utilization",
+    "galactic_logistics",
+    "stellar_harnessing"
+  ],
+  "cases": [
+    {
+      "id": "relaxed-none",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-all_finite",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "electromagnetic_matrix",
+          "electromagnetism",
+          "solar_energy",
+          "basic_logistics",
+          "thermal_power",
+          "high_efficiency_plasma_control",
+          "energy_matrix",
+          "energy_storage",
+          "fractionation",
+          "geothermal_power",
+          "high_speed_assembling",
+          "high_speed_logistics",
+          "mining_speed_1",
+          "proliferator_1",
+          "xray_cracking",
+          "reforming_refine",
+          "high_strength_crystal",
+          "basic_chemical_engineering",
+          "polymer_chemistry",
+          "structure_matrix",
+          "material_delivery_logistics",
+          "proliferator_2",
+          "titanium_alloy",
+          "processor",
+          "planetary_logistics",
+          "interstellar_logistics",
+          "nanomaterials",
+          "rare_resource_utilization",
+          "quantum_chemical_engineering",
+          "orbital_collection",
+          "information_matrix",
+          "construction_automation",
+          "proliferator_3",
+          "research_speed_1",
+          "miniature_particle_collider",
+          "fusion_power",
+          "quantum_chip",
+          "plane_smelting",
+          "gravity_matrix",
+          "construction_capacity_1",
+          "space_warp",
+          "stellar_exploration",
+          "quantum_printing",
+          "super_magnetic_logistics",
+          "research_speed_2",
+          "dyson_swarm",
+          "ray_receiver",
+          "antimatter",
+          "artificial_star",
+          "universe_matrix",
+          "micro_black_hole_containment",
+          "time_warp_engineering",
+          "construction_capacity_2",
+          "research_speed_3",
+          "dyson_sphere_program",
+          "vertical_launching_silo",
+          "dyson_shell",
+          "mining_speed_2",
+          "mining_speed_3",
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2",
+          "solar_sail_life_1",
+          "solar_sail_life_2",
+          "ray_transmission_1",
+          "ray_transmission_2",
+          "dyson_absorption_1",
+          "orbital_elevator_engineering",
+          "orbital_multi_cargo_bus",
+          "orbital_energy_recovery",
+          "system_space_station_engineering",
+          "orbital_modular_assembly",
+          "autonomous_station_construction",
+          "unified_system_logistics_protocol",
+          "quantum_logistics_network"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 2400
+      }
+    },
+    {
+      "id": "relaxed-finite-research_speed_1",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "research_speed_1"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-finite-research_speed_2",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "research_speed_2"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-finite-research_speed_3",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "research_speed_3"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-finite-mining_speed_1",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "mining_speed_1"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-finite-mining_speed_2",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "mining_speed_2"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-finite-mining_speed_3",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "mining_speed_3"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-finite-logistics_engine_1",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_1"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-finite-logistics_engine_2",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "logistics_engine_2"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-finite-ray_transmission_1",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "ray_transmission_1"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-finite-ray_transmission_2",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "ray_transmission_2"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-finite-dyson_absorption_1",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "dyson_absorption_1"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-finite-solar_sail_life_1",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "solar_sail_life_1"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1800
+      }
+    },
+    {
+      "id": "relaxed-finite-solar_sail_life_2",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "solar_sail_life_2"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1800
+      }
+    },
+    {
+      "id": "relaxed-noncontiguous_finite",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "research_speed_1",
+          "research_speed_3",
+          "mining_speed_1",
+          "mining_speed_3",
+          "ray_transmission_2",
+          "logistics_engine_2"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-infinite-matrix_compression-1",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 1,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-infinite-matrix_compression-2",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 2,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-infinite-matrix_compression-9",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 9,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-infinite-matrix_compression-10",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 10,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-infinite-matrix_compression-11",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 11,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-infinite-matrix_compression-99",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 99,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-infinite-matrix_compression-999",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 999,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-infinite-matrix_compression-1000",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 1000,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-infinite-vein_utilization-1",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 1,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-infinite-vein_utilization-2",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 2,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-infinite-vein_utilization-9",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 9,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-infinite-vein_utilization-10",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 10,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-infinite-vein_utilization-11",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 11,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-infinite-vein_utilization-99",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 99,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-infinite-vein_utilization-999",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 999,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-infinite-vein_utilization-1000",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 1000,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-infinite-galactic_logistics-1",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 1,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-infinite-galactic_logistics-2",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 2,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-infinite-galactic_logistics-9",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 9,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-infinite-galactic_logistics-10",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 10,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-infinite-galactic_logistics-11",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 11,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-infinite-galactic_logistics-99",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 99,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-infinite-galactic_logistics-999",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 999,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-infinite-galactic_logistics-1000",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 1000,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-infinite-stellar_harnessing-1",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 1
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-infinite-stellar_harnessing-2",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 2
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-infinite-stellar_harnessing-9",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 9
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-infinite-stellar_harnessing-10",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 10
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-infinite-stellar_harnessing-11",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 11
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-infinite-stellar_harnessing-99",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 99
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-infinite-stellar_harnessing-999",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 999
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-infinite-stellar_harnessing-1000",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 1000
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "relaxed-combined-0",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "electromagnetic_matrix",
+          "electromagnetism",
+          "solar_energy",
+          "basic_logistics",
+          "thermal_power",
+          "high_efficiency_plasma_control",
+          "energy_matrix",
+          "energy_storage",
+          "fractionation",
+          "geothermal_power",
+          "high_speed_assembling",
+          "high_speed_logistics",
+          "mining_speed_1",
+          "proliferator_1",
+          "xray_cracking",
+          "reforming_refine",
+          "high_strength_crystal",
+          "basic_chemical_engineering",
+          "polymer_chemistry",
+          "structure_matrix",
+          "material_delivery_logistics",
+          "proliferator_2",
+          "titanium_alloy",
+          "processor",
+          "planetary_logistics",
+          "interstellar_logistics",
+          "nanomaterials",
+          "rare_resource_utilization",
+          "quantum_chemical_engineering",
+          "orbital_collection",
+          "information_matrix",
+          "construction_automation",
+          "proliferator_3",
+          "research_speed_1",
+          "miniature_particle_collider",
+          "fusion_power",
+          "quantum_chip",
+          "plane_smelting",
+          "gravity_matrix",
+          "construction_capacity_1",
+          "space_warp",
+          "stellar_exploration",
+          "quantum_printing",
+          "super_magnetic_logistics",
+          "research_speed_2",
+          "dyson_swarm",
+          "ray_receiver",
+          "antimatter",
+          "artificial_star",
+          "universe_matrix",
+          "micro_black_hole_containment",
+          "time_warp_engineering",
+          "construction_capacity_2",
+          "research_speed_3",
+          "dyson_sphere_program",
+          "vertical_launching_silo",
+          "dyson_shell",
+          "mining_speed_2",
+          "mining_speed_3",
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2",
+          "solar_sail_life_1",
+          "solar_sail_life_2",
+          "ray_transmission_1",
+          "ray_transmission_2",
+          "dyson_absorption_1",
+          "orbital_elevator_engineering",
+          "orbital_multi_cargo_bus",
+          "orbital_energy_recovery",
+          "system_space_station_engineering",
+          "orbital_modular_assembly",
+          "autonomous_station_construction",
+          "unified_system_logistics_protocol",
+          "quantum_logistics_network"
+        ],
+        "levels": {
+          "matrix_compression": 1,
+          "vein_utilization": 9,
+          "galactic_logistics": 11,
+          "stellar_harnessing": 99
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 2400
+      }
+    },
+    {
+      "id": "relaxed-combined-1",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "electromagnetic_matrix",
+          "electromagnetism",
+          "solar_energy",
+          "basic_logistics",
+          "thermal_power",
+          "high_efficiency_plasma_control",
+          "energy_matrix",
+          "energy_storage",
+          "fractionation",
+          "geothermal_power",
+          "high_speed_assembling",
+          "high_speed_logistics",
+          "mining_speed_1",
+          "proliferator_1",
+          "xray_cracking",
+          "reforming_refine",
+          "high_strength_crystal",
+          "basic_chemical_engineering",
+          "polymer_chemistry",
+          "structure_matrix",
+          "material_delivery_logistics",
+          "proliferator_2",
+          "titanium_alloy",
+          "processor",
+          "planetary_logistics",
+          "interstellar_logistics",
+          "nanomaterials",
+          "rare_resource_utilization",
+          "quantum_chemical_engineering",
+          "orbital_collection",
+          "information_matrix",
+          "construction_automation",
+          "proliferator_3",
+          "research_speed_1",
+          "miniature_particle_collider",
+          "fusion_power",
+          "quantum_chip",
+          "plane_smelting",
+          "gravity_matrix",
+          "construction_capacity_1",
+          "space_warp",
+          "stellar_exploration",
+          "quantum_printing",
+          "super_magnetic_logistics",
+          "research_speed_2",
+          "dyson_swarm",
+          "ray_receiver",
+          "antimatter",
+          "artificial_star",
+          "universe_matrix",
+          "micro_black_hole_containment",
+          "time_warp_engineering",
+          "construction_capacity_2",
+          "research_speed_3",
+          "dyson_sphere_program",
+          "vertical_launching_silo",
+          "dyson_shell",
+          "mining_speed_2",
+          "mining_speed_3",
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2",
+          "solar_sail_life_1",
+          "solar_sail_life_2",
+          "ray_transmission_1",
+          "ray_transmission_2",
+          "dyson_absorption_1",
+          "orbital_elevator_engineering",
+          "orbital_multi_cargo_bus",
+          "orbital_energy_recovery",
+          "system_space_station_engineering",
+          "orbital_modular_assembly",
+          "autonomous_station_construction",
+          "unified_system_logistics_protocol",
+          "quantum_logistics_network"
+        ],
+        "levels": {
+          "matrix_compression": 999,
+          "vein_utilization": 10,
+          "galactic_logistics": 2,
+          "stellar_harnessing": 1000
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 2400
+      }
+    },
+    {
+      "id": "relaxed-combined-2",
+      "input": {
+        "difficulty": "relaxed",
+        "completed": [
+          "electromagnetic_matrix",
+          "electromagnetism",
+          "solar_energy",
+          "basic_logistics",
+          "thermal_power",
+          "high_efficiency_plasma_control",
+          "energy_matrix",
+          "energy_storage",
+          "fractionation",
+          "geothermal_power",
+          "high_speed_assembling",
+          "high_speed_logistics",
+          "mining_speed_1",
+          "proliferator_1",
+          "xray_cracking",
+          "reforming_refine",
+          "high_strength_crystal",
+          "basic_chemical_engineering",
+          "polymer_chemistry",
+          "structure_matrix",
+          "material_delivery_logistics",
+          "proliferator_2",
+          "titanium_alloy",
+          "processor",
+          "planetary_logistics",
+          "interstellar_logistics",
+          "nanomaterials",
+          "rare_resource_utilization",
+          "quantum_chemical_engineering",
+          "orbital_collection",
+          "information_matrix",
+          "construction_automation",
+          "proliferator_3",
+          "research_speed_1",
+          "miniature_particle_collider",
+          "fusion_power",
+          "quantum_chip",
+          "plane_smelting",
+          "gravity_matrix",
+          "construction_capacity_1",
+          "space_warp",
+          "stellar_exploration",
+          "quantum_printing",
+          "super_magnetic_logistics",
+          "research_speed_2",
+          "dyson_swarm",
+          "ray_receiver",
+          "antimatter",
+          "artificial_star",
+          "universe_matrix",
+          "micro_black_hole_containment",
+          "time_warp_engineering",
+          "construction_capacity_2",
+          "research_speed_3",
+          "dyson_sphere_program",
+          "vertical_launching_silo",
+          "dyson_shell",
+          "mining_speed_2",
+          "mining_speed_3",
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2",
+          "solar_sail_life_1",
+          "solar_sail_life_2",
+          "ray_transmission_1",
+          "ray_transmission_2",
+          "dyson_absorption_1",
+          "orbital_elevator_engineering",
+          "orbital_multi_cargo_bus",
+          "orbital_energy_recovery",
+          "system_space_station_engineering",
+          "orbital_modular_assembly",
+          "autonomous_station_construction",
+          "unified_system_logistics_protocol",
+          "quantum_logistics_network"
+        ],
+        "levels": {
+          "matrix_compression": 1000,
+          "vein_utilization": 1000,
+          "galactic_logistics": 1000,
+          "stellar_harnessing": 1000
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 2400
+      }
+    },
+    {
+      "id": "standard-none",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-all_finite",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "electromagnetic_matrix",
+          "electromagnetism",
+          "solar_energy",
+          "basic_logistics",
+          "thermal_power",
+          "high_efficiency_plasma_control",
+          "energy_matrix",
+          "energy_storage",
+          "fractionation",
+          "geothermal_power",
+          "high_speed_assembling",
+          "high_speed_logistics",
+          "mining_speed_1",
+          "proliferator_1",
+          "xray_cracking",
+          "reforming_refine",
+          "high_strength_crystal",
+          "basic_chemical_engineering",
+          "polymer_chemistry",
+          "structure_matrix",
+          "material_delivery_logistics",
+          "proliferator_2",
+          "titanium_alloy",
+          "processor",
+          "planetary_logistics",
+          "interstellar_logistics",
+          "nanomaterials",
+          "rare_resource_utilization",
+          "quantum_chemical_engineering",
+          "orbital_collection",
+          "information_matrix",
+          "construction_automation",
+          "proliferator_3",
+          "research_speed_1",
+          "miniature_particle_collider",
+          "fusion_power",
+          "quantum_chip",
+          "plane_smelting",
+          "gravity_matrix",
+          "construction_capacity_1",
+          "space_warp",
+          "stellar_exploration",
+          "quantum_printing",
+          "super_magnetic_logistics",
+          "research_speed_2",
+          "dyson_swarm",
+          "ray_receiver",
+          "antimatter",
+          "artificial_star",
+          "universe_matrix",
+          "micro_black_hole_containment",
+          "time_warp_engineering",
+          "construction_capacity_2",
+          "research_speed_3",
+          "dyson_sphere_program",
+          "vertical_launching_silo",
+          "dyson_shell",
+          "mining_speed_2",
+          "mining_speed_3",
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2",
+          "solar_sail_life_1",
+          "solar_sail_life_2",
+          "ray_transmission_1",
+          "ray_transmission_2",
+          "dyson_absorption_1",
+          "orbital_elevator_engineering",
+          "orbital_multi_cargo_bus",
+          "orbital_energy_recovery",
+          "system_space_station_engineering",
+          "orbital_modular_assembly",
+          "autonomous_station_construction",
+          "unified_system_logistics_protocol",
+          "quantum_logistics_network"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 2400
+      }
+    },
+    {
+      "id": "standard-finite-research_speed_1",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "research_speed_1"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-finite-research_speed_2",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "research_speed_2"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-finite-research_speed_3",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "research_speed_3"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-finite-mining_speed_1",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "mining_speed_1"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-finite-mining_speed_2",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "mining_speed_2"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-finite-mining_speed_3",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "mining_speed_3"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-finite-logistics_engine_1",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_1"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-finite-logistics_engine_2",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "logistics_engine_2"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-finite-ray_transmission_1",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "ray_transmission_1"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-finite-ray_transmission_2",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "ray_transmission_2"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-finite-dyson_absorption_1",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "dyson_absorption_1"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-finite-solar_sail_life_1",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "solar_sail_life_1"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1800
+      }
+    },
+    {
+      "id": "standard-finite-solar_sail_life_2",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "solar_sail_life_2"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1800
+      }
+    },
+    {
+      "id": "standard-noncontiguous_finite",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "research_speed_1",
+          "research_speed_3",
+          "mining_speed_1",
+          "mining_speed_3",
+          "ray_transmission_2",
+          "logistics_engine_2"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-infinite-matrix_compression-1",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 1,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-infinite-matrix_compression-2",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 2,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-infinite-matrix_compression-9",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 9,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-infinite-matrix_compression-10",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 10,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-infinite-matrix_compression-11",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 11,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-infinite-matrix_compression-99",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 99,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-infinite-matrix_compression-999",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 999,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-infinite-matrix_compression-1000",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 1000,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-infinite-vein_utilization-1",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 1,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-infinite-vein_utilization-2",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 2,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-infinite-vein_utilization-9",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 9,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-infinite-vein_utilization-10",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 10,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-infinite-vein_utilization-11",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 11,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-infinite-vein_utilization-99",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 99,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-infinite-vein_utilization-999",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 999,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-infinite-vein_utilization-1000",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 1000,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-infinite-galactic_logistics-1",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 1,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-infinite-galactic_logistics-2",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 2,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-infinite-galactic_logistics-9",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 9,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-infinite-galactic_logistics-10",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 10,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-infinite-galactic_logistics-11",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 11,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-infinite-galactic_logistics-99",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 99,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-infinite-galactic_logistics-999",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 999,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-infinite-galactic_logistics-1000",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 1000,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-infinite-stellar_harnessing-1",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 1
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-infinite-stellar_harnessing-2",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 2
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-infinite-stellar_harnessing-9",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 9
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-infinite-stellar_harnessing-10",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 10
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-infinite-stellar_harnessing-11",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 11
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-infinite-stellar_harnessing-99",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 99
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-infinite-stellar_harnessing-999",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 999
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-infinite-stellar_harnessing-1000",
+      "input": {
+        "difficulty": "standard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 1000
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "standard-combined-0",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "electromagnetic_matrix",
+          "electromagnetism",
+          "solar_energy",
+          "basic_logistics",
+          "thermal_power",
+          "high_efficiency_plasma_control",
+          "energy_matrix",
+          "energy_storage",
+          "fractionation",
+          "geothermal_power",
+          "high_speed_assembling",
+          "high_speed_logistics",
+          "mining_speed_1",
+          "proliferator_1",
+          "xray_cracking",
+          "reforming_refine",
+          "high_strength_crystal",
+          "basic_chemical_engineering",
+          "polymer_chemistry",
+          "structure_matrix",
+          "material_delivery_logistics",
+          "proliferator_2",
+          "titanium_alloy",
+          "processor",
+          "planetary_logistics",
+          "interstellar_logistics",
+          "nanomaterials",
+          "rare_resource_utilization",
+          "quantum_chemical_engineering",
+          "orbital_collection",
+          "information_matrix",
+          "construction_automation",
+          "proliferator_3",
+          "research_speed_1",
+          "miniature_particle_collider",
+          "fusion_power",
+          "quantum_chip",
+          "plane_smelting",
+          "gravity_matrix",
+          "construction_capacity_1",
+          "space_warp",
+          "stellar_exploration",
+          "quantum_printing",
+          "super_magnetic_logistics",
+          "research_speed_2",
+          "dyson_swarm",
+          "ray_receiver",
+          "antimatter",
+          "artificial_star",
+          "universe_matrix",
+          "micro_black_hole_containment",
+          "time_warp_engineering",
+          "construction_capacity_2",
+          "research_speed_3",
+          "dyson_sphere_program",
+          "vertical_launching_silo",
+          "dyson_shell",
+          "mining_speed_2",
+          "mining_speed_3",
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2",
+          "solar_sail_life_1",
+          "solar_sail_life_2",
+          "ray_transmission_1",
+          "ray_transmission_2",
+          "dyson_absorption_1",
+          "orbital_elevator_engineering",
+          "orbital_multi_cargo_bus",
+          "orbital_energy_recovery",
+          "system_space_station_engineering",
+          "orbital_modular_assembly",
+          "autonomous_station_construction",
+          "unified_system_logistics_protocol",
+          "quantum_logistics_network"
+        ],
+        "levels": {
+          "matrix_compression": 1,
+          "vein_utilization": 9,
+          "galactic_logistics": 11,
+          "stellar_harnessing": 99
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 2400
+      }
+    },
+    {
+      "id": "standard-combined-1",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "electromagnetic_matrix",
+          "electromagnetism",
+          "solar_energy",
+          "basic_logistics",
+          "thermal_power",
+          "high_efficiency_plasma_control",
+          "energy_matrix",
+          "energy_storage",
+          "fractionation",
+          "geothermal_power",
+          "high_speed_assembling",
+          "high_speed_logistics",
+          "mining_speed_1",
+          "proliferator_1",
+          "xray_cracking",
+          "reforming_refine",
+          "high_strength_crystal",
+          "basic_chemical_engineering",
+          "polymer_chemistry",
+          "structure_matrix",
+          "material_delivery_logistics",
+          "proliferator_2",
+          "titanium_alloy",
+          "processor",
+          "planetary_logistics",
+          "interstellar_logistics",
+          "nanomaterials",
+          "rare_resource_utilization",
+          "quantum_chemical_engineering",
+          "orbital_collection",
+          "information_matrix",
+          "construction_automation",
+          "proliferator_3",
+          "research_speed_1",
+          "miniature_particle_collider",
+          "fusion_power",
+          "quantum_chip",
+          "plane_smelting",
+          "gravity_matrix",
+          "construction_capacity_1",
+          "space_warp",
+          "stellar_exploration",
+          "quantum_printing",
+          "super_magnetic_logistics",
+          "research_speed_2",
+          "dyson_swarm",
+          "ray_receiver",
+          "antimatter",
+          "artificial_star",
+          "universe_matrix",
+          "micro_black_hole_containment",
+          "time_warp_engineering",
+          "construction_capacity_2",
+          "research_speed_3",
+          "dyson_sphere_program",
+          "vertical_launching_silo",
+          "dyson_shell",
+          "mining_speed_2",
+          "mining_speed_3",
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2",
+          "solar_sail_life_1",
+          "solar_sail_life_2",
+          "ray_transmission_1",
+          "ray_transmission_2",
+          "dyson_absorption_1",
+          "orbital_elevator_engineering",
+          "orbital_multi_cargo_bus",
+          "orbital_energy_recovery",
+          "system_space_station_engineering",
+          "orbital_modular_assembly",
+          "autonomous_station_construction",
+          "unified_system_logistics_protocol",
+          "quantum_logistics_network"
+        ],
+        "levels": {
+          "matrix_compression": 999,
+          "vein_utilization": 10,
+          "galactic_logistics": 2,
+          "stellar_harnessing": 1000
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 2400
+      }
+    },
+    {
+      "id": "standard-combined-2",
+      "input": {
+        "difficulty": "standard",
+        "completed": [
+          "electromagnetic_matrix",
+          "electromagnetism",
+          "solar_energy",
+          "basic_logistics",
+          "thermal_power",
+          "high_efficiency_plasma_control",
+          "energy_matrix",
+          "energy_storage",
+          "fractionation",
+          "geothermal_power",
+          "high_speed_assembling",
+          "high_speed_logistics",
+          "mining_speed_1",
+          "proliferator_1",
+          "xray_cracking",
+          "reforming_refine",
+          "high_strength_crystal",
+          "basic_chemical_engineering",
+          "polymer_chemistry",
+          "structure_matrix",
+          "material_delivery_logistics",
+          "proliferator_2",
+          "titanium_alloy",
+          "processor",
+          "planetary_logistics",
+          "interstellar_logistics",
+          "nanomaterials",
+          "rare_resource_utilization",
+          "quantum_chemical_engineering",
+          "orbital_collection",
+          "information_matrix",
+          "construction_automation",
+          "proliferator_3",
+          "research_speed_1",
+          "miniature_particle_collider",
+          "fusion_power",
+          "quantum_chip",
+          "plane_smelting",
+          "gravity_matrix",
+          "construction_capacity_1",
+          "space_warp",
+          "stellar_exploration",
+          "quantum_printing",
+          "super_magnetic_logistics",
+          "research_speed_2",
+          "dyson_swarm",
+          "ray_receiver",
+          "antimatter",
+          "artificial_star",
+          "universe_matrix",
+          "micro_black_hole_containment",
+          "time_warp_engineering",
+          "construction_capacity_2",
+          "research_speed_3",
+          "dyson_sphere_program",
+          "vertical_launching_silo",
+          "dyson_shell",
+          "mining_speed_2",
+          "mining_speed_3",
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2",
+          "solar_sail_life_1",
+          "solar_sail_life_2",
+          "ray_transmission_1",
+          "ray_transmission_2",
+          "dyson_absorption_1",
+          "orbital_elevator_engineering",
+          "orbital_multi_cargo_bus",
+          "orbital_energy_recovery",
+          "system_space_station_engineering",
+          "orbital_modular_assembly",
+          "autonomous_station_construction",
+          "unified_system_logistics_protocol",
+          "quantum_logistics_network"
+        ],
+        "levels": {
+          "matrix_compression": 1000,
+          "vein_utilization": 1000,
+          "galactic_logistics": 1000,
+          "stellar_harnessing": 1000
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 2400
+      }
+    },
+    {
+      "id": "hard-none",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-all_finite",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "electromagnetic_matrix",
+          "electromagnetism",
+          "solar_energy",
+          "basic_logistics",
+          "thermal_power",
+          "high_efficiency_plasma_control",
+          "energy_matrix",
+          "energy_storage",
+          "fractionation",
+          "geothermal_power",
+          "high_speed_assembling",
+          "high_speed_logistics",
+          "mining_speed_1",
+          "proliferator_1",
+          "xray_cracking",
+          "reforming_refine",
+          "high_strength_crystal",
+          "basic_chemical_engineering",
+          "polymer_chemistry",
+          "structure_matrix",
+          "material_delivery_logistics",
+          "proliferator_2",
+          "titanium_alloy",
+          "processor",
+          "planetary_logistics",
+          "interstellar_logistics",
+          "nanomaterials",
+          "rare_resource_utilization",
+          "quantum_chemical_engineering",
+          "orbital_collection",
+          "information_matrix",
+          "construction_automation",
+          "proliferator_3",
+          "research_speed_1",
+          "miniature_particle_collider",
+          "fusion_power",
+          "quantum_chip",
+          "plane_smelting",
+          "gravity_matrix",
+          "construction_capacity_1",
+          "space_warp",
+          "stellar_exploration",
+          "quantum_printing",
+          "super_magnetic_logistics",
+          "research_speed_2",
+          "dyson_swarm",
+          "ray_receiver",
+          "antimatter",
+          "artificial_star",
+          "universe_matrix",
+          "micro_black_hole_containment",
+          "time_warp_engineering",
+          "construction_capacity_2",
+          "research_speed_3",
+          "dyson_sphere_program",
+          "vertical_launching_silo",
+          "dyson_shell",
+          "mining_speed_2",
+          "mining_speed_3",
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2",
+          "solar_sail_life_1",
+          "solar_sail_life_2",
+          "ray_transmission_1",
+          "ray_transmission_2",
+          "dyson_absorption_1",
+          "orbital_elevator_engineering",
+          "orbital_multi_cargo_bus",
+          "orbital_energy_recovery",
+          "system_space_station_engineering",
+          "orbital_modular_assembly",
+          "autonomous_station_construction",
+          "unified_system_logistics_protocol",
+          "quantum_logistics_network"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 2400
+      }
+    },
+    {
+      "id": "hard-finite-research_speed_1",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "research_speed_1"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-finite-research_speed_2",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "research_speed_2"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-finite-research_speed_3",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "research_speed_3"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-finite-mining_speed_1",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "mining_speed_1"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-finite-mining_speed_2",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "mining_speed_2"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-finite-mining_speed_3",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "mining_speed_3"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-finite-logistics_engine_1",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_1"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-finite-logistics_engine_2",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "logistics_engine_2"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-finite-ray_transmission_1",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "ray_transmission_1"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-finite-ray_transmission_2",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "ray_transmission_2"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-finite-dyson_absorption_1",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "dyson_absorption_1"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-finite-solar_sail_life_1",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "solar_sail_life_1"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1800
+      }
+    },
+    {
+      "id": "hard-finite-solar_sail_life_2",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "solar_sail_life_2"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1800
+      }
+    },
+    {
+      "id": "hard-noncontiguous_finite",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "research_speed_1",
+          "research_speed_3",
+          "mining_speed_1",
+          "mining_speed_3",
+          "ray_transmission_2",
+          "logistics_engine_2"
+        ],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-infinite-matrix_compression-1",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 1,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-infinite-matrix_compression-2",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 2,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-infinite-matrix_compression-9",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 9,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-infinite-matrix_compression-10",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 10,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-infinite-matrix_compression-11",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 11,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-infinite-matrix_compression-99",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 99,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-infinite-matrix_compression-999",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 999,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-infinite-matrix_compression-1000",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 1000,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-infinite-vein_utilization-1",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 1,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-infinite-vein_utilization-2",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 2,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-infinite-vein_utilization-9",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 9,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-infinite-vein_utilization-10",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 10,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-infinite-vein_utilization-11",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 11,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-infinite-vein_utilization-99",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 99,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-infinite-vein_utilization-999",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 999,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-infinite-vein_utilization-1000",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 1000,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-infinite-galactic_logistics-1",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 1,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-infinite-galactic_logistics-2",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 2,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-infinite-galactic_logistics-9",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 9,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-infinite-galactic_logistics-10",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 10,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-infinite-galactic_logistics-11",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 11,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-infinite-galactic_logistics-99",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 99,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-infinite-galactic_logistics-999",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 999,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-infinite-galactic_logistics-1000",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 1000,
+          "stellar_harnessing": 0
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-infinite-stellar_harnessing-1",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 1
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-infinite-stellar_harnessing-2",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 2
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-infinite-stellar_harnessing-9",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 9
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-infinite-stellar_harnessing-10",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 10
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-infinite-stellar_harnessing-11",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 11
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-infinite-stellar_harnessing-99",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 99
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-infinite-stellar_harnessing-999",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 999
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-infinite-stellar_harnessing-1000",
+      "input": {
+        "difficulty": "hard",
+        "completed": [],
+        "levels": {
+          "matrix_compression": 0,
+          "vein_utilization": 0,
+          "galactic_logistics": 0,
+          "stellar_harnessing": 1000
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 1200
+      }
+    },
+    {
+      "id": "hard-combined-0",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "electromagnetic_matrix",
+          "electromagnetism",
+          "solar_energy",
+          "basic_logistics",
+          "thermal_power",
+          "high_efficiency_plasma_control",
+          "energy_matrix",
+          "energy_storage",
+          "fractionation",
+          "geothermal_power",
+          "high_speed_assembling",
+          "high_speed_logistics",
+          "mining_speed_1",
+          "proliferator_1",
+          "xray_cracking",
+          "reforming_refine",
+          "high_strength_crystal",
+          "basic_chemical_engineering",
+          "polymer_chemistry",
+          "structure_matrix",
+          "material_delivery_logistics",
+          "proliferator_2",
+          "titanium_alloy",
+          "processor",
+          "planetary_logistics",
+          "interstellar_logistics",
+          "nanomaterials",
+          "rare_resource_utilization",
+          "quantum_chemical_engineering",
+          "orbital_collection",
+          "information_matrix",
+          "construction_automation",
+          "proliferator_3",
+          "research_speed_1",
+          "miniature_particle_collider",
+          "fusion_power",
+          "quantum_chip",
+          "plane_smelting",
+          "gravity_matrix",
+          "construction_capacity_1",
+          "space_warp",
+          "stellar_exploration",
+          "quantum_printing",
+          "super_magnetic_logistics",
+          "research_speed_2",
+          "dyson_swarm",
+          "ray_receiver",
+          "antimatter",
+          "artificial_star",
+          "universe_matrix",
+          "micro_black_hole_containment",
+          "time_warp_engineering",
+          "construction_capacity_2",
+          "research_speed_3",
+          "dyson_sphere_program",
+          "vertical_launching_silo",
+          "dyson_shell",
+          "mining_speed_2",
+          "mining_speed_3",
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2",
+          "solar_sail_life_1",
+          "solar_sail_life_2",
+          "ray_transmission_1",
+          "ray_transmission_2",
+          "dyson_absorption_1",
+          "orbital_elevator_engineering",
+          "orbital_multi_cargo_bus",
+          "orbital_energy_recovery",
+          "system_space_station_engineering",
+          "orbital_modular_assembly",
+          "autonomous_station_construction",
+          "unified_system_logistics_protocol",
+          "quantum_logistics_network"
+        ],
+        "levels": {
+          "matrix_compression": 1,
+          "vein_utilization": 9,
+          "galactic_logistics": 11,
+          "stellar_harnessing": 99
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 2400
+      }
+    },
+    {
+      "id": "hard-combined-1",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "electromagnetic_matrix",
+          "electromagnetism",
+          "solar_energy",
+          "basic_logistics",
+          "thermal_power",
+          "high_efficiency_plasma_control",
+          "energy_matrix",
+          "energy_storage",
+          "fractionation",
+          "geothermal_power",
+          "high_speed_assembling",
+          "high_speed_logistics",
+          "mining_speed_1",
+          "proliferator_1",
+          "xray_cracking",
+          "reforming_refine",
+          "high_strength_crystal",
+          "basic_chemical_engineering",
+          "polymer_chemistry",
+          "structure_matrix",
+          "material_delivery_logistics",
+          "proliferator_2",
+          "titanium_alloy",
+          "processor",
+          "planetary_logistics",
+          "interstellar_logistics",
+          "nanomaterials",
+          "rare_resource_utilization",
+          "quantum_chemical_engineering",
+          "orbital_collection",
+          "information_matrix",
+          "construction_automation",
+          "proliferator_3",
+          "research_speed_1",
+          "miniature_particle_collider",
+          "fusion_power",
+          "quantum_chip",
+          "plane_smelting",
+          "gravity_matrix",
+          "construction_capacity_1",
+          "space_warp",
+          "stellar_exploration",
+          "quantum_printing",
+          "super_magnetic_logistics",
+          "research_speed_2",
+          "dyson_swarm",
+          "ray_receiver",
+          "antimatter",
+          "artificial_star",
+          "universe_matrix",
+          "micro_black_hole_containment",
+          "time_warp_engineering",
+          "construction_capacity_2",
+          "research_speed_3",
+          "dyson_sphere_program",
+          "vertical_launching_silo",
+          "dyson_shell",
+          "mining_speed_2",
+          "mining_speed_3",
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2",
+          "solar_sail_life_1",
+          "solar_sail_life_2",
+          "ray_transmission_1",
+          "ray_transmission_2",
+          "dyson_absorption_1",
+          "orbital_elevator_engineering",
+          "orbital_multi_cargo_bus",
+          "orbital_energy_recovery",
+          "system_space_station_engineering",
+          "orbital_modular_assembly",
+          "autonomous_station_construction",
+          "unified_system_logistics_protocol",
+          "quantum_logistics_network"
+        ],
+        "levels": {
+          "matrix_compression": 999,
+          "vein_utilization": 10,
+          "galactic_logistics": 2,
+          "stellar_harnessing": 1000
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 2400
+      }
+    },
+    {
+      "id": "hard-combined-2",
+      "input": {
+        "difficulty": "hard",
+        "completed": [
+          "electromagnetic_matrix",
+          "electromagnetism",
+          "solar_energy",
+          "basic_logistics",
+          "thermal_power",
+          "high_efficiency_plasma_control",
+          "energy_matrix",
+          "energy_storage",
+          "fractionation",
+          "geothermal_power",
+          "high_speed_assembling",
+          "high_speed_logistics",
+          "mining_speed_1",
+          "proliferator_1",
+          "xray_cracking",
+          "reforming_refine",
+          "high_strength_crystal",
+          "basic_chemical_engineering",
+          "polymer_chemistry",
+          "structure_matrix",
+          "material_delivery_logistics",
+          "proliferator_2",
+          "titanium_alloy",
+          "processor",
+          "planetary_logistics",
+          "interstellar_logistics",
+          "nanomaterials",
+          "rare_resource_utilization",
+          "quantum_chemical_engineering",
+          "orbital_collection",
+          "information_matrix",
+          "construction_automation",
+          "proliferator_3",
+          "research_speed_1",
+          "miniature_particle_collider",
+          "fusion_power",
+          "quantum_chip",
+          "plane_smelting",
+          "gravity_matrix",
+          "construction_capacity_1",
+          "space_warp",
+          "stellar_exploration",
+          "quantum_printing",
+          "super_magnetic_logistics",
+          "research_speed_2",
+          "dyson_swarm",
+          "ray_receiver",
+          "antimatter",
+          "artificial_star",
+          "universe_matrix",
+          "micro_black_hole_containment",
+          "time_warp_engineering",
+          "construction_capacity_2",
+          "research_speed_3",
+          "dyson_sphere_program",
+          "vertical_launching_silo",
+          "dyson_shell",
+          "mining_speed_2",
+          "mining_speed_3",
+          "logistics_engine_1",
+          "logistics_engine_2",
+          "logistics_capacity_1",
+          "logistics_capacity_2",
+          "solar_sail_life_1",
+          "solar_sail_life_2",
+          "ray_transmission_1",
+          "ray_transmission_2",
+          "dyson_absorption_1",
+          "orbital_elevator_engineering",
+          "orbital_multi_cargo_bus",
+          "orbital_energy_recovery",
+          "system_space_station_engineering",
+          "orbital_modular_assembly",
+          "autonomous_station_construction",
+          "unified_system_logistics_protocol",
+          "quantum_logistics_network"
+        ],
+        "levels": {
+          "matrix_compression": 1000,
+          "vein_utilization": 1000,
+          "galactic_logistics": 1000,
+          "stellar_harnessing": 1000
+        }
+      },
+      "expected": {
+        "getSolarSailLifetimeSeconds": 2400
+      }
+    }
+  ]
+}

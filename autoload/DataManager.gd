@@ -407,6 +407,8 @@ func is_recipe_supported_by_building(recipe: Dictionary, building_id: String) ->
     return building_ids.has(building_id)
 
 func source_technology_unlocked(state: GameState, source_id: String) -> bool:
+    if get_technology(source_id).has("source_content_pack"):
+        return state.completed_technologies.has(source_id)
     return source_id.is_empty() or state.completed_technologies.has(source_id) or state.completed_technologies.has("dsp_" + source_id)
 
 func building_pending_reason(building_id: String) -> String:

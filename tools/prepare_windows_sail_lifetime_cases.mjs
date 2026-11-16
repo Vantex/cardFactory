@@ -1,0 +1,16 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+const root=path.resolve(import.meta.dirname,'..');
+const destination=path.resolve(process.argv[2]??'');
+const checks=path.resolve(process.argv[3]??path.join(root,'.godot/windows-package-check'));
+assert.equal(path.dirname(destination),checks,'Sail fixture remains in isolated package directory');
+const fixture=JSON.parse(fs.readFileSync(path.join(root,'tests/fixtures/parity/behavior/task27-sail-lifetime.json'),'utf8'));
+const catalog=JSON.parse(fs.readFileSync(path.join(root,'tests/fixtures/parity/dsponline_source_catalog.json'),'utf8'));
+assert.equal(fixture.source_commit,catalog.source.commit);
+assert.equal(Object.keys(fixture.source_files).length,24);
+for(const [file,digest] of Object.entries(fixture.source_files))assert.equal(digest,catalog.source.files[file],file);
+assert.deepEqual(fixture.functions,['getSolarSailLifetimeSeconds']);
+assert.equal(fixture.cases.length,153);assert.equal(new Set(fixture.cases.map(row=>row.id)).size,153);
+fs.writeFileSync(path.join(destination,'sail-lifetime-cases.json'),JSON.stringify(fixture));
+console.log('WINDOWS SAIL LIFETIME FIXTURE PREPARED:153 controlled source states');

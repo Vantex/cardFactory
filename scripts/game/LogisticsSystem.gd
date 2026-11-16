@@ -21,6 +21,10 @@ func update(delta: float) -> void:
 	diagnostics.clear()
 	_advance_routes(delta)
 	_refill_warpers()
+	var outgoing := {}
+	for connection in game_state.connections.values():
+		if not outgoing.has(connection.source_id): outgoing[connection.source_id] = []
+		outgoing[connection.source_id].append(connection)
 	var ids := game_state.buildings.keys()
 	ids.sort()
 	var supplies := {}
@@ -30,7 +34,7 @@ func update(delta: float) -> void:
 		if not b.has("station"):
 			continue
 		if SystemHubLogisticsSystem.is_elevator(b): continue
-		_bridge_buffers(b)
+		_bridge_buffers(b, outgoing.get(id, []))
 		for index in range(b.station.slots.size()):
 			var slot: Dictionary = b.station.slots[index]
 			if slot.item_id == "":
@@ -47,6 +51,12 @@ func update(delta: float) -> void:
 		if a.slot.priority != b.slot.priority:
 			return a.slot.priority > b.slot.priority
 		return a.id < b.id if a.id != b.id else a.index < b.index)
+	var by_priority := {}
+	for item in supplies:
+		var groups := {2: [], 1: [], 0: []}
+		for candidate in supplies[item]:
+			groups[int(candidate.slot.priority)].append(candidate)
+		by_priority[item] = groups
 	for demand in demands:
 		var candidates: Array = supplies.get(demand.slot.item_id, [])
 		if candidates.is_empty():
@@ -54,7 +64,7 @@ func update(delta: float) -> void:
 			continue
 		var dispatched := false
 		for source_priority in [2, 1, 0]:
-			var peers: Array = candidates.filter(func(candidate: Dictionary): return candidate.slot.priority == source_priority)
+			var peers: Array = by_priority[demand.slot.item_id][source_priority]
 			if peers.is_empty():
 				continue
 			var start := int(demand.slot.cursor) % peers.size()
@@ -86,7 +96,8 @@ func _dispatch(source: Dictionary, target: Dictionary) -> String:
 	if interplanetary and not DataManager.source_technology_unlocked(game_state, "interstellar_logistics"):
 		return "需要星际物流科技"
 	var source_rules := StationSystem.is_source(a.type) or StationSystem.is_source(b.type)
-	var owners: Array = [b, a] if source_rules and a.type != OrbitalCollectorSystem.TYPE else [b] if a.type == OrbitalCollectorSystem.TYPE else [a]
+	if not source_rules: return _dispatch_owner(source, target, a, false)
+	var owners: Array = [b] if a.type == OrbitalCollectorSystem.TYPE else [b, a]
 	var dispatched := false
 	var reason := "调度站无可用载具"
 	for owner in owners:
@@ -94,7 +105,6 @@ func _dispatch(source: Dictionary, target: Dictionary) -> String:
 			reason = _dispatch_owner(source, target, owner, source_rules)
 			if reason != "已派遣": break
 			dispatched = true
-			if not source_rules: break
 	return "已派遣" if dispatched else reason
 
 func _dispatch_owner(source: Dictionary, target: Dictionary, owner: Dictionary, source_rules: bool) -> String:
@@ -119,7 +129,7 @@ func _dispatch_owner(source: Dictionary, target: Dictionary, owner: Dictionary, 
 	var warpers := int(economics.get("warpers_per_vessel", 1)) if source_rules else 2
 	if cross_system and ((source_rules and not DataManager.source_technology_unlocked(game_state, "space_warp")) or int(owner.station.fleet.space_warper) < warpers):
 		return "需要空间翘曲科技与航线翘曲器"
-	var free := StationSystem.capacity_for(target.slot) - float(target.slot.amount) - stations.reserved(target.id, target.index)
+	var free := StationSystem.capacity_for(target.slot, game_state, b) - float(target.slot.amount) - stations.reserved(target.id, target.index)
 	if not interplanetary and b.station.get("quantum_mode", "legacy") == "quantum" and StationSystem.mode_for(b, target.slot, true) == "supply": free = QuantumLogisticsSystem.new(game_state).free_capacity(target.slot.item_id) - stations.reserved(target.id, target.index)
 	if free <= 0:
 		return "需求槽容量不足"
@@ -170,7 +180,7 @@ func _advance_routes(delta: float) -> void:
 			diagnostics[route.target_id] = "到达等待：物流站断电"
 			continue
 		var quantum_supply: bool = source_rules and not route.interplanetary and target.station.get("quantum_mode", "legacy") == "quantum" and StationSystem.mode_for(target, slot, true) == "supply"
-		if not quantum_supply and float(slot.amount) + float(route.amount) > float(slot.capacity):
+		if not quantum_supply and float(slot.amount) + float(route.amount) > StationSystem.storage_capacity_for(target, slot):
 			diagnostics[route.target_id] = "到达等待：容量不足"
 			continue
 		var delivered := float(route.amount)
@@ -198,7 +208,7 @@ func _advance_routes(delta: float) -> void:
 			owner.station.fleet[route.vehicle] += 1
 			game_state.logistics_routes.erase(id)
 
-func _bridge_buffers(building: Dictionary) -> void:
+func _bridge_buffers(building: Dictionary, outgoing_connections: Array) -> void:
 	if float(building.get("power_efficiency", 0)) <= 0 and building.station.get("quantum_mode", "legacy") != "quantum":
 		return
 	for index in range(building.station.slots.size()):
@@ -207,15 +217,15 @@ func _bridge_buffers(building: Dictionary) -> void:
 		if item == "":
 			continue
 		if building.type == OrbitalCollectorSystem.TYPE and item != building.get("collector_item", "hydrogen"): continue
-		var incoming := minf(float(building.input_buffer.get(item, 0)), maxf(0, StationSystem.capacity_for(slot) - float(slot.amount) - stations.reserved(building.id, index)))
+		var incoming := minf(float(building.input_buffer.get(item, 0)), maxf(0, StationSystem.capacity_for(slot, game_state, building) - float(slot.amount) - stations.reserved(building.id, index)))
 		if incoming > 0:
 			building.input_buffer[item] -= incoming
 			slot.amount += incoming
 		if building.type != OrbitalCollectorSystem.TYPE and building.station.get("quantum_mode", "legacy") == "quantum" and StationSystem.mode_for(building, slot, true) == "supply":
 			var accepted := QuantumLogisticsSystem.new(game_state).deposit(item, int(floorf(maxf(0, float(slot.amount) - float(slot.get("min_stock", 0))))))
 			slot.amount -= accepted
-		for connection in game_state.get_connections_for_building(building.id):
-			if connection.source_id == building.id and connection.item_id == item and connection.get("enabled", true):
+		for connection in outgoing_connections:
+			if connection.item_id == item and connection.get("enabled", true):
 				var outgoing := minf(float(slot.amount), maxf(0, 60.0 - float(building.output_buffer.get(item, 0))))
 				if outgoing > 0:
 					slot.amount -= outgoing

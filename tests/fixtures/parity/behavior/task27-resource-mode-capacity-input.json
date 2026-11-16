@@ -1,0 +1,118 @@
+{
+	"capacities": {
+		"coal": {
+			"native_capacity": 331420,
+			"native_site": "home_coal_1",
+			"planet": "home",
+			"source_capacity": 267835.0,
+			"source_entity": "vein_coal"
+		},
+		"copper_ore": {
+			"native_capacity": 316537,
+			"native_site": "home_copper_ore_1",
+			"planet": "home",
+			"source_capacity": 330181.0,
+			"source_entity": "vein_copper"
+		},
+		"crude_oil": {
+			"native_capacity": 503297,
+			"native_site": "home_crude_oil_1",
+			"planet": "home",
+			"source_capacity": 510509.0,
+			"source_entity": "vein_oil"
+		},
+		"fire_ice": {
+			"native_capacity": 233886,
+			"native_site": "frost_fire_ice_1",
+			"planet": "frost",
+			"source_capacity": 311943.0,
+			"source_entity": "frost_fire_ice"
+		},
+		"fractal_silicon": {
+			"native_capacity": 39388,
+			"native_site": "ashen_fractal_silicon_1",
+			"planet": "ashen",
+			"source_capacity": 44995.0,
+			"source_entity": "ashen_fractal_silicon"
+		},
+		"iron_ore": {
+			"native_capacity": 287105,
+			"native_site": "home_iron_ore_1",
+			"planet": "home",
+			"source_capacity": 277133.0,
+			"source_entity": "vein_iron"
+		},
+		"kimberlite_ore": {
+			"native_capacity": 34623,
+			"native_site": "ashen_kimberlite_ore_1",
+			"planet": "ashen",
+			"source_capacity": 36373.0,
+			"source_entity": "ashen_kimberlite"
+		},
+		"optical_grating_crystal": {
+			"native_capacity": 38595,
+			"native_site": "frost_optical_grating_crystal_1",
+			"planet": "frost",
+			"source_capacity": 39550.0,
+			"source_entity": "vein_optical_grating"
+		},
+		"organic_crystal": {
+			"native_capacity": 36326,
+			"native_site": "ashen_organic_crystal_1",
+			"planet": "ashen",
+			"source_capacity": 40889.0,
+			"source_entity": "ashen_organic_crystal"
+		},
+		"silicon_ore": {
+			"native_capacity": 245381,
+			"native_site": "ashen_silicon_ore_1",
+			"planet": "ashen",
+			"source_capacity": 264931.0,
+			"source_entity": "vein_silicon"
+		},
+		"spiniform_stalagmite_crystal": {
+			"native_capacity": 44022,
+			"native_site": "frost_spiniform_stalagmite_crystal_1",
+			"planet": "frost",
+			"source_capacity": 44662.0,
+			"source_entity": "ashen_spiniform"
+		},
+		"stone": {
+			"native_capacity": 280571,
+			"native_site": "home_stone_1",
+			"planet": "home",
+			"source_capacity": 265048.0,
+			"source_entity": "vein_stone"
+		},
+		"sulfuric_acid": {
+			"native_capacity": 0,
+			"native_site": "ashen_sulfuric_acid_1",
+			"planet": "ashen",
+			"source_capacity": 0.0,
+			"source_entity": "ashen_sulfuric"
+		},
+		"titanium_ore": {
+			"native_capacity": 250185,
+			"native_site": "ashen_titanium_ore_1",
+			"planet": "ashen",
+			"source_capacity": 304733.0,
+			"source_entity": "vein_titanium"
+		},
+		"unipolar_magnet": {
+			"native_capacity": 18599,
+			"native_site": "magnetar_unipolar_magnet_1",
+			"planet": "magnetar",
+			"source_capacity": 17729.0,
+			"source_entity": "ashen_unipolar"
+		},
+		"water": {
+			"native_capacity": 0,
+			"native_site": "home_water_1",
+			"planet": "home",
+			"source_capacity": 0.0,
+			"source_entity": "vein_water"
+		}
+	},
+	"scope": "Actual native seeded capacity inputs only; no native output or expected result. Original source capacity mismatch remains separate.",
+	"seed": 240721
+}

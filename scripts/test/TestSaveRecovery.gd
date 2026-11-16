@@ -7,9 +7,17 @@ class FaultStorage extends SaveSystem:
 	var fail_primary := false
 	var writes := 0
 	var fail_replace := false
+	var corrupt_commit := false
 	func _rename_file(from: String, to: String) -> Error:
 		if fail_replace and from.ends_with(".json.tmp"): return ERR_CANT_CREATE
-		return super._rename_file(from, to)
+		var result := super._rename_file(from, to)
+		if result == OK and corrupt_commit and from.ends_with(".json.tmp"):
+			var envelope: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(to))
+			envelope.metadata.saved_at += 1
+			var file := FileAccess.open(to, FileAccess.WRITE)
+			file.store_string(JSON.stringify(envelope))
+			file.close()
+		return result
 	func _write_text(path: String, contents: String) -> Error:
 		if path.ends_with(".tmp") and not path.ends_with(".emergency.tmp"):
 			writes += 1
@@ -28,6 +36,9 @@ func _ready() -> void:
 		_test_recovery(storage)
 		_test_order_and_failures(storage)
 		_test_snapshots(storage)
+		_test_committed_corruption()
+		_test_float_digest_round_trip()
+		_test_json_control_characters()
 	GameManager.end_session()
 	if failures == 0: print("SAVE RECOVERY TESTS PASSED")
 	else: printerr("SAVE RECOVERY TESTS FAILED")
@@ -48,6 +59,86 @@ func _test_reentrant_save(storage: SaveSystem) -> void:
 	check(storage.writes - before == 2, "identical in-flight request coalesces; changed state writes next")
 	check(storage.load_slot(0).state.elapsed_time == 44.0, "latest queued revision is durable")
 	check(GameManager.get_save_status().phase == "saved", "saved status follows verified write")
+
+func _test_committed_corruption() -> void:
+	var storage := FaultStorage.new(root_path + "commit-check/")
+	var state := GameState.new()
+	state.elapsed_time = 1
+	check(storage.save_slot(0, state).ok, "commit integrity fixture saves a prior valid revision")
+	state.elapsed_time = 2
+	storage.corrupt_commit = true
+	var result := storage.save_slot(0, state)
+	check(not result.ok and result.error.code == "verification_failed", "post-rename metadata corruption cannot be reported durable")
+	check(storage.load_recovery_source(0, "backup").state.elapsed_time == 1, "failed commit integrity retains the previous verified backup")
+
+func _test_float_digest_round_trip() -> void:
+	var storage := SaveSystem.new(root_path + "float-digest/")
+	var state := GameState.new()
+	# The exported research journey reaches this rounding boundary after 2530 ticks.
+	for tick in range(2530): state.elapsed_time += 1.0 / 60.0
+	var planning := ProductionPlanningSystem.new(state)
+	check(planning.create_plan("iron_ingot").ok, "float digest regression creates a real production plan")
+	var before := GameStateCodec.to_persistent_dict(state)
+	var expected: Dictionary = JSON.parse_string(JSON.stringify(before, "", true, true))
+	check(storage.save_slot(0, state).ok, "rounding-boundary elapsed time and plan save successfully")
+	check(GameStateCodec.to_persistent_dict(state) == before, "float digest save preserves live state ownership")
+	var loaded := storage.load_recovery_source(0, "primary")
+	check(loaded.ok, "rounding-boundary disk passes the unchanged reader digest check")
+	if loaded.ok:
+		check(loaded.state.elapsed_time == expected.elapsed_time and loaded.state.production_plans[0].createdAt == expected.production_plans[0].createdAt, "elapsed time and plan creation retain the full-precision file representation")
+		check(storage.save_slot(0, loaded.state).ok, "loaded rounding-boundary state saves again")
+	check(storage.save_emergency(0, state).ok, "rounding-boundary emergency point verifies")
+	check(storage.load_recovery_source(0, "emergency").ok, "rounding-boundary emergency point loads")
+	var snapshot := storage.create_snapshot(0, state)
+	check(snapshot.ok, "rounding-boundary snapshot verifies")
+	if snapshot.ok: check(storage.load_recovery_source(0, snapshot.source).ok, "rounding-boundary snapshot loads")
+	var envelope: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(storage._get_slot_path(0)))
+	envelope.state.elapsed_time += 1.0
+	var file := FileAccess.open(storage._get_slot_path(0), FileAccess.WRITE)
+	file.store_string(JSON.stringify(envelope, "", true, true))
+	file.close()
+	var corrupt := storage.load_recovery_source(0, "primary")
+	check(not corrupt.ok and corrupt.error.code == "digest_mismatch", "changed disk payload without its matching digest remains rejected")
+
+func _test_json_control_characters() -> void:
+	var state := GameState.new()
+	var galaxy := SourceGalaxySystem.new(state)
+	galaxy.initialize(240721, false)
+	var control_text := ""
+	for code in range(1, 32): control_text += String.chr(code)
+	var note := "引号 \" 与字面反斜线 \\v 和 \\\\v " + control_text + "尾"
+	check(galaxy.set_metadata("home", "控制字符", note, [String.chr(31)]).ok, "source metadata accepts retained C0 values")
+	var storage := SaveSystem.new(root_path + "json-controls/")
+	var saved := storage.save_slot(0, state)
+	check(saved.ok, "C0 primary writes verified strict JSON")
+	if not saved.ok: return
+	var primary := FileAccess.get_file_as_string(storage._get_slot_path(0))
+	for code in range(1, 32):
+		if code not in [9, 10, 13]: check(not primary.contains(String.chr(code)), "primary contains no unescaped C0 code %d" % code)
+	var loaded := storage.load_recovery_source(0, "primary")
+	check(loaded.ok and loaded.state.source_galaxy.planetMetadata == state.source_galaxy.planetMetadata, "C0 primary reload retains exact text and escape characters")
+	check(storage.save_emergency(0, state).ok, "C0 emergency verifies with the same original payload digest")
+	var emergency_path := storage._get_slot_path(0) + ".emergency"
+	var emergency := FileAccess.get_file_as_string(emergency_path)
+	for code in range(1, 32):
+		if code not in [9, 10, 13]: check(not emergency.contains(String.chr(code)), "emergency contains no unescaped C0 code %d" % code)
+	check(storage.load_recovery_source(0, "emergency").ok, "C0 emergency source loads")
+	var snapshot := storage.create_snapshot(0, state)
+	check(snapshot.ok and storage.load_recovery_source(0, snapshot.get("source", "")).ok, "C0 snapshot retains verified text")
+	check(storage.save_slot(0, loaded.state).ok, "C0 verified state saves again")
+	print("STRICT JSON CONTROL FIXTURE: ", ProjectSettings.globalize_path(storage._get_slot_path(0)))
+	var cases := []
+	for slashes in range(21):
+		var prefix := "\\".repeat(slashes)
+		for text in [prefix + String.chr(11), prefix + "v", prefix + "u000b", prefix + String.chr(11) + String.chr(11), prefix + "v" + String.chr(11), prefix + control_text, prefix + "\"尾\\"]:
+			cases.append({"text": text, "units": Array(text.to_utf32_buffer())})
+	var matrix_path := root_path + "json-escape-matrix.json"
+	var matrix_file := FileAccess.open(matrix_path, FileAccess.WRITE)
+	check(matrix_file != null, "independent JSON escape matrix opens")
+	if matrix_file != null:
+		matrix_file.store_string(SaveSystem._json_save_text({"cases": cases}))
+		matrix_file.close()
+		print("STRICT JSON ESCAPE MATRIX: ", ProjectSettings.globalize_path(matrix_path))
 
 func _test_recovery(storage: SaveSystem) -> void:
 	GameManager.game_state.elapsed_time = 55.0

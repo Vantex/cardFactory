@@ -472,8 +472,10 @@ func _test_source_galaxy_gold() -> void:
 		check(state.resource_sites[first_id].remaining == remaining, "reinitializing resource bindings never resets depleted reserves")
 		check(service.set_role("home", "research").ok and service.set_metadata("home", "本地母星", "科学基地", ["矩阵"]).ok and service.set_metadata("helios", "本地星系", "", [], true).ok, "source world stores local role, names, notes, and tags")
 		check(galaxy.get_planet("home").name == "本地母星" and galaxy.get_system_name("helios") == "本地星系" and galaxy.search("科学基地").planet_ids.has("home"), "formal galaxy queries immediately project local metadata and search notes")
-		var before_metadata := state.source_galaxy.duplicate(true)
-		check(not service.set_metadata("home", "x".repeat(33)).ok and state.source_galaxy == before_metadata, "overlong local names reject atomically")
+		var metadata_gold := DSPOnlineParity.read_json("res://tests/fixtures/parity/behavior/task27-world-controls.json")
+		var metadata_row: Dictionary = metadata_gold.cases.filter(func(value): return value.id == "metadata-home-overflow")[0]
+		var metadata: Dictionary = metadata_row.command.value
+		check(service.set_metadata("home", metadata.customName, metadata.note, metadata.tags).ok and state.source_galaxy.planetMetadata.home == metadata_row.expected.planetMetadata.home, "overlong metadata matches actual source truncation and tag limits")
 		check(GameStateCodec.to_persistent_dict(state.copy_state()) == GameStateCodec.to_persistent_dict(state), "source world authority survives isolated state copies")
 		var saves := SaveSystem.new("res://.godot/task26-galaxy-saves")
 		var saved := saves.save_slot(4, state)

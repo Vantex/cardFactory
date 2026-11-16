@@ -10,6 +10,11 @@ var queue_status: Label
 var target_ids: Array[String] = []
 var preview: Dictionary = {}
 var refresh_time := 0.0
+var focus_item_id := ""
+var discard_button: Button
+var discard_dialog: ConfirmationDialog
+var _discard_target := ""
+var _discard_state: GameState
 
 func _ready() -> void:
 	position = Vector2(240, 90)
@@ -31,7 +36,9 @@ func _ready() -> void:
 	content.add_child(category)
 	target = OptionButton.new()
 	target.name = "Target"
-	target.item_selected.connect(func(_index): _preview())
+	target.item_selected.connect(func(_index):
+		focus_item_id = ""
+		_preview())
 	content.add_child(target)
 	quantity = SpinBox.new()
 	quantity.name = "Quantity"
@@ -46,6 +53,18 @@ func _ready() -> void:
 	_button(content, "重新预览材料", _preview)
 	_button(content, "确认预留并制造", _queue)
 	_button(content, "放置已拥有的施工件", _place)
+	discard_button = Button.new()
+	discard_button.name = "DiscardConstructionInventory"
+	discard_button.text = "永久丢弃所选施工件…"
+	discard_button.pressed.connect(_request_discard)
+	content.add_child(discard_button)
+	discard_dialog = ConfirmationDialog.new()
+	discard_dialog.name = "DiscardConstructionConfirmation"
+	discard_dialog.title = "确认永久丢弃施工件"
+	discard_dialog.ok_button_text = "永久丢弃"
+	discard_dialog.confirmed.connect(_confirm_discard)
+	discard_dialog.canceled.connect(_clear_discard)
+	add_child(discard_dialog)
 	center_quantity = SpinBox.new()
 	center_quantity.name = "CenterTarget"
 	center_quantity.min_value = 0
@@ -73,6 +92,7 @@ func _button(parent: Node, text: String, action: Callable) -> void:
 	parent.add_child(button)
 
 func _populate() -> void:
+	focus_item_id = ""
 	target.clear()
 	target_ids.clear()
 	var definitions: Dictionary = DataManager.construction if category.selected == 1 else DataManager.all_recipes
@@ -85,32 +105,70 @@ func _populate() -> void:
 	_preview()
 
 func _preview() -> void:
+	_refresh_discard()
 	if target_ids.is_empty(): return
+	if target.selected < 0:
+		preview = {"ok": false, "message": "请采集该资源，或在已有生产设备中取得物品"}
+		details.text = "%s\n%s" % [DataManager.get_item(focus_item_id).get("name", focus_item_id), preview.message]
+		return
 	var id := target_ids[maxi(target.selected, 0)]
 	preview = CraftingPlanner.new(GameManager.game_state).plan(id, int(quantity.value), category.selected == 1)
 	if preview.ok:
 		details.text = "共 %d 道工序，预计 %.1f 秒\n需要预留：%s\n完成后的物品：%s" % [preview.steps.size(), preview.duration, _items_text(preview.reserved), _items_text(preview.steps.back().outputs)]
 	else:
 		details.text = "%s\n缺口：%s" % [preview.get("message", "不可制造"), _items_text(preview.get("missing", {}))]
+	if not focus_item_id.is_empty(): details.text = String(DataManager.get_item(focus_item_id).get("name", focus_item_id)) + "\n" + details.text
 
 	if category.selected == 1:
 		var pending := DataManager.building_pending_reason(id)
 		if not pending.is_empty(): details.text += "\n" + pending
 
 func _queue() -> void:
-	if target_ids.is_empty(): return
+	if target_ids.is_empty() or target.selected < 0: return
 	var result := ConstructionAutomationSystem.new(GameManager.game_state).queue(target_ids[maxi(target.selected, 0)], int(quantity.value), category.selected == 1)
 	EventBus.notice_requested.emit(result.message, "success" if result.ok else "error")
 	_preview()
 
 func _place() -> void:
-	if category.selected != 1 or target_ids.is_empty(): return
+	if category.selected != 1 or target_ids.is_empty() or target.selected < 0: return
 	var id := target_ids[maxi(target.selected, 0)]
 	if DataManager.get_building(id).is_empty():
 		EventBus.notice_requested.emit("传送带已计入线路施工库存；连接建筑或在线路检查器中切换对应等级", "info")
 		return
 	get_parent()._on_building_pressed(id)
 	hide()
+
+func _refresh_discard() -> void:
+	if discard_button == null: return
+	discard_button.disabled = true
+	if category.selected != 1 or target.selected < 0 or target.selected >= target_ids.size() or GameManager.game_state == null: return
+	var amount := ConstructionSystem.new(GameManager.game_state).get_owned_count(CraftingPlanner.construction_stock_id(target_ids[target.selected]))
+	discard_button.disabled = not is_finite(amount) or floorf(amount) < 1
+
+func _request_discard() -> void:
+	_refresh_discard()
+	if discard_button.disabled: return
+	_discard_target = target_ids[target.selected]
+	_discard_state = GameManager.game_state
+	var amount := ConstructionSystem.new(_discard_state).get_owned_count(CraftingPlanner.construction_stock_id(_discard_target))
+	var automated := _discard_state.buildings.values().any(func(building): return float(building.get("construction_targets", {}).get(_discard_target, 0)) > 0)
+	discard_dialog.dialog_text = "确认永久丢弃%s施工件库存 ×%.0f？不返还材料，无法恢复。已放置建筑和制造目标会保留。%s" % [DataManager.construction[_discard_target].name, floorf(amount), "制造中心仍会按目标继续生产。" if automated else ""]
+	discard_dialog.popup_centered()
+
+func _confirm_discard() -> void:
+	if _discard_state == null or _discard_state != GameManager.game_state or _discard_target.is_empty():
+		_clear_discard()
+		EventBus.notice_requested.emit("工厂会话已变化，未执行丢弃", "error")
+		return
+	var result := ConstructionSystem.new(_discard_state).discard_inventory(_discard_target, true)
+	_clear_discard()
+	EventBus.notice_requested.emit(result.message, "success" if result.ok else "error")
+	_preview()
+	get_parent().refresh_now()
+
+func _clear_discard() -> void:
+	_discard_state = null
+	_discard_target = ""
 
 func _set_center() -> void:
 	if category.selected != 1 or target_ids.is_empty(): return
@@ -138,6 +196,7 @@ func _process(delta: float) -> void:
 	refresh_time += delta
 	if refresh_time < 0.25: return
 	refresh_time = 0
+	_refresh_discard()
 	var lines: Array[String] = []
 	for job in GameManager.game_state.production_orders:
 		var definition: Dictionary = DataManager.construction.get(job.target, {}) if job.construction else DataManager.get_recipe(job.target)
@@ -167,6 +226,7 @@ func _clear_center_target() -> void:
 
 func navigate_to(navigation: Dictionary) -> void:
 	var id := ""
+	focus_item_id = ""
 	if navigation.get("kind") == "recipe":
 		category.select(0)
 		for recipe in DataManager.all_recipes.values():
@@ -175,7 +235,11 @@ func navigate_to(navigation: Dictionary) -> void:
 				break
 	else:
 		category.select(1)
-		id = "dsp_" + String(navigation.get("buildingId", navigation.get("constructionId", "")))
+		var source_id := String(navigation.get("buildingId", navigation.get("constructionId", "")))
+		id = source_id if DataManager.construction.has(source_id) else "dsp_" + source_id
 	_populate()
 	if target_ids.has(id): target.select(target_ids.find(id))
+	if navigation.get("kind") == "recipe":
+		focus_item_id = String(navigation.itemId)
+		if id.is_empty(): target.select(-1)
 	_preview()

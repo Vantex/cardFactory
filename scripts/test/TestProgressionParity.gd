@@ -29,6 +29,8 @@ func _ready() -> void:
 	check(active == 69 and deprecated == 7, "complete finite technology catalog")
 	_test_effects()
 	_test_campaign_facts(source)
+	_test_industrial_system_counts()
+	_test_power_fact_persistence()
 	_test_infinite_research()
 	_test_infinite_lab_transaction()
 	_test_infinite_gold()
@@ -41,6 +43,64 @@ func check(value: bool, message: String) -> void:
 	if not value:
 		failures += 1
 		printerr("PROGRESSION PARITY: " + message)
+
+func _test_industrial_system_counts() -> void:
+	var state := GameState.new()
+	SourceGalaxySystem.new(state).initialize(240721, true)
+	var galaxy := GalaxySystem.new(state)
+	var home_system: String = galaxy.get_planet("home").system_id
+	var distant := ""
+	for id in SourceGalaxySystem.catalog().planets:
+		if galaxy.get_planet(id).system_id != home_system:
+			distant = id
+			break
+	check(not distant.is_empty(), "industrial fixture contains a second stellar system")
+	var metric := {"kind": "industrial-systems"}
+	check(SourceProgressionFacts.value(state, metric) == 0, "empty industry has no stellar systems")
+	var miner := state.add_building({"type": "dsp_mining_machine", "position": Vector2.ZERO, "planet_id": "home"})
+	check(SourceProgressionFacts.value(state, metric) == 0 and SourceProgressionFacts.value(state, metric, SourceProgressionFacts.building_snapshot(state)) == 0, "vein miners alone do not count an industrial stellar system")
+	state.buildings.erase(miner)
+	for index in range(20): state.add_building({"type": "smelter", "position": Vector2(index * 300, 0), "planet_id": "home"})
+	check(SourceProgressionFacts.value(state, metric) == 1, "many buildings on one planet count one industrial system")
+	state.add_building({"type": "smelter", "position": Vector2.ZERO, "planet_id": "ashen"})
+	check(SourceProgressionFacts.value(state, metric) == 1, "two planets in the same stellar system count once")
+	var remote := state.add_building({"type": "smelter", "position": Vector2.ZERO, "planet_id": distant})
+	check(SourceProgressionFacts.value(state, metric) == 2, "industry on a second stellar system increases the live fact")
+	state.remove_building(remote)
+	check(SourceProgressionFacts.value(state, metric) == 1, "removing remote industry refreshes the fact immediately")
+	state.buildings.values()[0]["spray_coater_installed"] = true
+	state.progression_facts["station_trips"] = {state.buildings.keys()[0]: 3}
+	var snapshot := SourceProgressionFacts.building_snapshot(state)
+	for query in [metric, {"kind": "building", "buildingId": "smelter"}, {"kind": "miner"}, {"kind": "spray-coater"}, {"kind": "station-trips", "buildingId": "smelter"}]:
+		check(SourceProgressionFacts.value(state, query, snapshot) == SourceProgressionFacts.value(state, query), "evaluation snapshot preserves the live fact: " + query.kind)
+	var evaluator := ObjectiveSystem.new()
+	var facts := {}
+	check(evaluator.get_condition_progress(state, {"fact": "source_metric", "metric": {"kind": "building", "buildingId": "smelter", "target": 30}}, facts).current == 21, "one evaluation shares correct building counts")
+	state.add_building({"type": "smelter", "position": Vector2(0, 400), "planet_id": "home"})
+	check(evaluator.get_condition_progress(state, {"fact": "source_metric", "metric": {"kind": "building", "buildingId": "smelter", "target": 30}}, {}).current == 22, "next evaluation does not reuse stale building counts")
+
+func _test_power_fact_persistence() -> void:
+	var state := GameState.new()
+	SourceGalaxySystem.new(state).initialize(240721, true)
+	state.add_building({"type": "dsp_wind_turbine", "position": Vector2.ZERO})
+	state.add_building({"type": "dsp_wind_turbine", "position": Vector2(800, 0)})
+	state.add_building({"type": "dsp_arc_smelter", "position": Vector2(400, 0), "recipe_id": "dsp_iron_ingot", "input_buffer": {"iron_ore": 1.0}})
+	var power := PowerSystem.new(state)
+	power.update(0.0)
+	var metric := {"kind": "power", "requireGeneration": true}
+	check(SourceProgressionFacts.value(state, metric) == 1, "actual funded load records stable power")
+	var disk := SaveSystem.new("res://.godot/progression-power-%d/" % Time.get_ticks_usec())
+	var saved := disk.save_slot(0, state)
+	var loaded := disk.load_slot(0) if saved.ok else {}
+	check(saved.ok and loaded.get("ok", false), "cached power fact passes actual disk save/load")
+	if loaded.get("ok", false):
+		check(SourceProgressionFacts.value(loaded.state, metric) == 1, "power query survives reload before the next simulation tick")
+	state.buildings.clear()
+	power.update(0.0)
+	check(SourceProgressionFacts.value(state, metric) == 0, "next power update clears the cached fact after all loads are removed")
+	var corrupt := GameStateCodec.to_persistent_dict(state)
+	corrupt.planet_metrics.home.power.efficiency = 2.0
+	check(GameStateCodec.from_persistent_dict(corrupt) == null, "invalid persisted power efficiency is rejected")
 
 func _test_effects() -> void:
 	var state := GameState.new()
