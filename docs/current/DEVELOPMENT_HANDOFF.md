@@ -9,7 +9,7 @@
 ```powershell
 git clone --branch handoff/task27-development --single-branch https://github.com/Vantex/cardFactory.git
 Set-Location cardFactory
-.\tools\run_tests.ps1 -Test TestParityResourceManual,TestParityResourceOutputUI,TestParityResourceJourney
+.\tools\run_tests.ps1 -Test TestParityResourceManual,TestParityResourceJourney
 node tools/test_parity_task_ownership.mjs
 node tools/check_parity_recording.mjs
 ```
@@ -17,6 +17,8 @@ node tools/check_parity_recording.mjs
 使用 Godot 4.7.2 和 Node 24；PowerShell 脚本可通过 `-GodotPath` 指定本机安装。运行既有夹具不需要源仓库；重新导出金标时，将干净的冻结 `DSPONLINE` 检出放在 CardFactory 的同级目录，保持上面的提交不变。先读根目录 `AGENTS.md`、[交接记录](HANDOFF.md) 与本文的 B1 接手顺序。参考数据及派生规则的许可见 [NOTICE](../../tests/fixtures/parity/NOTICE.md)。
 
 规则表 `tests/fixtures/parity/rule_cases.json` 使用存储格式 2：相同断言列表保存一次，程序读取后还原各规则的原有字段。完整对比确认 1099 规则、262 已验证记录和 1,130,643 条逐 key 断言全部保留。登记、归属检查和 Godot 验证入口均读取此格式；不需 Git LFS。新格式涉及的实现指纹发生改变，后续正式登记仍须用本分支重新执行总门。
+
+本次干净检出验证：Godot 导入、208 手采、703 安装/16 主档、240 采矿定义案例均通过；Godot 读取规则表后逐条断言顺序和内容与 Node 一致，非法断言索引被拒绝。归属检查、登记器完整性检查和 101 个冻结源文件哈希核对通过。`TestParityResourceOutputUI` 仍在 `closing panel cancels hold` 失败：诊断看到计时器已停止，但同一时间有施工后的延迟战役奖励和空间索引更新；尝试等待一帧未能消除失败，未提交该尝试。单独复核采集库存与计时器，以及延迟事件的测试边界；不要把 UI 场景登记为当前通过。本轮未执行完整门或重新打包。
 
 ## 已完成与正在验证的工作
 
