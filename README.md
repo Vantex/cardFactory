@@ -1,5 +1,7 @@
 # CardFactory
 
+> 本分支归档后续本地开发文档，代码仍是较早的 GitHub `main` 基线。请从[开发现状与续作指南](docs/current/DEVELOPMENT_HANDOFF.md)进入，查看任务 27 的当前能力、待办、验证边界和后续实现顺序。
+
 CardFactory 是一个使用卡牌式二维界面表达工厂生产链的 Godot 原型。当前可信基线要求 **Godot 4.7.2**；其他 Godot 版本尚未验证。
 
 ## 启动与测试

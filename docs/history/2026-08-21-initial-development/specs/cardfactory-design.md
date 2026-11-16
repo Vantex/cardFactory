@@ -1,4 +1,4 @@
-﻿# CardFactory - 卡牌化工厂模拟游戏 设计文档
+# CardFactory - 卡牌化工厂模拟游戏 设计文档
 
 > **历史归档（2026-08-21 初始开发）：** 本设计保留当时设想，不证明当前完成状态；请以[项目状态](../../../PROJECT_STATUS.md)和[当前设计](../../../current/SINGLE_PLAYER_GAP_ANALYSIS.md)为准。
 
@@ -704,7 +704,7 @@ func _load_data_line(path: String):
 ## 附录A：参考资源
 
 ### DSPONLINE源码位置
-- 项目位置：D:\AI_Program\CardGame\DSPONLINE
+- 项目位置：../DSPONLINE
 - 核心引擎：src/game/engine.ts (675KB)
 - 生产管理：src/game/productionManagement.ts
 - 物流系统：src/game/beltFlow.ts
